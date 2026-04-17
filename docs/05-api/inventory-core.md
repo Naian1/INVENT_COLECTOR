@@ -58,6 +58,7 @@ Acoes:
     "nr_patrimonio": "PAT123",
     "nr_serie": "SER999",
     "nr_ip": "10.0.0.12",
+    "nm_hostname": "CPU-ADM-001",
     "nr_invent_sup": null,
     "tp_status": "ATIVO"
   }
@@ -84,6 +85,39 @@ Acoes:
 - 500: Equipamento do tipo RAIZ nao pode ter item superior vinculado
 - 500: Equipamento do tipo FILHO em status ATIVO precisa de item superior
 - 500: Item superior e item filho devem estar no mesmo setor
+
+### Regras de hostname
+
+- `nm_hostname` deve ser enviado para equipamentos com hierarquia `RAIZ` ou `AMBOS`.
+- Quando o equipamento e `FILHO`, o backend ignora/limpa `nm_hostname`.
+
+## Action: update_inventario
+
+### Request
+
+```json
+{
+  "action": "update_inventario",
+  "payload": {
+    "nr_inventario": 999,
+    "cd_equipamento": 123,
+    "cd_setor": 10,
+    "nr_patrimonio": "PAT123",
+    "nr_serie": "SER999",
+    "nr_ip": "10.0.0.12",
+    "nm_hostname": "CPU-ADM-001",
+    "nr_invent_sup": null,
+    "tp_status": "ATIVO"
+  }
+}
+```
+
+## Action: list_context
+
+### Observacoes
+
+- Retorna inventario, setores, equipamentos, tipos e empresas ativas.
+- Setores sao ordenados por `nm_piso`, `nm_setor` e `nm_localizacao`.
 
 ## Action: move_inventario
 

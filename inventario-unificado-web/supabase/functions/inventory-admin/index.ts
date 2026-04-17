@@ -53,7 +53,13 @@ Deno.serve(async (req) => {
       const [empRes, tipRes, setRes, eqRes] = await Promise.all([
         supabase.from("empresa").select("*").eq("ie_situacao", "A").order("nm_empresa"),
         supabase.from("tipo_equipamento").select("*").eq("ie_situacao", "A").order("nm_tipo_equipamento"),
-        supabase.from("setor").select("*").eq("ie_situacao", "A").order("nm_setor"),
+        supabase
+          .from("setor")
+          .select("*")
+          .eq("ie_situacao", "A")
+          .order("nm_piso")
+          .order("nm_setor")
+          .order("nm_localizacao"),
         supabase.from("equipamento").select("*").eq("ie_situacao", "A").order("nm_modelo"),
       ]);
 
@@ -171,16 +177,19 @@ Deno.serve(async (req) => {
     }
 
     if (action === "create_setor") {
+      const nm_piso = String(payload?.nm_piso || "").trim();
       const nm_setor = String(payload?.nm_setor || "").trim();
-      if (!nm_setor) {
-        return badRequest("nm_setor e obrigatorio");
+      if (!nm_piso || !nm_setor) {
+        return badRequest("nm_piso e nm_setor sao obrigatorios");
       }
 
       const { data, error } = await supabase
         .from("setor")
         .insert([
           {
+            nm_piso,
             nm_setor,
+            nm_localizacao: payload?.nm_localizacao ? String(payload.nm_localizacao).trim() : null,
             ds_setor: payload?.ds_setor ? String(payload.ds_setor) : null,
             ie_situacao: "A",
           },
@@ -194,16 +203,19 @@ Deno.serve(async (req) => {
 
     if (action === "update_setor") {
       const cd_setor = Number(payload?.cd_setor);
+      const nm_piso = String(payload?.nm_piso || "").trim();
       const nm_setor = String(payload?.nm_setor || "").trim();
 
-      if (!Number.isFinite(cd_setor) || !nm_setor) {
-        return badRequest("cd_setor e nm_setor sao obrigatorios");
+      if (!Number.isFinite(cd_setor) || !nm_piso || !nm_setor) {
+        return badRequest("cd_setor, nm_piso e nm_setor sao obrigatorios");
       }
 
       const { data, error } = await supabase
         .from("setor")
         .update({
+          nm_piso,
           nm_setor,
+          nm_localizacao: payload?.nm_localizacao ? String(payload.nm_localizacao).trim() : null,
           ds_setor: payload?.ds_setor ? String(payload.ds_setor) : null,
         })
         .eq("cd_setor", cd_setor)

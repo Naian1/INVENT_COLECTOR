@@ -1074,7 +1074,13 @@ Deno.serve(async (req) => {
         fetchAllPaginated(async (from, to) =>
           await supabase.from("inventario").select("*").order("nr_patrimonio").range(from, to)
         ),
-        supabase.from("setor").select("*").eq("ie_situacao", "A").order("nm_setor"),
+        supabase
+          .from("setor")
+          .select("*")
+          .eq("ie_situacao", "A")
+          .order("nm_piso")
+          .order("nm_setor")
+          .order("nm_localizacao"),
         supabase.from("equipamento").select("*").eq("ie_situacao", "A").order("nm_modelo"),
         supabase.from("tipo_equipamento").select("*").eq("ie_situacao", "A").order("nm_tipo_equipamento"),
         hasEmpresa
@@ -1247,6 +1253,9 @@ Deno.serve(async (req) => {
         return badRequest("cd_equipamento e cd_setor sao obrigatorios");
       }
 
+      const tp_hierarquia = await getTpHierarquiaEquipamento(supabase, cd_equipamento);
+      const nm_hostname = tp_hierarquia === "FILHO" ? null : limparTexto(payload?.nm_hostname);
+
       const regrasStatus = await aplicarRegrasStatusInventario({
         supabase,
         tp_status,
@@ -1268,6 +1277,7 @@ Deno.serve(async (req) => {
         nr_patrimonio: limparTexto(payload?.nr_patrimonio),
         nr_serie: limparTexto(payload?.nr_serie),
         nr_ip: normalizarIp(limparTexto(payload?.nr_ip)),
+        nm_hostname,
         nr_invent_sup: regrasStatus.nr_invent_sup,
         tp_status,
         ie_situacao: tpStatusParaSituacao(tp_status),
@@ -1325,6 +1335,9 @@ Deno.serve(async (req) => {
         return badRequest("cd_equipamento e cd_setor sao obrigatorios");
       }
 
+      const tp_hierarquia = await getTpHierarquiaEquipamento(supabase, cd_equipamento);
+      const nm_hostname = tp_hierarquia === "FILHO" ? null : limparTexto(payload?.nm_hostname);
+
       const { data: existente, error: existeError } = await supabase
         .from("inventario")
         .select("nr_inventario, cd_setor")
@@ -1361,6 +1374,7 @@ Deno.serve(async (req) => {
         nr_patrimonio: limparTexto(payload?.nr_patrimonio),
         nr_serie: limparTexto(payload?.nr_serie),
         nr_ip: normalizarIp(limparTexto(payload?.nr_ip)),
+        nm_hostname,
         nr_invent_sup: regrasStatus.nr_invent_sup,
         tp_status,
         ie_situacao: tpStatusParaSituacao(tp_status),

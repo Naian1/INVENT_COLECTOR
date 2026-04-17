@@ -61,6 +61,7 @@ type FormInventarioState = {
   cd_setor: string;
   nr_serie: string;
   nr_ip: string;
+  nm_hostname: string;
   nr_invent_sup: string;
   tp_status: TpStatus;
   nr_chamado: string;
@@ -72,6 +73,7 @@ const INITIAL_FORM: FormInventarioState = {
   cd_setor: '',
   nr_serie: '',
   nr_ip: '',
+  nm_hostname: '',
   nr_invent_sup: '',
   tp_status: 'ATIVO',
   nr_chamado: '',
@@ -137,6 +139,14 @@ function labelInventario(item: InventarioComDetalhes): string {
   const patrimonio = item.nr_patrimonio || `ID ${item.nr_inventario}`;
   const modelo = item.equipamento?.nm_modelo || 'Sem modelo';
   return `${patrimonio} - ${modelo}`;
+}
+
+function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null): string {
+  if (!setor) return '-';
+  return [setor.nm_piso || '', setor.nm_setor || '', setor.nm_localizacao || '']
+    .map((value) => value.trim())
+    .filter(Boolean)
+    .join(' > ');
 }
 
 function statusFromLegacy(situacao?: string | null): TpStatus {
@@ -330,6 +340,13 @@ export default function InventarioPage() {
     return equipamentos.filter((item) => item.cd_tipo_equipamento === formTipoEquipamento);
   }, [equipamentos, formTipoEquipamento]);
 
+  const equipamentoSelecionadoFormulario = useMemo(
+    () => equipamentos.find((item) => item.cd_equipamento === Number(formData.cd_equipamento)) || null,
+    [equipamentos, formData.cd_equipamento],
+  );
+
+  const tpHierarquiaFormulario = (equipamentoSelecionadoFormulario?.tp_hierarquia || 'AMBOS') as TpHierarquia;
+
   const empresasByCgc = useMemo(
     () => new Map(empresas.map((empresa) => [empresa.cd_cgc, empresa.nm_empresa])),
     [empresas],
@@ -372,11 +389,12 @@ export default function InventarioPage() {
           item.nr_patrimonio || '',
           item.nr_serie || '',
           item.nr_ip || '',
+          item.nm_hostname || '',
           item.equipamento?.nm_modelo || '',
           item.equipamento?.nm_equipamento || '',
           item.equipamento?.tp_hierarquia || '',
           item.tipoEquipamento?.nm_tipo_equipamento || '',
-          item.setor?.nm_setor || '',
+          formatSetorLabel(item.setor),
           item.itemSuperior?.nr_patrimonio || '',
           item.tp_status || '',
         ].join(' '),
@@ -418,8 +436,8 @@ export default function InventarioPage() {
 
     return Array.from(grouped.entries())
       .sort((a, b) => {
-        const setorA = setores.find((setor) => setor.cd_setor === a[0])?.nm_setor || '';
-        const setorB = setores.find((setor) => setor.cd_setor === b[0])?.nm_setor || '';
+        const setorA = formatSetorLabel(setores.find((setor) => setor.cd_setor === a[0]));
+        const setorB = formatSetorLabel(setores.find((setor) => setor.cd_setor === b[0]));
         return setorA.localeCompare(setorB);
       })
       .map(([setorId, inventarios]) => ({
@@ -571,6 +589,7 @@ export default function InventarioPage() {
       ...previous,
       cd_equipamento: value,
       nr_invent_sup: equipamento?.tp_hierarquia === 'RAIZ' ? '' : previous.nr_invent_sup,
+      nm_hostname: equipamento?.tp_hierarquia === 'FILHO' ? '' : previous.nm_hostname,
     }));
     setFormTipoEquipamento(equipamento?.cd_tipo_equipamento || null);
   };
@@ -716,6 +735,7 @@ export default function InventarioPage() {
       cd_setor: String(item.cd_setor || ''),
       nr_serie: item.nr_serie || '',
       nr_ip: item.nr_ip || '',
+      nm_hostname: item.equipamento?.tp_hierarquia === 'FILHO' ? '' : (item.nm_hostname || ''),
       nr_invent_sup: item.nr_invent_sup ? String(item.nr_invent_sup) : '',
       tp_status: (item.tp_status as TpStatus) || 'ATIVO',
       nr_chamado: '',
@@ -1000,6 +1020,11 @@ export default function InventarioPage() {
       return;
     }
 
+    if (tpHierarquia !== 'FILHO' && !formData.nm_hostname.trim()) {
+      setErrorMessage('Hostname e obrigatorio para equipamentos RAIZ/AMBOS.');
+      return;
+    }
+
     const patrimonioDigitado = formData.nr_patrimonio.trim();
     if (patrimonioDigitado) {
       const patrimonioExistente = items.find((item) => {
@@ -1040,6 +1065,7 @@ export default function InventarioPage() {
         nr_patrimonio: formData.nr_patrimonio.trim() || null,
         nr_serie: formData.nr_serie.trim() || null,
         nr_ip: formData.nr_ip.trim() || null,
+        nm_hostname: tpHierarquia === 'FILHO' ? null : formData.nm_hostname.trim() || null,
         nr_invent_sup: formData.nr_invent_sup ? Number(formData.nr_invent_sup) : null,
         tp_status: formData.tp_status,
         nr_chamado: formData.nr_chamado.trim() || null,
@@ -1200,6 +1226,20 @@ export default function InventarioPage() {
                 />
               </label>
 
+              {tpHierarquiaFormulario !== 'FILHO' ? (
+                <label className="flex flex-col gap-1 text-sm">
+                  <FieldDbHint text="inventario.nm_hostname" />
+                  <span className="font-medium text-slate-700">Hostname</span>
+                  <input
+                    value={formData.nm_hostname}
+                    onChange={(event) => handleChangeForm('nm_hostname', event.target.value)}
+                    className="rounded-md border border-slate-300 px-3 py-2"
+                    placeholder="Ex: CPU-ADM-012"
+                    required
+                  />
+                </label>
+              ) : null}
+
               <label className="flex flex-col gap-1 text-sm">
                 <FieldDbHint text="inventario.cd_setor -> setor.cd_setor" />
                 <span className="font-medium text-slate-700">Setor</span>
@@ -1212,7 +1252,7 @@ export default function InventarioPage() {
                   <option value="">Selecione o setor</option>
                   {setores.map((setor) => (
                     <option key={setor.cd_setor} value={setor.cd_setor}>
-                      {setor.nm_setor}
+                      {formatSetorLabel(setor)}
                     </option>
                   ))}
                 </select>
@@ -1288,6 +1328,7 @@ export default function InventarioPage() {
                   value={formData.nr_invent_sup}
                   onChange={(event) => handleSelectItemSuperior(event.target.value)}
                   className="rounded-md border border-slate-300 px-3 py-2"
+                  disabled={tpHierarquiaFormulario === 'RAIZ'}
                 >
                   <option value="">Sem vinculo (item raiz)</option>
                   {itensRaiz.map((item) => (
@@ -1300,6 +1341,12 @@ export default function InventarioPage() {
                   Uma CPU raiz pode ter varios filhos vinculados ao mesmo tempo (ex: 2 monitores + 1 nobreak).
                 </span>
               </label>
+
+              {tpHierarquiaFormulario === 'RAIZ' ? (
+                <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 md:col-span-2 lg:col-span-3">
+                  Modelo RAIZ selecionado: este item nao pode ter item superior.
+                </div>
+              ) : null}
 
               <div className="flex flex-col gap-2 text-sm md:col-span-2 lg:col-span-3">
                 <FieldDbHint text="nao salva em tabela; camera somente para leitura temporaria de codigo" />
@@ -1351,8 +1398,7 @@ export default function InventarioPage() {
                 Hierarquia esperada para este modelo:{' '}
                 <strong>
                   {
-                    (equipamentos.find((item) => item.cd_equipamento === Number(formData.cd_equipamento))
-                      ?.tp_hierarquia || 'AMBOS')
+                    tpHierarquiaFormulario
                   }
                 </strong>
               </div>
@@ -1481,7 +1527,7 @@ export default function InventarioPage() {
                   <option value="">Selecione</option>
                   {setores.map((setor) => (
                     <option key={setor.cd_setor} value={setor.cd_setor}>
-                      {setor.nm_setor}
+                      {formatSetorLabel(setor)}
                     </option>
                   ))}
                 </select>
@@ -1555,7 +1601,7 @@ export default function InventarioPage() {
                 <strong>Item em manutencao:</strong> {labelInventario(substituindoItem)}
               </p>
               <p>
-                <strong>Setor atual:</strong> {substituindoItem.setor?.nm_setor || '-'}
+                <strong>Setor atual:</strong> {formatSetorLabel(substituindoItem.setor)}
               </p>
               <p>
                 <strong>Regra:</strong> este item permanece em manutencao ate a resolucao.
@@ -1591,7 +1637,7 @@ export default function InventarioPage() {
                 <option value="">Automatico (setor de origem da manutencao)</option>
                 {setores.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
-                    {setor.nm_setor}
+                    {formatSetorLabel(setor)}
                   </option>
                 ))}
               </select>
@@ -1687,7 +1733,7 @@ export default function InventarioPage() {
                 {empresasByCgc.get(String(movimentandoItem.equipamento?.cd_cgc || '')) || 'Nao identificada'}
               </p>
               <p>
-                <strong>Setor atual:</strong> {movimentandoItem.setor?.nm_setor || '-'}
+                <strong>Setor atual:</strong> {formatSetorLabel(movimentandoItem.setor)}
               </p>
               <p>
                 <strong>Modelo:</strong> {movimentandoItem.equipamento?.nm_modelo || '-'}
@@ -1707,7 +1753,7 @@ export default function InventarioPage() {
                 <option value="">Selecione</option>
                 {setores.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
-                    {setor.nm_setor}
+                    {formatSetorLabel(setor)}
                   </option>
                 ))}
               </select>
@@ -1807,7 +1853,7 @@ export default function InventarioPage() {
                 <option value="">Todos</option>
                 {setores.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
-                    {setor.nm_setor}
+                    {formatSetorLabel(setor)}
                   </option>
                 ))}
               </select>
@@ -1885,7 +1931,7 @@ export default function InventarioPage() {
               return (
                 <div key={setorId} className="overflow-x-auto rounded-lg border bg-white">
                   <div className="border-b bg-gray-100 px-4 py-3">
-                    <h2 className="text-lg font-bold">{setor?.nm_setor}</h2>
+                    <h2 className="text-lg font-bold">{formatSetorLabel(setor)}</h2>
                     <p className="text-sm text-gray-600">{setor?.ds_setor}</p>
                   </div>
                   <table className="w-full">
@@ -1899,6 +1945,7 @@ export default function InventarioPage() {
                         <th className="px-4 py-2 text-left font-semibold">Hierarquia</th>
                         <th className="px-4 py-2 text-left font-semibold">Item superior</th>
                         <th className="px-4 py-2 text-left font-semibold">Filhos</th>
+                        <th className="px-4 py-2 text-left font-semibold">Hostname</th>
                         <th className="px-4 py-2 text-left font-semibold">IP</th>
                         <th className="px-4 py-2 text-left font-semibold">Serie</th>
                         <th className="px-4 py-2 text-left font-semibold">Status</th>
@@ -1945,6 +1992,7 @@ export default function InventarioPage() {
                             {item.itemSuperior ? labelInventario(item.itemSuperior) : 'Raiz'}
                           </td>
                           <td className="px-4 py-2 text-sm">{item.filhosCount}</td>
+                          <td className="px-4 py-2 font-mono text-sm">{item.nm_hostname || '-'}</td>
                           <td className="px-4 py-2 font-mono text-sm">{item.nr_ip || '-'}</td>
                           <td className="px-4 py-2 text-sm">{item.nr_serie || '-'}</td>
                           <td className="px-4 py-2">
@@ -1978,7 +2026,7 @@ export default function InventarioPage() {
                   return (
                     <div key={raiz.nr_inventario} className="rounded-lg border border-slate-200 p-3">
                       <p className="font-semibold text-slate-900">{labelInventario(raiz)}</p>
-                      <p className="text-xs text-slate-500">{raiz.setor?.nm_setor || 'Sem setor'}</p>
+                      <p className="text-xs text-slate-500">{formatSetorLabel(raiz.setor)}</p>
                       <div className="mt-2 space-y-1 text-sm text-slate-700">
                         {filhos.length === 0 ? (
                           <p className="text-slate-500">Sem itens vinculados</p>

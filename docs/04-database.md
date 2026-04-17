@@ -41,6 +41,8 @@
 - Equipamento RAIZ nao aceita nr_invent_sup.
 - Equipamento FILHO em status ATIVO exige nr_invent_sup.
 - Filho e superior devem estar no mesmo setor.
+- Hostname (inventario.nm_hostname) e utilizado para equipamentos RAIZ/AMBOS.
+- Equipamentos FILHO nao persistem hostname.
 
 2. Status operacional padrao
 - ATIVO
@@ -48,7 +50,13 @@
 - BACKUP
 - DEVOLUCAO
 
-3. Matrix por competencia
+3. Estrutura de setor (hospital)
+- `setor.nm_piso`: nivel macro (Terreo, 1o Andar, Anexo, etc.).
+- `setor.nm_setor`: unidade funcional (SAME, UTI, Recepcao, etc.).
+- `setor.nm_localizacao`: detalhamento opcional (sala/corredor/local).
+- Unicidade composta: (`nm_piso`, `nm_setor`, `nm_localizacao`).
+
+4. Matrix por competencia
 - Competencia no formato MM/AAAA.
 - Reimportacao substitui apenas a competencia alvo.
 

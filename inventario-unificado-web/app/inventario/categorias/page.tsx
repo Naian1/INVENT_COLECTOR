@@ -24,7 +24,9 @@ type TipoEquipamento = {
 
 type Setor = {
   cd_setor: number;
+  nm_piso?: string | null;
   nm_setor: string;
+  nm_localizacao?: string | null;
   ds_setor?: string | null;
   ie_situacao: 'A' | 'I';
 };
@@ -54,6 +56,14 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
   throw new Error(`Falha ao executar inventory-admin: ${fnError}`);
 }
 
+function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>): string {
+  const piso = (setor.nm_piso || '').trim();
+  const nomeSetor = (setor.nm_setor || '').trim();
+  const localizacao = (setor.nm_localizacao || '').trim();
+
+  return [piso, nomeSetor, localizacao].filter(Boolean).join(' > ');
+}
+
 export default function GerenciarCategoriasPage() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -78,7 +88,9 @@ export default function GerenciarCategoriasPage() {
   });
 
   const [novoSetor, setNovoSetor] = useState({
+    nm_piso: '',
     nm_setor: '',
+    nm_localizacao: '',
     ds_setor: '',
   });
 
@@ -100,6 +112,7 @@ export default function GerenciarCategoriasPage() {
   const [editarCadastroModalOpen, setEditarCadastroModalOpen] = useState(false);
 
   const [edicaoEmpresa, setEdicaoEmpresa] = useState({
+    cd_cgc: '',
     nm_empresa: '',
     nm_fantasia: '',
     ds_email: '',
@@ -112,7 +125,9 @@ export default function GerenciarCategoriasPage() {
   });
 
   const [edicaoSetor, setEdicaoSetor] = useState({
+    nm_piso: '',
     nm_setor: '',
+    nm_localizacao: '',
     ds_setor: '',
   });
 
@@ -159,6 +174,7 @@ export default function GerenciarCategoriasPage() {
     if (!atual) return;
 
     setEdicaoEmpresa({
+      cd_cgc: atual.cd_cgc || '',
       nm_empresa: atual.nm_empresa || '',
       nm_fantasia: atual.nm_fantasia || '',
       ds_email: atual.ds_email || '',
@@ -185,7 +201,9 @@ export default function GerenciarCategoriasPage() {
     if (!atual) return;
 
     setEdicaoSetor({
+      nm_piso: atual.nm_piso || '',
       nm_setor: atual.nm_setor || '',
+      nm_localizacao: atual.nm_localizacao || '',
       ds_setor: atual.ds_setor || '',
     });
   }, [setorSelecionado, setores]);
@@ -257,8 +275,8 @@ export default function GerenciarCategoriasPage() {
   }
 
   async function criarSetor() {
-    if (!novoSetor.nm_setor) {
-      setErro('Preencha o nome do setor.');
+    if (!novoSetor.nm_piso || !novoSetor.nm_setor) {
+      setErro('Preencha piso/andar e nome do setor.');
       return;
     }
 
@@ -266,7 +284,9 @@ export default function GerenciarCategoriasPage() {
     setOk(null);
     try {
       await invokeInventoryAdmin('create_setor', {
+        nm_piso: novoSetor.nm_piso,
         nm_setor: novoSetor.nm_setor,
+        nm_localizacao: novoSetor.nm_localizacao || null,
         ds_setor: novoSetor.ds_setor || null,
       });
     } catch (error) {
@@ -275,7 +295,7 @@ export default function GerenciarCategoriasPage() {
     }
 
     setOk('Setor criado com sucesso.');
-    setNovoSetor({ nm_setor: '', ds_setor: '' });
+    setNovoSetor({ nm_piso: '', nm_setor: '', nm_localizacao: '', ds_setor: '' });
     await carregarTudo();
   }
 
@@ -385,12 +405,19 @@ export default function GerenciarCategoriasPage() {
       return;
     }
 
+    if (!edicaoSetor.nm_piso.trim()) {
+      setErro('Piso/andar e obrigatorio.');
+      return;
+    }
+
     setErro(null);
     setOk(null);
     try {
       await invokeInventoryAdmin('update_setor', {
         cd_setor: Number(setorSelecionado),
+        nm_piso: edicaoSetor.nm_piso.trim(),
         nm_setor: edicaoSetor.nm_setor.trim(),
+        nm_localizacao: edicaoSetor.nm_localizacao.trim() || null,
         ds_setor: edicaoSetor.ds_setor.trim() || null,
       });
       setOk('Setor atualizado com sucesso.');
@@ -460,7 +487,7 @@ export default function GerenciarCategoriasPage() {
 
         <div className="ui-grid-3">
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
-            <strong>Setor:</strong> local fisico/organizacional onde o item fica (UTI, Recepcao, Farmacia, TI).
+            <strong>Setor:</strong> estrutura por piso/andar + setor + localizacao (ex.: 1o Andar &gt; SAME &gt; Arquivo).
           </div>
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
             <strong>Tipo:</strong> classe do equipamento (CPU, MONITOR, NOBREAK, TABLET, IMPRESSORA).
@@ -490,7 +517,7 @@ export default function GerenciarCategoriasPage() {
             <DialogHeader>
               <DialogTitle>Novo Cadastro</DialogTitle>
               <DialogDescription>
-                Cadastre empresa, tipo, setor e modelos de equipamento.
+                Cadastre empresa, tipo, setor (com piso/localizacao) e modelos de equipamento.
               </DialogDescription>
             </DialogHeader>
             <div style={{ padding: 18, display: 'grid', gap: 12 }}>
@@ -500,6 +527,8 @@ export default function GerenciarCategoriasPage() {
                   <input className="ui-field" placeholder="CNPJ/CGC" value={novaEmpresa.cd_cgc} onChange={(e) => setNovaEmpresa(v => ({ ...v, cd_cgc: e.target.value }))} />
                   <input className="ui-field" placeholder="Nome" value={novaEmpresa.nm_empresa} onChange={(e) => setNovaEmpresa(v => ({ ...v, nm_empresa: e.target.value }))} />
                   <input className="ui-field" placeholder="Fantasia" value={novaEmpresa.nm_fantasia} onChange={(e) => setNovaEmpresa(v => ({ ...v, nm_fantasia: e.target.value }))} />
+                  <input className="ui-field" placeholder="E-mail" value={novaEmpresa.ds_email} onChange={(e) => setNovaEmpresa(v => ({ ...v, ds_email: e.target.value }))} />
+                  <input className="ui-field" placeholder="Telefone" value={novaEmpresa.nr_telefone} onChange={(e) => setNovaEmpresa(v => ({ ...v, nr_telefone: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarEmpresa}>Salvar Empresa</button>
                 </div>
 
@@ -512,7 +541,9 @@ export default function GerenciarCategoriasPage() {
 
                 <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
                   <h2 style={{ margin: 0 }}>Novo Setor</h2>
+                  <input className="ui-field" placeholder="Piso/Andar (ex.: Terreo, 1o Andar, Anexo)" value={novoSetor.nm_piso} onChange={(e) => setNovoSetor(v => ({ ...v, nm_piso: e.target.value }))} />
                   <input className="ui-field" placeholder="Nome do setor" value={novoSetor.nm_setor} onChange={(e) => setNovoSetor(v => ({ ...v, nm_setor: e.target.value }))} />
+                  <input className="ui-field" placeholder="Localizacao (opcional)" value={novoSetor.nm_localizacao} onChange={(e) => setNovoSetor(v => ({ ...v, nm_localizacao: e.target.value }))} />
                   <input className="ui-field" placeholder="Descricao" value={novoSetor.ds_setor} onChange={(e) => setNovoSetor(v => ({ ...v, ds_setor: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarSetor}>Salvar Setor</button>
                 </div>
@@ -528,6 +559,7 @@ export default function GerenciarCategoriasPage() {
                     {tipos.map((t) => <option key={t.cd_tipo_equipamento} value={t.cd_tipo_equipamento}>{t.nm_tipo_equipamento}</option>)}
                   </select>
                   <input className="ui-field" placeholder="Nome equipamento" value={novoEquipamento.nm_equipamento} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_equipamento: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descricao" value={novoEquipamento.ds_equipamento} onChange={(e) => setNovoEquipamento(v => ({ ...v, ds_equipamento: e.target.value }))} />
                   <input className="ui-field" placeholder="Marca" value={novoEquipamento.nm_marca} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_marca: e.target.value }))} />
                   <input className="ui-field" placeholder="Modelo" value={novoEquipamento.nm_modelo} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_modelo: e.target.value }))} />
                   <select
@@ -564,6 +596,7 @@ export default function GerenciarCategoriasPage() {
                       <option key={item.cd_cgc} value={item.cd_cgc}>{item.nm_empresa}</option>
                     ))}
                   </select>
+                  <input className="ui-field" placeholder="CNPJ/CGC" value={edicaoEmpresa.cd_cgc} readOnly />
                   <input className="ui-field" placeholder="Nome" value={edicaoEmpresa.nm_empresa} onChange={(e) => setEdicaoEmpresa((v) => ({ ...v, nm_empresa: e.target.value }))} />
                   <input className="ui-field" placeholder="Fantasia" value={edicaoEmpresa.nm_fantasia} onChange={(e) => setEdicaoEmpresa((v) => ({ ...v, nm_fantasia: e.target.value }))} />
                   <input className="ui-field" placeholder="E-mail" value={edicaoEmpresa.ds_email} onChange={(e) => setEdicaoEmpresa((v) => ({ ...v, ds_email: e.target.value }))} />
@@ -589,10 +622,12 @@ export default function GerenciarCategoriasPage() {
                   <select className="ui-select" value={setorSelecionado} onChange={(e) => setSetorSelecionado(e.target.value)}>
                     <option value="">Selecione setor</option>
                     {setores.map((item) => (
-                      <option key={item.cd_setor} value={item.cd_setor}>{item.nm_setor}</option>
+                      <option key={item.cd_setor} value={item.cd_setor}>{formatSetorLabel(item)}</option>
                     ))}
                   </select>
+                  <input className="ui-field" placeholder="Piso/Andar" value={edicaoSetor.nm_piso} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_piso: e.target.value }))} />
                   <input className="ui-field" placeholder="Nome do setor" value={edicaoSetor.nm_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_setor: e.target.value }))} />
+                  <input className="ui-field" placeholder="Localizacao (opcional)" value={edicaoSetor.nm_localizacao} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_localizacao: e.target.value }))} />
                   <input className="ui-field" placeholder="Descricao" value={edicaoSetor.ds_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, ds_setor: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={atualizarSetor}>Salvar Setor</button>
                 </div>
