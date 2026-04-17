@@ -11,3 +11,6 @@ pnpm-debug.log*
 
 
 .vercel
+
+# Supabase local metadata
+supabase/.temp/
