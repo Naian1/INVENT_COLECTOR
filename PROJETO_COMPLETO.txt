@@ -1,5 +1,5 @@
-﻿================================================================================
-PROJETO: INVENTÃRIO UNIFICADO + COLETOR SNMP
+================================================================================
+PROJETO: INVENTÁRIO UNIFICADO + COLETOR SNMP
 Data: 31/03/2026
 ================================================================================
 
@@ -8,108 +8,108 @@ Data: 31/03/2026
 ================================================================================
 
 INVENT_COLECTOR/
-â”œâ”€â”€ coletor-snmp/
-â”‚   â”œâ”€â”€ .env (configuraÃ§Ã£o local)
-â”‚   â”œâ”€â”€ requirements.txt
-â”‚   â”œâ”€â”€ dados_cache.json
-â”‚   â”œâ”€â”€ README.md
-â”‚   â”œâ”€â”€ scripts/
-â”‚   â”‚   â”œâ”€â”€ run_collector_loop.py (loop principal)
-â”‚   â”‚   â”œâ”€â”€ test_collector_push.py
-â”‚   /// â””â”€â”€ python/
-â”‚   â”œâ”€â”€ utils/
-â”‚   â”‚   â”œâ”€â”€ __init__.py
-â”‚   â”‚   â”œâ”€â”€ api_client.py
-â”‚   â”‚   â”œâ”€â”€ cache_manager.py
-â”‚   â”‚   â”œâ”€â”€ file_manager.py
-â”‚   â”‚   â”œâ”€â”€ snmp_client.py
-â”‚   â”‚   â””â”€â”€ telemetry_mapper.py
-â”‚   â”œâ”€â”€ data/
-â”‚   â”‚   â”œâ”€â”€ printers.json
-â”‚   â”‚   â”œâ”€â”€ collector_pending.jsonl
-â”‚   â”‚   â””â”€â”€ collector_pending_invalid.jsonl
-â”‚   â””â”€â”€ logs/
-â”‚
-â”œâ”€â”€ inventario-unificado-web/
-â”‚   â”œâ”€â”€ package.json
-â”‚   â”œâ”€â”€ tsconfig.json
-â”‚   â”œâ”€â”€ next.config.mjs
-â”‚   â”œâ”€â”€ vercel.json
-â”‚   â”œâ”€â”€ README.md
-â”‚   â”œâ”€â”€ app/
-â”‚   â”‚   â”œâ”€â”€ layout.tsx
-â”‚   â”‚   â”œâ”€â”€ page.tsx
-â”‚   â”‚   â”œâ”€â”€ globals.css
-â”‚   â”‚   â”œâ”€â”€ api/
-â”‚   â”‚   â”‚   â”œâ”€â”€ coletor/
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ telemetria (POST - recebe telemetria)
-â”‚   â”‚   â”‚   â”œâ”€â”€ collector/
-â”‚   â”‚   â”‚   â”œâ”€â”€ dashboard/
-â”‚   â”‚   â”‚   â”œâ”€â”€ impressoras/
-â”‚   â”‚   â”‚   â”œâ”€â”€ inventario/
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ importacoes/
-â”‚   â”‚   â”‚   â”‚       â””â”€â”€ executar (POST - executa importaÃ§Ã£o)
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ operacionais/
-â”‚   â”‚   â”‚   â”‚       â””â”€â”€ sincronizar-lote (POST - sincroniza lote)
-â”‚   â”‚   â”‚   â””â”€â”€ printers/
-â”‚   â”‚   â”‚       â””â”€â”€ [id]/coletor (GET - lista impressoras para coletor)
-â”‚   â”‚   â”œâ”€â”€ impressoras/
-â”‚   â”‚   â”‚   â””â”€â”€ page.tsx
-â”‚   â”‚   â”œâ”€â”€ inventario/
-â”‚   â”‚   â”‚   â”œâ”€â”€ page.tsx (operacional)
-â”‚   â”‚   â”‚   â”œâ”€â”€ importacoes/
-â”‚   â”‚   â”‚   â”‚   â””â”€â”€ page.tsx
-â”‚   â”‚   â”‚   â”œâ”€â”€ [id]/
-â”‚   â”‚   â”‚   â””â”€â”€ categorias/
-â”‚   â”‚   â”œâ”€â”€ operacional/
-â”‚   â”‚   â”‚   â””â”€â”€ page.tsx
-â”‚   â”‚   â””â”€â”€ sca/
-â”‚   â”œâ”€â”€ components/
-â”‚   â”‚   â”œâ”€â”€ BasicPageShell.tsx
-â”‚   â”‚   â”œâ”€â”€ PainelDashboard.tsx
-â”‚   â”‚   â”œâ”€â”€ StatusFeedback.tsx
-â”‚   â”‚   â””â”€â”€ SuprimentosLista.tsx
-â”‚   â”œâ”€â”€ lib/
-â”‚   â”‚   â”œâ”€â”€ supabase/
-â”‚   â”‚   â”‚   â””â”€â”€ server.ts
-â”‚   â”‚   â”œâ”€â”€ security/
-â”‚   â”‚   â”‚   â””â”€â”€ collectorAuth.ts
-â”‚   â”‚   â”œâ”€â”€ mappers/
-â”‚   â”‚   â”œâ”€â”€ validation/
-â”‚   â”‚   â”‚   â”œâ”€â”€ coletorSchemasPtBr.ts
-â”‚   â”‚   â”‚   â”œâ”€â”€ impressoraSchemas.ts
-â”‚   â”‚   â”‚   â”œâ”€â”€ importacoesInventarioSchemas.ts
-â”‚   â”‚   â”‚   â””â”€â”€ inventarioDinamicoSchemas.ts
-â”‚   â”‚   â”œâ”€â”€ printers/
-â”‚   â”‚   â”‚   â””â”€â”€ naming.ts
-â”‚   â”‚   â””â”€â”€ security/
-â”‚   â”œâ”€â”€ services/
-â”‚   â”‚   â”œâ”€â”€ impressorasService.ts
-â”‚   â”‚   â”œâ”€â”€ coletorTelemetriaPtService.ts
-â”‚   â”‚   â”œâ”€â”€ coletorScaResumoService.ts
-â”‚   â”‚   â”œâ”€â”€ telemetryService.ts
-â”‚   â”‚   â”œâ”€â”€ dashboardAnaliticoService.ts (dashboard com retenÃ§Ã£o 92 dias)
-â”‚   â”‚   â”œâ”€â”€ importacaoInventarioDinamicoService.ts
-â”‚   â”‚   â”œâ”€â”€ inventarioOperacionalService.ts
-â”‚   â”‚   â”œâ”€â”€ visaoGeralImpressorasService.ts
-â”‚   â”‚   â”œâ”€â”€ statusSuprimentosImpressorasService.ts
-â”‚   â”‚   â”œâ”€â”€ inventarioItensService.ts
-â”‚   â”‚   â””â”€â”€ googleSheetsSyncService.ts
-â”‚   â”œâ”€â”€ supabase/
-â”‚   â”‚   â””â”€â”€ migrations/
-â”‚   â”‚       â”œâ”€â”€ 20260327_schema_unico_completo_datado.sql (SCHEMA PRINCIPAL)
-â”‚   â”‚       â”œâ”€â”€ 20260331_retencao_leituras_paginas_3_meses.sql (NO-OP, tudo em schema Ãºnico)
-â”‚   â”‚       â””â”€â”€ 20260331_reparo_permissoes_service_role.sql
-â”‚   â”œâ”€â”€ types/
-â”‚   â”‚   â”œâ”€â”€ impressora.ts
-â”‚   â”‚   â”œâ”€â”€ inventario.ts
-â”‚   â”‚   â””â”€â”€ inventarioDinamico.ts
-â”‚   â””â”€â”€ scripts/
-â”‚       â”œâ”€â”€ backfillLegacyPrinters.mjs
-â”‚       â””â”€â”€ importAbaImpressoras.mjs
+├── coletor-snmp/
+│   ├── .env (configuração local)
+│   ├── requirements.txt
+│   ├── dados_cache.json
+│   ├── README.md
+│   ├── scripts/
+│   │   ├── run_collector_loop.py (loop principal)
+│   │   ├── test_collector_push.py
+│   /// └── python/
+│   ├── utils/
+│   │   ├── __init__.py
+│   │   ├── api_client.py
+│   │   ├── cache_manager.py
+│   │   ├── file_manager.py
+│   │   ├── snmp_client.py
+│   │   └── telemetry_mapper.py
+│   ├── data/
+│   │   ├── printers.json
+│   │   ├── collector_pending.jsonl
+│   │   └── collector_pending_invalid.jsonl
+│   └── logs/
+│
+├── inventario-unificado-web/
+│   ├── package.json
+│   ├── tsconfig.json
+│   ├── next.config.mjs
+│   ├── vercel.json
+│   ├── README.md
+│   ├── app/
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   ├── globals.css
+│   │   ├── api/
+│   │   │   ├── coletor/
+│   │   │   │   └── telemetria (POST - recebe telemetria)
+│   │   │   ├── collector/
+│   │   │   ├── dashboard/
+│   │   │   ├── impressoras/
+│   │   │   ├── inventario/
+│   │   │   │   └── importacoes/
+│   │   │   │       └── executar (POST - executa importação)
+│   │   │   │   └── operacionais/
+│   │   │   │       └── sincronizar-lote (POST - sincroniza lote)
+│   │   │   └── printers/
+│   │   │       └── [id]/coletor (GET - lista impressoras para coletor)
+│   │   ├── impressoras/
+│   │   │   └── page.tsx
+│   │   ├── inventario/
+│   │   │   ├── page.tsx (operacional)
+│   │   │   ├── importacoes/
+│   │   │   │   └── page.tsx
+│   │   │   ├── [id]/
+│   │   │   └── categorias/
+│   │   ├── operacional/
+│   │   │   └── page.tsx
+│   │   └── sca/
+│   ├── components/
+│   │   ├── BasicPageShell.tsx
+│   │   ├── PainelDashboard.tsx
+│   │   ├── StatusFeedback.tsx
+│   │   └── SuprimentosLista.tsx
+│   ├── lib/
+│   │   ├── supabase/
+│   │   │   └── server.ts
+│   │   ├── security/
+│   │   │   └── collectorAuth.ts
+│   │   ├── mappers/
+│   │   ├── validation/
+│   │   │   ├── coletorSchemasPtBr.ts
+│   │   │   ├── impressoraSchemas.ts
+│   │   │   ├── importacoesInventarioSchemas.ts
+│   │   │   └── inventarioDinamicoSchemas.ts
+│   │   ├── printers/
+│   │   │   └── naming.ts
+│   │   └── security/
+│   ├── services/
+│   │   ├── impressorasService.ts
+│   │   ├── coletorTelemetriaPtService.ts
+│   │   ├── coletorScaResumoService.ts
+│   │   ├── telemetryService.ts
+│   │   ├── dashboardAnaliticoService.ts (dashboard com retenção 92 dias)
+│   │   ├── importacaoInventarioDinamicoService.ts
+│   │   ├── inventarioOperacionalService.ts
+│   │   ├── visaoGeralImpressorasService.ts
+│   │   ├── statusSuprimentosImpressorasService.ts
+│   │   ├── inventarioItensService.ts
+│   │   └── googleSheetsSyncService.ts
+│   ├── supabase/
+│   │   └── migrations/
+│   │       ├── 20260327_schema_unico_completo_datado.sql (SCHEMA PRINCIPAL)
+│   │       ├── 20260331_retencao_leituras_paginas_3_meses.sql (NO-OP, tudo em schema único)
+│   │       └── 20260331_reparo_permissoes_service_role.sql
+│   ├── types/
+│   │   ├── impressora.ts
+│   │   ├── inventario.ts
+│   │   └── inventarioDinamico.ts
+│   └── scripts/
+│       ├── backfillLegacyPrinters.mjs
+│       └── importAbaImpressoras.mjs
 
 ================================================================================
-2. CONFIGURAÃ‡ÃƒO AMBIENTE - .env (coletor-snmp)
+2. CONFIGURAÇÃO AMBIENTE - .env (coletor-snmp)
 ================================================================================
 
 COLLECTOR_PRINTERS_SOURCE=supabase
@@ -131,7 +131,7 @@ COLLECTOR_LOG_ROTATION=daily
 COLLECTOR_LOG_MAX_SIZE=10MB
 
 ================================================================================
-3. CONFIGURAÃ‡ÃƒO AMBIENTE - SUPABASE
+3. CONFIGURAÇÃO AMBIENTE - SUPABASE
 ================================================================================
 
 Project URL: https://your-project-ref.supabase.co
@@ -149,11 +149,11 @@ TABELAS PRINCIPAIS:
 A. OPERACIONAL DE IMPRESSORAS
   - impressoras (patrimonio, ip, setor, modelo, etc)
   - telemetria_impressoras (coletas SNMP)
-  - leituras_paginas_impressoras (histÃ³rico contadores, retenÃ§Ã£o 3 meses)
+  - leituras_paginas_impressoras (histórico contadores, retenção 3 meses)
   - suprimentos_impressoras (estado atual por impressora+chave)
   - alertas_impressoras
 
-B. INVENTÃRIO DINÃ‚MICO
+B. INVENTÁRIO DINÂMICO
   - abas_inventario
   - categorias_inventario
   - categoria_campos
@@ -163,16 +163,16 @@ B. INVENTÃRIO DINÃ‚MICO
   - movimentacoes_itens_inventario
   - vinculos_itens_impressoras
 
-C. IMPORTAÃ‡ÃƒO
+C. IMPORTAÇÃO
   - importacoes_planilha
   - importacoes_planilha_linhas
 
-RETENÃ‡ÃƒO AUTOMÃTICA:
-  - FunÃ§Ã£o: fn_purgar_leituras_paginas_antigas(3) 
+RETENÇÃO AUTOMÁTICA:
+  - Função: fn_purgar_leituras_paginas_antigas(3) 
   - Schedule: cron daily 3:15 AM
-  - MantÃ©m: Ãºltimos 3 meses de leituras de pÃ¡ginas
+  - Mantém: últimos 3 meses de leituras de páginas
 
-PERMISSÃ•ES:
+PERMISSÕES:
   - service_role tem ALL em todas tabelas
   - Aplica via: GRANT ALL ON SCHEMA public TO service_role
 
@@ -181,76 +181,76 @@ PERMISSÃ•ES:
 ================================================================================
 
 1. run_collector_loop.py --interval 150 --log-level INFO
-   â”œâ”€â”€ LÃª impressoras do Supabase (tabela impressoras)
-   â”œâ”€â”€ Aplica filtros IP: 172., 10.6.
-   â”œâ”€â”€ Para cada impressora, coleta via SNMP
-   â”œâ”€â”€ Coleta:
-   â”‚   â”œâ”€â”€ Status (online/offline)
-   â”‚   â”œâ”€â”€ Tempo resposta
-   â”‚   â”œâ”€â”€ Contador total de pÃ¡ginas
-   â”‚   â”œâ”€â”€ Suprimentos (nÃ­vel, status)
-   â”‚   â””â”€â”€ Dados brutos (payload JSON)
-   â”œâ”€â”€ Insere em (3 tabelas):
-   â”‚   â”œâ”€â”€ telemetria_impressoras
-   â”‚   â”œâ”€â”€ leituras_paginas_impressoras (com validaÃ§Ã£o, histÃ³rico 3 meses)
-   â”‚   â””â”€â”€ suprimentos_impressoras (upsert por impressora+chave_suprimento)
-   â”œâ”€â”€ Replay automÃ¡tico de pendÃªncias (atÃ© 20 por ciclo)
-   â””â”€â”€ Repete a cada 150s
+   ├── Lê impressoras do Supabase (tabela impressoras)
+   ├── Aplica filtros IP: 172., 10.6.
+   ├── Para cada impressora, coleta via SNMP
+   ├── Coleta:
+   │   ├── Status (online/offline)
+   │   ├── Tempo resposta
+   │   ├── Contador total de páginas
+   │   ├── Suprimentos (nível, status)
+   │   └── Dados brutos (payload JSON)
+   ├── Insere em (3 tabelas):
+   │   ├── telemetria_impressoras
+   │   ├── leituras_paginas_impressoras (com validação, histórico 3 meses)
+   │   └── suprimentos_impressoras (upsert por impressora+chave_suprimento)
+   ├── Replay automático de pendências (até 20 por ciclo)
+   └── Repete a cada 150s
 
-PERSISTÃŠNCIA LOCAL:
+PERSISTÊNCIA LOCAL:
   - dados_cache.json: cache de impressoras
   - collector_pending.jsonl: fila de entrada bem-formada
-  - collector_pending_invalid.jsonl: rejeiÃ§Ãµes
+  - collector_pending_invalid.jsonl: rejeições
 
 ================================================================================
-6. FLUXO DE IMPORTAÃ‡ÃƒO (Web)
+6. FLUXO DE IMPORTAÇÃO (Web)
 ================================================================================
 
-1. UsuÃ¡rio acessa: inventario-unificado-web.vercel.app/inventario/importacoes
+1. Usuário acessa: inventario-unificado-web.vercel.app/inventario/importacoes
 2. Upload arquivo CSV/XLSX
-3. Front faz parse (detecta header automaticamente, ignora linhas de tÃ­tulo)
-4. Mapeamento de colunas (assiste usuÃ¡rio na escolha)
+3. Front faz parse (detecta header automaticamente, ignora linhas de título)
+4. Mapeamento de colunas (assiste usuário na escolha)
 5. Preview com dados normalizados
 6. POST /api/inventario/importacoes/executar
-   â”œâ”€â”€ Valida dados contra categoria
-   â”œâ”€â”€ Aplica aliases de chave (nm_n_serie â†’ nm_numero_serie)
-   â”œâ”€â”€ Cria linhas em linhas_inventario
-   â”œâ”€â”€ Grava em importacoes_planilha_linhas (com status pendente â†’ sucesso/erro)
-   â””â”€â”€ Retorna resumo (total_criadas, total_erros, etc)
-7. Novo botÃ£o: "Sincronizar Operacionais"
-   â””â”€â”€ POST /api/inventario/operacionais/sincronizar-lote
-       â”œâ”€â”€ LÃª linhas_inventario nÃ£o operacionalizadas
-       â”œâ”€â”€ Extrai campos (patrimonio, ip, modelo, setor, etc)
-       â”œâ”€â”€ Cria/atualiza registros em impressoras (tabela operacional)
-       â””â”€â”€ Retorna quantas foram sincronizadas
+   ├── Valida dados contra categoria
+   ├── Aplica aliases de chave (nm_n_serie → nm_numero_serie)
+   ├── Cria linhas em linhas_inventario
+   ├── Grava em importacoes_planilha_linhas (com status pendente → sucesso/erro)
+   └── Retorna resumo (total_criadas, total_erros, etc)
+7. Novo botão: "Sincronizar Operacionais"
+   └── POST /api/inventario/operacionais/sincronizar-lote
+       ├── Lê linhas_inventario não operacionalizadas
+       ├── Extrai campos (patrimonio, ip, modelo, setor, etc)
+       ├── Cria/atualiza registros em impressoras (tabela operacional)
+       └── Retorna quantas foram sincronizadas
 
 ================================================================================
-7. FLUXO DE VISUALIZAÃ‡ÃƒO (Web)
+7. FLUXO DE VISUALIZAÇÃO (Web)
 ================================================================================
 
 A. Dashboard (/app/page.tsx)
-   â””â”€â”€ chamada: dashboardAnaliticoService.getResumoDashboard()
-       â”œâ”€â”€ Agrupa leituras_paginas por dia (Ãºltimos 92 dias)
-       â”œâ”€â”€ Calcula totais por impressora
-       â””â”€â”€ Retorna sÃ©ries para grÃ¡fico
+   └── chamada: dashboardAnaliticoService.getResumoDashboard()
+       ├── Agrupa leituras_paginas por dia (últimos 92 dias)
+       ├── Calcula totais por impressora
+       └── Retorna séries para gráfico
 
 B. Operacional (/app/operacional/page.tsx)
-   â”œâ”€â”€ impressorasService.listarOperacionais()
-   â”œâ”€â”€ statusSuprimentosService.getStatusSuprimentos()
-   â””â”€â”€ visaoGeralService.montarVisaoGeral()
+   ├── impressorasService.listarOperacionais()
+   ├── statusSuprimentosService.getStatusSuprimentos()
+   └── visaoGeralService.montarVisaoGeral()
 
 C. Impressoras Operacionais (/app/impressoras/page.tsx)
-   â”œâ”€â”€ BotÃ£o "Sincronizar Operacionais" (novo)
-   â”œâ”€â”€ Filtra por status (operacional/nÃ£o operacional)
-   â”œâ”€â”€ Mostra telemetria + suprimentos
-   â””â”€â”€ AÃ§Ãµes: Tomar operacional (1 por 1) ou Sincronizar tudo
+   ├── Botão "Sincronizar Operacionais" (novo)
+   ├── Filtra por status (operacional/não operacional)
+   ├── Mostra telemetria + suprimentos
+   └── Ações: Tomar operacional (1 por 1) ou Sincronizar tudo
 
-D. ImportaÃ§Ãµes (/app/inventario/importacoes/page.tsx)
-   â”œâ”€â”€ Upload arquivo
-   â”œâ”€â”€ Preview local (CSS)
-   â”œâ”€â”€ Mapeamento assistido
-   â”œâ”€â”€ BotÃµes: Gerar preview, Executar importacao
-   â””â”€â”€ Resumo final
+D. Importações (/app/inventario/importacoes/page.tsx)
+   ├── Upload arquivo
+   ├── Preview local (CSS)
+   ├── Mapeamento assistido
+   ├── Botões: Gerar preview, Executar importacao
+   └── Resumo final
 
 ================================================================================
 8. ENDPOINTS API (Next.js)
@@ -259,126 +259,126 @@ D. ImportaÃ§Ãµes (/app/inventario/importacoes/page.tsx)
 POST /api/coletor/telemetria
   Input: { patrimonio, ip, dados_telemetria, leituras_paginas, suprimentos }
   Output: { sucesso, msg }
-  AutenticaÃ§Ã£o: token via header X-Collector-Token
+  Autenticação: token via header X-Collector-Token
 
 POST /api/inventario/importacoes/executar
   Input: { categoria_id, linhas[], modo }
   Output: { total_criadas, total_erros, erros[], importacao_id }
-  AutenticaÃ§Ã£o: session/auth
+  Autenticação: session/auth
 
 POST /api/inventario/operacionais/sincronizar-lote
   Input: { categoria_id?, limit? }
   Output: { total_sincronizadas, total_operacionais }
-  AutenticaÃ§Ã£o: session/auth
+  Autenticação: session/auth
 
 GET /api/printers/[id]/coletor
   Input: token via header
   Output: { impressoras: [...] } (para coletor sincronizar)
-  AutenticaÃ§Ã£o: token
+  Autenticação: token
 
 GET /api/dashboard/analitico
   Output: { resumo, graficos, metricas }
-  AutenticaÃ§Ã£o: session
+  Autenticação: session
 
 ================================================================================
 9. FLUXO DE DADOS END-TO-END
 ================================================================================
 
-CENÃRIO: Importar 120 impressoras + coletor comeÃ§a a coletar
+CENÁRIO: Importar 120 impressoras + coletor começa a coletar
 
 dia 1 (31/03):
   1. Admin importa planilha com 120 impressoras
-     â””â”€â†’ 120 linhas em linhas_inventario
+     └─→ 120 linhas em linhas_inventario
   2. Admin clica "Sincronizar Operacionais"
-     â””â”€â†’ 120 registros criados em impressoras (operacional)
+     └─→ 120 registros criados em impressoras (operacional)
   3. Admin inicia coletor (coletor-snmp)
-     â””â”€â†’ Coletor lÃª 120 impressoras do Supabase
-     â””â”€â†’ Coleta SNMP de cada uma
-     â””â”€â†’ Insere em telemetria_impressoras (coletas brutas)
-     â””â”€â†’ Insere em leituras_paginas_impressoras (contadores)
-     â””â”€â†’ Insere/atualiza em suprimentos_impressoras (estado atual)
+     └─→ Coletor lê 120 impressoras do Supabase
+     └─→ Coleta SNMP de cada uma
+     └─→ Insere em telemetria_impressoras (coletas brutas)
+     └─→ Insere em leituras_paginas_impressoras (contadores)
+     └─→ Insere/atualiza em suprimentos_impressoras (estado atual)
 
-dia 2 a 30/06 (prÃ³ximos 3 meses):
-  â””â”€â†’ Coletor continua coletando
-  â””â”€â†’ telemetria cresce
-  â””â”€â†’ leituras_paginas cresce
-  â””â”€â†’ suprimentos permanecem em estado atual (apenas 1 por impressora+tipo)
+dia 2 a 30/06 (próximos 3 meses):
+  └─→ Coletor continua coletando
+  └─→ telemetria cresce
+  └─→ leituras_paginas cresce
+  └─→ suprimentos permanecem em estado atual (apenas 1 por impressora+tipo)
 
-dia 1/07 (mÃªs 4):
-  â””â”€â†’ Cron automÃ¡tico (08:00 UTC - 05:00 BRT) deleta leituras_paginas < (01/04)
-  â””â”€â†’ Dashboard continua mostrando Ãºltimos 92 dias
-  â””â”€â†’ suprimentos continuam em estado atual
+dia 1/07 (mês 4):
+  └─→ Cron automático (08:00 UTC - 05:00 BRT) deleta leituras_paginas < (01/04)
+  └─→ Dashboard continua mostrando últimos 92 dias
+  └─→ suprimentos continuam em estado atual
 
 ================================================================================
-10. DETALHES DE IMPLEMENTAÃ‡ÃƒO
+10. DETALHES DE IMPLEMENTAÇÃO
 ================================================================================
 
-A. PARSER DE IMPORTAÃ‡ÃƒO (front-end)
+A. PARSER DE IMPORTAÇÃO (front-end)
    Arquivo: app/inventario/importacoes/page.tsx
-   â”œâ”€â”€ Detecta automaticamente linha de cabeÃ§alho
-   â”œâ”€â”€ Ignora linhas com sÃ³ 1 cÃ©lula preenchida (tÃ­tulo)
-   â”œâ”€â”€ Normaliza nomes de coluna
-   â”œâ”€â”€ Suporta CSV + XLSX
-   â””â”€â”€ Fallback por semÃ¢ntico quando chave nÃ£o bate
+   ├── Detecta automaticamente linha de cabeçalho
+   ├── Ignora linhas com só 1 célula preenchida (título)
+   ├── Normaliza nomes de coluna
+   ├── Suporta CSV + XLSX
+   └── Fallback por semântico quando chave não bate
 
-B. SINCRONIZAÃ‡ÃƒO OPERACIONAL
+B. SINCRONIZAÇÃO OPERACIONAL
    Arquivo: services/importacaoInventarioDinamicoService.ts
-   â”œâ”€â”€ LÃª linhas_inventario
-   â”œâ”€â”€ Extrai valores via campo_id + valor
-   â”œâ”€â”€ Mapeia semanticamente (tipo_semantico â†’ coluna impressoras)
-   â”œâ”€â”€ Aliases: nm_n_serie â†’ numero_serie, nm_setor â†’ setor, etc
-   â”œâ”€â”€ Cria/atualiza impressoras (upsert por patrimonio+ip)
-   â””â”€â”€ Grava vinculos em vinculos_itens_impressoras
+   ├── Lê linhas_inventario
+   ├── Extrai valores via campo_id + valor
+   ├── Mapeia semanticamente (tipo_semantico → coluna impressoras)
+   ├── Aliases: nm_n_serie → numero_serie, nm_setor → setor, etc
+   ├── Cria/atualiza impressoras (upsert por patrimonio+ip)
+   └── Grava vinculos em vinculos_itens_impressoras
 
-C. RETENÃ‡ÃƒO DE DADOS
+C. RETENÇÃO DE DADOS
    Arquivo: supabase/migrations/20260327_schema_unico_completo_datado.sql
-   â”œâ”€â”€ FunÃ§Ã£o: fn_purgar_leituras_paginas_antigas(3)
-   â”œâ”€â”€ Schedule: cron 15 03 * * * (todos os dias 3:15 AM)
-   â”œâ”€â”€ MantÃ©m: (mÃªs atual) + (2 meses anteriores) = 3 meses rolling
-   â”œâ”€â”€ Deleta: coletado_em < date_trunc('month', now()) - 3 meses
-   â””â”€â”€ Auditado: retorna nÃºmero de linhas deletadas
+   ├── Função: fn_purgar_leituras_paginas_antigas(3)
+   ├── Schedule: cron 15 03 * * * (todos os dias 3:15 AM)
+   ├── Mantém: (mês atual) + (2 meses anteriores) = 3 meses rolling
+   ├── Deleta: coletado_em < date_trunc('month', now()) - 3 meses
+   └── Auditado: retorna número de linhas deletadas
 
 D. SUPRIMENTOS EM ESTADO ATUAL
    Arquivo: leituras_paginas_impressoras + suprimentos_impressoras
-   â”œâ”€â”€ Constraint: UNIQUE(impressora_id, chave_suprimento)
-   â”œâ”€â”€ On duplicate: UPDATE (sobrescreve)
-   â”œâ”€â”€ Ãndice: (impressora_id, chave_suprimento, atualizado_em DESC)
-   â””â”€â”€ Sem histÃ³rico pesado (auditoria em alertas_impressoras se precisar)
+   ├── Constraint: UNIQUE(impressora_id, chave_suprimento)
+   ├── On duplicate: UPDATE (sobrescreve)
+   ├── Índice: (impressora_id, chave_suprimento, atualizado_em DESC)
+   └── Sem histórico pesado (auditoria em alertas_impressoras se precisar)
 
-E. VALIDAÃ‡ÃƒO DE DADOS
+E. VALIDAÇÃO DE DADOS
    Arquivo: lib/validation/coletorSchemasPtBr.ts
-   â”œâ”€â”€ Valida patrimonio (texto nÃ£o vazio)
-   â”œâ”€â”€ Valida IP (inet)
-   â”œâ”€â”€ Valida modelo (texto nÃ£o vazio)
-   â”œâ”€â”€ Valida contador_paginas (bigint >= 0)
-   â”œâ”€â”€ Valida nivel_suprimento (0-100)
-   â””â”€â”€ Rejeita linha se falha (entra em erros[])
+   ├── Valida patrimonio (texto não vazio)
+   ├── Valida IP (inet)
+   ├── Valida modelo (texto não vazio)
+   ├── Valida contador_paginas (bigint >= 0)
+   ├── Valida nivel_suprimento (0-100)
+   └── Rejeita linha se falha (entra em erros[])
 
 ================================================================================
-11. PRÃ“XIMOS PASSOS RECOMENDADOS
+11. PRÓXIMOS PASSOS RECOMENDADOS
 ================================================================================
 
 CURTO PRAZO (semana):
-  âœ“ Testar sincronizaÃ§Ã£o em lote de operacionais
-  âœ“ Validar coletor coletando direto do Supabase
-  âœ“ Dashboard mostrando dados dos Ãºltimos 92 dias
-  âœ“ RetenÃ§Ã£o automÃ¡tica ativa
+  ✓ Testar sincronização em lote de operacionais
+  ✓ Validar coletor coletando direto do Supabase
+  ✓ Dashboard mostrando dados dos últimos 92 dias
+  ✓ Retenção automática ativa
 
-MÃ‰DIO PRAZO (1-2 meses):
-  [ ] Refatorar schema para 1 fonte de verdade (equipamentos Ãºnico)
-  [ ] Migrear APIs de Vercel â†’ Supabase Functions
-  [ ] Auditoria completa (quem, quando, o quÃª)
+MÉDIO PRAZO (1-2 meses):
+  [ ] Refatorar schema para 1 fonte de verdade (equipamentos único)
+  [ ] Migrear APIs de Vercel → Supabase Functions
+  [ ] Auditoria completa (quem, quando, o quê)
   [ ] Dashboard em tempo real (WebSocket)
-  [ ] Alertas automÃ¡ticos (suprimento crÃ­tico, offline)
+  [ ] Alertas automáticos (suprimento crítico, offline)
 
 LONGO PRAZO (3+ meses):
-  [ ] IntegraÃ§Ã£o TASY (importar equipamentos de lÃ¡)
-  [ ] Rastreamento de movimentaÃ§Ã£o (emprÃ©stimo, conserto, devoluÃ§Ã£o)
-  [ ] PrevisÃ£o de consumo (ML â†’ quando pedir suprimento)
-  [ ] API pÃºblica (parceiros, consultoria)
+  [ ] Integração TASY (importar equipamentos de lá)
+  [ ] Rastreamento de movimentação (empréstimo, conserto, devolução)
+  [ ] Previsão de consumo (ML → quando pedir suprimento)
+  [ ] API pública (parceiros, consultoria)
 
 ================================================================================
-12. COMANDOS ÃšTEIS
+12. COMANDOS ÚTEIS
 ================================================================================
 
 COLETOR:
@@ -386,21 +386,21 @@ COLETOR:
   cd coletor-snmp/scripts
   py run_collector_loop.py --interval 150 --log-level INFO
 
-  # Testar conexÃ£o SNMP
+  # Testar conexão SNMP
   py test_collector_push.py
 
 VERCEL:
-  # Deploy produÃ§Ã£o
+  # Deploy produção
   cd inventario-unificado-web
   npx vercel@latest --prod --yes
 
 SUPABASE:
-  # Reset schema completo + retenÃ§Ã£o
+  # Reset schema completo + retenção
   1. Abrir Supabase SQL Editor
-  2. Copiar conteÃºdo de: 20260327_schema_unico_completo_datado.sql
+  2. Copiar conteúdo de: 20260327_schema_unico_completo_datado.sql
   3. Executar
 
-  # Verificar retenÃ§Ã£o
+  # Verificar retenção
   SELECT COUNT(*) FROM leituras_paginas_impressoras;
   SELECT MIN(coletado_em), MAX(coletado_em) FROM leituras_paginas_impressoras;
 
@@ -412,11 +412,11 @@ SUPABASE:
   GROUP BY impressora_id;
 
 DATABASE:
-  # Limpar importaÃ§Ã£o especÃ­fica
+  # Limpar importação específica
   DELETE FROM importacoes_planilha_linhas WHERE importacao_id = '...';
   DELETE FROM importacoes_planilha WHERE id = '...';
 
-  # Limpar todas nÃ£o-operacionais
+  # Limpar todas não-operacionais
   DELETE FROM linhas_inventario 
   WHERE categoria_id IN (
     SELECT id FROM categorias_inventario 
@@ -427,26 +427,26 @@ DATABASE:
 13. TROUBLESHOOTING
 ================================================================================
 
-COLETOR NÃƒO COLETA:
-  âœ“ Verificar .env (COLLECTOR_SUPABASE_KEY = service role, nÃ£o publishable)
-  âœ“ Verificar impressoras em Supabase: SELECT COUNT(*) FROM impressoras;
-  âœ“ Verificar filtro IP: COLLECTOR_FILTER_IP_PREFIXES
-  âœ“ Testar SNMP manual: py test_collector_push.py
+COLETOR NÃO COLETA:
+  ✓ Verificar .env (COLLECTOR_SUPABASE_KEY = service role, não publishable)
+  ✓ Verificar impressoras em Supabase: SELECT COUNT(*) FROM impressoras;
+  ✓ Verificar filtro IP: COLLECTOR_FILTER_IP_PREFIXES
+  ✓ Testar SNMP manual: py test_collector_push.py
 
-IMPORTAÃ‡ÃƒO COM 500:
-  âœ“ Verificar permissÃµes: GRANT ALL ON importacoes_planilha TO service_role
-  âœ“ Verificar categoria ativa: SELECT * FROM categorias_inventario WHERE ativo = true
-  âœ“ Verificar headers mapeados: Modal de importaÃ§Ã£o
+IMPORTAÇÃO COM 500:
+  ✓ Verificar permissões: GRANT ALL ON importacoes_planilha TO service_role
+  ✓ Verificar categoria ativa: SELECT * FROM categorias_inventario WHERE ativo = true
+  ✓ Verificar headers mapeados: Modal de importação
 
 DASHBOARD VAZIO:
-  âœ“ Verificar coletas: SELECT COUNT(*) FROM leituras_paginas_impressoras;
-  âœ“ Verificar datas: SELECT MIN(coletado_em) FROM leituras_paginas_impressoras;
-  âœ“ Verificar limite 92 dias no serviÃ§o
+  ✓ Verificar coletas: SELECT COUNT(*) FROM leituras_paginas_impressoras;
+  ✓ Verificar datas: SELECT MIN(coletado_em) FROM leituras_paginas_impressoras;
+  ✓ Verificar limite 92 dias no serviço
 
-RETENÃ‡ÃƒO NÃƒO FUNCIONA:
-  âœ“ Verificar cron: SELECT * FROM cron.job WHERE jobname = 'purge_leituras_paginas_3_meses';
-  âœ“ Testar manual: SELECT public.fn_purgar_leituras_paginas_antigas(3);
-  âœ“ Verificar logs: SELECT * FROM pg_stat_user_functions WHERE funcname LIKE '%purg%';
+RETENÇÃO NÃO FUNCIONA:
+  ✓ Verificar cron: SELECT * FROM cron.job WHERE jobname = 'purge_leituras_paginas_3_meses';
+  ✓ Testar manual: SELECT public.fn_purgar_leituras_paginas_antigas(3);
+  ✓ Verificar logs: SELECT * FROM pg_stat_user_functions WHERE funcname LIKE '%purg%';
 
 ================================================================================
 FIM DO DOCUMENTO

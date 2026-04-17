@@ -1,10 +1,10 @@
-﻿================================================================================
-                    ENDPOINTS E COLETOR - DOCUMENTAÃ‡ÃƒO COMPLETA
-                            INVENTÃRIO UNIFICADO
+================================================================================
+                    ENDPOINTS E COLETOR - DOCUMENTAÇÃO COMPLETA
+                            INVENTÁRIO UNIFICADO
 ================================================================================
 
-ÃNDICE:
-1. VARIÃVEIS DE AMBIENTE
+ÍNDICE:
+1. VARIÁVEIS DE AMBIENTE
 2. ENDPOINTS DA API
 3. FLUXO DO COLETOR SNMP
 4. COMO EXECUTAR
@@ -12,7 +12,7 @@
 6. DIAGRAMAS DE FLUXO
 
 ================================================================================
-1. VARIÃVEIS DE AMBIENTE (.env)
+1. VARIÁVEIS DE AMBIENTE (.env)
 ================================================================================
 
 BACKEND (inventario-unificado-web/.env.local):
@@ -44,12 +44,12 @@ COLETOR (coletor-snmp/.env):
 
 PREFIX BASE: https://inventario-unificado-web.vercel.app/api
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 2.1 ENDPOINTS DE COLETOR (POST)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/coletor/telemetria
-  DescriÃ§Ã£o: Envia telemetria coletada (SNMP) das impressoras
+📤 POST /api/coletor/telemetria
+  Descrição: Envia telemetria coletada (SNMP) das impressoras
   
   Body:
   {
@@ -70,14 +70,14 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
   }
   
   Erros:
-  - 400: Payload invÃ¡lido
-  - 401: Token invÃ¡lido
+  - 400: Payload inválido
+  - 401: Token inválido
   - 500: Erro ao persistir no banco
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/coletor/suprimentos
-  DescriÃ§Ã£o: Envia estado atual de suprimentos da impressora
+📤 POST /api/coletor/suprimentos
+  Descrição: Envia estado atual de suprimentos da impressora
   
   Body:
   {
@@ -103,10 +103,10 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     "atualizadas": 2
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/coletor/leituras
-  DescriÃ§Ã£o: Registra leitura de contador de pÃ¡ginas
+📤 POST /api/coletor/leituras
+  Descrição: Registra leitura de contador de páginas
   
   Body:
   {
@@ -123,15 +123,15 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     "leitura_id": "uuid"
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ GET /api/coletor/impressoras
-  DescriÃ§Ã£o: Lista impressoras disponÃ­veis para coleta
+📤 GET /api/coletor/impressoras
+  Descrição: Lista impressoras disponíveis para coleta
   
   Query Params:
-  - filtro_ativo: true|false (padrÃ£o: true)
+  - filtro_ativo: true|false (padrão: true)
   - setor: string (opcional, filtra por setor)
-  - limit: number (padrÃ£o: 1000)
+  - limit: number (padrão: 1000)
   
   Response (200):
   [
@@ -149,15 +149,15 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
   ]
   
   Erros:
-  - 401: Chave invÃ¡lida
+  - 401: Chave inválida
   - 500: Erro ao consultar banco
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-2.2 ENDPOINTS DE IMPORTAÃ‡ÃƒO (POST)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
+2.2 ENDPOINTS DE IMPORTAÇÃO (POST)
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/inventario/importacoes/preview
-  DescriÃ§Ã£o: Gera preview da linha a importar (valida campos)
+📤 POST /api/inventario/importacoes/preview
+  Descrição: Gera preview da linha a importar (valida campos)
   
   Body:
   {
@@ -183,14 +183,14 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
   
   Response (400):
   {
-    "erro": "Campo IP invÃ¡lido",
+    "erro": "Campo IP inválido",
     "campo": "nm_ip"
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/inventario/importacoes/executar
-  DescriÃ§Ã£o: Executa a importaÃ§Ã£o efetivamente
+📤 POST /api/inventario/importacoes/executar
+  Descrição: Executa a importação efetivamente
   
   Body:
   {
@@ -221,12 +221,12 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     "erro": "permission denied for table importacoes_planilha"
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 2.3 ENDPOINTS DE OPERACIONAL (POST/GET)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ POST /api/inventario/operacionais/sincronizar-lote
-  DescriÃ§Ã£o: Sincroniza TODAS as linhas nÃ£o-operacionais para operacionais
+📤 POST /api/inventario/operacionais/sincronizar-lote
+  Descrição: Sincroniza TODAS as linhas não-operacionais para operacionais
   
   Body:
   {
@@ -247,15 +247,15 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     "detalhes": "..."
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“¤ GET /api/inventario/operacionais
-  DescriÃ§Ã£o: Lista impressoras operacionais
+📤 GET /api/inventario/operacionais
+  Descrição: Lista impressoras operacionais
   
   Query Params:
   - setor: string (filtro opcional)
-  - status: online|offline|todos (padrÃ£o: todos)
-  - limit: number (padrÃ£o: 100)
+  - status: online|offline|todos (padrão: todos)
+  - limit: number (padrão: 100)
   
   Response (200):
   [
@@ -265,7 +265,7 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
       "ip": "10.6.1.20",
       "modelo": "M3250",
       "setor": "Sala dos Coordenadores",
-      "localizacao": "1Â° Andar",
+      "localizacao": "1° Andar",
       "numero_serie": "4600217425RGW",
       "hostname": "HGG-ICOORDNIR01",
       "ultima_coleta": "2026-03-31T15:30:00Z",
@@ -273,12 +273,12 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     }
   ]
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 2.4 ENDPOINTS DE DASHBOARD (GET)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“Š GET /api/dashboard/resumo
-  DescriÃ§Ã£o: Retorna resumo geral do dashboard
+📊 GET /api/dashboard/resumo
+  Descrição: Retorna resumo geral do dashboard
   
   Response (200):
   {
@@ -293,13 +293,13 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     "suprimentos_baixos": 5
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“Š GET /api/dashboard/analitico
-  DescriÃ§Ã£o: Dados analÃ­ticos por dia (Ãºltimos 92 dias)
+📊 GET /api/dashboard/analitico
+  Descrição: Dados analíticos por dia (últimos 92 dias)
   
   Query Params:
-  - dias: number (padrÃ£o: 30, mÃ¡ximo: 92)
+  - dias: number (padrão: 30, máximo: 92)
   - setor: string (opcional)
   
   Response (200):
@@ -315,18 +315,18 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
     ]
   }
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-2.5 ENDPOINTS DE VISÃƒO GERAL (GET)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
+2.5 ENDPOINTS DE VISÃO GERAL (GET)
+─────────────────────────────────────────────────────────────────────────────
 
-ðŸ“‹ GET /api/impressoras/visao-geral
-  DescriÃ§Ã£o: Retorna lista completa com status, suprimentos, pÃ¡ginas
+📋 GET /api/impressoras/visao-geral
+  Descrição: Retorna lista completa com status, suprimentos, páginas
   
   Query Params:
-  - filtro_operacional: true|false|todos (padrÃ£o: true)
+  - filtro_operacional: true|false|todos (padrão: true)
   - setor: string (opcional)
-  - page: number (padrÃ£o: 1)
-  - limit: number (padrÃ£o: 50)
+  - page: number (padrão: 1)
+  - limit: number (padrão: 50)
   
   Response (200):
   [
@@ -355,90 +355,90 @@ PREFIX BASE: https://inventario-unificado-web.vercel.app/api
 
 ESTRUTURA DO COLETOR:
   coletor-snmp/
-  â”œâ”€â”€ scripts/
-  â”‚   â””â”€â”€ run_collector_loop.py          # Script principal
-  â”œâ”€â”€ utils/
-  â”‚   â”œâ”€â”€ cache_manager.py               # Gerencia cache local
-  â”‚   â”œâ”€â”€ api_client.py                  # Cliente HTTP/Supabase
-  â”‚   â”œâ”€â”€ snmp_client.py                 # Cliente SNMP (coleta)
-  â”‚   â”œâ”€â”€ telemetry_mapper.py            # Mapeia dados SNMP
-  â”‚   â””â”€â”€ file_manager.py                # Gerencia arquivos locais
-  â”œâ”€â”€ data/
-  â”‚   â”œâ”€â”€ collector_pending.jsonl        # Fila de envio
-  â”‚   â”œâ”€â”€ collector_pending_invalid.jsonl # Erros/falhas
-  â”‚   â””â”€â”€ printers.json                  # Cache de impressoras
-  â””â”€â”€ .env                               # ConfiguraÃ§Ã£o
+  ├── scripts/
+  │   └── run_collector_loop.py          # Script principal
+  ├── utils/
+  │   ├── cache_manager.py               # Gerencia cache local
+  │   ├── api_client.py                  # Cliente HTTP/Supabase
+  │   ├── snmp_client.py                 # Cliente SNMP (coleta)
+  │   ├── telemetry_mapper.py            # Mapeia dados SNMP
+  │   └── file_manager.py                # Gerencia arquivos locais
+  ├── data/
+  │   ├── collector_pending.jsonl        # Fila de envio
+  │   ├── collector_pending_invalid.jsonl # Erros/falhas
+  │   └── printers.json                  # Cache de impressoras
+  └── .env                               # Configuração
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 3.1 FLUXO PRINCIPAL (ciclo de 150s)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CICLO COMPLETO:
 
-1ï¸âƒ£ SINCRONIZAÃ‡ÃƒO REMOTA (atualizar_cache)
-   â””â”€ Busca lista de impressoras do Supabase/API
-   â””â”€ Filtra por IP (10.6.*, 172.*)
-   â””â”€ Salva em cache (printers.json)
-   â””â”€ Se falhar: RuntimeError (ciclo abortado)
+1️⃣ SINCRONIZAÇÃO REMOTA (atualizar_cache)
+   └─ Busca lista de impressoras do Supabase/API
+   └─ Filtra por IP (10.6.*, 172.*)
+   └─ Salva em cache (printers.json)
+   └─ Se falhar: RuntimeError (ciclo abortado)
 
-2ï¸âƒ£ COLETA SNMP (coletar_telemetria)
-   â””â”€ Para cada impressora em cache:
-      â”œâ”€ Conecta SNMP (porta 161)
-      â”œâ”€ Coleta OIDs:
-      â”‚  â”œâ”€ 1.3.6.1.2.1.25.3.2.1.5.1 â†’ contador de pÃ¡ginas
-      â”‚  â”œâ”€ 1.3.6.1.2.1.25.4.2.1.2 â†’ modelo
-      â”‚  â”œâ”€ 1.3.6.1.4.1.11.2.3.9.1.1.13.0 â†’ status
-      â”‚  â””â”€ ... outros OIDs
-      â”œâ”€ Mapeia dados (normaliza)
-      â”œâ”€ Se sucesso: salva em JSONL
-      â””â”€ Se falha: tenta retry (3x com backoff)
+2️⃣ COLETA SNMP (coletar_telemetria)
+   └─ Para cada impressora em cache:
+      ├─ Conecta SNMP (porta 161)
+      ├─ Coleta OIDs:
+      │  ├─ 1.3.6.1.2.1.25.3.2.1.5.1 → contador de páginas
+      │  ├─ 1.3.6.1.2.1.25.4.2.1.2 → modelo
+      │  ├─ 1.3.6.1.4.1.11.2.3.9.1.1.13.0 → status
+      │  └─ ... outros OIDs
+      ├─ Mapeia dados (normaliza)
+      ├─ Se sucesso: salva em JSONL
+      └─ Se falha: tenta retry (3x com backoff)
 
-3ï¸âƒ£ ENVIO PARA BACKEND
-   â”œâ”€ LÃª fila de envio (collector_pending.jsonl)
-   â”œâ”€ Faz batch POST â†’ /api/coletor/telemetria
-   â”œâ”€ Se 200: remove de fila
-   â”œâ”€ Se erro (401/403/500): move para invalid.jsonl
-   â””â”€ Se timeout: mantÃ©m na fila (retry prÃ³ximo ciclo)
+3️⃣ ENVIO PARA BACKEND
+   ├─ Lê fila de envio (collector_pending.jsonl)
+   ├─ Faz batch POST → /api/coletor/telemetria
+   ├─ Se 200: remove de fila
+   ├─ Se erro (401/403/500): move para invalid.jsonl
+   └─ Se timeout: mantém na fila (retry próximo ciclo)
 
-4ï¸âƒ£ RECOLETA DE FALHAS (replay_pendentes)
-   â”œâ”€ LÃª atÃ© 20 linhas de collector_pending.jsonl
-   â”œâ”€ Retenta envio para cada uma
-   â””â”€ Move sucesso/erro conforme resultado
+4️⃣ RECOLETA DE FALHAS (replay_pendentes)
+   ├─ Lê até 20 linhas de collector_pending.jsonl
+   ├─ Retenta envio para cada uma
+   └─ Move sucesso/erro conforme resultado
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-3.2 VARIÃVEIS DE CONTROLE
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
+3.2 VARIÁVEIS DE CONTROLE
+─────────────────────────────────────────────────────────────────────────────
 
 COLLECTOR_INTERVAL (segundos)
-  â””â”€ Tempo entre ciclos (padrÃ£o: 150s)
-  â””â”€ MÃ­nimo recomendado: 60s
-  â””â”€ Impacto: quanto menor, mais coleta (mais CPU)
+  └─ Tempo entre ciclos (padrão: 150s)
+  └─ Mínimo recomendado: 60s
+  └─ Impacto: quanto menor, mais coleta (mais CPU)
 
-COLLECTOR_WORKERS (nÃºmero)
-  â””â”€ Threads paralelas pra coleta SNMP (padrÃ£o: 4)
-  â””â”€ Impacto: mais workers = mais coletas simultÃ¢neas (mas mais CPU/memoria)
+COLLECTOR_WORKERS (número)
+  └─ Threads paralelas pra coleta SNMP (padrão: 4)
+  └─ Impacto: mais workers = mais coletas simultâneas (mas mais CPU/memoria)
 
 COLLECTOR_IP_FILTERS
-  â””â”€ PadrÃ£o: "172.,10.6."
-  â””â”€ Filtra impressoras por IP (suporta mÃºltiplos com vÃ­rgula)
-  â””â”€ Exemplo: "10.,172.18.,192.168.1."
+  └─ Padrão: "172.,10.6."
+  └─ Filtra impressoras por IP (suporta múltiplos com vírgula)
+  └─ Exemplo: "10.,172.18.,192.168.1."
 
 COLLECTOR_LOG_LEVEL
-  â””â”€ INFO, DEBUG, WARNING, ERROR
-  â””â”€ INFO: mostra ciclos, sync, coletas
-  â””â”€ DEBUG: mostra todos os OIDs, tentativas
+  └─ INFO, DEBUG, WARNING, ERROR
+  └─ INFO: mostra ciclos, sync, coletas
+  └─ DEBUG: mostra todos os OIDs, tentativas
 
 COLLECTOR_REQUIRE_REMOTE_PRINTERS
-  â””â”€ true: ciclo falha se nÃ£o conseguir sync remoto
-  â””â”€ false: usa cache mesmo se sync falhar
+  └─ true: ciclo falha se não conseguir sync remoto
+  └─ false: usa cache mesmo se sync falhar
 
 COLLECTOR_PRINTERS_SOURCE
-  â””â”€ "supabase": lÃª direto do banco (sem API)
-  â””â”€ "api": lÃª via endpoint /api/coletor/impressoras
+  └─ "supabase": lê direto do banco (sem API)
+  └─ "api": lê via endpoint /api/coletor/impressoras
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 3.3 ESTRUTURA DOS DADOS COLETADOS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 TELEMETRIA (salvo em collector_pending.jsonl):
 {
@@ -464,38 +464,38 @@ SUPRIMENTOS (gravado direto no Supabase):
   "coletado_em": "2026-03-31T15:30:00Z",
   "tipo_suprimento": "toner_preto",
   "nivel": 45,
-  "status": "ok"  # ok|baixo|crÃ­tico
+  "status": "ok"  # ok|baixo|crítico
 }
 
 ================================================================================
 4. COMO EXECUTAR
 ================================================================================
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
-4.1 EXECUÃ‡ÃƒO DO COLETOR
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
+4.1 EXECUÇÃO DO COLETOR
+─────────────────────────────────────────────────────────────────────────────
 
 MODO SIMPLES (1 ciclo):
   $ cd coletor-snmp/scripts
   $ python run_collector_loop.py --ciclos 1 --log-level INFO
 
-MODO CONTÃNUO (daemon):
+MODO CONTÍNUO (daemon):
   $ python run_collector_loop.py --interval 150 --log-level INFO
 
 MODO DEBUG:
   $ python run_collector_loop.py --interval 150 --log-level DEBUG
 
-VALIDAR CONEXÃƒO:
+VALIDAR CONEXÃO:
   $ python run_collector_loop.py --check-connection
   
   Output:
-  âœ… Supabase conectado (X impressoras)
-  âœ… API backend respondendo
-  âœ… Cache de impressoras ok
+  ✅ Supabase conectado (X impressoras)
+  ✅ API backend respondendo
+  ✅ Cache de impressoras ok
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 4.2 LIMPEZA E RESET
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 Limpar fila de envio:
   $ rm coletor-snmp/data/collector_pending.jsonl
@@ -503,7 +503,7 @@ Limpar fila de envio:
 
 Atualizar cache:
   $ rm coletor-snmp/data/printers.json
-  (serÃ¡ recriado no prÃ³ximo ciclo)
+  (será recriado no próximo ciclo)
 
 Ver tamanho dos arquivos:
   $ ls -lh coletor-snmp/data/
@@ -513,9 +513,9 @@ Ver tamanho dos arquivos:
   collector_pending_invalid.jsonl: 100K (poucos erros)
   printers.json:                   50K (cache de ~500 impressoras)
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 4.3 MONITORAMENTO
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 Ver logs em tempo real:
   $ python run_collector_loop.py --interval 150 --log-level INFO | tee coletor.log
@@ -523,7 +523,7 @@ Ver logs em tempo real:
 Contar linhas na fila:
   $ wc -l coletor-snmp/data/collector_pending.jsonl
 
-Ver Ãºltimas coletas:
+Ver últimas coletas:
   $ tail -5 coletor-snmp/data/collector_pending.jsonl
 
 Validar JSON da fila:
@@ -533,166 +533,166 @@ Validar JSON da fila:
 5. TROUBLESHOOTING
 ================================================================================
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 5.1 ERRO: "permission denied for table impressoras"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CAUSA:
-  â””â”€ Chave COLLECTOR_SUPABASE_KEY Ã© publishable (anon), nÃ£o service_role
+  └─ Chave COLLECTOR_SUPABASE_KEY é publishable (anon), não service_role
 
-SOLUÃ‡ÃƒO:
+SOLUÇÃO:
   1. Abra Supabase Dashboard > Settings > API
   2. Copie "Service Role Secret" (chave longa privada)
   3. Substitua em .env:
     COLLECTOR_SUPABASE_KEY=<service_role_secret>
   4. Reinicie coletor
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 5.2 ERRO: "Nenhuma impressora carregada"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CAUSA:
-  â””â”€ Cache nÃ£o tem impressoras OU nenhuma bate com filtro IP
+  └─ Cache não tem impressoras OU nenhuma bate com filtro IP
 
-SOLUÃ‡ÃƒO A (validar cache):
+SOLUÇÃO A (validar cache):
   $ python -c "import json; print(json.load(open('coletor-snmp/data/printers.json'))[:2])"
 
-SOLUÃ‡ÃƒO B (filtro muito restritivo):
+SOLUÇÃO B (filtro muito restritivo):
   $ Edite .env: COLLECTOR_IP_FILTERS=172.,10.,192.
 
-SOLUÃ‡ÃƒO C (sync remoto falhou):
+SOLUÇÃO C (sync remoto falhou):
   $ Valide COLLECTOR_SUPABASE_URL e COLLECTOR_SUPABASE_KEY
   $ Tente: python run_collector_loop.py --check-connection
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 5.3 ERRO: "HTTP 401 ao enviar telemetria"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CAUSA:
-  â””â”€ Token da API invÃ¡lido/expirado
+  └─ Token da API inválido/expirado
 
-SOLUÃ‡ÃƒO:
+SOLUÇÃO:
   1. Valide COLLECTOR_API_TOKEN (se usando API)
-  2. Ou confirme que COLLECTOR_PRINTERS_SOURCE=supabase estÃ¡ usando Supabase
+  2. Ou confirme que COLLECTOR_PRINTERS_SOURCE=supabase está usando Supabase
   3. Tente: curl -H "Authorization: Bearer YOUR_TOKEN" https://inventario-unificado-web.vercel.app/api/coletor/impressoras
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 5.4 ERRO: "Timeout ao conectar SNMP"
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CAUSA:
-  â””â”€ Impressora offline OU porta 161 bloqueada OU SNMP desligado
+  └─ Impressora offline OU porta 161 bloqueada OU SNMP desligado
 
-SOLUÃ‡ÃƒO:
+SOLUÇÃO:
   1. Teste manualmente:
      $ snmpget -v 2c -c public 10.6.1.20 1.3.6.1.2.1.1.1.0
   2. Valide rede:
      $ ping 10.6.1.20
   3. Aumente timeout (se tiver mais tempo):
-     â””â”€ Edite: SNMP_TIMEOUT=10 em .env (padrÃ£o 5s)
+     └─ Edite: SNMP_TIMEOUT=10 em .env (padrão 5s)
 
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 5.5 FILA DE ENVIO MUITA GRANDE (collector_pending.jsonl > 50MB)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
 CAUSA:
-  â””â”€ Backend offline OU rejeita dados OU intervalo muito curto
+  └─ Backend offline OU rejeita dados OU intervalo muito curto
 
-SOLUÃ‡ÃƒO:
+SOLUÇÃO:
   1. Verifique se backend responde:
      $ curl https://inventario-unificado-web.vercel.app/api/coletor/impressoras
-  2. Se backend tÃ¡ ok, acelere replay:
-     â””â”€ Aumente COLLECTOR_WORKERS=8 (default 4)
-     â””â”€ Reduza COLLECTOR_INTERVAL=60 (se quiser enviar mais frequente)
+  2. Se backend tá ok, acelere replay:
+     └─ Aumente COLLECTOR_WORKERS=8 (default 4)
+     └─ Reduza COLLECTOR_INTERVAL=60 (se quiser enviar mais frequente)
   3. Se continuar grote, limpe fila:
      $ rm coletor-snmp/data/collector_pending.jsonl
-     â””â”€ âš ï¸ Vai perder histÃ³rico dessa fila
+     └─ ⚠️ Vai perder histórico dessa fila
 
 ================================================================================
 6. DIAGRAMAS DE FLUXO
 ================================================================================
 
 6.1 FLUXO DO COLETOR (Ciclo de 150s)
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+─────────────────────────────────────────────────────────────────────────────
 
-                         â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
-                         â•‘   InÃ­cio do Ciclo (150s)  â•‘
-                         â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•¤â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
-                                      â”‚
-                                      â–¼
-              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-              â”‚ 1. Sincronizar impressoras (Supabase)     â”‚
-              â”‚    â””â”€ Busca lista remota                 â”‚
-              â”‚    â””â”€ Filtra por IP                      â”‚
-              â”‚    â””â”€ Salva em printers.json             â”‚
-              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                            â”‚
-                    â”Œâ”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”
-                    â”‚   Sucesso?     â”‚
-                    â””â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”˜
-                       NÃ£o     Sim
-                        â”‚        â”‚
-                    â”Œâ”€â”€â”€â–¼â”€â”€â”   â”‚
-                    â”‚Abort â”‚   â”‚
-                    â”‚Ciclo â”‚   â”‚
-                    â””â”€â”€â”€â”€â”€â”˜   â”‚
-                               â–¼
-             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-             â”‚ 2. Coleta SNMP (paralelo, 4 workers)â”‚
-             â”‚    â”œâ”€ Para cada impressora:         â”‚
-             â”‚    â”‚  â”œâ”€ SNMP GET OIDs              â”‚
-             â”‚    â”‚  â”œâ”€ Mapeia dados               â”‚
-             â”‚    â”‚  â””â”€ Normaliza                  â”‚
-             â”‚    â””â”€ Salva em collector_pending    â”‚
-             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                           â”‚
-                           â–¼
-             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-             â”‚ 3. Envio para Backend (batch)        â”‚
-             â”‚    â”œâ”€ LÃª fila (collector_pending)   â”‚
-             â”‚    â”œâ”€ POST /api/coletor/telemetria â”‚
-             â”‚    â”œâ”€ Se 200: remove               â”‚
-             â”‚    â””â”€ Se erro: invalid.jsonl       â”‚
-             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                           â”‚
-                           â–¼
-             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-             â”‚ 4. Replay de falhas (max 20)         â”‚
-             â”‚    â”œâ”€ LÃª invalid.jsonl              â”‚
-             â”‚    â”œâ”€ Retenta envio                â”‚
-             â”‚    â””â”€ Move conforme resultado      â”‚
-             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                           â”‚
-                           â–¼
-              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-              â”‚ Aguarda 150s atÃ© prÃ³x cicloâ”‚
-              â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
-                       â”‚
-                       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-                                      â”‚
-                         Loop volta (2ï¸âƒ£ Coleta SNMP)
+                         ╔═══════════════════════════╗
+                         ║   Início do Ciclo (150s)  ║
+                         ╚════════════╤══════════════╝
+                                      │
+                                      ▼
+              ┌───────────────────────────────────────────┐
+              │ 1. Sincronizar impressoras (Supabase)     │
+              │    └─ Busca lista remota                 │
+              │    └─ Filtra por IP                      │
+              │    └─ Salva em printers.json             │
+              └─────────────┬─────────────────────────────┘
+                            │
+                    ┌───────▼────────┐
+                    │   Sucesso?     │
+                    └───┬────────┬───┘
+                       Não     Sim
+                        │        │
+                    ┌───▼──┐   │
+                    │Abort │   │
+                    │Ciclo │   │
+                    └─────┘   │
+                               ▼
+             ┌──────────────────────────────────────┐
+             │ 2. Coleta SNMP (paralelo, 4 workers)│
+             │    ├─ Para cada impressora:         │
+             │    │  ├─ SNMP GET OIDs              │
+             │    │  ├─ Mapeia dados               │
+             │    │  └─ Normaliza                  │
+             │    └─ Salva em collector_pending    │
+             └─────────────┬──────────────────────┘
+                           │
+                           ▼
+             ┌──────────────────────────────────────┐
+             │ 3. Envio para Backend (batch)        │
+             │    ├─ Lê fila (collector_pending)   │
+             │    ├─ POST /api/coletor/telemetria │
+             │    ├─ Se 200: remove               │
+             │    └─ Se erro: invalid.jsonl       │
+             └─────────────┬──────────────────────┘
+                           │
+                           ▼
+             ┌──────────────────────────────────────┐
+             │ 4. Replay de falhas (max 20)         │
+             │    ├─ Lê invalid.jsonl              │
+             │    ├─ Retenta envio                │
+             │    └─ Move conforme resultado      │
+             └─────────────┬──────────────────────┘
+                           │
+                           ▼
+              ┌────────────────────────────┐
+              │ Aguarda 150s até próx ciclo│
+              └────────┬───────────────────┘
+                       │
+                       └──────────────┐
+                                      │
+                         Loop volta (2️⃣ Coleta SNMP)
 
-6.2 FLUXO DE SUPRIMENTOS E PÃGINAS
-â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+6.2 FLUXO DE SUPRIMENTOS E PÁGINAS
+─────────────────────────────────────────────────────────────────────────────
 
-COLETA DIÃRIA:
+COLETA DIÁRIA:
 
-  2026-03-31:  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-               â”‚ Coleta SNMP â”‚â”€â”€â–¶ Suprimentos  â”‚ (sobrescreve)
-               â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚ estado_atual  â”‚
-                                â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+  2026-03-31:  ┌─────────────┐  ┌──────────────┐
+               │ Coleta SNMP │──▶ Suprimentos  │ (sobrescreve)
+               └─────────────┘  │ estado_atual  │
+                                └──────────────┘
   
-               â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-               â”‚ Contador    â”‚â”€â”€â–¶ PÃ¡ginas      â”‚ (append-only)
-               â”‚ de PÃ¡ginas  â”‚  â”‚ Ãºltimas 3m   â”‚
-               â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+               ┌─────────────┐  ┌──────────────┐
+               │ Contador    │──▶ Páginas      │ (append-only)
+               │ de Páginas  │  │ últimas 3m   │
+               └─────────────┘  └──────────────┘
 
-  JAN/FEV/MAR:  â†’ MantÃ©m histÃ³rico (90+ dias)
-  ABRIL (dia 1): â†’ APaga tudo antes de 2026-01-01 (job automÃ¡tico)
+  JAN/FEV/MAR:  → Mantém histórico (90+ dias)
+  ABRIL (dia 1): → APaga tudo antes de 2026-01-01 (job automático)
 
 DASHBOARD USA:
-  â””â”€ PÃ¡ginas diÃ¡rias (tabela agregada por dia)
-  â””â”€ Suprimentos atual (1 linha por impressora+insumo)
+  └─ Páginas diárias (tabela agregada por dia)
+  └─ Suprimentos atual (1 linha por impressora+insumo)
 
 ================================================================================
 7. RESUMO QUICK-START
@@ -703,20 +703,20 @@ RESTAURAR BANCO:
   2. Aplicar reparo: GRANT ALL ... (se precisar)
 
 IMPORTAR IMPRESSORAS:
-  1. Site > InventÃ¡rio > ImportaÃ§Ãµes > Upload XLSX
+  1. Site > Inventário > Importações > Upload XLSX
   2. Revisar mapeamento de colunas
-  3. Executar importaÃ§Ã£o
+  3. Executar importação
   4. Clicar "Sincronizar Operacionais"
 
 RODARLOR COLETOR:
   1. Verificar .env (SUPABASE_KEY = service_role)
   2. cd coletor-snmp/scripts
   3. python run_collector_loop.py --interval 150 --log-level INFO
-  4. Ver logs (deve sincronizar impressoras + comeÃ§ar coleta)
+  4. Ver logs (deve sincronizar impressoras + começar coleta)
 
 VALIDAR COLETA:
   1. Dashboard > Impressoras Operacionais (deve mostrar status)
-  2. Dashboard > AnalÃ­tico (sÃ³ mostra apÃ³s coleta)
+  2. Dashboard > Analítico (só mostra após coleta)
   3. SQL: SELECT COUNT(*) FROM telemetria_impressoras;
 
 ================================================================================
