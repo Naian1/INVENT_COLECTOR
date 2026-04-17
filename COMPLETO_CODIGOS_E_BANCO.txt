@@ -1,0 +1,854 @@
+﻿================================================================================
+PROJETO COMPLETO: INVENTÃRIO + COLETOR SNMP
+Data: 31/03/2026
+Autor: Sistema de InventÃ¡rio Hospitalar
+================================================================================
+
+ÃNDICE:
+1. CONFIGURAÃ‡ÃƒO E VARIÃVEIS DE AMBIENTE
+2. SCHEMA BANCO DE DADOS (SQL)
+3. COLETOR SNMP (PYTHON)
+4. BACKEND API (NEXT.JS / TYPESCRIPT)
+5. FRONTEND (TYPESCRIPT/REACT)
+6. FLUXO DE IMPORTAÃ‡ÃƒO
+7. COMANDOS ÃšTEIS
+8. TROUBLESHOOTING
+
+================================================================================
+1. CONFIGURAÃ‡ÃƒO E VARIÃVEIS DE AMBIENTE
+================================================================================
+
+--- .env (coletor-snmp) ---
+COLLECTOR_LOOP_INTERVAL=150
+COLLECTOR_API_URL=https://inventario-unificado-web.vercel.app/api/coletor/telemetria
+COLLECTOR_SUPABASE_URL=https://your-project-ref.supabase.co
+COLLECTOR_SUPABASE_KEY=<service_role_secret>
+COLLECTOR_PRINTERS_SOURCE=supabase
+COLLECTOR_SUPABASE_PRINTERS_TABLE=impressoras
+COLLECTOR_REQUIRE_REMOTE_PRINTERS=true
+COLLECTOR_IP_FILTERS=172.,10.6.
+COLLECTOR_MAX_WORKERS=4
+COLLECTOR_API_TIMEOUT=30
+COLLECTOR_SYNC_TIMEOUT=10
+COLLECTOR_SYNC_RETRIES=3
+COLLECTOR_SYNC_RETRY_BACKOFF=2.0
+COLLECTOR_API_RETRIES=3
+COLLECTOR_API_RETRY_BACKOFF=2.0
+COLLECTOR_REPLAY_PENDING=true
+COLLECTOR_REPLAY_MAX_PER_CYCLE=20
+COLLECTOR_LOG_LEVEL=INFO
+
+--- package.json (inventario-unificado-web) ---
+{
+  "name": "inventario-unificado-web",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.57.4",
+    "googleapis": "^171.4.0",
+    "next": "^15.0.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "xlsx": "^0.18.5",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.3.0"
+  }
+}
+
+--- Next.js env (inventario-unificado-web/.env) ---
+NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=<public_publishable_key>
+SUPABASE_SERVICE_ROLE_KEY=<service_role_secret>
+
+================================================================================
+2. SCHEMA BANCO DE DADOS - PRINCIPAIS TABELAS
+================================================================================
+
+--- TABELA: impressoras (estado operacional atual)
+CREATE TABLE public.impressoras (
+  id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+  patrimonio TEXT NOT NULL UNIQUE,
+  ip INET NOT NULL UNIQUE,
+  setor TEXT NOT NULL,
+  localizacao TEXT,
+  modelo TEXT NOT NULL,
+  fabricante TEXT,
+  numero_serie TEXT UNIQUE,
+  hostname TEXT,
+  endereco_mac TEXT,
+  ativo BOOLEAN DEFAULT TRUE,
+  ultima_coleta_em TIMESTAMPTZ,
+  criado_em TIMESTAMPTZ DEFAULT NOW(),
+  atualizado_em TIMESTAMPTZ DEFAULT NOW()
+);
+
+--- TABELA: telemetria_impressoras (histÃ³rico de snapshots)
+CREATE TABLE public.telemetria_impressoras (
+  id BIGSERIAL PRIMARY KEY,
+  impressora_id UUID NOT NULL REFERENCES impressoras(id) ON DELETE CASCADE,
+  patrimonio TEXT,
+  ip INET,
+  coletor_id TEXT NOT NULL,
+  ingestao_id TEXT NOT NULL UNIQUE,
+  coletado_em TIMESTAMPTZ NOT NULL,
+  status TEXT DEFAULT 'unknown' CHECK (status IN ('online', 'offline', 'warning', 'error', 'unknown')),
+  tempo_resposta_ms INTEGER,
+  payload_bruto JSONB DEFAULT '{}',
+  criado_em TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(coletor_id, ingestao_id)
+);
+
+--- TABELA: leituras_paginas_impressoras (contador acumulado, histÃ³rico 3 meses)
+CREATE TABLE public.leituras_paginas_impressoras (
+  id BIGSERIAL PRIMARY KEY,
+  impressora_id UUID NOT NULL REFERENCES impressoras(id) ON DELETE CASCADE,
+  patrimonio TEXT,
+  ip INET,
+  coletor_id TEXT NOT NULL,
+  ingestao_id TEXT NOT NULL UNIQUE,
+  coletado_em TIMESTAMPTZ NOT NULL,
+  contador_total_paginas BIGINT NOT NULL CHECK (contador_total_paginas >= 0),
+  valido BOOLEAN DEFAULT TRUE,
+  motivo_invalido TEXT,
+  reset_detectado BOOLEAN DEFAULT FALSE,
+  payload_bruto JSONB DEFAULT '{}',
+  criado_em TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(coletor_id, ingestao_id)
+);
+
+--- TABELA: suprimentos_impressoras (estado atual, sobrescrito)
+CREATE TABLE public.suprimentos_impressoras (
+  id BIGSERIAL PRIMARY KEY,
+  impressora_id UUID NOT NULL REFERENCES impressoras(id) ON DELETE CASCADE,
+  patrimonio TEXT,
+  ip INET,
+  coletor_id TEXT NOT NULL,
+  ingestao_id TEXT NOT NULL,
+  coletado_em TIMESTAMPTZ NOT NULL,
+  chave_suprimento TEXT NOT NULL,
+  nome_suprimento TEXT NOT NULL,
+  nivel_percentual NUMERIC(5,2),
+  paginas_restantes BIGINT,
+  status_suprimento TEXT DEFAULT 'unknown' CHECK (status_suprimento IN ('ok', 'low', 'critical', 'empty', 'unknown', 'offline')),
+  valido BOOLEAN DEFAULT TRUE,
+  payload_bruto JSONB DEFAULT '{}',
+  criado_em TIMESTAMPTZ DEFAULT NOW(),
+  atualizado_em TIMESTAMPTZ DEFAULT NOW(),
+  UNIQUE(impressora_id, chave_suprimento)
+);
+
+--- RETENÃ‡ÃƒO: FunÃ§Ã£o de limpeza automÃ¡tica (3 meses)
+CREATE OR REPLACE FUNCTION public.fn_purgar_leituras_paginas_antigas(meses_manter integer DEFAULT 3)
+RETURNS integer LANGUAGE plpgsql AS $$
+DECLARE
+  limite TIMESTAMPTZ;
+  removidos INTEGER;
+BEGIN
+  limite := date_trunc('month', now()) - make_interval(months => meses_manter - 1);
+  DELETE FROM public.leituras_paginas_impressoras WHERE coletado_em < limite;
+  GET DIAGNOSTICS removidos = row_count;
+  RETURN removidos;
+END;
+$$;
+
+-- Job automÃ¡tico diÃ¡rio
+SELECT cron.schedule('purge_leituras_paginas_3_meses', '15 3 * * *', 
+  'SELECT public.fn_purgar_leituras_paginas_antigas(3);');
+
+================================================================================
+3. COLETOR SNMP (PYTHON)
+================================================================================
+
+--- Estrutura de Pastas ---
+coletor-snmp/
+  â”œâ”€â”€ scripts/
+  â”‚   â”œâ”€â”€ run_collector_loop.py (execuÃ§Ã£o principal)
+  â”‚   â”œâ”€â”€ test_collector_push.py (teste de envio)
+  â”‚   â””â”€â”€ python (script helper)
+  â”œâ”€â”€ utils/
+  â”‚   â”œâ”€â”€ cache_manager.py (lÃ³gica de coleta + cache)
+  â”‚   â”œâ”€â”€ api_client.py (requisiÃ§Ãµes HTTP)
+  â”‚   â”œâ”€â”€ snmp_client.py (protocolo SNMP)
+  â”‚   â”œâ”€â”€ file_manager.py (I/O local)
+  â”‚   â”œâ”€â”€ telemetry_mapper.py (transformaÃ§Ã£o de dados)
+  â”‚   â””â”€â”€ __init__.py
+  â”œâ”€â”€ data/
+  â”‚   â”œâ”€â”€ collector_pending.jsonl (fila local)
+  â”‚   â”œâ”€â”€ printers.json (cache de impressoras)
+  â”‚   â”œâ”€â”€ history/ (histÃ³rico local)
+  â”‚   â””â”€â”€ logs/
+  â”œâ”€â”€ .env
+  â””â”€â”€ requirements.txt
+
+--- Fluxo Coleta SNMP ---
+1. Sincronizar impressoras do Supabase (via tabela impressoras)
+2. Para cada impressora (IP, SNMP community):
+   - SNMP GET contador de pÃ¡ginas (OID 1.3.6.1.2.1.43.10.2.1.4.1.1)
+   - SNMP WALK suprimentos (OID 1.3.6.1.2.1.43.11.1.1.6.1)
+3. Montar payload JSON com telemetria + suprimentos
+4. Enviar POST para /api/coletor/telemetria
+5. Se falhar, guardar em fila local (collector_pending.jsonl)
+6. Repetir a cada N segundos (150 padrÃ£o)
+
+--- cache_manager.py (snippet principal) ---
+
+import json
+import logging
+from datetime import datetime, timezone
+from concurrent.futures import ThreadPoolExecutor
+
+from .api_client import fetch_printers_from_api, send_telemetry_payload
+from .snmp_client import snmp_get, snmp_walk
+
+OID_PAGE_COUNTER = "1.3.6.1.2.1.43.10.2.1.4.1.1"
+OID_SUPPLY_DESCRIPTION = "1.3.6.1.2.1.43.11.1.1.6.1"
+OID_SUPPLY_CURRENT = "1.3.6.1.2.1.43.11.1.1.9.1"
+
+def atualizar_cache():
+    """
+    ObtÃ©m lista de impressoras (Supabase ou API)
+    Coleta SNMP de cada uma
+    Envia telemetria via HTTP POST
+    Retorna lista de impressoras processadas
+    """
+    printers = fetch_printers_from_api()  # vem de Supabase/API
+    
+    results = []
+    with ThreadPoolExecutor(max_workers=4) as executor:
+        futures = {}
+        for ip, info in printers.items():
+            future = executor.submit(_collect_single_printer, ip, info)
+            futures[future] = (ip, info)
+        
+        for future in as_completed(futures):
+            ip, info = futures[future]
+            try:
+                payload = future.result()
+                send_telemetry_payload(payload)
+                results.append(payload)
+            except Exception as exc:
+                logging.error(f"Erro ao coletar {ip}: {exc}")
+    
+    return results
+
+def _collect_single_printer(ip, info):
+    """Coleta dados SNMP de 1 impressora"""
+    community = "public"
+    
+    # Contador de pÃ¡ginas
+    pages_resp = snmp_get(OID_PAGE_COUNTER, ip, community)
+    pages = int(pages_resp.get('value', 0)) if pages_resp.get('ok') else None
+    
+    # Suprimentos
+    supplies_resp = snmp_walk(OID_SUPPLY_DESCRIPTION, ip, community)
+    supplies = []
+    for supply in supplies_resp:
+        supplies.append({
+            "nome": supply.get('value'),
+            "descricao": supply.get('value')
+        })
+    
+    payload = {
+        "patrimonio": info.get('patrimonio'),
+        "ip": ip,
+        "modelo": info.get('modelo'),
+        "coletado_em": datetime.now(timezone.utc).isoformat(),
+        "contador_paginas": pages,
+        "suprimentos": supplies,
+        "status": "online" if pages is not None else "offline"
+    }
+    
+    return payload
+
+--- api_client.py (snippet) ---
+
+import json
+import os
+from urllib import request, error
+
+def get_collector_config():
+    """Carrega config do .env"""
+    return {
+        "api_url": os.getenv("COLLECTOR_API_URL", "https://inventario-unificado-web.vercel.app/api/coletor/telemetria"),
+        "supabase_url": os.getenv("COLLECTOR_SUPABASE_URL"),
+        "supabase_key": os.getenv("COLLECTOR_SUPABASE_KEY"),
+        "printers_source": os.getenv("COLLECTOR_PRINTERS_SOURCE", "api"),  # ou "supabase"
+        "timeout": int(os.getenv("COLLECTOR_SYNC_TIMEOUT", "10")),
+        "retries": int(os.getenv("COLLECTOR_SYNC_RETRIES", "3"))
+    }
+
+def fetch_printers_from_api():
+    """Busca lista de impressoras do Supabase ou API"""
+    config = get_collector_config()
+    
+    if config["printers_source"] == "supabase":
+        return _fetch_from_supabase(config)
+    else:
+        return _fetch_from_api(config)
+
+def _fetch_from_supabase(config):
+    """SELECT * FROM impressoras WHERE ativo=true"""
+    from supabase import create_client
+    
+    client = create_client(config["supabase_url"], config["supabase_key"])
+    response = client.table("impressoras").select("*").eq("ativo", True).execute()
+    
+    printers = {}
+    for row in response.data:
+        printers[row["ip"]] = {
+            "patrimonio": row["patrimonio"],
+            "modelo": row["modelo"],
+            "setor": row["setor"],
+            "localizacao": row["localizacao"],
+            "numero_serie": row.get("numero_serie"),
+            "hostname": row.get("hostname")
+        }
+    
+    return printers
+
+def _fetch_from_api(config):
+    """GET /api/coletor/impressoras"""
+    url = config["api_url"].replace("/telemetria", "/impressoras")
+    req = request.Request(url, method="GET")
+    
+    try:
+        with request.urlopen(req, timeout=config["timeout"]) as resp:
+            data = json.loads(resp.read().decode())
+            printers = {}
+            for item in data.get("impressoras", []):
+                printers[item["ip"]] = {
+                    "patrimonio": item["patrimonio"],
+                    "modelo": item["modelo"],
+                    "setor": item["setor"],
+                    "localizacao": item.get("localizacao")
+                }
+            return printers
+    except error.HTTPError as e:
+        logging.error(f"Erro ao buscar impressoras da API: {e}")
+        return {}
+
+def send_telemetry_payload(payload):
+    """POST /api/coletor/telemetria com retry"""
+    config = get_collector_config()
+    
+    for attempt in range(config["retries"]):
+        try:
+            data = json.dumps(payload).encode('utf-8')
+            req = request.Request(
+                config["api_url"],
+                data=data,
+                headers={"Content-Type": "application/json"},
+                method="POST"
+            )
+            
+            with request.urlopen(req, timeout=config["timeout"]) as resp:
+                return json.loads(resp.read().decode())
+        except error.HTTPError as e:
+            logging.warning(f"Tentativa {attempt+1} falhou: {e}")
+            if attempt < config["retries"] - 1:
+                time.sleep(2 ** attempt)  # backoff exponencial
+        except Exception as e:
+            logging.error(f"Erro ao enviar telemetria: {e}")
+            return None
+    
+    return None
+
+--- run_collector_loop.py (execuÃ§Ã£o) ---
+
+import argparse
+import logging
+import os
+import sys
+import time
+from datetime import datetime
+from logging.handlers import RotatingFileHandler
+
+BASE_DIR = os.path.abspath(os.path.dirname(__file__) + "/..")
+sys.path.insert(0, BASE_DIR)
+
+from utils.cache_manager import atualizar_cache
+
+STOP = False
+
+def _handle_stop(signum, _frame):
+    global STOP
+    STOP = True
+    logging.info("Sinal recebido. Encerrando...")
+
+def run_loop(interval_seconds, run_once=False):
+    cycle = 0
+    while not STOP:
+        cycle += 1
+        logging.info(f"Ciclo {cycle} iniciado em {datetime.now()}")
+        
+        try:
+            rows = atualizar_cache()
+            logging.info(f"Ciclo {cycle} concluÃ­do. {len(rows) if rows else 0} linhas")
+        except Exception as exc:
+            logging.exception(f"Erro no ciclo {cycle}: {exc}")
+        
+        if run_once:
+            break
+        
+        time.sleep(interval_seconds)
+
+def main():
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--interval", type=int, default=150, help="Intervalo em segundos")
+    parser.add_argument("--once", action="store_true", help="Executa apenas 1 ciclo")
+    parser.add_argument("--log-level", default="INFO")
+    args = parser.parse_args()
+    
+    # Setup logging
+    logging.basicConfig(
+        level=getattr(logging, args.log_level),
+        format='%(asctime)s | %(levelname)s | %(message)s'
+    )
+    
+    signal.signal(signal.SIGINT, _handle_stop)
+    signal.signal(signal.SIGTERM, _handle_stop)
+    
+    run_loop(args.interval, args.once)
+
+if __name__ == "__main__":
+    main()
+
+--- requirements.txt ---
+requests==2.31.0
+supabase==2.4.1
+python-dotenv==1.0.0
+
+================================================================================
+4. BACKEND API (NEXT.JS / TYPESCRIPT)
+================================================================================
+
+--- Estrutura de Rotas ---
+app/api/
+  â”œâ”€â”€ coletor/
+  â”‚   â”œâ”€â”€ telemetria/route.ts (POST: recebe dados coleta)
+  â”‚   â”œâ”€â”€ impressoras/route.ts (GET: lista impressoras)
+  â”‚   â””â”€â”€ sincronizar/route.ts (POST: sincroniza com Supabase)
+  â”œâ”€â”€ inventario/
+  â”‚   â”œâ”€â”€ operacionais/sincronizar-lote/route.ts (POST: move linhas para operacionais)
+  â”‚   â””â”€â”€ importacoes/executar/route.ts (POST: executa import)
+  â””â”€â”€ dashboard/
+      â””â”€â”€ analÃ­tico/route.ts (GET: dados dashboard)
+
+--- POST /api/coletor/telemetria ---
+Recebe payload do coletor com:
+  - patrimonio, ip, modelo
+  - contador_paginas (total acumulado)
+  - suprimentos: [{nome, nivel, estado}, ...]
+  - coletado_em (ISO timestamp)
+
+Processa:
+  1. Localiza/cria impressora em tabela `impressoras`
+  2. Insere em `telemetria_impressoras` (histÃ³rico)
+  3. Insere contador em `leituras_paginas_impressoras` (histÃ³rico 3 meses)
+  4. Upsert em `suprimentos_impressoras` (estado atual)
+  5. Atualiza `ultima_coleta_em` em `impressoras`
+
+--- GET /api/coletor/impressoras ---
+Lista todas as impressoras ativas do Supabase:
+  SELECT   patrimonio, ip, modelo, setor, localizacao, numero_serie, hostname
+  FROM     impressoras
+  WHERE    ativo = true
+  ORDER BY patrimonio
+
+--- POST /api/inventario/operacionais/sincronizar-lote ---
+Sincroniza todas as linhas de inventÃ¡rio nÃ£o-operacionais:
+  1. SELECT * FROM linhas_inventario WHERE categoria_id=... AND status != 'operacional'
+  2. Para cada linha: sincroniza para tabela `impressoras` (se patrimÃ´nio/IP vÃ¡lidos)
+  3. Atualiza status para 'operacional'
+  4. Retorna: {total_sincronizadas, erros}
+
+--- POST /api/inventario/importacoes/executar ---
+Executa importaÃ§Ã£o dinÃ¢mica:
+  1. Recebe categoria_id + lista de linhas (dados da planilha)
+  2. Mapeia colunas para campos da categoria
+  3. Valida dados obrigatÃ³rios (patrimÃ´nio, IP, modelo)
+  4. Insere em `linhas_inventario` + `importacoes_planilha_linhas`
+  5. Se sucesso, retorna import_id
+  6. Se erro em linha, marca com motivo e continua (nÃ£o falha tudo)
+
+--- GET /api/dashboard/analÃ­tico ---
+Retorna dados histÃ³rico Ãºltimos 92 dias:
+  {
+    "periodo": { "inicio": "2026-01-29", "fim": "2026-03-31" },
+    "total_paginas": 450000,
+    "total_por_dia": [
+      { "dia": "2026-03-31", "total_paginas": 1500 },
+      ...
+    ],
+    "total_por_impressora": [
+      { "patrimonio": "242076", "modelo": "M3250", "total_paginas": 45000 },
+      ...
+    ],
+    "max_dias_historico": 92
+  }
+
+--- Exemplo: services/coletorTelemetriaPtService.ts ---
+
+export async function receberTelemetriaImpressora(payload: any) {
+  const impressora = await sincronizarImpressora({
+    patrimonio: payload.patrimonio,
+    ip: payload.ip,
+    modelo: payload.modelo,
+    setor: payload.setor || "Desconhecido",
+    localizacao: payload.localizacao,
+    numero_serie: payload.numero_serie,
+    hostname: payload.hostname
+  });
+
+  // Insere telemetria
+  await supabase
+    .from("telemetria_impressoras")
+    .insert({
+      impressora_id: impressora.id,
+      patrimonio: payload.patrimonio,
+      ip: payload.ip,
+      coletor_id: payload.coletor_id,
+      ingestao_id: payload.ingestao_id,
+      coletado_em: payload.coletado_em,
+      status: payload.status || "online",
+      tempo_resposta_ms: payload.tempo_resposta_ms,
+      payload_bruto: payload
+    });
+
+  // Insere contador de pÃ¡ginas
+  if (payload.contador_paginas !== null) {
+    await supabase
+      .from("leituras_paginas_impressoras")
+      .insert({
+        impressora_id: impressora.id,
+        patrimonio: payload.patrimonio,
+        ip: payload.ip,
+        coletor_id: payload.coletor_id,
+        ingestao_id: payload.ingestao_id,
+        coletado_em: payload.coletado_em,
+        contador_total_paginas: payload.contador_paginas,
+        payload_bruto: payload
+      });
+  }
+
+  // Upsert suprimentos (estado atual)
+  for (const supply of payload.suprimentos || []) {
+    await supabase
+      .from("suprimentos_impressoras")
+      .upsert({
+        impressora_id: impressora.id,
+        patrimonio: payload.patrimonio,
+        ip: payload.ip,
+        coletor_id: payload.coletor_id,
+        ingestao_id: payload.ingestao_id,
+        coletado_em: payload.coletado_em,
+        chave_suprimento: supply.chave,
+        nome_suprimento: supply.nome,
+        nivel_percentual: supply.nivel,
+        status_suprimento: supply.status,
+        payload_bruto: supply
+      }, {
+        onConflict: "impressora_id,chave_suprimento"
+      });
+  }
+
+  // Atualiza Ãºltima coleta
+  await supabase
+    .from("impressoras")
+    .update({ ultima_coleta_em: new Date().toISOString() })
+    .eq("id", impressora.id);
+
+  return impressora;
+}
+
+================================================================================
+5. FRONTEND (TYPESCRIPT/REACT)
+================================================================================
+
+--- Telas Principais ---
+1. Impressoras Operacionais (app/impressoras/page.tsx)
+   - Listagem de impressoras com status (online/offline)
+   - Filtros: setor, status, suprimento crÃ­tico
+   - BotÃ£o "Adicionar Impressora"
+   - BotÃ£o "Sincronizar Operacionais" (novo!)
+
+2. InventÃ¡rio (app/inventario/page.tsx)
+   - VisualizaÃ§Ã£o de linhas de inventÃ¡rio (dinÃ¢micas)
+   - Modo ediÃ§Ã£o por linha
+   - BotÃ£o "Tomar Operacional" (antes, agora em batch)
+
+3. ImportaÃ§Ãµes (app/inventario/importacoes/page.tsx)
+   - Upload XLSX/CSV
+   - DetecÃ§Ã£o automÃ¡tica de abas (sheets)
+   - Mapeamento de colunas
+   - Preview de dados
+   - BotÃ£o "Gerar preview" + "Executar importacao"
+
+4. Dashboard (app/page.tsx)
+   - GrÃ¡fico de pÃ¡ginas por dia (Ãºltimos 92 dias)
+   - Cards de status (total impressoras, online, offline)
+   - DistribuiÃ§Ã£o por setor
+
+--- app/impressoras/page.tsx (snippet) ---
+
+export default function ImpressorasOperacionaisPa() {
+  const [impressoras, setImpressoras] = useState([]);
+  const [loading, setLoading] = useState(false);
+
+  async function sincronizarOperacionais() {
+    setLoading(true);
+    try {
+      const res = await fetch("/api/inventario/operacionais/sincronizar-lote", {
+        method: "POST"
+      });
+      const data = await res.json();
+      
+      if (res.ok) {
+        toast.success(`${data.total_sincronizadas} impressoras sincronizadas!`);
+        // Recarrega lista
+        await listarImpressoras();
+      } else {
+        toast.error(data.erro || "Erro ao sincronizar");
+      }
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  async function listarImpressoras() {
+    const res = await fetch("/api/inventario/operacionais");
+    const data = await res.json();
+    setImpressoras(data.operacionais);
+  }
+
+  return (
+    <div>
+      <h1>Impressoras Operacionais</h1>
+      <button onClick={sincronizarOperacionais} disabled={loading}>
+        {loading ? "Sincronizando..." : "Sincronizar Operacionais"}
+      </button>
+      
+      <table>
+        <thead>
+          <tr>
+            <th>PatrimÃ´nio</th>
+            <th>IP</th>
+            <th>Modelo</th>
+            <th>Status</th>
+            <th>Setor</th>
+          </tr>
+        </thead>
+        <tbody>
+          {impressoras.map(imp => (
+            <tr key={imp.id}>
+              <td>{imp.patrimonio}</td>
+              <td>{imp.ip}</td>
+              <td>{imp.modelo}</td>
+              <td>{imp.ativo ? "âœ“ Ativo" : "âœ— Inativo"}</td>
+              <td>{imp.setor}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+--- app/inventario/importacoes/page.tsx (snippet parser) ---
+
+function parseCSVFile(file: File): Promise<string[][]> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const text = event.target?.result as string;
+      const lines = text.split('\n').map(l => l.trim()).filter(l => l);
+      
+      // Detecta linha de header (primeira linha com muitas palavras/coluna vÃ¡lidas)
+      let headerLineIndex = 0;
+      for (let i = 0; i < Math.min(5, lines.length); i++) {
+        const cells = lines[i].split(',').filter(c => c.trim());
+        if (cells.length >= 3 && cells.every(c => c.length > 0)) {
+          headerLineIndex = i;
+          break;
+        }
+      }
+      
+      const data = lines.slice(headerLineIndex).map((line, idx) => {
+        if (idx === 0) return null; // skip header line
+        return line.split(',').map(c => c.trim());
+      }).filter(Boolean);
+      
+      resolve(data);
+    };
+    reader.readAsText(file);
+  });
+}
+
+function parseXLSXFile(file: File): Promise<{ [sheet: string]: any[][] }> {
+  return new Promise((resolve) => {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const data = event.target?.result;
+      const workbook = XLSX.read(data, { type: 'array' });
+      
+      const sheets: { [key: string]: any[][] } = {};
+      workbook.SheetNames.forEach(sheetName => {
+        const worksheet = workbook.Sheets[sheetName];
+        const json = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+        
+        // Detecta header real (ignora linhas de tÃ­tulo)
+        let headerIndex = 0;
+        for (let i = 0; i < Math.min(5, json.length); i++) {
+          const row = json[i] as any[];
+          const validCells = row?.filter(c => c && String(c).trim().length > 0) || [];
+          if (validCells.length >= 3 && !row?.some(c => String(c || "").includes("InventÃ¡rio"))) {
+            headerIndex = i;
+            break;
+          }
+        }
+        
+        sheets[sheetName] = json.slice(headerIndex + 1);
+      });
+      
+      resolve(sheets);
+    };
+    reader.readAsArrayBuffer(file);
+  });
+}
+
+================================================================================
+6. FLUXO DE IMPORTAÃ‡ÃƒO COMPLETO
+================================================================================
+
+Etapas:
+1. Upload arquivo XLSX/CSV
+   â””â”€ Detecta abas/sheets
+   â””â”€ Apresenta opÃ§Ãµes de destino (criar nova categoria ou usar existente)
+
+2. Mapeamento de Colunas
+   â””â”€ Detecta automaticamente headers
+   â””â”€ UsuÃ¡rio revisa e mapeia: "PatrimÃ´nio" â†’ nm_patrimonio
+   â””â”€ Define semÃ¢ntica de cada campo (patrimonio, ip, modelo, etc)
+
+3. Preview Local
+   â””â”€ Exibe amostra de 5 linhas do arquivo
+   â””â”€ UsuÃ¡rio valida visual
+
+4. Executar ImportaÃ§Ã£o (POST /api/inventario/importacoes/executar)
+   â””â”€ Backend mapeia dados da planilha â†’ campos da categoria
+   â””â”€ Valida cada linha (patrimÃ´nio + IP + modelo obrigatÃ³rio)
+   â””â”€ Insere em `linhas_inventario` (ainda nÃ£o operacional)
+   â””â”€ Retorna: total_criadas, total_erros, erros_por_linha
+
+5. Sincronizar Operacionais (POST /api/inventario/operacionais/sincronizar-lote)
+   â””â”€ Move TODAS as linhas nÃ£o-operacionais para tabela `impressoras`
+   â””â”€ Em 1 clique, tudo vira operacional
+   â””â”€ Coletor jÃ¡ consegue coleta SNMP
+
+================================================================================
+7. COMANDOS ÃšTEIS
+================================================================================
+
+--- Executar Coletor ---
+cd coletor-snmp/scripts
+py run_collector_loop.py --interval 150 --log-level INFO
+# Ou apenas 1 ciclo:
+py run_collector_loop.py --once
+
+--- Deploy no Vercel ---
+cd inventario-unificado-web
+npm run build          # Validar build
+npx vercel --prod      # Deploy de produÃ§Ã£o
+
+--- Build Local (sem deploy) ---
+cd inventario-unificado-web
+npm run build
+npm start              # Roda em localhost:3000
+
+--- SQL Ãštil (Supabase Dashboard) ---
+
+-- Ver todas impressoras
+SELECT patrimonio, ip, modelo, setor, ativo FROM impressoras ORDER BY patrimonio;
+
+-- Ver Ãºltima coleta
+SELECT patrimonio, ip, ultima_coleta_em FROM impressoras ORDER BY ultima_coleta_em DESC LIMIT 10;
+
+-- Ver telemetria recente
+SELECT patrimonio, ip, status, COUNT(*) as eventos, MAX(coletado_em) as Ãºltima
+FROM telemetria_impressoras
+WHERE coletado_em > NOW() - INTERVAL '1 day'
+GROUP BY patrimonio, ip, status;
+
+-- Ver histÃ³rico de pÃ¡ginas (Ãºltimos 7 dias)
+SELECT patrimonio, DATE(coletado_em) as data, SUM(contador_total_paginas) as total_paginas
+FROM leituras_paginas_impressoras
+WHERE coletado_em > NOW() - INTERVAL '7 days' AND valido = true
+GROUP BY patrimonio, DATE(coletado_em)
+ORDER BY data DESC;
+
+-- Ver suprimentos crÃ­ticos
+SELECT patrimonio, nome_suprimento, nivel_percentual, status_suprimento
+FROM suprimentos_impressoras
+WHERE nivel_percentual < 20 AND valido = true
+ORDER BY nivel_percentual ASC;
+
+-- Sincronizar permissÃµes (se 401 permission denied)
+GRANT USAGE ON SCHEMA public TO service_role;
+GRANT ALL ON ALL TABLES IN SCHEMA public TO service_role;
+GRANT ALL ON ALL SEQUENCES IN SCHEMA public TO service_role;
+ALTER DEFAULT PRIVILEGES FOR ROLE postgres IN SCHEMA public
+  GRANT ALL ON TABLES TO service_role;
+
+================================================================================
+8. TROUBLESHOOTING
+================================================================================
+
+ERRO: "permission denied for table impressoras" (Coletor)
+SOLUÃ‡ÃƒO:
+  1. Verificar se .env tem chave de SERVICE_ROLE (nÃ£o publishable/anon)
+  2. No Supabase Dashboard, rodar GRANT (veja comandos SQL)
+  3. Testar: py run_collector_loop.py --once
+
+ERRO: "Failed to fetch" no site
+SOLUÃ‡ÃƒO:
+  1. Verificar se Vercel estÃ¡ respondendo: curl https://inventario-unificado-web.vercel.app
+  2. Ctrl+F5 no navegador (limpar cache)
+  3. Verificar logs do Vercel: `npx vercel logs --follow`
+
+ERRO: ImportaÃ§Ã£o diz "120 criadas" mas nÃ£o aparece no inventÃ¡rio
+SOLUÃ‡ÃƒO:
+  1. Clicar "Sincronizar Operacionais" para mover da tabela dinÃ¢mica para operacional
+  2. Atualizar lista: "Atualizar lista" ou F5
+
+ERRO: Coletor nÃ£o encontra nenhuma impressora
+SOLUÃ‡ÃƒO:
+  1. No Supabase, confirmar: SELECT COUNT(*) FROM impressoras WHERE ativo=true;
+  2. Se vazio, fazer importaÃ§Ã£o + sincronizar operacionais
+  3. Se nÃ£o vazio, verificar filtro IP (.env COLLECTOR_IP_FILTERS)
+
+ERRO: Suprimentos aparecem branco no site
+SOLUÃ‡ÃƒO:
+  1. Esperar 1 ciclo de coleta (150 segundos)
+  2. Testar: SELECT * FROM suprimentos_impressoras ORDER BY coletado_em DESC LIMIT 5;
+
+ERRO: Dashboard mostra 0 pÃ¡ginas apesar de coletor rodando
+SOLUÃ‡ÃƒO:
+  1. Verificar: SELECT COUNT(*) FROM leituras_paginas_impressoras;
+  2. se > 0, verificar perÃ­odo (mÃ¡x 92 dias): SELECT MAX(coletado_em) FROM leituras_paginas_impressoras;
+
+================================================================================
+FIM DO DOCUMENTO
+================================================================================
+

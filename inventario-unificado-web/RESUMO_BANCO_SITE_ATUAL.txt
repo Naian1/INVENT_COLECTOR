@@ -1,0 +1,162 @@
+RESUMO ATUAL - BANCO E SITE (INVENTARIO UNIFICADO)
+Data: 2026-04-07
+
+DEPLOY (VERCEL)
+- URL principal: https://inventario-unificado-web.vercel.app
+- URL de producao do ultimo deploy: https://inventario-unificado-58gxj0m52-naian1s-projects.vercel.app
+- Build local validado com sucesso (next build, lint e typecheck ok)
+
+1) COMO O BANCO ESTA FUNCIONANDO AGORA
+
+Base principal (inventario oficial):
+- public.empresa
+- public.tipo_equipamento
+- public.equipamento
+- public.setor
+- public.inventario
+- public.movimentacao
+- public.suprimentos
+- public.telemetria_pagecount
+
+Novas regras de inventario/hierarquia:
+- equipamento.tp_hierarquia: RAIZ | FILHO | AMBOS
+- inventario.nr_invent_sup: FK recursiva para inventario.nr_inventario
+- inventario.tp_status: ATIVO | MANUTENCAO | BACKUP | DEVOLUCAO
+- inventario.ds_imagem_url: URL da foto do ativo
+
+Regras aplicadas no banco (trigger):
+- RAIZ nao pode ter item superior
+- FILHO em ATIVO deve ter item superior
+- item superior precisa existir
+- item superior e filho devem ficar no mesmo setor
+- bloqueio de ciclo (A->B->C->A)
+
+Base mensal de apoio (consolidado):
+- public.inventario_consolidado_carga
+- public.inventario_consolidado_linha
+
+Uso da base consolidada:
+- Serve como base auxiliar para auto preenchimento no cadastro do inventario
+- Nao substitui o inventario oficial
+- Permite conciliacao e auditoria entre as duas bases
+
+2) MIGRATION PARA RODAR
+
+Se o banco foi criado com 20260402_migrate_daniel_to_public.sql:
+- Rodar: supabase/migrations/20260408_inventario_gerenciamento_full.sql
+
+Essa migration contempla:
+- hierarquia de equipamento
+- status com DEVOLUCAO
+- vinculo pai/filho no inventario
+- imagem de ativo
+- tabelas de consolidado mensal
+- bucket inventario-imagens
+
+3) COMO O SITE ESTA FUNCIONANDO AGORA
+
+Tela oficial do inventario:
+- Rota: /inventario
+- Essa tela mostra o NOSSO inventario (nao mostra consolidado como base principal)
+- Acoes principais:
+	- abrir modal "Adicionar equipamento"
+	- ir para "Importacoes"
+	- ir para "Base consolidada"
+	- ir para "Conciliacao"
+
+Modal "Adicionar equipamento" (cadastro de item no inventario):
+- Campos de entrada:
+	- Patrimonio
+	- Competencia consolidado (opcional)
+	- Serie
+	- IP
+	- Setor
+	- Tipo do equipamento
+	- Modelo
+	- Status operacional (ATIVO, MANUTENCAO, BACKUP, DEVOLUCAO)
+	- Item superior (opcional)
+	- Leitura de imagem (upload de JPG/PNG/WEBP)
+- Funcionalidades do modal:
+	- Auto preencher por patrimonio, buscando no consolidado:
+		- Serie (AI)
+		- Tipo
+		- Descricao do produto
+	- Preview da imagem antes de salvar
+	- Heranca de setor ao escolher item superior
+	- Validacao de regra de hierarquia antes de salvar
+
+Filtros na tela de inventario:
+- Busca livre: patrimonio, IP, serie, setor
+- Setor
+- Tipo
+- Relacionamento (todos, raizes, vinculados)
+- Status (todos, ATIVO, MANUTENCAO, BACKUP, DEVOLUCAO)
+
+4) PLANILHA CONSOLIDADO (IMPORTACAO MENSAL)
+
+Tela:
+- Rota: /inventario/importacoes
+
+Comportamento:
+- Recebe arquivo .xlsx do consolidado
+- Prioriza aba "Faturamento"
+- Salva por competencia (MM/AAAA)
+- Substitui os dados da competencia quando reimporta
+
+Mapeamentos chave (planilha real):
+- Coluna K: ID Equipamento
+- Coluna L: Equipamento (usado como patrimonio)
+- Coluna N: Descricao do Produto
+- Coluna AI: Serie do Equipamento
+
+5) BASE CONSOLIDADA (VISUALIZACAO)
+
+Tela:
+- Rota: /inventario/consolidado
+
+Objetivo:
+- Conferir linhas importadas da competencia
+- Filtros por competencia, patrimonio e serie
+- Serve para auditoria da base mensal
+
+6) CONCILIACAO (TELA SEPARADA)
+
+Tela:
+- Rota: /inventario/conciliacao
+
+Objetivo:
+- Comparar inventario oficial x base consolidada
+- Detectar problemas de qualidade de dados
+
+Saidas da conciliacao:
+- Duplicidades no inventario (mesmo patrimonio)
+- Duplicidades no consolidado (mesmo patrimonio)
+- Itens do consolidado que nao estao no inventario
+- Itens do inventario que nao estao no consolidado
+- Itens sem patrimonio em ambas as bases
+
+7) ROTAS API RELACIONADAS
+
+Inventario:
+- /api/inventario
+- /api/inventario/[id]
+- /api/inventario/upload-imagem
+
+Consolidado:
+- /api/inventario/consolidado
+- /api/inventario/consolidado/lookup
+- /api/inventario/consolidado/linhas
+
+Conferencia:
+- /api/inventario/conciliacao
+
+Importacao mensal:
+- /api/inventario/importacoes
+
+8) RESUMO RAPIDO DE GOVERNANCA
+
+- Inventario oficial = fonte principal para operacao
+- Consolidado = base de apoio para auto preenchimento e auditoria
+- Conciliacao = controle de consistencia entre as duas fontes
+
+Esse desenho permite evolucao sem limitar novos tipos de ativo (ex: tablet), mantendo regra de hierarquia e rastreabilidade operacional.

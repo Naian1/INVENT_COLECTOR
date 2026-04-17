@@ -1,0 +1,725 @@
+﻿================================================================================
+                    ENDPOINTS E COLETOR - DOCUMENTAÃ‡ÃƒO COMPLETA
+                            INVENTÃRIO UNIFICADO
+================================================================================
+
+ÃNDICE:
+1. VARIÃVEIS DE AMBIENTE
+2. ENDPOINTS DA API
+3. FLUXO DO COLETOR SNMP
+4. COMO EXECUTAR
+5. TROUBLESHOOTING
+6. DIAGRAMAS DE FLUXO
+
+================================================================================
+1. VARIÃVEIS DE AMBIENTE (.env)
+================================================================================
+
+BACKEND (inventario-unificado-web/.env.local):
+  NEXT_PUBLIC_SUPABASE_URL=https://your-project-ref.supabase.co
+  NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=<public_publishable_key>
+  SUPABASE_SERVICE_ROLE_SECRET=<service_role_secret>
+  
+COLETOR (coletor-snmp/.env):
+  COLLECTOR_SUPABASE_URL=https://your-project-ref.supabase.co
+  COLLECTOR_SUPABASE_KEY=<service_role_secret>
+  COLLECTOR_SUPABASE_PRINTERS_TABLE=impressoras
+  COLLECTOR_SUPABASE_TELEMETRY_TABLE=telemetria_impressoras
+  COLLECTOR_SUPABASE_SUPPLIES_TABLE=suprimentos_impressoras
+  COLLECTOR_SUPABASE_READINGS_TABLE=leituras_paginas_impressoras
+  
+  COLLECTOR_API_URL=https://inventario-unificado-web.vercel.app/api/coletor
+  COLLECTOR_API_TOKEN=<collector_api_token>
+  
+  COLLECTOR_PRINTERS_SOURCE=supabase
+  COLLECTOR_REQUIRE_REMOTE_PRINTERS=true
+  COLLECTOR_IP_FILTERS=172.,10.6.
+  COLLECTOR_WORKERS=4
+  COLLECTOR_INTERVAL=150
+  COLLECTOR_LOG_LEVEL=INFO
+
+================================================================================
+2. ENDPOINTS DA API
+================================================================================
+
+PREFIX BASE: https://inventario-unificado-web.vercel.app/api
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2.1 ENDPOINTS DE COLETOR (POST)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/coletor/telemetria
+  DescriÃ§Ã£o: Envia telemetria coletada (SNMP) das impressoras
+  
+  Body:
+  {
+    "impressora_id": "uuid",
+    "coletado_em": "2026-03-31T15:30:00Z",
+    "contador_paginas": 150000,
+    "status_snmp": "online",
+    "modelo": "M3250",
+    "ip": "10.6.1.20",
+    "hostname": "HGG-ICOORDNIR01"
+  }
+  
+  Response (200):
+  {
+    "sucesso": true,
+    "mensagem": "Telemetria salva",
+    "telemetria_id": "uuid"
+  }
+  
+  Erros:
+  - 400: Payload invÃ¡lido
+  - 401: Token invÃ¡lido
+  - 500: Erro ao persistir no banco
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/coletor/suprimentos
+  DescriÃ§Ã£o: Envia estado atual de suprimentos da impressora
+  
+  Body:
+  {
+    "impressora_id": "uuid",
+    "coletado_em": "2026-03-31T15:30:00Z",
+    "suprimentos": [
+      {
+        "tipo": "toner_preto",
+        "nivel": 45,
+        "status": "ok"
+      },
+      {
+        "tipo": "toner_amarelo",
+        "nivel": 10,
+        "status": "baixo"
+      }
+    ]
+  }
+  
+  Response (200):
+  {
+    "sucesso": true,
+    "atualizadas": 2
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/coletor/leituras
+  DescriÃ§Ã£o: Registra leitura de contador de pÃ¡ginas
+  
+  Body:
+  {
+    "impressora_id": "uuid",
+    "coletado_em": "2026-03-31T15:30:00Z",
+    "contador_total": 150000,
+    "contador_preto": 120000,
+    "contador_cor": 30000
+  }
+  
+  Response (200):
+  {
+    "sucesso": true,
+    "leitura_id": "uuid"
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ GET /api/coletor/impressoras
+  DescriÃ§Ã£o: Lista impressoras disponÃ­veis para coleta
+  
+  Query Params:
+  - filtro_ativo: true|false (padrÃ£o: true)
+  - setor: string (opcional, filtra por setor)
+  - limit: number (padrÃ£o: 1000)
+  
+  Response (200):
+  [
+    {
+      "id": "uuid",
+      "patrimonio": "242076",
+      "ip": "10.6.1.20",
+      "modelo": "M3250",
+      "hostname": "HGG-ICOORDNIR01",
+      "setor": "Sala dos Coordenadores",
+      "numero_serie": "4600217425RGW",
+      "status": "ativo"
+    },
+    ...
+  ]
+  
+  Erros:
+  - 401: Chave invÃ¡lida
+  - 500: Erro ao consultar banco
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2.2 ENDPOINTS DE IMPORTAÃ‡ÃƒO (POST)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/inventario/importacoes/preview
+  DescriÃ§Ã£o: Gera preview da linha a importar (valida campos)
+  
+  Body:
+  {
+    "categoria_id": "cf823e4b-847a-4305-9ed4-edef16f7c526",
+    "dados_linha": {
+      "nm_patrimonio": "242076",
+      "nm_ip": "10.6.1.20",
+      "nm_modelo": "M3250",
+      "nm_local": "Sala dos Coordenadores"
+    }
+  }
+  
+  Response (200):
+  {
+    "dados_normalizados": {
+      "patrimonio": 242076,
+      "ip": "10.6.1.20",
+      "modelo": "M3250",
+      "localizacao": "Sala dos Coordenadores"
+    },
+    "erros": []
+  }
+  
+  Response (400):
+  {
+    "erro": "Campo IP invÃ¡lido",
+    "campo": "nm_ip"
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/inventario/importacoes/executar
+  DescriÃ§Ã£o: Executa a importaÃ§Ã£o efetivamente
+  
+  Body:
+  {
+    "categoria_id": "cf823e4b-847a-4305-9ed4-edef16f7c526",
+    "importacao_id": "d4196b41-3d28-4229-9c03-e0ac32c0f4ef",
+    "linhas": [
+      {
+        "nm_patrimonio": "242076",
+        "nm_ip": "10.6.1.20",
+        "nm_modelo": "M3250"
+      }
+    ]
+  }
+  
+  Response (200):
+  {
+    "erros": [],
+    "total_erros": 0,
+    "total_criadas": 120,
+    "total_atualizadas": 0,
+    "total_conflitos": 0,
+    "total_ignoradas": 0,
+    "total_processadas": 120
+  }
+  
+  Response (500):
+  {
+    "erro": "permission denied for table importacoes_planilha"
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2.3 ENDPOINTS DE OPERACIONAL (POST/GET)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ POST /api/inventario/operacionais/sincronizar-lote
+  DescriÃ§Ã£o: Sincroniza TODAS as linhas nÃ£o-operacionais para operacionais
+  
+  Body:
+  {
+    "categoria_id": "cf823e4b-847a-4305-9ed4-edef16f7c526" (opcional)
+  }
+  
+  Response (200):
+  {
+    "sucesso": true,
+    "total_sincronizadas": 71,
+    "total_erros": 0,
+    "erros": []
+  }
+  
+  Response (500):
+  {
+    "erro": "Erro ao sincronizar",
+    "detalhes": "..."
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“¤ GET /api/inventario/operacionais
+  DescriÃ§Ã£o: Lista impressoras operacionais
+  
+  Query Params:
+  - setor: string (filtro opcional)
+  - status: online|offline|todos (padrÃ£o: todos)
+  - limit: number (padrÃ£o: 100)
+  
+  Response (200):
+  [
+    {
+      "id": "uuid",
+      "patrimonio": 242076,
+      "ip": "10.6.1.20",
+      "modelo": "M3250",
+      "setor": "Sala dos Coordenadores",
+      "localizacao": "1Â° Andar",
+      "numero_serie": "4600217425RGW",
+      "hostname": "HGG-ICOORDNIR01",
+      "ultima_coleta": "2026-03-31T15:30:00Z",
+      "status": "online"
+    }
+  ]
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2.4 ENDPOINTS DE DASHBOARD (GET)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“Š GET /api/dashboard/resumo
+  DescriÃ§Ã£o: Retorna resumo geral do dashboard
+  
+  Response (200):
+  {
+    "total_impressoras": 114,
+    "operacionais": 43,
+    "nao_operacionais": 71,
+    "online": 7,
+    "offline": 3,
+    "total_paginas_dia": 15000,
+    "media_paginas_hora": 625,
+    "suprimentos_criticos": 3,
+    "suprimentos_baixos": 5
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“Š GET /api/dashboard/analitico
+  DescriÃ§Ã£o: Dados analÃ­ticos por dia (Ãºltimos 92 dias)
+  
+  Query Params:
+  - dias: number (padrÃ£o: 30, mÃ¡ximo: 92)
+  - setor: string (opcional)
+  
+  Response (200):
+  {
+    "max_dias_historico": 92,
+    "dados": [
+      {
+        "data": "2026-03-31",
+        "total_paginas": 15000,
+        "media_por_impressora": 131,
+        "impressoras_ativas": 114
+      }
+    ]
+  }
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+2.5 ENDPOINTS DE VISÃƒO GERAL (GET)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+ðŸ“‹ GET /api/impressoras/visao-geral
+  DescriÃ§Ã£o: Retorna lista completa com status, suprimentos, pÃ¡ginas
+  
+  Query Params:
+  - filtro_operacional: true|false|todos (padrÃ£o: true)
+  - setor: string (opcional)
+  - page: number (padrÃ£o: 1)
+  - limit: number (padrÃ£o: 50)
+  
+  Response (200):
+  [
+    {
+      "id": "uuid",
+      "patrimonio": 242076,
+      "ip": "10.6.1.20",
+      "modelo": "M3250",
+      "setor": "Sala dos Coordenadores",
+      "numero_serie": "4600217425RGW",
+      "hostname": "HGG-ICOORDNIR01",
+      "status": "online",
+      "ultima_coleta": "2026-03-31T15:30:00Z",
+      "paginas_hoje": 234,
+      "paginas_semana": 1500,
+      "suprimentos": {
+        "toner_preto": { "nivel": 45, "status": "ok" },
+        "toner_amarelo": { "nivel": 10, "status": "baixo" }
+      }
+    }
+  ]
+
+================================================================================
+3. FLUXO DO COLETOR SNMP
+================================================================================
+
+ESTRUTURA DO COLETOR:
+  coletor-snmp/
+  â”œâ”€â”€ scripts/
+  â”‚   â””â”€â”€ run_collector_loop.py          # Script principal
+  â”œâ”€â”€ utils/
+  â”‚   â”œâ”€â”€ cache_manager.py               # Gerencia cache local
+  â”‚   â”œâ”€â”€ api_client.py                  # Cliente HTTP/Supabase
+  â”‚   â”œâ”€â”€ snmp_client.py                 # Cliente SNMP (coleta)
+  â”‚   â”œâ”€â”€ telemetry_mapper.py            # Mapeia dados SNMP
+  â”‚   â””â”€â”€ file_manager.py                # Gerencia arquivos locais
+  â”œâ”€â”€ data/
+  â”‚   â”œâ”€â”€ collector_pending.jsonl        # Fila de envio
+  â”‚   â”œâ”€â”€ collector_pending_invalid.jsonl # Erros/falhas
+  â”‚   â””â”€â”€ printers.json                  # Cache de impressoras
+  â””â”€â”€ .env                               # ConfiguraÃ§Ã£o
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+3.1 FLUXO PRINCIPAL (ciclo de 150s)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CICLO COMPLETO:
+
+1ï¸âƒ£ SINCRONIZAÃ‡ÃƒO REMOTA (atualizar_cache)
+   â””â”€ Busca lista de impressoras do Supabase/API
+   â””â”€ Filtra por IP (10.6.*, 172.*)
+   â””â”€ Salva em cache (printers.json)
+   â””â”€ Se falhar: RuntimeError (ciclo abortado)
+
+2ï¸âƒ£ COLETA SNMP (coletar_telemetria)
+   â””â”€ Para cada impressora em cache:
+      â”œâ”€ Conecta SNMP (porta 161)
+      â”œâ”€ Coleta OIDs:
+      â”‚  â”œâ”€ 1.3.6.1.2.1.25.3.2.1.5.1 â†’ contador de pÃ¡ginas
+      â”‚  â”œâ”€ 1.3.6.1.2.1.25.4.2.1.2 â†’ modelo
+      â”‚  â”œâ”€ 1.3.6.1.4.1.11.2.3.9.1.1.13.0 â†’ status
+      â”‚  â””â”€ ... outros OIDs
+      â”œâ”€ Mapeia dados (normaliza)
+      â”œâ”€ Se sucesso: salva em JSONL
+      â””â”€ Se falha: tenta retry (3x com backoff)
+
+3ï¸âƒ£ ENVIO PARA BACKEND
+   â”œâ”€ LÃª fila de envio (collector_pending.jsonl)
+   â”œâ”€ Faz batch POST â†’ /api/coletor/telemetria
+   â”œâ”€ Se 200: remove de fila
+   â”œâ”€ Se erro (401/403/500): move para invalid.jsonl
+   â””â”€ Se timeout: mantÃ©m na fila (retry prÃ³ximo ciclo)
+
+4ï¸âƒ£ RECOLETA DE FALHAS (replay_pendentes)
+   â”œâ”€ LÃª atÃ© 20 linhas de collector_pending.jsonl
+   â”œâ”€ Retenta envio para cada uma
+   â””â”€ Move sucesso/erro conforme resultado
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+3.2 VARIÃVEIS DE CONTROLE
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+COLLECTOR_INTERVAL (segundos)
+  â””â”€ Tempo entre ciclos (padrÃ£o: 150s)
+  â””â”€ MÃ­nimo recomendado: 60s
+  â””â”€ Impacto: quanto menor, mais coleta (mais CPU)
+
+COLLECTOR_WORKERS (nÃºmero)
+  â””â”€ Threads paralelas pra coleta SNMP (padrÃ£o: 4)
+  â””â”€ Impacto: mais workers = mais coletas simultÃ¢neas (mas mais CPU/memoria)
+
+COLLECTOR_IP_FILTERS
+  â””â”€ PadrÃ£o: "172.,10.6."
+  â””â”€ Filtra impressoras por IP (suporta mÃºltiplos com vÃ­rgula)
+  â””â”€ Exemplo: "10.,172.18.,192.168.1."
+
+COLLECTOR_LOG_LEVEL
+  â””â”€ INFO, DEBUG, WARNING, ERROR
+  â””â”€ INFO: mostra ciclos, sync, coletas
+  â””â”€ DEBUG: mostra todos os OIDs, tentativas
+
+COLLECTOR_REQUIRE_REMOTE_PRINTERS
+  â””â”€ true: ciclo falha se nÃ£o conseguir sync remoto
+  â””â”€ false: usa cache mesmo se sync falhar
+
+COLLECTOR_PRINTERS_SOURCE
+  â””â”€ "supabase": lÃª direto do banco (sem API)
+  â””â”€ "api": lÃª via endpoint /api/coletor/impressoras
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+3.3 ESTRUTURA DOS DADOS COLETADOS
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+TELEMETRIA (salvo em collector_pending.jsonl):
+{
+  "impressora_id": "uuid",
+  "coletado_em": "2026-03-31T15:30:00Z",
+  "ip": "10.6.1.20",
+  "hostname": "HGG-ICOORDNIR01",
+  "modelo": "M3250",
+  "status": "online",
+  "contador_paginas": 150000,
+  "contador_preto": 120000,
+  "contador_cor": 30000,
+  "toner_preto_nivel": 45,
+  "toner_corrompido": 20,
+  "nivel_cilindro": 85,
+  "taxa_erro_ultima_hora": 0,
+  "temperatura": 65
+}
+
+SUPRIMENTOS (gravado direto no Supabase):
+{
+  "impressora_id": "uuid",
+  "coletado_em": "2026-03-31T15:30:00Z",
+  "tipo_suprimento": "toner_preto",
+  "nivel": 45,
+  "status": "ok"  # ok|baixo|crÃ­tico
+}
+
+================================================================================
+4. COMO EXECUTAR
+================================================================================
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+4.1 EXECUÃ‡ÃƒO DO COLETOR
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+MODO SIMPLES (1 ciclo):
+  $ cd coletor-snmp/scripts
+  $ python run_collector_loop.py --ciclos 1 --log-level INFO
+
+MODO CONTÃNUO (daemon):
+  $ python run_collector_loop.py --interval 150 --log-level INFO
+
+MODO DEBUG:
+  $ python run_collector_loop.py --interval 150 --log-level DEBUG
+
+VALIDAR CONEXÃƒO:
+  $ python run_collector_loop.py --check-connection
+  
+  Output:
+  âœ… Supabase conectado (X impressoras)
+  âœ… API backend respondendo
+  âœ… Cache de impressoras ok
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+4.2 LIMPEZA E RESET
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Limpar fila de envio:
+  $ rm coletor-snmp/data/collector_pending.jsonl
+  $ rm coletor-snmp/data/collector_pending_invalid.jsonl
+
+Atualizar cache:
+  $ rm coletor-snmp/data/printers.json
+  (serÃ¡ recriado no prÃ³ximo ciclo)
+
+Ver tamanho dos arquivos:
+  $ ls -lh coletor-snmp/data/
+  
+  Exemplo:
+  collector_pending.jsonl:        2.5M (muitos envios na fila)
+  collector_pending_invalid.jsonl: 100K (poucos erros)
+  printers.json:                   50K (cache de ~500 impressoras)
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+4.3 MONITORAMENTO
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+Ver logs em tempo real:
+  $ python run_collector_loop.py --interval 150 --log-level INFO | tee coletor.log
+
+Contar linhas na fila:
+  $ wc -l coletor-snmp/data/collector_pending.jsonl
+
+Ver Ãºltimas coletas:
+  $ tail -5 coletor-snmp/data/collector_pending.jsonl
+
+Validar JSON da fila:
+  $ python -m json.tool coletor-snmp/data/collector_pending.jsonl | head -20
+
+================================================================================
+5. TROUBLESHOOTING
+================================================================================
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5.1 ERRO: "permission denied for table impressoras"
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CAUSA:
+  â””â”€ Chave COLLECTOR_SUPABASE_KEY Ã© publishable (anon), nÃ£o service_role
+
+SOLUÃ‡ÃƒO:
+  1. Abra Supabase Dashboard > Settings > API
+  2. Copie "Service Role Secret" (chave longa privada)
+  3. Substitua em .env:
+    COLLECTOR_SUPABASE_KEY=<service_role_secret>
+  4. Reinicie coletor
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5.2 ERRO: "Nenhuma impressora carregada"
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CAUSA:
+  â””â”€ Cache nÃ£o tem impressoras OU nenhuma bate com filtro IP
+
+SOLUÃ‡ÃƒO A (validar cache):
+  $ python -c "import json; print(json.load(open('coletor-snmp/data/printers.json'))[:2])"
+
+SOLUÃ‡ÃƒO B (filtro muito restritivo):
+  $ Edite .env: COLLECTOR_IP_FILTERS=172.,10.,192.
+
+SOLUÃ‡ÃƒO C (sync remoto falhou):
+  $ Valide COLLECTOR_SUPABASE_URL e COLLECTOR_SUPABASE_KEY
+  $ Tente: python run_collector_loop.py --check-connection
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5.3 ERRO: "HTTP 401 ao enviar telemetria"
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CAUSA:
+  â””â”€ Token da API invÃ¡lido/expirado
+
+SOLUÃ‡ÃƒO:
+  1. Valide COLLECTOR_API_TOKEN (se usando API)
+  2. Ou confirme que COLLECTOR_PRINTERS_SOURCE=supabase estÃ¡ usando Supabase
+  3. Tente: curl -H "Authorization: Bearer YOUR_TOKEN" https://inventario-unificado-web.vercel.app/api/coletor/impressoras
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5.4 ERRO: "Timeout ao conectar SNMP"
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CAUSA:
+  â””â”€ Impressora offline OU porta 161 bloqueada OU SNMP desligado
+
+SOLUÃ‡ÃƒO:
+  1. Teste manualmente:
+     $ snmpget -v 2c -c public 10.6.1.20 1.3.6.1.2.1.1.1.0
+  2. Valide rede:
+     $ ping 10.6.1.20
+  3. Aumente timeout (se tiver mais tempo):
+     â””â”€ Edite: SNMP_TIMEOUT=10 em .env (padrÃ£o 5s)
+
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+5.5 FILA DE ENVIO MUITA GRANDE (collector_pending.jsonl > 50MB)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+CAUSA:
+  â””â”€ Backend offline OU rejeita dados OU intervalo muito curto
+
+SOLUÃ‡ÃƒO:
+  1. Verifique se backend responde:
+     $ curl https://inventario-unificado-web.vercel.app/api/coletor/impressoras
+  2. Se backend tÃ¡ ok, acelere replay:
+     â””â”€ Aumente COLLECTOR_WORKERS=8 (default 4)
+     â””â”€ Reduza COLLECTOR_INTERVAL=60 (se quiser enviar mais frequente)
+  3. Se continuar grote, limpe fila:
+     $ rm coletor-snmp/data/collector_pending.jsonl
+     â””â”€ âš ï¸ Vai perder histÃ³rico dessa fila
+
+================================================================================
+6. DIAGRAMAS DE FLUXO
+================================================================================
+
+6.1 FLUXO DO COLETOR (Ciclo de 150s)
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+                         â•”â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•—
+                         â•‘   InÃ­cio do Ciclo (150s)  â•‘
+                         â•šâ•â•â•â•â•â•â•â•â•â•â•â•â•¤â•â•â•â•â•â•â•â•â•â•â•â•â•â•â•
+                                      â”‚
+                                      â–¼
+              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+              â”‚ 1. Sincronizar impressoras (Supabase)     â”‚
+              â”‚    â””â”€ Busca lista remota                 â”‚
+              â”‚    â””â”€ Filtra por IP                      â”‚
+              â”‚    â””â”€ Salva em printers.json             â”‚
+              â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                            â”‚
+                    â”Œâ”€â”€â”€â”€â”€â”€â”€â–¼â”€â”€â”€â”€â”€â”€â”€â”€â”
+                    â”‚   Sucesso?     â”‚
+                    â””â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”˜
+                       NÃ£o     Sim
+                        â”‚        â”‚
+                    â”Œâ”€â”€â”€â–¼â”€â”€â”   â”‚
+                    â”‚Abort â”‚   â”‚
+                    â”‚Ciclo â”‚   â”‚
+                    â””â”€â”€â”€â”€â”€â”˜   â”‚
+                               â–¼
+             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+             â”‚ 2. Coleta SNMP (paralelo, 4 workers)â”‚
+             â”‚    â”œâ”€ Para cada impressora:         â”‚
+             â”‚    â”‚  â”œâ”€ SNMP GET OIDs              â”‚
+             â”‚    â”‚  â”œâ”€ Mapeia dados               â”‚
+             â”‚    â”‚  â””â”€ Normaliza                  â”‚
+             â”‚    â””â”€ Salva em collector_pending    â”‚
+             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚
+                           â–¼
+             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+             â”‚ 3. Envio para Backend (batch)        â”‚
+             â”‚    â”œâ”€ LÃª fila (collector_pending)   â”‚
+             â”‚    â”œâ”€ POST /api/coletor/telemetria â”‚
+             â”‚    â”œâ”€ Se 200: remove               â”‚
+             â”‚    â””â”€ Se erro: invalid.jsonl       â”‚
+             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚
+                           â–¼
+             â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+             â”‚ 4. Replay de falhas (max 20)         â”‚
+             â”‚    â”œâ”€ LÃª invalid.jsonl              â”‚
+             â”‚    â”œâ”€ Retenta envio                â”‚
+             â”‚    â””â”€ Move conforme resultado      â”‚
+             â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                           â”‚
+                           â–¼
+              â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+              â”‚ Aguarda 150s atÃ© prÃ³x cicloâ”‚
+              â””â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+                       â”‚
+                       â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+                                      â”‚
+                         Loop volta (2ï¸âƒ£ Coleta SNMP)
+
+6.2 FLUXO DE SUPRIMENTOS E PÃGINAS
+â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
+
+COLETA DIÃRIA:
+
+  2026-03-31:  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+               â”‚ Coleta SNMP â”‚â”€â”€â–¶ Suprimentos  â”‚ (sobrescreve)
+               â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â”‚ estado_atual  â”‚
+                                â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+  
+               â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
+               â”‚ Contador    â”‚â”€â”€â–¶ PÃ¡ginas      â”‚ (append-only)
+               â”‚ de PÃ¡ginas  â”‚  â”‚ Ãºltimas 3m   â”‚
+               â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+
+  JAN/FEV/MAR:  â†’ MantÃ©m histÃ³rico (90+ dias)
+  ABRIL (dia 1): â†’ APaga tudo antes de 2026-01-01 (job automÃ¡tico)
+
+DASHBOARD USA:
+  â””â”€ PÃ¡ginas diÃ¡rias (tabela agregada por dia)
+  â””â”€ Suprimentos atual (1 linha por impressora+insumo)
+
+================================================================================
+7. RESUMO QUICK-START
+================================================================================
+
+RESTAURAR BANCO:
+  1. Supabase SQL Editor > Rodar schema_unico_completo_datado.sql
+  2. Aplicar reparo: GRANT ALL ... (se precisar)
+
+IMPORTAR IMPRESSORAS:
+  1. Site > InventÃ¡rio > ImportaÃ§Ãµes > Upload XLSX
+  2. Revisar mapeamento de colunas
+  3. Executar importaÃ§Ã£o
+  4. Clicar "Sincronizar Operacionais"
+
+RODARLOR COLETOR:
+  1. Verificar .env (SUPABASE_KEY = service_role)
+  2. cd coletor-snmp/scripts
+  3. python run_collector_loop.py --interval 150 --log-level INFO
+  4. Ver logs (deve sincronizar impressoras + comeÃ§ar coleta)
+
+VALIDAR COLETA:
+  1. Dashboard > Impressoras Operacionais (deve mostrar status)
+  2. Dashboard > AnalÃ­tico (sÃ³ mostra apÃ³s coleta)
+  3. SQL: SELECT COUNT(*) FROM telemetria_impressoras;
+
+================================================================================
+                                    FIM
+================================================================================
+

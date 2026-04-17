@@ -1,0 +1,31 @@
+﻿# Root Python env
+.venv/
+
+# Editor/OS
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Environment and secrets
+**/.env
+**/.env.*
+!**/.env.example
+
+# Build/cache artifacts
+**/__pycache__/
+**/*.pyc
+**/.pytest_cache/
+**/.next/
+**/node_modules/
+**/dist/
+**/out/
+**/tsconfig.tsbuildinfo
+
+# Local logs and runtime data
+**/*.log
+coletor-snmp/dados_cache.json
+coletor-snmp/data/collector_pending.jsonl
+coletor-snmp/data/collector_pending_invalid.jsonl
+
+# Local archives
+*.zip

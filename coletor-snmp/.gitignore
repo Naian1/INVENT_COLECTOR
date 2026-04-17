@@ -1,0 +1,15 @@
+﻿__pycache__/
+**/__pycache__/
+*.pyc
+
+logs/*.log
+dados_cache.json
+
+# Runtime queues and snapshots
+data/collector_pending.jsonl
+data/collector_pending_invalid.jsonl
+data/history/
+
+# Local environment
+.env
+
