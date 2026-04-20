@@ -8,6 +8,7 @@
 
 ## Entidades centrais
 
+- piso
 - empresa
 - tipo_equipamento
 - equipamento
@@ -24,6 +25,7 @@
 
 ## Relacoes principais
 
+- setor -> piso
 - equipamento -> empresa
 - equipamento -> tipo_equipamento
 - inventario -> equipamento
@@ -51,10 +53,14 @@
 - DEVOLUCAO
 
 3. Estrutura de setor (hospital)
-- `setor.nm_piso`: nivel macro (Terreo, 1o Andar, Anexo, etc.).
+- `piso`: entidade propria para andares/blocos (`cd_piso`, `nm_piso`, `ds_piso`).
+- `setor.cd_piso`: vinculacao obrigatoria do setor a um piso.
 - `setor.nm_setor`: unidade funcional (SAME, UTI, Recepcao, etc.).
 - `setor.nm_localizacao`: detalhamento opcional (sala/corredor/local).
-- Unicidade composta: (`nm_piso`, `nm_setor`, `nm_localizacao`).
+- Unicidade composta em setor: (`cd_piso`, `nm_setor`, `nm_localizacao`).
+- Modelo alvo: manter `nm_piso` apenas em `piso` (evitar redundancia em `setor`).
+- Exibicao padronizada: usar `public.vw_setor` para retorno de setor com `nm_piso` via join.
+- `setor.nm_piso` foi removida para evitar redundancia e risco de divergencia de dados.
 
 4. Matrix por competencia
 - Competencia no formato MM/AAAA.

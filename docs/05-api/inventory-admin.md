@@ -7,6 +7,8 @@ Endpoint:
 Acoes:
 
 - list
+- create_piso
+- update_piso
 - create_empresa
 - update_empresa
 - create_tipo
@@ -85,7 +87,7 @@ Acoes:
 {
   "action": "create_setor",
   "payload": {
-    "nm_piso": "1o Andar",
+    "cd_piso": 2,
     "nm_setor": "SAME",
     "nm_localizacao": "Arquivo",
     "ds_setor": "Setor de arquivo e prontuarios"
@@ -95,9 +97,9 @@ Acoes:
 
 ### Regras
 
-- `nm_piso` e `nm_setor` sao obrigatorios.
+- `cd_piso` e `nm_setor` sao obrigatorios.
 - `nm_localizacao` e opcional.
-- A ordenacao de listagem considera `nm_piso`, depois `nm_setor`, depois `nm_localizacao`.
+- A ordenacao de listagem considera piso, depois setor, depois localizacao.
 
 ## Action: update_setor
 
@@ -108,7 +110,7 @@ Acoes:
   "action": "update_setor",
   "payload": {
     "cd_setor": 10,
-    "nm_piso": "1o Andar",
+    "cd_piso": 2,
     "nm_setor": "SAME",
     "nm_localizacao": "Arquivo",
     "ds_setor": "Setor atualizado"
@@ -118,4 +120,33 @@ Acoes:
 
 ### Errors comuns
 
-- 400: `cd_setor, nm_piso e nm_setor sao obrigatorios`
+- 400: `cd_setor, cd_piso e nm_setor sao obrigatorios`
+
+## Action: create_piso
+
+### Request
+
+```json
+{
+  "action": "create_piso",
+  "payload": {
+    "nm_piso": "1o Andar",
+    "ds_piso": "Bloco principal"
+  }
+}
+```
+
+## Action: update_piso
+
+### Request
+
+```json
+{
+  "action": "update_piso",
+  "payload": {
+    "cd_piso": 2,
+    "nm_piso": "1o Andar",
+    "ds_piso": "Bloco principal - ala A"
+  }
+}
+```

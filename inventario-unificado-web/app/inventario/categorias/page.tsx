@@ -22,8 +22,16 @@ type TipoEquipamento = {
   ie_situacao: 'A' | 'I';
 };
 
+type Piso = {
+  cd_piso: number;
+  nm_piso: string;
+  ds_piso?: string | null;
+  ie_situacao: 'A' | 'I';
+};
+
 type Setor = {
   cd_setor: number;
+  cd_piso: number;
   nm_piso?: string | null;
   nm_setor: string;
   nm_localizacao?: string | null;
@@ -64,15 +72,27 @@ function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_locali
   return [piso, nomeSetor, localizacao].filter(Boolean).join(' > ');
 }
 
+function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
+  const nome = (piso.nm_piso || '').trim();
+  const descricao = (piso.ds_piso || '').trim();
+  return descricao ? `${nome} (${descricao})` : nome;
+}
+
 export default function GerenciarCategoriasPage() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
 
   const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [pisos, setPisos] = useState<Piso[]>([]);
   const [tipos, setTipos] = useState<TipoEquipamento[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
   const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
+
+  const [novoPiso, setNovoPiso] = useState({
+    nm_piso: '',
+    ds_piso: '',
+  });
 
   const [novaEmpresa, setNovaEmpresa] = useState({
     cd_cgc: '',
@@ -88,7 +108,7 @@ export default function GerenciarCategoriasPage() {
   });
 
   const [novoSetor, setNovoSetor] = useState({
-    nm_piso: '',
+    cd_piso: '',
     nm_setor: '',
     nm_localizacao: '',
     ds_setor: '',
@@ -105,6 +125,7 @@ export default function GerenciarCategoriasPage() {
   });
 
   const [empresaSelecionada, setEmpresaSelecionada] = useState('');
+  const [pisoSelecionado, setPisoSelecionado] = useState('');
   const [tipoSelecionado, setTipoSelecionado] = useState('');
   const [setorSelecionado, setSetorSelecionado] = useState('');
   const [equipamentoSelecionado, setEquipamentoSelecionado] = useState('');
@@ -119,13 +140,18 @@ export default function GerenciarCategoriasPage() {
     nr_telefone: '',
   });
 
+  const [edicaoPiso, setEdicaoPiso] = useState({
+    nm_piso: '',
+    ds_piso: '',
+  });
+
   const [edicaoTipo, setEdicaoTipo] = useState({
     nm_tipo_equipamento: '',
     ds_tipo_equipamento: '',
   });
 
   const [edicaoSetor, setEdicaoSetor] = useState({
-    nm_piso: '',
+    cd_piso: '',
     nm_setor: '',
     nm_localizacao: '',
     ds_setor: '',
@@ -146,12 +172,14 @@ export default function GerenciarCategoriasPage() {
     setErro(null);
     try {
       const response = await invokeInventoryAdmin<{
+        pisos: Piso[];
         empresas: Empresa[];
         tipos: TipoEquipamento[];
         setores: Setor[];
         equipamentos: Equipamento[];
       }>('list');
 
+      setPisos(Array.isArray(response.pisos) ? response.pisos : []);
       setEmpresas(Array.isArray(response.empresas) ? response.empresas : []);
       setTipos(Array.isArray(response.tipos) ? response.tipos : []);
       setSetores(Array.isArray(response.setores) ? response.setores : []);
@@ -183,6 +211,18 @@ export default function GerenciarCategoriasPage() {
   }, [empresaSelecionada, empresas]);
 
   useEffect(() => {
+    if (!pisoSelecionado) return;
+    const id = Number(pisoSelecionado);
+    const atual = pisos.find((item) => item.cd_piso === id);
+    if (!atual) return;
+
+    setEdicaoPiso({
+      nm_piso: atual.nm_piso || '',
+      ds_piso: atual.ds_piso || '',
+    });
+  }, [pisoSelecionado, pisos]);
+
+  useEffect(() => {
     if (!tipoSelecionado) return;
     const id = Number(tipoSelecionado);
     const atual = tipos.find((item) => item.cd_tipo_equipamento === id);
@@ -201,7 +241,7 @@ export default function GerenciarCategoriasPage() {
     if (!atual) return;
 
     setEdicaoSetor({
-      nm_piso: atual.nm_piso || '',
+      cd_piso: atual.cd_piso ? String(atual.cd_piso) : '',
       nm_setor: atual.nm_setor || '',
       nm_localizacao: atual.nm_localizacao || '',
       ds_setor: atual.ds_setor || '',
@@ -274,9 +314,32 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  async function criarPiso() {
+    if (!novoPiso.nm_piso.trim()) {
+      setErro('Preencha o nome do piso.');
+      return;
+    }
+
+    setErro(null);
+    setOk(null);
+    try {
+      await invokeInventoryAdmin('create_piso', {
+        nm_piso: novoPiso.nm_piso.trim(),
+        ds_piso: novoPiso.ds_piso.trim() || null,
+      });
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : 'Erro ao criar piso.');
+      return;
+    }
+
+    setOk('Piso criado com sucesso.');
+    setNovoPiso({ nm_piso: '', ds_piso: '' });
+    await carregarTudo();
+  }
+
   async function criarSetor() {
-    if (!novoSetor.nm_piso || !novoSetor.nm_setor) {
-      setErro('Preencha piso/andar e nome do setor.');
+    if (!novoSetor.cd_piso || !novoSetor.nm_setor) {
+      setErro('Preencha piso e nome do setor.');
       return;
     }
 
@@ -284,7 +347,7 @@ export default function GerenciarCategoriasPage() {
     setOk(null);
     try {
       await invokeInventoryAdmin('create_setor', {
-        nm_piso: novoSetor.nm_piso,
+        cd_piso: Number(novoSetor.cd_piso),
         nm_setor: novoSetor.nm_setor,
         nm_localizacao: novoSetor.nm_localizacao || null,
         ds_setor: novoSetor.ds_setor || null,
@@ -295,7 +358,7 @@ export default function GerenciarCategoriasPage() {
     }
 
     setOk('Setor criado com sucesso.');
-    setNovoSetor({ nm_piso: '', nm_setor: '', nm_localizacao: '', ds_setor: '' });
+    setNovoSetor({ cd_piso: '', nm_setor: '', nm_localizacao: '', ds_setor: '' });
     await carregarTudo();
   }
 
@@ -394,6 +457,32 @@ export default function GerenciarCategoriasPage() {
     }
   }
 
+  async function atualizarPiso() {
+    if (!pisoSelecionado) {
+      setErro('Selecione um piso para editar.');
+      return;
+    }
+
+    if (!edicaoPiso.nm_piso.trim()) {
+      setErro('Nome do piso e obrigatorio.');
+      return;
+    }
+
+    setErro(null);
+    setOk(null);
+    try {
+      await invokeInventoryAdmin('update_piso', {
+        cd_piso: Number(pisoSelecionado),
+        nm_piso: edicaoPiso.nm_piso.trim(),
+        ds_piso: edicaoPiso.ds_piso.trim() || null,
+      });
+      setOk('Piso atualizado com sucesso.');
+      await carregarTudo();
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : 'Erro ao atualizar piso.');
+    }
+  }
+
   async function atualizarSetor() {
     if (!setorSelecionado) {
       setErro('Selecione um setor para editar.');
@@ -405,8 +494,8 @@ export default function GerenciarCategoriasPage() {
       return;
     }
 
-    if (!edicaoSetor.nm_piso.trim()) {
-      setErro('Piso/andar e obrigatorio.');
+    if (!edicaoSetor.cd_piso) {
+      setErro('Piso e obrigatorio.');
       return;
     }
 
@@ -415,7 +504,7 @@ export default function GerenciarCategoriasPage() {
     try {
       await invokeInventoryAdmin('update_setor', {
         cd_setor: Number(setorSelecionado),
-        nm_piso: edicaoSetor.nm_piso.trim(),
+        cd_piso: Number(edicaoSetor.cd_piso),
         nm_setor: edicaoSetor.nm_setor.trim(),
         nm_localizacao: edicaoSetor.nm_localizacao.trim() || null,
         ds_setor: edicaoSetor.ds_setor.trim() || null,
@@ -464,8 +553,8 @@ export default function GerenciarCategoriasPage() {
   }
 
   const resumo = useMemo(
-    () => ({ empresas: empresas.length, tipos: tipos.length, setores: setores.length, equipamentos: equipamentos.length }),
-    [empresas.length, tipos.length, setores.length, equipamentos.length]
+    () => ({ pisos: pisos.length, empresas: empresas.length, tipos: tipos.length, setores: setores.length, equipamentos: equipamentos.length }),
+    [pisos.length, empresas.length, tipos.length, setores.length, equipamentos.length]
   );
 
   return (
@@ -474,6 +563,7 @@ export default function GerenciarCategoriasPage() {
         <StatusFeedback loading={loading} error={erro} success={ok} />
 
         <div className="ui-grid-4">
+          <div className="ui-card">Pisos: <strong>{resumo.pisos}</strong></div>
           <div className="ui-card">Empresas: <strong>{resumo.empresas}</strong></div>
           <div className="ui-card">Tipos: <strong>{resumo.tipos}</strong></div>
           <div className="ui-card">Setores: <strong>{resumo.setores}</strong></div>
@@ -487,7 +577,7 @@ export default function GerenciarCategoriasPage() {
 
         <div className="ui-grid-3">
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
-            <strong>Setor:</strong> estrutura por piso/andar + setor + localizacao (ex.: 1o Andar &gt; SAME &gt; Arquivo).
+            <strong>Piso + Setor:</strong> cada setor/localizacao pertence a um piso cadastrado (ex.: 1o Andar &gt; SAME &gt; Sala de Equipamentos).
           </div>
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
             <strong>Tipo:</strong> classe do equipamento (CPU, MONITOR, NOBREAK, TABLET, IMPRESSORA).
@@ -517,7 +607,7 @@ export default function GerenciarCategoriasPage() {
             <DialogHeader>
               <DialogTitle>Novo Cadastro</DialogTitle>
               <DialogDescription>
-                Cadastre empresa, tipo, setor (com piso/localizacao) e modelos de equipamento.
+                Cadastre piso, empresa, tipo, setor (vinculado ao piso) e modelos de equipamento.
               </DialogDescription>
             </DialogHeader>
             <div style={{ padding: 18, display: 'grid', gap: 12 }}>
@@ -540,8 +630,18 @@ export default function GerenciarCategoriasPage() {
                 </div>
 
                 <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
+                  <h2 style={{ margin: 0 }}>Novo Piso</h2>
+                  <input className="ui-field" placeholder="Nome do piso (ex.: 1o Andar, Terreo, Anexo A)" value={novoPiso.nm_piso} onChange={(e) => setNovoPiso(v => ({ ...v, nm_piso: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descricao do piso (opcional)" value={novoPiso.ds_piso} onChange={(e) => setNovoPiso(v => ({ ...v, ds_piso: e.target.value }))} />
+                  <button className="ui-btn ui-btn-primary" onClick={criarPiso}>Salvar Piso</button>
+                </div>
+
+                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
                   <h2 style={{ margin: 0 }}>Novo Setor</h2>
-                  <input className="ui-field" placeholder="Piso/Andar (ex.: Terreo, 1o Andar, Anexo)" value={novoSetor.nm_piso} onChange={(e) => setNovoSetor(v => ({ ...v, nm_piso: e.target.value }))} />
+                  <select className="ui-select" value={novoSetor.cd_piso} onChange={(e) => setNovoSetor(v => ({ ...v, cd_piso: e.target.value }))}>
+                    <option value="">Selecione piso</option>
+                    {pisos.map((p) => <option key={p.cd_piso} value={p.cd_piso}>{formatPisoLabel(p)}</option>)}
+                  </select>
                   <input className="ui-field" placeholder="Nome do setor" value={novoSetor.nm_setor} onChange={(e) => setNovoSetor(v => ({ ...v, nm_setor: e.target.value }))} />
                   <input className="ui-field" placeholder="Localizacao (opcional)" value={novoSetor.nm_localizacao} onChange={(e) => setNovoSetor(v => ({ ...v, nm_localizacao: e.target.value }))} />
                   <input className="ui-field" placeholder="Descricao" value={novoSetor.ds_setor} onChange={(e) => setNovoSetor(v => ({ ...v, ds_setor: e.target.value }))} />
@@ -618,6 +718,19 @@ export default function GerenciarCategoriasPage() {
                 </div>
 
                 <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
+                  <h3 style={{ margin: 0 }}>Editar Piso</h3>
+                  <select className="ui-select" value={pisoSelecionado} onChange={(e) => setPisoSelecionado(e.target.value)}>
+                    <option value="">Selecione piso</option>
+                    {pisos.map((item) => (
+                      <option key={item.cd_piso} value={item.cd_piso}>{formatPisoLabel(item)}</option>
+                    ))}
+                  </select>
+                  <input className="ui-field" placeholder="Nome do piso" value={edicaoPiso.nm_piso} onChange={(e) => setEdicaoPiso((v) => ({ ...v, nm_piso: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descricao (opcional)" value={edicaoPiso.ds_piso} onChange={(e) => setEdicaoPiso((v) => ({ ...v, ds_piso: e.target.value }))} />
+                  <button className="ui-btn ui-btn-primary" onClick={atualizarPiso}>Salvar Piso</button>
+                </div>
+
+                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
                   <h3 style={{ margin: 0 }}>Editar Setor</h3>
                   <select className="ui-select" value={setorSelecionado} onChange={(e) => setSetorSelecionado(e.target.value)}>
                     <option value="">Selecione setor</option>
@@ -625,7 +738,12 @@ export default function GerenciarCategoriasPage() {
                       <option key={item.cd_setor} value={item.cd_setor}>{formatSetorLabel(item)}</option>
                     ))}
                   </select>
-                  <input className="ui-field" placeholder="Piso/Andar" value={edicaoSetor.nm_piso} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_piso: e.target.value }))} />
+                  <select className="ui-select" value={edicaoSetor.cd_piso} onChange={(e) => setEdicaoSetor((v) => ({ ...v, cd_piso: e.target.value }))}>
+                    <option value="">Selecione piso</option>
+                    {pisos.map((item) => (
+                      <option key={item.cd_piso} value={item.cd_piso}>{formatPisoLabel(item)}</option>
+                    ))}
+                  </select>
                   <input className="ui-field" placeholder="Nome do setor" value={edicaoSetor.nm_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_setor: e.target.value }))} />
                   <input className="ui-field" placeholder="Localizacao (opcional)" value={edicaoSetor.nm_localizacao} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_localizacao: e.target.value }))} />
                   <input className="ui-field" placeholder="Descricao" value={edicaoSetor.ds_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, ds_setor: e.target.value }))} />

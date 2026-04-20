@@ -2,6 +2,7 @@ import { z } from 'zod';
 
 export const SetorSchema = z.object({
   cd_setor: z.number().int().positive(),
+  cd_piso: z.number().int().positive(),
   nm_piso: z.string().optional().nullable(),
   nm_setor: z.string().min(1),
   nm_localizacao: z.string().optional().nullable(),

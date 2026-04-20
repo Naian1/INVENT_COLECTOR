@@ -15,6 +15,7 @@ import { Inventario } from '@/types/inventario';
 import { Setor } from '@/types/setor';
 import { Equipamento } from '@/types/equipamento';
 import { TipoEquipamento } from '@/types/tipoEquipamento';
+import { Piso } from '@/types/piso';
 
 interface InventarioComDetalhes extends Inventario {
   equipamento?: Equipamento;
@@ -121,6 +122,8 @@ const INITIAL_SUBSTITUICAO_FORM: SubstituicaoFormState = {
   observacao: '',
 };
 
+const SEM_LOCALIZACAO_VALUE = '__SEM_LOCALIZACAO__';
+
 function normalizarTexto(texto: string): string {
   return texto
     .normalize('NFD')
@@ -205,6 +208,7 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
 
 export default function InventarioPage() {
   const [items, setItems] = useState<InventarioComDetalhes[]>([]);
+  const [pisos, setPisos] = useState<Piso[]>([]);
   const [setores, setSetores] = useState<Setor[]>([]);
   const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
   const [tiposEquipamento, setTiposEquipamento] = useState<TipoEquipamento[]>([]);
@@ -232,7 +236,9 @@ export default function InventarioPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
+  const [selectedPiso, setSelectedPiso] = useState<number | null>(null);
   const [selectedSetor, setSelectedSetor] = useState<number | null>(null);
+  const [selectedLocalizacao, setSelectedLocalizacao] = useState<string>('');
   const [selectedTipo, setSelectedTipo] = useState<number | null>(null);
   const [selectedRelacao, setSelectedRelacao] = useState<RelacaoFiltro>('todos');
   const [selectedStatus, setSelectedStatus] = useState<StatusFiltro>('todos');
@@ -259,6 +265,7 @@ export default function InventarioPage() {
     try {
       const response = await invokeInventoryCore<{
         inventarios: Inventario[];
+        pisos: Piso[];
         setores: Setor[];
         equipamentos: Equipamento[];
         tipos: TipoEquipamento[];
@@ -266,6 +273,7 @@ export default function InventarioPage() {
       }>('list_context');
 
       const inventarios = Array.isArray(response.inventarios) ? response.inventarios : [];
+      const pisosList = Array.isArray(response.pisos) ? response.pisos : [];
       const sectorList = Array.isArray(response.setores) ? response.setores : [];
       const equipmentList = Array.isArray(response.equipamentos) ? response.equipamentos : [];
       const tipoList = Array.isArray(response.tipos) ? response.tipos : [];
@@ -318,6 +326,7 @@ export default function InventarioPage() {
           : null,
       }));
 
+      setPisos(pisosList || []);
       setTiposEquipamento(tipoList || []);
       setEquipamentos(equipmentList || []);
       setSetores(sectorList || []);
@@ -365,11 +374,62 @@ export default function InventarioPage() {
     return grouped;
   }, [items]);
 
+  const setoresFiltradosPorPiso = useMemo(() => {
+    if (selectedPiso === null) return setores;
+    return setores.filter((setor) => setor.cd_piso === selectedPiso);
+  }, [setores, selectedPiso]);
+
+  const localizacoesFiltradas = useMemo(() => {
+    const base = selectedSetor !== null
+      ? setores.filter((setor) => setor.cd_setor === selectedSetor)
+      : setoresFiltradosPorPiso;
+
+    const values = Array.from(
+      new Set(
+        base.map((setor) => (setor.nm_localizacao || '').trim()),
+      ),
+    );
+
+    return values
+      .filter((value) => value.length > 0)
+      .sort((a, b) => a.localeCompare(b));
+  }, [setores, setoresFiltradosPorPiso, selectedSetor]);
+
+  useEffect(() => {
+    if (selectedSetor === null) return;
+    const stillExists = setoresFiltradosPorPiso.some((setor) => setor.cd_setor === selectedSetor);
+    if (!stillExists) {
+      setSelectedSetor(null);
+    }
+  }, [setoresFiltradosPorPiso, selectedSetor]);
+
+  useEffect(() => {
+    if (!selectedLocalizacao) return;
+    if (selectedLocalizacao === SEM_LOCALIZACAO_VALUE) {
+      return;
+    }
+
+    const stillExists = localizacoesFiltradas.some((local) => local === selectedLocalizacao);
+    if (!stillExists) {
+      setSelectedLocalizacao('');
+    }
+  }, [localizacoesFiltradas, selectedLocalizacao]);
+
   const paintedItems = useMemo(() => {
     const termoBusca = normalizarTexto(searchTerm.trim());
 
     return items.filter((item) => {
+      if (selectedPiso !== null && item.setor?.cd_piso !== selectedPiso) return false;
       if (selectedSetor !== null && item.cd_setor !== selectedSetor) return false;
+
+      if (selectedLocalizacao) {
+        const localizacao = (item.setor?.nm_localizacao || '').trim();
+        if (selectedLocalizacao === SEM_LOCALIZACAO_VALUE) {
+          if (localizacao) return false;
+        } else if (normalizarTexto(localizacao) !== normalizarTexto(selectedLocalizacao)) {
+          return false;
+        }
+      }
 
       if (
         selectedTipo !== null
@@ -402,7 +462,7 @@ export default function InventarioPage() {
 
       return conteudoBusca.includes(termoBusca);
     });
-  }, [items, searchTerm, selectedRelacao, selectedSetor, selectedStatus, selectedTipo]);
+  }, [items, searchTerm, selectedPiso, selectedRelacao, selectedSetor, selectedLocalizacao, selectedStatus, selectedTipo]);
 
   const itensRaizDaVisao = useMemo(
     () => paintedItems.filter((item) => !item.nr_invent_sup && (selectedSetor === null || item.cd_setor === selectedSetor)),
@@ -1832,7 +1892,7 @@ export default function InventarioPage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-5">
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-7">
             <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium text-slate-700">Buscar</span>
               <input
@@ -1844,16 +1904,56 @@ export default function InventarioPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Setor</span>
+              <span className="font-medium text-slate-700">Piso</span>
               <select
-                value={selectedSetor || ''}
-                onChange={(event) => setSelectedSetor(event.target.value ? Number(event.target.value) : null)}
+                value={selectedPiso || ''}
+                onChange={(event) => {
+                  setSelectedPiso(event.target.value ? Number(event.target.value) : null);
+                  setSelectedSetor(null);
+                  setSelectedLocalizacao('');
+                }}
                 className="rounded-md border border-slate-300 px-3 py-2"
               >
                 <option value="">Todos</option>
-                {setores.map((setor) => (
+                {pisos.map((piso) => (
+                  <option key={piso.cd_piso} value={piso.cd_piso}>
+                    {piso.nm_piso}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-slate-700">Setor</span>
+              <select
+                value={selectedSetor || ''}
+                onChange={(event) => {
+                  setSelectedSetor(event.target.value ? Number(event.target.value) : null);
+                  setSelectedLocalizacao('');
+                }}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              >
+                <option value="">Todos</option>
+                {setoresFiltradosPorPiso.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
                     {formatSetorLabel(setor)}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-slate-700">Localizacao</span>
+              <select
+                value={selectedLocalizacao}
+                onChange={(event) => setSelectedLocalizacao(event.target.value)}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              >
+                <option value="">Todas</option>
+                <option value={SEM_LOCALIZACAO_VALUE}>Sem localizacao</option>
+                {localizacoesFiltradas.map((localizacao) => (
+                  <option key={localizacao} value={localizacao}>
+                    {localizacao}
                   </option>
                 ))}
               </select>

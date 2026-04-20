@@ -372,10 +372,60 @@ function normalizarTexto(value: unknown): string {
     .trim();
 }
 
+function formatarLabelSetor(setor: any): string {
+  return [
+    String(setor?.nm_piso || "").trim(),
+    String(setor?.nm_setor || "").trim(),
+    String(setor?.nm_localizacao || "").trim(),
+  ]
+    .filter(Boolean)
+    .join(" > ");
+}
+
+function enrichSetoresComPiso(setores: any[]): any[] {
+  return [...(setores || [])]
+    .sort((a, b) => formatarLabelSetor(a).localeCompare(formatarLabelSetor(b)));
+}
+
 function palavraChaveSetorPorStatus(tpStatus: TpStatus): string | null {
   if (tpStatus === "MANUTENCAO") return "manutencao";
   if (tpStatus === "DEVOLUCAO") return "devolucao";
   return null;
+}
+
+async function resolverCdPisoNaoInformado(supabase: ReturnType<typeof getAdminClient>): Promise<number> {
+  const { data: existente, error: buscaError } = await supabase
+    .from("piso")
+    .select("cd_piso")
+    .eq("ie_situacao", "A")
+    .ilike("nm_piso", "NAO INFORMADO")
+    .maybeSingle();
+
+  if (buscaError) {
+    throw new Error(`Erro ao buscar piso padrao: ${buscaError.message}`);
+  }
+
+  if (existente?.cd_piso) {
+    return Number(existente.cd_piso);
+  }
+
+  const { data: criado, error: createError } = await supabase
+    .from("piso")
+    .insert([
+      {
+        nm_piso: "NAO INFORMADO",
+        ds_piso: "Piso padrao para setores automaticos.",
+        ie_situacao: "A",
+      },
+    ])
+    .select("cd_piso")
+    .single();
+
+  if (createError || !criado?.cd_piso) {
+    throw new Error(`Erro ao criar piso padrao: ${createError?.message || "sem cd_piso"}`);
+  }
+
+  return Number(criado.cd_piso);
 }
 
 async function resolverSetorPorPalavraChave(params: {
@@ -406,7 +456,9 @@ async function resolverSetorPorPalavraChave(params: {
     .from("setor")
     .insert([
       {
+        cd_piso: await resolverCdPisoNaoInformado(params.supabase),
         nm_setor: params.nomeSetor,
+        nm_localizacao: null,
         ds_setor: params.descricaoSetor,
         ie_situacao: "A",
       },
@@ -1070,15 +1122,15 @@ Deno.serve(async (req) => {
     if (action === "list_context") {
       const hasEmpresa = await tableExists(supabase, "empresa");
 
-      const [inventarios, setRes, eqRes, tipRes, empRes] = await Promise.all([
+      const [inventarios, pisRes, setRes, eqRes, tipRes, empRes] = await Promise.all([
         fetchAllPaginated(async (from, to) =>
           await supabase.from("inventario").select("*").order("nr_patrimonio").range(from, to)
         ),
+        supabase.from("piso").select("*").eq("ie_situacao", "A").order("nm_piso"),
         supabase
-          .from("setor")
+          .from("vw_setor")
           .select("*")
           .eq("ie_situacao", "A")
-          .order("nm_piso")
           .order("nm_setor")
           .order("nm_localizacao"),
         supabase.from("equipamento").select("*").eq("ie_situacao", "A").order("nm_modelo"),
@@ -1088,16 +1140,20 @@ Deno.serve(async (req) => {
           : Promise.resolve({ data: [], error: null }),
       ]);
 
+      if (pisRes.error) throw new Error(`piso: ${pisRes.error.message}`);
       if (setRes.error) throw new Error(`setor: ${setRes.error.message}`);
       if (eqRes.error) throw new Error(`equipamento: ${eqRes.error.message}`);
       if (tipRes.error) throw new Error(`tipo_equipamento: ${tipRes.error.message}`);
       if (empRes.error) throw new Error(`empresa: ${empRes.error.message}`);
 
+      const setoresComPiso = enrichSetoresComPiso(setRes.data || []);
+
       return jsonResponse({
         ok: true,
         data: {
           inventarios: inventarios || [],
-          setores: setRes.data || [],
+          pisos: pisRes.data || [],
+          setores: setoresComPiso,
           equipamentos: eqRes.data || [],
           tipos: tipRes.data || [],
           empresas: empRes.data || [],
@@ -1154,7 +1210,7 @@ Deno.serve(async (req) => {
 
       const [setoresRes, equipamentosRes] = await Promise.all([
         setorIds.length
-          ? supabase.from("setor").select("cd_setor,nm_setor,ds_setor").in("cd_setor", setorIds)
+          ? supabase.from("vw_setor").select("cd_setor,cd_piso,nm_piso,nm_setor,nm_localizacao,ds_setor").in("cd_setor", setorIds)
           : Promise.resolve({ data: [], error: null }),
         equipamentoIds.length
           ? supabase.from("equipamento").select("cd_equipamento,cd_cgc,nm_modelo,nm_equipamento").in("cd_equipamento", equipamentoIds)
@@ -1222,7 +1278,7 @@ Deno.serve(async (req) => {
           nr_patrimonio: limparTexto(item.nr_patrimonio),
           nr_serie: limparTexto(item.nr_serie),
           nr_ip: limparTexto(item.nr_ip),
-          setor_atual: limparTexto(setor?.nm_setor),
+          setor_atual: limparTexto(formatarLabelSetor(setor)),
           setor_descricao: limparTexto(setor?.ds_setor),
           cd_setor: Number(item.cd_setor),
           equipamento_modelo: limparTexto(equipamento?.nm_modelo || equipamento?.nm_equipamento),

@@ -116,8 +116,9 @@ Acoes:
 
 ### Observacoes
 
-- Retorna inventario, setores, equipamentos, tipos e empresas ativas.
-- Setores sao ordenados por `nm_piso`, `nm_setor` e `nm_localizacao`.
+- Retorna inventario, pisos, setores, equipamentos, tipos e empresas ativas.
+- Setor retorna `cd_piso` para vinculo com piso.
+- Setores sao ordenados por piso, setor e localizacao.
 
 ## Action: move_inventario
 

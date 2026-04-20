@@ -3,6 +3,8 @@ import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 
 type Action =
   | "list"
+  | "create_piso"
+  | "update_piso"
   | "create_empresa"
   | "update_empresa"
   | "create_tipo"
@@ -29,6 +31,73 @@ function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
 }
 
+function isMissingPisoTable(message: string): boolean {
+  return /relation\s+"?piso"?\s+does not exist/i.test(message);
+}
+
+async function resolveCdPiso(
+  supabase: ReturnType<typeof getAdminClient>,
+  payload: Record<string, unknown>,
+): Promise<number | null> {
+  const cd_piso_raw = payload?.cd_piso;
+  const cd_piso = cd_piso_raw !== null && cd_piso_raw !== undefined && String(cd_piso_raw).trim() !== ""
+    ? Number(cd_piso_raw)
+    : null;
+
+  if (Number.isFinite(cd_piso) && Number(cd_piso) > 0) {
+    return Number(cd_piso);
+  }
+
+  const nm_piso = String(payload?.nm_piso || "").trim();
+  if (!nm_piso) {
+    return null;
+  }
+
+  const { data: existente, error: buscaError } = await supabase
+    .from("piso")
+    .select("cd_piso")
+    .eq("ie_situacao", "A")
+    .ilike("nm_piso", nm_piso)
+    .maybeSingle();
+
+  if (buscaError && !isMissingPisoTable(buscaError.message)) {
+    throw new Error(`piso: ${buscaError.message}`);
+  }
+
+  if (existente?.cd_piso) {
+    return Number(existente.cd_piso);
+  }
+
+  const { data: criado, error: createError } = await supabase
+    .from("piso")
+    .insert([
+      {
+        nm_piso,
+        ds_piso: payload?.ds_piso ? String(payload.ds_piso).trim() : null,
+        ie_situacao: "A",
+      },
+    ])
+    .select("cd_piso")
+    .single();
+
+  if (createError) {
+    throw new Error(`piso: ${createError.message}`);
+  }
+
+  return criado?.cd_piso ? Number(criado.cd_piso) : null;
+}
+
+function enrichSetoresComPiso(setores: any[]): any[] {
+  return [...(setores || [])]
+    .sort((a, b) => {
+      const pisoA = String(a.nm_piso || "").localeCompare(String(b.nm_piso || ""));
+      if (pisoA !== 0) return pisoA;
+      const setorA = String(a.nm_setor || "").localeCompare(String(b.nm_setor || ""));
+      if (setorA !== 0) return setorA;
+      return String(a.nm_localizacao || "").localeCompare(String(b.nm_localizacao || ""));
+    });
+}
+
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") {
     return new Response("ok", { headers: corsHeaders });
@@ -50,33 +119,82 @@ Deno.serve(async (req) => {
     const supabase = getAdminClient();
 
     if (action === "list") {
-      const [empRes, tipRes, setRes, eqRes] = await Promise.all([
+      const [pisRes, empRes, tipRes, setRes, eqRes] = await Promise.all([
+        supabase.from("piso").select("*").eq("ie_situacao", "A").order("nm_piso"),
         supabase.from("empresa").select("*").eq("ie_situacao", "A").order("nm_empresa"),
         supabase.from("tipo_equipamento").select("*").eq("ie_situacao", "A").order("nm_tipo_equipamento"),
         supabase
-          .from("setor")
+          .from("vw_setor")
           .select("*")
           .eq("ie_situacao", "A")
-          .order("nm_piso")
           .order("nm_setor")
           .order("nm_localizacao"),
         supabase.from("equipamento").select("*").eq("ie_situacao", "A").order("nm_modelo"),
       ]);
 
+      if (pisRes.error) throw new Error(`piso: ${pisRes.error.message}`);
       if (empRes.error) throw new Error(`empresa: ${empRes.error.message}`);
       if (tipRes.error) throw new Error(`tipo_equipamento: ${tipRes.error.message}`);
       if (setRes.error) throw new Error(`setor: ${setRes.error.message}`);
       if (eqRes.error) throw new Error(`equipamento: ${eqRes.error.message}`);
 
+      const setoresComPiso = enrichSetoresComPiso(setRes.data || []);
+
       return jsonResponse({
         ok: true,
         data: {
+          pisos: pisRes.data || [],
           empresas: empRes.data || [],
           tipos: tipRes.data || [],
-          setores: setRes.data || [],
+          setores: setoresComPiso,
           equipamentos: eqRes.data || [],
         },
       });
+    }
+
+    if (action === "create_piso") {
+      const nm_piso = String(payload?.nm_piso || "").trim();
+      if (!nm_piso) {
+        return badRequest("nm_piso e obrigatorio");
+      }
+
+      const { data, error } = await supabase
+        .from("piso")
+        .insert([
+          {
+            nm_piso,
+            ds_piso: payload?.ds_piso ? String(payload.ds_piso).trim() : null,
+            ie_situacao: "A",
+          },
+        ])
+        .select("*")
+        .single();
+
+      if (error) throw new Error(error.message);
+      return jsonResponse({ ok: true, data });
+    }
+
+    if (action === "update_piso") {
+      const cd_piso = Number(payload?.cd_piso);
+      const nm_piso = String(payload?.nm_piso || "").trim();
+
+      if (!Number.isFinite(cd_piso) || cd_piso <= 0 || !nm_piso) {
+        return badRequest("cd_piso e nm_piso sao obrigatorios");
+      }
+
+      const { data, error } = await supabase
+        .from("piso")
+        .update({
+          nm_piso,
+          ds_piso: payload?.ds_piso ? String(payload.ds_piso).trim() : null,
+        })
+        .eq("cd_piso", cd_piso)
+        .eq("ie_situacao", "A")
+        .select("*")
+        .single();
+
+      if (error) throw new Error(error.message);
+      return jsonResponse({ ok: true, data });
     }
 
     if (action === "create_empresa") {
@@ -177,53 +295,69 @@ Deno.serve(async (req) => {
     }
 
     if (action === "create_setor") {
-      const nm_piso = String(payload?.nm_piso || "").trim();
+      const cd_piso = await resolveCdPiso(supabase, payload);
       const nm_setor = String(payload?.nm_setor || "").trim();
-      if (!nm_piso || !nm_setor) {
-        return badRequest("nm_piso e nm_setor sao obrigatorios");
+      if (!Number.isFinite(cd_piso) || Number(cd_piso) <= 0 || !nm_setor) {
+        return badRequest("cd_piso e nm_setor sao obrigatorios");
       }
 
-      const { data, error } = await supabase
+      const { data: setorCriado, error } = await supabase
         .from("setor")
         .insert([
           {
-            nm_piso,
+            cd_piso,
             nm_setor,
             nm_localizacao: payload?.nm_localizacao ? String(payload.nm_localizacao).trim() : null,
             ds_setor: payload?.ds_setor ? String(payload.ds_setor) : null,
             ie_situacao: "A",
           },
         ])
-        .select("*")
+        .select("cd_setor")
         .single();
 
       if (error) throw new Error(error.message);
+
+      const { data, error: viewError } = await supabase
+        .from("vw_setor")
+        .select("*")
+        .eq("cd_setor", Number(setorCriado?.cd_setor))
+        .single();
+
+      if (viewError) throw new Error(`vw_setor: ${viewError.message}`);
       return jsonResponse({ ok: true, data });
     }
 
     if (action === "update_setor") {
       const cd_setor = Number(payload?.cd_setor);
-      const nm_piso = String(payload?.nm_piso || "").trim();
+      const cd_piso = await resolveCdPiso(supabase, payload);
       const nm_setor = String(payload?.nm_setor || "").trim();
 
-      if (!Number.isFinite(cd_setor) || !nm_piso || !nm_setor) {
-        return badRequest("cd_setor, nm_piso e nm_setor sao obrigatorios");
+      if (!Number.isFinite(cd_setor) || !Number.isFinite(cd_piso) || Number(cd_piso) <= 0 || !nm_setor) {
+        return badRequest("cd_setor, cd_piso e nm_setor sao obrigatorios");
       }
 
-      const { data, error } = await supabase
+      const { data: setorAtualizado, error } = await supabase
         .from("setor")
         .update({
-          nm_piso,
+          cd_piso,
           nm_setor,
           nm_localizacao: payload?.nm_localizacao ? String(payload.nm_localizacao).trim() : null,
           ds_setor: payload?.ds_setor ? String(payload.ds_setor) : null,
         })
         .eq("cd_setor", cd_setor)
         .eq("ie_situacao", "A")
-        .select("*")
+        .select("cd_setor")
         .single();
 
       if (error) throw new Error(error.message);
+
+      const { data, error: viewError } = await supabase
+        .from("vw_setor")
+        .select("*")
+        .eq("cd_setor", Number(setorAtualizado?.cd_setor))
+        .single();
+
+      if (viewError) throw new Error(`vw_setor: ${viewError.message}`);
       return jsonResponse({ ok: true, data });
     }
 
