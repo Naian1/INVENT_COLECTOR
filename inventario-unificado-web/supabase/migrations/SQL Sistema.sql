@@ -1526,6 +1526,8 @@ EXECUTE FUNCTION public.fn_inventario_validar_hierarquia_status();
 CREATE TABLE IF NOT EXISTS public.inventario_consolidado_carga (
   nr_carga SERIAL PRIMARY KEY,
   nr_competencia VARCHAR(7) NOT NULL,
+  cd_cgc VARCHAR,
+  nm_empresa VARCHAR,
   nm_arquivo VARCHAR NOT NULL,
   nr_total_linhas INTEGER NOT NULL DEFAULT 0,
   dt_importacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -1534,8 +1536,25 @@ CREATE TABLE IF NOT EXISTS public.inventario_consolidado_carga (
     CHECK (nr_competencia ~ '^(0[1-9]|1[0-2])/[0-9]{4}$')
 );
 
-CREATE UNIQUE INDEX IF NOT EXISTS uq_inventario_consolidado_competencia
-  ON public.inventario_consolidado_carga(nr_competencia);
+CREATE UNIQUE INDEX IF NOT EXISTS uq_inventario_consolidado_competencia_empresa
+  ON public.inventario_consolidado_carga(nr_competencia, cd_cgc);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'fk_inventario_consolidado_carga_empresa'
+  ) THEN
+    ALTER TABLE public.inventario_consolidado_carga
+      ADD CONSTRAINT fk_inventario_consolidado_carga_empresa
+      FOREIGN KEY (cd_cgc)
+      REFERENCES public.empresa(cd_cgc)
+      ON UPDATE CASCADE
+      ON DELETE RESTRICT;
+  END IF;
+END;
+$$;
 
 CREATE TABLE IF NOT EXISTS public.inventario_consolidado_linha (
   nr_linha_consolidado SERIAL PRIMARY KEY,
@@ -1628,6 +1647,42 @@ ALTER TABLE public.inventario_consolidado_linha
   ADD COLUMN IF NOT EXISTS tp_status VARCHAR(15),
   ADD COLUMN IF NOT EXISTS dados_json JSONB DEFAULT '{}'::jsonb,
   ADD COLUMN IF NOT EXISTS dt_cadastro TIMESTAMP DEFAULT CURRENT_TIMESTAMP;
+
+ALTER TABLE public.inventario_consolidado_carga
+  ADD COLUMN IF NOT EXISTS cd_cgc VARCHAR,
+  ADD COLUMN IF NOT EXISTS nm_empresa VARCHAR;
+
+UPDATE public.inventario_consolidado_carga AS c
+SET nm_empresa = e.nm_empresa
+FROM public.empresa AS e
+WHERE c.cd_cgc IS NOT NULL
+  AND c.cd_cgc = e.cd_cgc
+  AND (c.nm_empresa IS NULL OR btrim(c.nm_empresa) = '');
+
+DROP INDEX IF EXISTS uq_inventario_consolidado_competencia;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_inventario_consolidado_competencia_empresa
+  ON public.inventario_consolidado_carga(nr_competencia, cd_cgc);
+
+CREATE INDEX IF NOT EXISTS idx_inventario_consolidado_carga_empresa_importacao
+  ON public.inventario_consolidado_carga(cd_cgc, dt_importacao DESC);
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'fk_inventario_consolidado_carga_empresa'
+  ) THEN
+    ALTER TABLE public.inventario_consolidado_carga
+      ADD CONSTRAINT fk_inventario_consolidado_carga_empresa
+      FOREIGN KEY (cd_cgc)
+      REFERENCES public.empresa(cd_cgc)
+      ON UPDATE CASCADE
+      ON DELETE RESTRICT;
+  END IF;
+END;
+$$;
 
 CREATE UNIQUE INDEX IF NOT EXISTS uq_inventario_consolidado_linha_carga_linha
   ON public.inventario_consolidado_linha(nr_carga, nr_linha);

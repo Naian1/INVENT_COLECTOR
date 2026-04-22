@@ -27,6 +27,8 @@ type MatrixLookupItem = {
   nm_cliente: string | null;
   nm_local: string | null;
   tp_status: string | null;
+  cd_cgc?: string | null;
+  nm_empresa?: string | null;
 };
 
 function getAdminClient() {
@@ -750,15 +752,32 @@ async function validarHierarquiaInventario(params: {
   }
 }
 
-async function matrixLookup(supabase: ReturnType<typeof getAdminClient>, patrimonio: string, competencia: string | null) {
-  let cargaSelecionada: { nr_carga: number; nr_competencia: string } | null = null;
+async function matrixLookup(
+  supabase: ReturnType<typeof getAdminClient>,
+  patrimonio: string,
+  competencia: string | null,
+  cdCgc: string | null,
+) {
+  let cargaSelecionada: {
+    nr_carga: number;
+    nr_competencia: string;
+    cd_cgc: string | null;
+    nm_empresa: string | null;
+  } | null = null;
 
   if (competencia) {
-    const { data, error } = await supabase
+    let query = supabase
       .from("inventario_consolidado_carga")
-      .select("nr_carga, nr_competencia")
+      .select("nr_carga, nr_competencia, cd_cgc, nm_empresa")
       .eq("nr_competencia", competencia)
-      .maybeSingle();
+      .order("dt_importacao", { ascending: false })
+      .limit(1);
+
+    if (cdCgc) {
+      query = query.eq("cd_cgc", cdCgc);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) throw new Error(error.message);
 
@@ -766,15 +785,22 @@ async function matrixLookup(supabase: ReturnType<typeof getAdminClient>, patrimo
       cargaSelecionada = {
         nr_carga: Number(data.nr_carga),
         nr_competencia: String(data.nr_competencia),
+        cd_cgc: limparTexto(data.cd_cgc),
+        nm_empresa: limparTexto(data.nm_empresa),
       };
     }
   } else {
-    const { data, error } = await supabase
+    let query = supabase
       .from("inventario_consolidado_carga")
-      .select("nr_carga, nr_competencia")
+      .select("nr_carga, nr_competencia, cd_cgc, nm_empresa")
       .order("dt_importacao", { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .limit(1);
+
+    if (cdCgc) {
+      query = query.eq("cd_cgc", cdCgc);
+    }
+
+    const { data, error } = await query.maybeSingle();
 
     if (error) throw new Error(error.message);
 
@@ -782,6 +808,8 @@ async function matrixLookup(supabase: ReturnType<typeof getAdminClient>, patrimo
       cargaSelecionada = {
         nr_carga: Number(data.nr_carga),
         nr_competencia: String(data.nr_competencia),
+        cd_cgc: limparTexto(data.cd_cgc),
+        nm_empresa: limparTexto(data.nm_empresa),
       };
     }
   }
@@ -804,6 +832,8 @@ async function matrixLookup(supabase: ReturnType<typeof getAdminClient>, patrimo
     return {
       encontrado: false,
       competencia: cargaSelecionada.nr_competencia,
+      cd_cgc: cargaSelecionada.cd_cgc,
+      nm_empresa: cargaSelecionada.nm_empresa,
       motivo: "Patrimonio nao encontrado na competencia selecionada.",
     };
   }
@@ -816,30 +846,47 @@ async function matrixLookup(supabase: ReturnType<typeof getAdminClient>, patrimo
   return {
     encontrado: true,
     competencia: cargaSelecionada.nr_competencia,
+    cd_cgc: cargaSelecionada.cd_cgc,
+    nm_empresa: cargaSelecionada.nm_empresa,
     item: correspondenciaExata as MatrixLookupItem,
-    candidatos: linhas as MatrixLookupItem[],
+    candidatos: (linhas || []).map((item) => ({
+      ...(item as MatrixLookupItem),
+      cd_cgc: cargaSelecionada?.cd_cgc || null,
+      nm_empresa: cargaSelecionada?.nm_empresa || null,
+    })) as MatrixLookupItem[],
   };
 }
 
 async function matrixLinhas(
   supabase: ReturnType<typeof getAdminClient>,
   competencia: string | null,
+  cdCgc: string | null,
   patrimonio: string | null,
   serie: string | null,
+  tipo: string | null,
+  modelo: string | null,
   pagina: number,
   tamanhoPagina: number,
 ) {
-  const { data: cargas, error: cargasError } = await supabase
+  let cargaQuery = supabase
     .from("inventario_consolidado_carga")
-    .select("nr_carga, nr_competencia, nm_arquivo, nr_total_linhas, dt_importacao")
+    .select("nr_carga, nr_competencia, cd_cgc, nm_empresa, nm_arquivo, nr_total_linhas, dt_importacao")
     .order("dt_importacao", { ascending: false })
     .limit(24);
+
+  if (cdCgc) {
+    cargaQuery = cargaQuery.eq("cd_cgc", cdCgc);
+  }
+
+  const { data: cargas, error: cargasError } = await cargaQuery;
 
   if (cargasError) throw new Error(cargasError.message);
 
   const listaCargas = (cargas || []).map((carga) => ({
     nr_carga: Number(carga.nr_carga),
     nr_competencia: String(carga.nr_competencia),
+    cd_cgc: limparTexto(carga.cd_cgc),
+    nm_empresa: limparTexto(carga.nm_empresa),
     nm_arquivo: String(carga.nm_arquivo || ""),
     nr_total_linhas: Number(carga.nr_total_linhas || 0),
     dt_importacao: String(carga.dt_importacao || ""),
@@ -849,7 +896,7 @@ async function matrixLinhas(
     return {
       cargas: [],
       cargaSelecionada: null,
-      filtros: { competencia, patrimonio, serie },
+      filtros: { competencia, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
       linhas: [],
     };
   }
@@ -862,7 +909,7 @@ async function matrixLinhas(
     return {
       cargas: listaCargas,
       cargaSelecionada: null,
-      filtros: { competencia, patrimonio, serie },
+      filtros: { competencia, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
       linhas: [],
     };
   }
@@ -881,6 +928,14 @@ async function matrixLinhas(
 
   if (serie) {
     countQuery = countQuery.ilike("nr_serie", `%${serie}%`);
+  }
+
+  if (tipo) {
+    countQuery = countQuery.ilike("nm_tipo", `%${tipo}%`);
+  }
+
+  if (modelo) {
+    countQuery = countQuery.ilike("ds_produto", `%${modelo}%`);
   }
 
   const { count, error: countError } = await countQuery;
@@ -907,18 +962,36 @@ async function matrixLinhas(
     query = query.ilike("nr_serie", `%${serie}%`);
   }
 
+  if (tipo) {
+    query = query.ilike("nm_tipo", `%${tipo}%`);
+  }
+
+  if (modelo) {
+    query = query.ilike("ds_produto", `%${modelo}%`);
+  }
+
   const { data: linhas, error: linhasError } = await query;
   if (linhasError) throw new Error(linhasError.message);
+
+  const linhasComEmpresa = (linhas || []).map((linha) => ({
+    ...linha,
+    cd_cgc: cargaSelecionada.cd_cgc || null,
+    nm_empresa: cargaSelecionada.nm_empresa || null,
+  }));
 
   return {
     cargas: listaCargas,
     cargaSelecionada,
     filtros: {
       competencia: cargaSelecionada.nr_competencia,
+      cd_cgc: cargaSelecionada.cd_cgc || null,
+      nm_empresa: cargaSelecionada.nm_empresa || null,
       patrimonio,
       serie,
+      tipo,
+      modelo,
     },
-    linhas: linhas || [],
+    linhas: linhasComEmpresa,
     paginacao: {
       pagina: paginaAtual,
       tamanhoPagina: tamanhoSeguro,
@@ -2292,6 +2365,7 @@ Deno.serve(async (req) => {
     if (action === "matrix_lookup") {
       const patrimonio = limparTexto(payload?.patrimonio);
       const competencia = limparTexto(payload?.competencia);
+      const cdCgc = limparTexto(payload?.cd_cgc);
 
       if (!patrimonio) {
         return badRequest("Informe o patrimonio para busca.");
@@ -2301,14 +2375,17 @@ Deno.serve(async (req) => {
         return badRequest("Competencia invalida. Use MM/AAAA.");
       }
 
-      const data = await matrixLookup(supabase, patrimonio, competencia);
+      const data = await matrixLookup(supabase, patrimonio, competencia, cdCgc);
       return jsonResponse({ ok: true, data });
     }
 
     if (action === "matrix_lines") {
       const competencia = limparTexto(payload?.competencia);
+      const cdCgc = limparTexto(payload?.cd_cgc);
       const patrimonio = limparTexto(payload?.patrimonio);
       const serie = limparTexto(payload?.serie);
+      const tipo = limparTexto(payload?.tipo);
+      const modelo = limparTexto(payload?.modelo);
       const pagina = Number(payload?.pagina || 1);
       const tamanhoPagina = Number(payload?.tamanhoPagina || payload?.limite || 500);
 
@@ -2316,7 +2393,7 @@ Deno.serve(async (req) => {
         return badRequest("Competencia invalida. Use MM/AAAA.");
       }
 
-      const data = await matrixLinhas(supabase, competencia, patrimonio, serie, pagina, tamanhoPagina);
+      const data = await matrixLinhas(supabase, competencia, cdCgc, patrimonio, serie, tipo, modelo, pagina, tamanhoPagina);
       return jsonResponse({ ok: true, data });
     }
 

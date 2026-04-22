@@ -49,12 +49,13 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
       >
         <div
           style={{
-            background: '#ffffff',
+            background: 'var(--panel)',
+            color: 'var(--text)',
             borderRadius: 14,
             boxShadow: '0 20px 40px rgba(2, 6, 23, 0.22)',
             maxWidth: 1160,
             width: '100%',
-            border: '1px solid #e2e8f0',
+            border: '1px solid var(--border)',
             maxHeight: '90vh',
             overflow: 'auto',
           }}
@@ -88,8 +89,8 @@ export function DialogHeader({
     <div
       style={{
         padding: '18px 22px',
-        borderBottom: '1px solid #e2e8f0',
-        background: '#f8fafc',
+        borderBottom: '1px solid var(--border)',
+        background: 'var(--panel-soft)',
       }}
     >
       {children}
@@ -104,7 +105,7 @@ export function DialogTitle({
   children: ReactNode;
   className?: string;
 }) {
-  return <h2 style={{ margin: 0, fontSize: 26, lineHeight: 1.1 }}>{children}</h2>;
+  return <h2 style={{ margin: 0, fontSize: 26, lineHeight: 1.1, color: 'var(--text)' }}>{children}</h2>;
 }
 
 export function DialogDescription({
@@ -118,7 +119,7 @@ export function DialogDescription({
     <p
       style={{
         margin: '8px 0 0',
-        color: '#64748b',
+        color: 'var(--muted)',
         fontSize: 14,
       }}
     >

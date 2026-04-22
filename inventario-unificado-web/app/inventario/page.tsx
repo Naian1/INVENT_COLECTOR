@@ -144,6 +144,12 @@ function labelInventario(item: InventarioComDetalhes): string {
   return `${patrimonio} - ${modelo}`;
 }
 
+function labelInventarioComHostname(item: InventarioComDetalhes): string {
+  const base = labelInventario(item);
+  const hostname = String(item.nm_hostname || '').trim();
+  return hostname ? `${base} | ${hostname}` : base;
+}
+
 function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null): string {
   if (!setor) return '-';
   return [setor.nm_piso || '', setor.nm_setor || '', setor.nm_localizacao || '']
@@ -244,6 +250,7 @@ export default function InventarioPage() {
   const [selectedStatus, setSelectedStatus] = useState<StatusFiltro>('todos');
   const [searchTerm, setSearchTerm] = useState('');
 
+  const [formPisoSelecionado, setFormPisoSelecionado] = useState<number | null>(null);
   const [formTipoEquipamento, setFormTipoEquipamento] = useState<number | null>(null);
   const [formData, setFormData] = useState<FormInventarioState>(INITIAL_FORM);
   const [scannerOpen, setScannerOpen] = useState(false);
@@ -257,6 +264,7 @@ export default function InventarioPage() {
   const [autoFillLoading, setAutoFillLoading] = useState(false);
   const [autoFillItem, setAutoFillItem] = useState<ConsolidadoLookupItem | null>(null);
   const [autoFillMessage, setAutoFillMessage] = useState<string | null>(null);
+  const [movimentacaoPisoDestino, setMovimentacaoPisoDestino] = useState<number | null>(null);
 
   const loadData = async () => {
     setLoading(true);
@@ -395,6 +403,20 @@ export default function InventarioPage() {
       .sort((a, b) => a.localeCompare(b));
   }, [setores, setoresFiltradosPorPiso, selectedSetor]);
 
+  const setoresFormularioPorPiso = useMemo(() => {
+    if (formPisoSelecionado === null) return setores;
+    return setores.filter((setor) => setor.cd_piso === formPisoSelecionado);
+  }, [setores, formPisoSelecionado]);
+
+  const setoresMovimentacaoPorPiso = useMemo(() => {
+    const base = movimentacaoPisoDestino === null
+      ? setores
+      : setores.filter((setor) => setor.cd_piso === movimentacaoPisoDestino);
+
+    if (!movimentandoItem) return base;
+    return base.filter((setor) => setor.cd_setor !== movimentandoItem.cd_setor);
+  }, [setores, movimentacaoPisoDestino, movimentandoItem]);
+
   useEffect(() => {
     if (selectedSetor === null) return;
     const stillExists = setoresFiltradosPorPiso.some((setor) => setor.cd_setor === selectedSetor);
@@ -402,6 +424,42 @@ export default function InventarioPage() {
       setSelectedSetor(null);
     }
   }, [setoresFiltradosPorPiso, selectedSetor]);
+
+  useEffect(() => {
+    if (!formData.cd_setor) return;
+    const setorSelecionado = setores.find((setor) => setor.cd_setor === Number(formData.cd_setor));
+    if (!setorSelecionado) return;
+    if (formPisoSelecionado !== setorSelecionado.cd_piso) {
+      setFormPisoSelecionado(setorSelecionado.cd_piso);
+    }
+  }, [setores, formData.cd_setor, formPisoSelecionado]);
+
+  useEffect(() => {
+    if (!formData.cd_setor) return;
+    const stillExists = setoresFormularioPorPiso.some((setor) => setor.cd_setor === Number(formData.cd_setor));
+    if (!stillExists) {
+      setFormData((prev) => ({ ...prev, cd_setor: '' }));
+    }
+  }, [setoresFormularioPorPiso, formData.cd_setor]);
+
+  useEffect(() => {
+    if (!movimentacaoForm.cd_setor_destino) return;
+    const setorSelecionado = setores.find((setor) => setor.cd_setor === Number(movimentacaoForm.cd_setor_destino));
+    if (!setorSelecionado) return;
+    if (movimentacaoPisoDestino !== setorSelecionado.cd_piso) {
+      setMovimentacaoPisoDestino(setorSelecionado.cd_piso);
+    }
+  }, [setores, movimentacaoForm.cd_setor_destino, movimentacaoPisoDestino]);
+
+  useEffect(() => {
+    if (!movimentacaoForm.cd_setor_destino) return;
+    const stillExists = setoresMovimentacaoPorPiso.some(
+      (setor) => setor.cd_setor === Number(movimentacaoForm.cd_setor_destino),
+    );
+    if (!stillExists) {
+      setMovimentacaoForm((prev) => ({ ...prev, cd_setor_destino: '' }));
+    }
+  }, [setoresMovimentacaoPorPiso, movimentacaoForm.cd_setor_destino]);
 
   useEffect(() => {
     if (!selectedLocalizacao) return;
@@ -456,6 +514,7 @@ export default function InventarioPage() {
           item.tipoEquipamento?.nm_tipo_equipamento || '',
           formatSetorLabel(item.setor),
           item.itemSuperior?.nr_patrimonio || '',
+          item.itemSuperior?.nm_hostname || '',
           item.tp_status || '',
         ].join(' '),
       );
@@ -579,6 +638,7 @@ export default function InventarioPage() {
       }>('matrix_lookup', {
         patrimonio,
         competencia: autoFillCompetencia.trim() || null,
+        cd_cgc: equipamentoSelecionadoFormulario?.cd_cgc || null,
       });
 
       if (!body.encontrado || !body.item) {
@@ -773,6 +833,7 @@ export default function InventarioPage() {
   const resetModalForm = () => {
     setEditingItem(null);
     setFormData(INITIAL_FORM);
+    setFormPisoSelecionado(selectedPiso);
     setFormTipoEquipamento(null);
     setScannerOpen(false);
     setScannerStatus(null);
@@ -800,6 +861,7 @@ export default function InventarioPage() {
       tp_status: (item.tp_status as TpStatus) || 'ATIVO',
       nr_chamado: '',
     });
+    setFormPisoSelecionado(item.setor?.cd_piso || null);
     setAutoFillCompetencia('');
     setAutoFillItem(null);
     setAutoFillMessage(null);
@@ -831,6 +893,7 @@ export default function InventarioPage() {
   const resetMovimentacaoModal = () => {
     setMovimentandoItem(null);
     setMovimentacaoForm(INITIAL_MOVIMENTACAO_FORM);
+    setMovimentacaoPisoDestino(null);
     setMovimentacaoFilhosAcoes({});
     setMovimentacaoLoading(false);
     setErrorMessage(null);
@@ -850,6 +913,7 @@ export default function InventarioPage() {
       nr_chamado: '',
       observacao: '',
     });
+    setMovimentacaoPisoDestino(item.setor?.cd_piso || null);
     setMovimentacaoFilhosAcoes(acoesIniciais);
     setMovimentacaoLoading(false);
     setErrorMessage(null);
@@ -1301,16 +1365,42 @@ export default function InventarioPage() {
               ) : null}
 
               <label className="flex flex-col gap-1 text-sm">
+                <FieldDbHint text="setor.cd_piso -> piso.cd_piso (filtro de lista)" />
+                <span className="font-medium text-slate-700">Piso</span>
+                <select
+                  value={formPisoSelecionado || ''}
+                  onChange={(event) => {
+                    const piso = event.target.value ? Number(event.target.value) : null;
+                    setFormPisoSelecionado(piso);
+                    setFormData((previous) => ({ ...previous, cd_setor: '' }));
+                  }}
+                  className="rounded-md border border-slate-300 px-3 py-2"
+                >
+                  <option value="">Selecione o piso</option>
+                  {pisos.map((piso) => (
+                    <option key={piso.cd_piso} value={piso.cd_piso}>
+                      {piso.nm_piso}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-1 text-sm">
                 <FieldDbHint text="inventario.cd_setor -> setor.cd_setor" />
                 <span className="font-medium text-slate-700">Setor</span>
                 <select
                   value={formData.cd_setor}
-                  onChange={(event) => handleChangeForm('cd_setor', event.target.value)}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    const setor = setores.find((item) => item.cd_setor === Number(value));
+                    setFormPisoSelecionado(setor?.cd_piso || formPisoSelecionado);
+                    handleChangeForm('cd_setor', value);
+                  }}
                   className="rounded-md border border-slate-300 px-3 py-2"
                   required
                 >
                   <option value="">Selecione o setor</option>
-                  {setores.map((setor) => (
+                  {setoresFormularioPorPiso.map((setor) => (
                     <option key={setor.cd_setor} value={setor.cd_setor}>
                       {formatSetorLabel(setor)}
                     </option>
@@ -1803,15 +1893,40 @@ export default function InventarioPage() {
 
           <form onSubmit={handleSubmitMovimentacao} className="inv-modal-form space-y-3">
             <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-slate-700">Piso de destino</span>
+              <select
+                value={movimentacaoPisoDestino || ''}
+                onChange={(event) => {
+                  const piso = event.target.value ? Number(event.target.value) : null;
+                  setMovimentacaoPisoDestino(piso);
+                  setMovimentacaoForm((prev) => ({ ...prev, cd_setor_destino: '' }));
+                }}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              >
+                <option value="">Selecione o piso</option>
+                {pisos.map((piso) => (
+                  <option key={piso.cd_piso} value={piso.cd_piso}>
+                    {piso.nm_piso}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex flex-col gap-1 text-sm">
               <span className="font-medium text-slate-700">Setor de destino</span>
               <select
                 value={movimentacaoForm.cd_setor_destino}
-                onChange={(event) => handleChangeMovimentacao('cd_setor_destino', event.target.value)}
+                onChange={(event) => {
+                  const value = event.target.value;
+                  const setor = setores.find((item) => item.cd_setor === Number(value));
+                  setMovimentacaoPisoDestino(setor?.cd_piso || movimentacaoPisoDestino);
+                  handleChangeMovimentacao('cd_setor_destino', value);
+                }}
                 className="rounded-md border border-slate-300 px-3 py-2"
                 required
               >
                 <option value="">Selecione</option>
-                {setores.map((setor) => (
+                {setoresMovimentacaoPorPiso.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
                     {formatSetorLabel(setor)}
                   </option>
@@ -2122,17 +2237,17 @@ export default function InventarioPage() {
                 ) : null}
 
                 {itensRaizDaVisao.map((raiz) => {
-                  const filhos = filhosByParent.get(raiz.nr_inventario) || [];
+                  const filhos = filhosByParentAll.get(raiz.nr_inventario) || [];
                   return (
                     <div key={raiz.nr_inventario} className="rounded-lg border border-slate-200 p-3">
-                      <p className="font-semibold text-slate-900">{labelInventario(raiz)}</p>
+                      <p className="font-semibold text-slate-900">{labelInventarioComHostname(raiz)}</p>
                       <p className="text-xs text-slate-500">{formatSetorLabel(raiz.setor)}</p>
                       <div className="mt-2 space-y-1 text-sm text-slate-700">
                         {filhos.length === 0 ? (
                           <p className="text-slate-500">Sem itens vinculados</p>
                         ) : (
                           filhos.map((filho) => (
-                            <p key={filho.nr_inventario}>- {labelInventario(filho)}</p>
+                            <p key={filho.nr_inventario}>- {labelInventarioComHostname(filho)}</p>
                           ))
                         )}
                       </div>

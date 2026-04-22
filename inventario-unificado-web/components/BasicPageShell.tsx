@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
 import type { ReactNode } from "react";
 
 type BasicPageShellProps = {
@@ -20,8 +21,35 @@ const navLinks = [
   { href: "/inventario/importacoes", label: "Importacoes", short: "M" }
 ];
 
+const THEME_KEY = "inventario-ui-theme";
+
+type Theme = "light" | "dark";
+
 export function BasicPageShell({ title, subtitle, children, actions }: BasicPageShellProps) {
   const pathname = usePathname();
+  const [theme, setTheme] = useState<Theme>("light");
+
+  useEffect(() => {
+    const current = document.documentElement.getAttribute("data-theme");
+    if (current === "light" || current === "dark") {
+      setTheme(current);
+      return;
+    }
+
+    const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+    const fallbackTheme: Theme = prefersDark ? "dark" : "light";
+    document.documentElement.setAttribute("data-theme", fallbackTheme);
+    document.documentElement.style.colorScheme = fallbackTheme;
+    setTheme(fallbackTheme);
+  }, []);
+
+  const alternarTema = () => {
+    const nextTheme: Theme = theme === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", nextTheme);
+    document.documentElement.style.colorScheme = nextTheme;
+    localStorage.setItem(THEME_KEY, nextTheme);
+    setTheme(nextTheme);
+  };
 
   return (
     <div className="ui-shell">
@@ -57,7 +85,19 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
       <div className="ui-main">
         <header className="ui-topbar">
           <div className="ui-topbar-brand">Gestao de Inventario</div>
-          <input className="ui-search" placeholder="Buscar..." />
+          <div className="ui-topbar-actions">
+            <input className="ui-search" placeholder="Buscar..." />
+            <button
+              type="button"
+              onClick={alternarTema}
+              className="ui-theme-toggle"
+              aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
+              title={theme === "dark" ? "Tema claro" : "Tema escuro"}
+            >
+              <span aria-hidden>{theme === "dark" ? "L" : "D"}</span>
+              <span>{theme === "dark" ? "Tema claro" : "Tema escuro"}</span>
+            </button>
+          </div>
         </header>
 
         <main className="ui-content">

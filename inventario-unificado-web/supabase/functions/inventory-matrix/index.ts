@@ -89,15 +89,33 @@ Deno.serve(async (req) => {
       const competencia = String(body?.competencia || "").trim();
       const arquivoNome = String(body?.arquivo_nome || "matrix.xlsx").trim();
       const totalLinhas = Number(body?.total_linhas || 0);
+      const cdCgc = String(body?.cd_cgc || "").trim();
 
       if (!/^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia)) {
         return badRequest("Competencia invalida. Use MM/AAAA");
+      }
+
+      if (!cdCgc) {
+        return badRequest("Informe a empresa (cd_cgc) da carga Matrix.");
+      }
+
+      const { data: empresa, error: empresaError } = await supabase
+        .from("empresa")
+        .select("cd_cgc, nm_empresa")
+        .eq("cd_cgc", cdCgc)
+        .eq("ie_situacao", "A")
+        .maybeSingle();
+
+      if (empresaError) throw new Error(empresaError.message);
+      if (!empresa?.cd_cgc) {
+        return badRequest("Empresa informada nao encontrada ou inativa.");
       }
 
       const { data: existente, error: findError } = await supabase
         .from("inventario_consolidado_carga")
         .select("nr_carga")
         .eq("nr_competencia", competencia)
+        .eq("cd_cgc", cdCgc)
         .maybeSingle();
 
       if (findError) throw new Error(findError.message);
@@ -116,19 +134,28 @@ Deno.serve(async (req) => {
         .insert([
           {
             nr_competencia: competencia,
+            cd_cgc: String(empresa.cd_cgc),
+            nm_empresa: String(empresa.nm_empresa || ""),
             nm_arquivo: arquivoNome,
             nr_total_linhas: totalLinhas,
-            ds_observacao: "Carga mensal da Matrix via Edge Function",
+            ds_observacao: "Carga mensal da Matrix via Edge Function por empresa",
           },
         ])
-        .select("nr_carga")
+        .select("nr_carga, cd_cgc, nm_empresa")
         .single();
 
       if (cargaError || !carga) {
         throw new Error(cargaError?.message || "Falha ao criar carga");
       }
 
-      return jsonResponse({ ok: true, data: { nr_carga: Number(carga.nr_carga) } });
+      return jsonResponse({
+        ok: true,
+        data: {
+          nr_carga: Number(carga.nr_carga),
+          cd_cgc: String(carga.cd_cgc || empresa.cd_cgc),
+          nm_empresa: String(carga.nm_empresa || empresa.nm_empresa || ""),
+        },
+      });
     }
 
     if (action === "append") {

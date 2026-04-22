@@ -1,8 +1,13 @@
 ﻿'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
 import { supabase } from '@/lib/supabase/client';
+
+type EmpresaOption = {
+  cd_cgc: string;
+  nm_empresa: string;
+};
 
 type LinhaImportacao = {
   cd_cgc?: string;
@@ -244,6 +249,8 @@ function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
 }
 
 export default function ImportacoesInventarioPage() {
+  const [empresas, setEmpresas] = useState<EmpresaOption[]>([]);
+  const [empresaSelecionada, setEmpresaSelecionada] = useState('');
   const [arquivoNome, setArquivoNome] = useState('');
   const [linhas, setLinhas] = useState<LinhaImportacao[]>([]);
   const [linhasBrutas, setLinhasBrutas] = useState<Array<Record<string, unknown>>>([]);
@@ -256,6 +263,32 @@ export default function ImportacoesInventarioPage() {
   const [ok, setOk] = useState<string | null>(null);
 
   const preview = useMemo(() => linhas.slice(0, 10), [linhas]);
+
+  useEffect(() => {
+    const carregarEmpresas = async () => {
+      try {
+        const response = await fetch('/api/empresas', { cache: 'no-store' });
+        const body = await response.json();
+        if (!response.ok) {
+          throw new Error(body?.error || 'Falha ao carregar empresas.');
+        }
+
+        const lista = (Array.isArray(body) ? body : [])
+          .map((item) => ({
+            cd_cgc: String(item?.cd_cgc || ''),
+            nm_empresa: String(item?.nm_empresa || ''),
+          }))
+          .filter((item) => item.cd_cgc && item.nm_empresa);
+
+        setEmpresas(lista);
+        setEmpresaSelecionada((current) => current || lista[0]?.cd_cgc || '');
+      } catch (error: any) {
+        setErro(error?.message || 'Falha ao carregar empresas para importacao.');
+      }
+    };
+
+    void carregarEmpresas();
+  }, []);
 
   async function onArquivoSelecionado(file: File) {
     setErro(null);
@@ -309,6 +342,17 @@ export default function ImportacoesInventarioPage() {
       return;
     }
 
+    if (!empresaSelecionada) {
+      setErro('Selecione a empresa responsavel pela carga Matrix.');
+      return;
+    }
+
+    const empresaEscolhida = empresas.find((item) => item.cd_cgc === empresaSelecionada);
+    if (!empresaEscolhida) {
+      setErro('Empresa selecionada nao encontrada. Recarregue a pagina e tente novamente.');
+      return;
+    }
+
     setErro(null);
     setOk(null);
     setLoadingConsolidado(true);
@@ -321,6 +365,7 @@ export default function ImportacoesInventarioPage() {
         body: {
           action: 'start',
           competencia: competenciaTrim,
+          cd_cgc: empresaEscolhida.cd_cgc,
           arquivo_nome: arquivoNome || 'consolidado.xlsx',
           total_linhas: linhasBrutas.length,
         },
@@ -375,7 +420,7 @@ export default function ImportacoesInventarioPage() {
       }
 
       setOk(
-        `Matrix ${competenciaTrim} salva com sucesso pela Edge Function. Linhas: ${linhasBrutas.length}.`,
+        `Matrix ${competenciaTrim} (${empresaEscolhida.nm_empresa}) salva com sucesso pela Edge Function. Linhas: ${linhasBrutas.length}.`,
       );
     } catch (error: any) {
       setErro(error?.message || 'Falha ao salvar Matrix mensal via Edge Function.');
@@ -432,7 +477,23 @@ export default function ImportacoesInventarioPage() {
           </div>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-3 rounded border bg-white p-4 md:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 rounded border bg-white p-4 md:grid-cols-3">
+          <label className="flex flex-col gap-1 text-sm">
+            <span className="font-medium text-slate-700">Empresa da carga</span>
+            <select
+              value={empresaSelecionada}
+              onChange={(event) => setEmpresaSelecionada(event.target.value)}
+              className="rounded border border-slate-300 px-3 py-2"
+            >
+              <option value="">Selecione a empresa</option>
+              {empresas.map((empresa) => (
+                <option key={empresa.cd_cgc} value={empresa.cd_cgc}>
+                  {empresa.nm_empresa} ({empresa.cd_cgc})
+                </option>
+              ))}
+            </select>
+          </label>
+
           <label className="flex flex-col gap-1 text-sm">
             <span className="font-medium text-slate-700">Competencia da Matrix (MM/AAAA)</span>
             <input
@@ -444,8 +505,8 @@ export default function ImportacoesInventarioPage() {
           </label>
 
           <div className="text-xs text-slate-600">
-            A carga da Matrix substitui os dados da mesma competencia na tabela de apoio.
-            Esse e o fluxo recomendado antes de cadastrar no inventario oficial.
+            A carga da Matrix substitui somente os dados da mesma competencia para a empresa selecionada.
+            Isso evita conflito entre empresas diferentes no mesmo mes.
           </div>
         </div>
 
