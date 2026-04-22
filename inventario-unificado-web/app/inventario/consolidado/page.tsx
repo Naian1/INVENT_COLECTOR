@@ -35,6 +35,11 @@ type LinhaConsolidado = {
 type ConsolidadoResponse = {
   cargas: CargaConsolidado[];
   cargaSelecionada: CargaConsolidado | null;
+  resumoGlobal?: {
+    total: number;
+    comPatrimonio: number;
+    comSerie: number;
+  };
   filtros: {
     competencia: string | null;
     cd_cgc: string | null;
@@ -140,10 +145,10 @@ export default function InventarioConsolidadoPage() {
   }, [carregar]);
 
   const resumo = useMemo(() => {
-    const total = dados?.paginacao?.total || 0;
+    const total = dados?.resumoGlobal?.total ?? dados?.paginacao?.total ?? 0;
     const exibidas = linhasExibidas.length;
-    const comPatrimonio = linhasExibidas.filter((item) => item.nr_patrimonio).length;
-    const comSerie = linhasExibidas.filter((item) => item.nr_serie).length;
+    const comPatrimonio = dados?.resumoGlobal?.comPatrimonio ?? linhasExibidas.filter((item) => item.nr_patrimonio).length;
+    const comSerie = dados?.resumoGlobal?.comSerie ?? linhasExibidas.filter((item) => item.nr_serie).length;
 
     return {
       total,
@@ -151,7 +156,7 @@ export default function InventarioConsolidadoPage() {
       comPatrimonio,
       comSerie,
     };
-  }, [dados?.paginacao?.total, linhasExibidas]);
+  }, [dados?.paginacao?.total, dados?.resumoGlobal?.total, dados?.resumoGlobal?.comPatrimonio, dados?.resumoGlobal?.comSerie, linhasExibidas]);
 
   const empresasDisponiveis = useMemo(() => {
     const mapa = new Map<string, { cd_cgc: string; nm_empresa: string }>();
@@ -309,8 +314,8 @@ export default function InventarioConsolidadoPage() {
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">Total Matrix: {resumo.total}</span>
           <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">Exibidas: {resumo.exibidas}</span>
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700">Com patrimonio: {resumo.comPatrimonio}</span>
-          <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-700">Com serie: {resumo.comSerie}</span>
+          <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700">Com patrimonio (geral): {resumo.comPatrimonio}</span>
+          <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-700">Com serie (geral): {resumo.comSerie}</span>
           <span className="rounded-full bg-cyan-100 px-3 py-1 text-cyan-700">Pagina: {pagina}</span>
           <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">
             Arquivo: {dados?.cargaSelecionada?.nm_arquivo || '-'}

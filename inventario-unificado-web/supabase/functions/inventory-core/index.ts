@@ -898,6 +898,11 @@ async function matrixLinhas(
       cargaSelecionada: null,
       filtros: { competencia, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
       linhas: [],
+      resumoGlobal: {
+        total: 0,
+        comPatrimonio: 0,
+        comSerie: 0,
+      },
     };
   }
 
@@ -911,6 +916,11 @@ async function matrixLinhas(
       cargaSelecionada: null,
       filtros: { competencia, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
       linhas: [],
+      resumoGlobal: {
+        total: 0,
+        comPatrimonio: 0,
+        comSerie: 0,
+      },
     };
   }
 
@@ -940,6 +950,60 @@ async function matrixLinhas(
 
   const { count, error: countError } = await countQuery;
   if (countError) throw new Error(countError.message);
+
+  let countPatrimonioQuery = supabase
+    .from("inventario_consolidado_linha")
+    .select("nr_linha", { count: "exact", head: true })
+    .eq("nr_carga", cargaSelecionada.nr_carga)
+    .not("nr_patrimonio", "is", null)
+    .neq("nr_patrimonio", "");
+
+  if (patrimonio) {
+    countPatrimonioQuery = countPatrimonioQuery.ilike("nr_patrimonio", `%${patrimonio}%`);
+  }
+
+  if (serie) {
+    countPatrimonioQuery = countPatrimonioQuery.ilike("nr_serie", `%${serie}%`);
+  }
+
+  if (tipo) {
+    countPatrimonioQuery = countPatrimonioQuery.ilike("nm_tipo", `%${tipo}%`);
+  }
+
+  if (modelo) {
+    countPatrimonioQuery = countPatrimonioQuery.ilike("ds_produto", `%${modelo}%`);
+  }
+
+  let countSerieQuery = supabase
+    .from("inventario_consolidado_linha")
+    .select("nr_linha", { count: "exact", head: true })
+    .eq("nr_carga", cargaSelecionada.nr_carga)
+    .not("nr_serie", "is", null)
+    .neq("nr_serie", "");
+
+  if (patrimonio) {
+    countSerieQuery = countSerieQuery.ilike("nr_patrimonio", `%${patrimonio}%`);
+  }
+
+  if (serie) {
+    countSerieQuery = countSerieQuery.ilike("nr_serie", `%${serie}%`);
+  }
+
+  if (tipo) {
+    countSerieQuery = countSerieQuery.ilike("nm_tipo", `%${tipo}%`);
+  }
+
+  if (modelo) {
+    countSerieQuery = countSerieQuery.ilike("ds_produto", `%${modelo}%`);
+  }
+
+  const [countPatrimonioResult, countSerieResult] = await Promise.all([
+    countPatrimonioQuery,
+    countSerieQuery,
+  ]);
+
+  if (countPatrimonioResult.error) throw new Error(countPatrimonioResult.error.message);
+  if (countSerieResult.error) throw new Error(countSerieResult.error.message);
 
   const total = Number(count || 0);
   const totalPaginas = Math.max(1, Math.ceil(total / tamanhoSeguro));
@@ -990,6 +1054,11 @@ async function matrixLinhas(
       serie,
       tipo,
       modelo,
+    },
+    resumoGlobal: {
+      total,
+      comPatrimonio: Number(countPatrimonioResult.count || 0),
+      comSerie: Number(countSerieResult.count || 0),
     },
     linhas: linhasComEmpresa,
     paginacao: {
