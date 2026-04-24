@@ -11,12 +11,8 @@ export default function HomePage() {
       <PainelDashboard />
 
       <section
-        className="ui-card"
-        style={{
-          marginBottom: 14,
-          borderColor: '#bfdbfe',
-          background: 'linear-gradient(135deg, #eff6ff 0%, #ffffff 65%)',
-        }}
+        className="ui-card ui-stage-overview"
+        style={{ marginBottom: 14 }}
       >
         <h2 style={{ marginTop: 0, marginBottom: 8 }}>Visao geral da etapa</h2>
         <p className="ui-kv" style={{ marginTop: 0 }}>

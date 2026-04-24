@@ -13,12 +13,12 @@ type BasicPageShellProps = {
 };
 
 const navLinks = [
-  { href: "/", label: "Painel", short: "P" },
-  { href: "/inventario", label: "Inventario", short: "I" },
-  { href: "/inventario/devolucao", label: "Devolucao", short: "D" },
-  { href: "/inventario/categorias", label: "Gerenciar Categorias", short: "C" },
-  { href: "/impressoras", label: "Impressoras", short: "R" },
-  { href: "/inventario/importacoes", label: "Importacoes", short: "M" }
+  { href: "/", label: "Painel", icon: "fi-rr-dashboard" },
+  { href: "/inventario", label: "Inventario", icon: "fi-rr-clipboard-list" },
+  { href: "/inventario/devolucao", label: "Devolucao", icon: "fi-rr-undo-alt" },
+  { href: "/inventario/categorias", label: "Gerenciar Categorias", icon: "fi-rr-category" },
+  { href: "/impressoras", label: "Impressoras", icon: "fi-rr-print" },
+  { href: "/inventario/importacoes", label: "Importacoes", icon: "fi-rr-file-upload" }
 ];
 
 const THEME_KEY = "inventario-ui-theme";
@@ -74,7 +74,9 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
                 className={`ui-nav-link${active ? " active" : ""}`}
                 title={link.label}
               >
-                <span className="ui-nav-link-short">{link.short}</span>
+                <span className="ui-nav-link-short" aria-hidden>
+                  <i className={`fi ${link.icon} ui-nav-link-icon`} />
+                </span>
                 <span className="ui-nav-link-label">{link.label}</span>
               </Link>
             );
@@ -94,8 +96,12 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
               aria-label={theme === "dark" ? "Ativar tema claro" : "Ativar tema escuro"}
               title={theme === "dark" ? "Tema claro" : "Tema escuro"}
             >
-              <span aria-hidden>{theme === "dark" ? "L" : "D"}</span>
-              <span>{theme === "dark" ? "Tema claro" : "Tema escuro"}</span>
+              <span className={`ui-theme-switch${theme === "dark" ? " dark" : ""}`} aria-hidden>
+                <span className="ui-theme-switch-thumb">
+                  <i className={`fi ${theme === "dark" ? "fi-rr-moon-stars" : "fi-rr-sun"}`} />
+                </span>
+              </span>
+              <span className="ui-theme-toggle-text">{theme === "dark" ? "Tema claro" : "Tema escuro"}</span>
             </button>
           </div>
         </header>

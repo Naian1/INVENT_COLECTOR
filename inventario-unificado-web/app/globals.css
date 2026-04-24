@@ -1,4 +1,6 @@
-﻿:root {
+﻿@import "@flaticon/flaticon-uicons/css/regular/rounded.css";
+
+:root {
   --bg: #f5f7fb;
   --panel: #ffffff;
   --panel-soft: #f8fafc;
@@ -43,6 +45,13 @@ body {
 
 a {
   color: inherit;
+}
+
+.fi {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
 }
 
 .ui-shell {
@@ -153,6 +162,10 @@ a {
   flex: 0 0 auto;
 }
 
+.ui-nav-link-icon {
+  font-size: 12px;
+}
+
 .ui-nav-link-label {
   opacity: 0;
   width: 0;
@@ -209,20 +222,64 @@ a {
 }
 
 .ui-theme-toggle {
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 8px 10px;
-  background: var(--panel-soft);
+  border: 1px solid #bfd6ff;
+  border-radius: 999px;
+  padding: 6px 10px 6px 6px;
+  background: linear-gradient(160deg, #f8fbff 0%, #edf3ff 100%);
   color: var(--text);
   font-weight: 600;
   display: inline-flex;
   align-items: center;
   gap: 8px;
   cursor: pointer;
+  transition: all 0.2s ease;
 }
 
 .ui-theme-toggle:hover {
-  background: var(--panel);
+  transform: translateY(-1px);
+  box-shadow: 0 10px 20px rgba(37, 99, 235, 0.16);
+}
+
+.ui-theme-switch {
+  width: 54px;
+  height: 28px;
+  border-radius: 999px;
+  background: linear-gradient(160deg, #dbeafe 0%, #93c5fd 100%);
+  border: 1px solid #93c5fd;
+  padding: 2px;
+  display: inline-flex;
+  align-items: center;
+  transition: all 0.2s ease;
+}
+
+.ui-theme-switch.dark {
+  background: linear-gradient(160deg, #1e293b 0%, #0f172a 100%);
+  border-color: #334155;
+}
+
+.ui-theme-switch-thumb {
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: #2563eb;
+  box-shadow: 0 4px 10px rgba(2, 6, 23, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transform: translateX(0);
+  transition: transform 0.2s ease, color 0.2s ease, background 0.2s ease;
+}
+
+.ui-theme-switch.dark .ui-theme-switch-thumb {
+  transform: translateX(26px);
+  background: #0b1220;
+  color: #e2e8f0;
+}
+
+.ui-theme-toggle-text {
+  font-size: 12px;
+  white-space: nowrap;
 }
 
 .ui-content {
@@ -255,6 +312,11 @@ a {
   border-radius: 14px;
   padding: 14px;
   box-shadow: 0 1px 1px rgba(2, 6, 23, 0.03);
+}
+
+.ui-stage-overview {
+  border-color: #bfdbfe;
+  background: linear-gradient(135deg, #eff6ff 0%, #ffffff 65%);
 }
 
 .ui-grid-3 {
@@ -1382,6 +1444,20 @@ html[data-theme="dark"] .ui-nav-link.active {
 
 html[data-theme="dark"] .ui-nav-link-short {
   background: #0b1220;
+}
+
+html[data-theme="dark"] .ui-theme-toggle {
+  border-color: #334155;
+  background: linear-gradient(160deg, #0f172a 0%, #111827 100%);
+}
+
+html[data-theme="dark"] .ui-theme-toggle:hover {
+  box-shadow: 0 10px 20px rgba(15, 23, 42, 0.4);
+}
+
+html[data-theme="dark"] .ui-stage-overview {
+  border-color: #1d4ed8;
+  background: linear-gradient(135deg, #10213b 0%, #0f172a 65%);
 }
 
 html[data-theme="dark"] .ui-brand-icon {
