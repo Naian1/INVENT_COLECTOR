@@ -6,11 +6,11 @@ export async function getEmpresas(): Promise<Empresa[]> {
   const { data, error } = await supabase
     .from('empresa')
     .select('*')
-    .eq('ie_situacao', 'A')
     .order('nm_empresa');
 
   if (error) throw new Error(`Erro ao listar empresas: ${error.message}`);
-  return (data || []) as Empresa[];
+  const ativos = (data || []).filter((item) => String(item?.ie_situacao || 'A').trim().toUpperCase() !== 'I');
+  return ativos as Empresa[];
 }
 
 export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
