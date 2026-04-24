@@ -371,6 +371,12 @@ export default function InventarioPage() {
 
   const itensRaiz = useMemo(() => items.filter((item) => !item.nr_invent_sup), [items]);
 
+  const itensRaizNoSetorSelecionado = useMemo(() => {
+    const setorSelecionado = Number(formData.cd_setor);
+    if (!Number.isFinite(setorSelecionado) || setorSelecionado <= 0) return [];
+    return itensRaiz.filter((item) => item.cd_setor === setorSelecionado);
+  }, [itensRaiz, formData.cd_setor]);
+
   const filhosByParentAll = useMemo(() => {
     const grouped = new Map<number, InventarioComDetalhes[]>();
     items.forEach((item) => {
@@ -441,6 +447,16 @@ export default function InventarioPage() {
       setFormData((prev) => ({ ...prev, cd_setor: '' }));
     }
   }, [setoresFormularioPorPiso, formData.cd_setor]);
+
+  useEffect(() => {
+    if (!formData.nr_invent_sup) return;
+    const stillExists = itensRaizNoSetorSelecionado.some(
+      (item) => item.nr_inventario === Number(formData.nr_invent_sup),
+    );
+    if (!stillExists) {
+      setFormData((prev) => ({ ...prev, nr_invent_sup: '' }));
+    }
+  }, [itensRaizNoSetorSelecionado, formData.nr_invent_sup]);
 
   useEffect(() => {
     if (!movimentacaoForm.cd_setor_destino) return;
@@ -1478,17 +1494,21 @@ export default function InventarioPage() {
                   value={formData.nr_invent_sup}
                   onChange={(event) => handleSelectItemSuperior(event.target.value)}
                   className="rounded-md border border-slate-300 px-3 py-2"
-                  disabled={tpHierarquiaFormulario === 'RAIZ'}
+                  disabled={tpHierarquiaFormulario === 'RAIZ' || !formData.cd_setor}
                 >
-                  <option value="">Sem vinculo (item raiz)</option>
-                  {itensRaiz.map((item) => (
+                  <option value="">
+                    {formData.cd_setor ? 'Sem vinculo (item raiz)' : 'Selecione primeiro o setor'}
+                  </option>
+                  {itensRaizNoSetorSelecionado.map((item) => (
                     <option key={item.nr_inventario} value={item.nr_inventario}>
                       {labelInventario(item)}
                     </option>
                   ))}
                 </select>
                 <span className="text-xs text-slate-600">
-                  Uma CPU raiz pode ter varios filhos vinculados ao mesmo tempo (ex: 2 monitores + 1 nobreak).
+                  {formData.cd_setor
+                    ? 'A lista mostra apenas itens raiz do setor selecionado.'
+                    : 'Selecione o setor para carregar os itens superiores disponiveis.'}
                 </span>
               </label>
 
