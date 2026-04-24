@@ -2,10 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import { CreateEmpresaSchema } from '@/types/empresa';
 import { createEmpresa, getEmpresas } from '@/services/empresaService';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const data = await getEmpresas();
-    return NextResponse.json(data);
+    return NextResponse.json(data, {
+      headers: {
+        'Cache-Control': 'no-store, no-cache, must-revalidate, max-age=0',
+      },
+    });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'Erro ao listar empresas' }, { status: 500 });
   }
