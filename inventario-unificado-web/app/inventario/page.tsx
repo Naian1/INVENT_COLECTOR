@@ -1199,6 +1199,11 @@ export default function InventarioPage() {
     if (ipDigitadoNormalizado) {
       const ipExistente = items.find((item) => {
         if (editingItem && item.nr_inventario === editingItem.nr_inventario) return false;
+        const tpStatusItem = (item.tp_status || statusFromLegacy(item.ie_situacao)) as TpStatus;
+        const inativoPorSituacao = String(item.ie_situacao || '').toUpperCase() === 'I';
+        if (inativoPorSituacao || tpStatusItem === 'BACKUP' || tpStatusItem === 'DEVOLUCAO') {
+          return false;
+        }
         const itemIp = normalizarIpSemMascara(item.nr_ip);
         return itemIp === ipDigitadoNormalizado;
       });

@@ -305,23 +305,30 @@ async function validarDuplicidadeInventario(params: {
   if (ipNormalizado) {
     let query = params.supabase
       .from("inventario")
-      .select("nr_inventario, nr_ip")
+      .select("nr_inventario, nr_ip, tp_status, ie_situacao")
       .ilike("nr_ip", ipNormalizado)
-      .limit(1);
+      .limit(50);
 
     if (inventarioAtual) {
       query = query.neq("nr_inventario", inventarioAtual);
     }
 
-    const { data, error } = await query.maybeSingle();
+    const { data, error } = await query;
 
     if (error) {
       throw new Error(`Erro ao validar duplicidade de IP: ${error.message}`);
     }
 
-    if (data?.nr_inventario) {
+    const conflitoAtivo = (data || []).find((item: any) => {
+      const tpStatusItem = parseTpStatus(item?.tp_status || situacaoParaTpStatus(item?.ie_situacao));
+      const inativoPorSituacao = String(item?.ie_situacao || "").toUpperCase() === "I";
+      if (inativoPorSituacao) return false;
+      return tpStatusItem !== "BACKUP" && tpStatusItem !== "DEVOLUCAO";
+    });
+
+    if (conflitoAtivo?.nr_inventario) {
       throw new Error(
-        `IP ${ipNormalizado} ja cadastrado no inventario (ID ${Number(data.nr_inventario)}).`,
+        `IP ${ipNormalizado} ja cadastrado no inventario (ID ${Number(conflitoAtivo.nr_inventario)}).`,
       );
     }
   }
