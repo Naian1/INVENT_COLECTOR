@@ -935,15 +935,15 @@ async function matrixLinhas(
     };
   }
 
-  const cargaSelecionada = competencia
-    ? listaCargas.find((item) => item.nr_competencia === competencia) || null
-    : listaCargas[0];
+  const competenciaSelecionada = competencia || listaCargas[0].nr_competencia;
+  const cargasSelecionadas = listaCargas.filter((item) => item.nr_competencia === competenciaSelecionada);
+  const cargaSelecionada = cargasSelecionadas[0] || null;
 
   if (!cargaSelecionada) {
     return {
       cargas: listaCargas,
       cargaSelecionada: null,
-      filtros: { competencia, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
+      filtros: { competencia: competenciaSelecionada, cd_cgc: cdCgc, nm_empresa: null, patrimonio, serie, tipo, modelo },
       linhas: [],
       resumoGlobal: {
         total: 0,
@@ -953,13 +953,24 @@ async function matrixLinhas(
     };
   }
 
+  const cargaIds = cargasSelecionadas.map((item) => item.nr_carga);
+  const cargaById = new Map<number, (typeof cargasSelecionadas)[number]>(
+    cargasSelecionadas.map((item) => [item.nr_carga, item]),
+  );
+  const cargaSelecionadaResumo = !cdCgc && cargasSelecionadas.length > 1
+    ? {
+      ...cargaSelecionada,
+      nm_arquivo: `MULTIPLOS ARQUIVOS (${cargasSelecionadas.length})`,
+    }
+    : cargaSelecionada;
+
   const tamanhoSeguro = Math.max(50, Math.min(1000, Number.isFinite(tamanhoPagina) ? tamanhoPagina : 500));
   const paginaSolicitada = Math.max(1, Number.isFinite(pagina) ? pagina : 1);
 
   let countQuery = supabase
     .from("inventario_consolidado_linha")
     .select("nr_linha", { count: "exact", head: true })
-    .eq("nr_carga", cargaSelecionada.nr_carga);
+    .in("nr_carga", cargaIds);
 
   if (patrimonio) {
     countQuery = countQuery.ilike("nr_patrimonio", `%${patrimonio}%`);
@@ -983,7 +994,7 @@ async function matrixLinhas(
   let countPatrimonioQuery = supabase
     .from("inventario_consolidado_linha")
     .select("nr_linha", { count: "exact", head: true })
-    .eq("nr_carga", cargaSelecionada.nr_carga)
+    .in("nr_carga", cargaIds)
     .not("nr_patrimonio", "is", null)
     .neq("nr_patrimonio", "");
 
@@ -1006,7 +1017,7 @@ async function matrixLinhas(
   let countSerieQuery = supabase
     .from("inventario_consolidado_linha")
     .select("nr_linha", { count: "exact", head: true })
-    .eq("nr_carga", cargaSelecionada.nr_carga)
+    .in("nr_carga", cargaIds)
     .not("nr_serie", "is", null)
     .neq("nr_serie", "");
 
@@ -1042,8 +1053,9 @@ async function matrixLinhas(
 
   let query = supabase
     .from("inventario_consolidado_linha")
-    .select("nr_linha, nr_patrimonio, nr_serie, nr_id_equipamento, nm_tipo, ds_produto, nm_cliente, nm_local, tp_status, nr_nf_faturamento, dt_faturamento")
-    .eq("nr_carga", cargaSelecionada.nr_carga)
+    .select("nr_carga, nr_linha, nr_patrimonio, nr_serie, nr_id_equipamento, nm_tipo, ds_produto, nm_cliente, nm_local, tp_status, nr_nf_faturamento, dt_faturamento")
+    .in("nr_carga", cargaIds)
+    .order("nr_carga", { ascending: true })
     .order("nr_linha", { ascending: true })
     .range(from, to);
 
@@ -1066,19 +1078,32 @@ async function matrixLinhas(
   const { data: linhas, error: linhasError } = await query;
   if (linhasError) throw new Error(linhasError.message);
 
-  const linhasComEmpresa = (linhas || []).map((linha) => ({
-    ...linha,
-    cd_cgc: cargaSelecionada.cd_cgc || null,
-    nm_empresa: cargaSelecionada.nm_empresa || null,
-  }));
+  const linhasComEmpresa = (linhas || []).map((linha: any) => {
+    const cargaLinha = cargaById.get(Number(linha.nr_carga));
+    return {
+      nr_linha: Number(linha.nr_linha),
+      nr_patrimonio: linha.nr_patrimonio ?? null,
+      nr_serie: linha.nr_serie ?? null,
+      nr_id_equipamento: linha.nr_id_equipamento ?? null,
+      nm_tipo: linha.nm_tipo ?? null,
+      ds_produto: linha.ds_produto ?? null,
+      nm_cliente: linha.nm_cliente ?? null,
+      nm_local: linha.nm_local ?? null,
+      tp_status: linha.tp_status ?? null,
+      nr_nf_faturamento: linha.nr_nf_faturamento ?? null,
+      dt_faturamento: linha.dt_faturamento ?? null,
+      cd_cgc: cargaLinha?.cd_cgc || null,
+      nm_empresa: cargaLinha?.nm_empresa || null,
+    };
+  });
 
   return {
     cargas: listaCargas,
-    cargaSelecionada,
+    cargaSelecionada: cargaSelecionadaResumo,
     filtros: {
-      competencia: cargaSelecionada.nr_competencia,
-      cd_cgc: cargaSelecionada.cd_cgc || null,
-      nm_empresa: cargaSelecionada.nm_empresa || null,
+      competencia: competenciaSelecionada,
+      cd_cgc: cdCgc || null,
+      nm_empresa: cdCgc ? (cargaSelecionada.nm_empresa || null) : null,
       patrimonio,
       serie,
       tipo,

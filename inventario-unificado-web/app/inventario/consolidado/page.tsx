@@ -124,8 +124,10 @@ export default function InventarioConsolidadoPage() {
       });
       setDados(parsed);
       setLinhasExibidas(parsed.linhas || []);
-      setEmpresaCgc(parsed.filtros.cd_cgc || '');
-      setCompetencia(parsed.filtros.competencia || '');
+      const empresaFiltroAplicado = filtros?.cd_cgc ?? (parsed.filtros.cd_cgc || '');
+      const competenciaFiltroAplicada = filtros?.competencia ?? (parsed.filtros.competencia || '');
+      setEmpresaCgc(empresaFiltroAplicado || '');
+      setCompetencia(competenciaFiltroAplicada || '');
       setPatrimonio(parsed.filtros.patrimonio || '');
       setSerie(parsed.filtros.serie || '');
       setTipo(parsed.filtros.tipo || '');
@@ -170,6 +172,19 @@ export default function InventarioConsolidadoPage() {
     });
     return Array.from(mapa.values());
   }, [dados?.cargas]);
+
+  const competenciasDisponiveis = useMemo(() => {
+    const lista = dados?.cargas || [];
+    if (empresaCgc) return lista;
+
+    const mapa = new Map<string, CargaConsolidado>();
+    lista.forEach((carga) => {
+      if (!mapa.has(carga.nr_competencia)) {
+        mapa.set(carga.nr_competencia, carga);
+      }
+    });
+    return Array.from(mapa.values());
+  }, [dados?.cargas, empresaCgc]);
 
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -230,9 +245,9 @@ export default function InventarioConsolidadoPage() {
               onChange={(event) => setCompetencia(event.target.value)}
               className="rounded border border-slate-300 px-3 py-2"
             >
-              {(dados?.cargas || []).map((carga) => (
+              {competenciasDisponiveis.map((carga) => (
                 <option key={carga.nr_carga} value={carga.nr_competencia}>
-                  {carga.nr_competencia} {carga.nm_empresa ? `- ${carga.nm_empresa}` : ''}
+                  {carga.nr_competencia}{empresaCgc && carga.nm_empresa ? ` - ${carga.nm_empresa}` : ''}
                 </option>
               ))}
             </select>
@@ -295,7 +310,7 @@ export default function InventarioConsolidadoPage() {
               onChange={(event) => {
                 const next = Number(event.target.value);
                 setTamanhoPagina(next);
-                void carregar({ competencia, patrimonio, serie, tipo, modelo, pagina: 1, tamanhoPagina: next });
+                void carregar({ cd_cgc: empresaCgc, competencia, patrimonio, serie, tipo, modelo, pagina: 1, tamanhoPagina: next });
               }}
               className="rounded border border-slate-300 px-3 py-2"
             >
