@@ -239,6 +239,17 @@ function normalizarIp(value: string | null): string | null {
   return text.replace(/\/32$/, "").toLowerCase();
 }
 
+function normalizarMac(value: string | null): string | null {
+  const text = limparTexto(value);
+  if (!text) return null;
+  const hex = text.replace(/[^0-9a-fA-F]/g, "").toUpperCase();
+  if (hex.length === 12) {
+    const pares = hex.match(/.{1,2}/g);
+    return pares ? pares.join(":") : null;
+  }
+  return text.toUpperCase();
+}
+
 function mapearErroDuplicidadeInventario(message: string): string {
   const raw = String(message || "");
   const normalizado = raw.toLowerCase();
@@ -325,12 +336,30 @@ function isMissingTableError(error: unknown): boolean {
   );
 }
 
+function isMissingColumnError(error: unknown): boolean {
+  const message = String((error as any)?.message ?? "");
+  return /column .* does not exist/i.test(message) || /Could not find the '.*' column/i.test(message);
+}
+
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
 
   if (!error) return true;
   if (isMissingTableError(error)) return false;
   throw new Error(error.message || `Falha ao verificar tabela ${table}`);
+}
+
+async function columnExists(
+  supabase: ReturnType<typeof getAdminClient>,
+  table: string,
+  column: string,
+): Promise<boolean> {
+  const { error } = await supabase.from(table).select(column).limit(1);
+
+  if (!error) return true;
+  if (isMissingColumnError(error)) return false;
+  if (isMissingTableError(error)) return false;
+  throw new Error(error.message || `Falha ao verificar coluna ${table}.${column}`);
 }
 
 async function buscarUltimoChamadoMovimentacao(params: {
@@ -1446,6 +1475,7 @@ Deno.serve(async (req) => {
         : null;
       const tp_status = parseTpStatus(payload?.tp_status);
       const nr_chamado = limparTexto(payload?.nr_chamado);
+      const nm_mac = normalizarMac(limparTexto(payload?.nm_mac));
 
       if (!Number.isFinite(cd_equipamento) || cd_equipamento <= 0 || !Number.isFinite(cd_setor) || cd_setor <= 0) {
         return badRequest("cd_equipamento e cd_setor sao obrigatorios");
@@ -1453,6 +1483,7 @@ Deno.serve(async (req) => {
 
       const tp_hierarquia = await getTpHierarquiaEquipamento(supabase, cd_equipamento);
       const nm_hostname = tp_hierarquia === "FILHO" ? null : limparTexto(payload?.nm_hostname);
+      const hasNmMac = await columnExists(supabase, "inventario", "nm_mac");
 
       const regrasStatus = await aplicarRegrasStatusInventario({
         supabase,
@@ -1475,6 +1506,7 @@ Deno.serve(async (req) => {
         nr_patrimonio: limparTexto(payload?.nr_patrimonio),
         nr_serie: limparTexto(payload?.nr_serie),
         nr_ip: normalizarIp(limparTexto(payload?.nr_ip)),
+        ...(hasNmMac ? { nm_mac } : {}),
         nm_hostname,
         nr_invent_sup: regrasStatus.nr_invent_sup,
         tp_status,
@@ -1524,6 +1556,7 @@ Deno.serve(async (req) => {
         : null;
       const tp_status = parseTpStatus(payload?.tp_status);
       const nr_chamado = limparTexto(payload?.nr_chamado);
+      const nm_mac = normalizarMac(limparTexto(payload?.nm_mac));
 
       if (!Number.isFinite(nr_inventario) || nr_inventario <= 0) {
         return badRequest("nr_inventario e obrigatorio");
@@ -1535,6 +1568,7 @@ Deno.serve(async (req) => {
 
       const tp_hierarquia = await getTpHierarquiaEquipamento(supabase, cd_equipamento);
       const nm_hostname = tp_hierarquia === "FILHO" ? null : limparTexto(payload?.nm_hostname);
+      const hasNmMac = await columnExists(supabase, "inventario", "nm_mac");
 
       const { data: existente, error: existeError } = await supabase
         .from("inventario")
@@ -1572,6 +1606,7 @@ Deno.serve(async (req) => {
         nr_patrimonio: limparTexto(payload?.nr_patrimonio),
         nr_serie: limparTexto(payload?.nr_serie),
         nr_ip: normalizarIp(limparTexto(payload?.nr_ip)),
+        ...(hasNmMac ? { nm_mac } : {}),
         nm_hostname,
         nr_invent_sup: regrasStatus.nr_invent_sup,
         tp_status,

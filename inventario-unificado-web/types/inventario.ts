@@ -10,6 +10,7 @@ export const InventarioSchema = z.object({
   nr_invent_sup: z.number().int().positive().optional().nullable(),
   nr_serie: z.string().optional().nullable(),
   nr_ip: z.string().optional().nullable(),
+  nm_mac: z.string().optional().nullable(),
   tp_status: TpStatusSchema.optional().default('ATIVO'),
   ds_imagem_url: z.string().url().optional().nullable(),
   // Campos legados mantidos opcionais para compatibilidade de frontend antigo

@@ -1736,8 +1736,14 @@ CREATE INDEX IF NOT EXISTS idx_setor_localizacao
 ALTER TABLE public.inventario
   ADD COLUMN IF NOT EXISTS nm_hostname VARCHAR;
 
+ALTER TABLE public.inventario
+  ADD COLUMN IF NOT EXISTS nm_mac VARCHAR;
+
 CREATE INDEX IF NOT EXISTS idx_inventario_hostname
   ON public.inventario (LOWER(BTRIM(COALESCE(nm_hostname, ''))));
+
+CREATE INDEX IF NOT EXISTS idx_inventario_mac
+  ON public.inventario (LOWER(BTRIM(COALESCE(nm_mac, ''))));
 
 -- =========================================================
 -- 2) PISO: entidade canonica

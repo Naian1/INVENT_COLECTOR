@@ -62,6 +62,7 @@ type FormInventarioState = {
   cd_setor: string;
   nr_serie: string;
   nr_ip: string;
+  nm_mac: string;
   nm_hostname: string;
   nr_invent_sup: string;
   tp_status: TpStatus;
@@ -74,6 +75,7 @@ const INITIAL_FORM: FormInventarioState = {
   cd_setor: '',
   nr_serie: '',
   nr_ip: '',
+  nm_mac: '',
   nm_hostname: '',
   nr_invent_sup: '',
   tp_status: 'ATIVO',
@@ -136,6 +138,17 @@ function normalizarIpSemMascara(ip: string | null | undefined): string | null {
   const normalizado = ip.trim();
   if (!normalizado) return null;
   return normalizado.replace(/\/32$/, '').toLowerCase();
+}
+
+function normalizarMacSemMascara(mac: string | null | undefined): string | null {
+  if (!mac) return null;
+  const normalizado = mac.trim();
+  if (!normalizado) return null;
+  const hex = normalizado.replace(/[^0-9a-fA-F]/g, '').toUpperCase();
+  if (hex.length === 12) {
+    return hex.match(/.{1,2}/g)?.join(':') || null;
+  }
+  return normalizado.toUpperCase();
 }
 
 function labelInventario(item: InventarioComDetalhes): string {
@@ -523,6 +536,7 @@ export default function InventarioPage() {
           item.nr_patrimonio || '',
           item.nr_serie || '',
           item.nr_ip || '',
+          item.nm_mac || '',
           item.nm_hostname || '',
           item.equipamento?.nm_modelo || '',
           item.equipamento?.nm_equipamento || '',
@@ -872,6 +886,7 @@ export default function InventarioPage() {
       cd_setor: String(item.cd_setor || ''),
       nr_serie: item.nr_serie || '',
       nr_ip: item.nr_ip || '',
+      nm_mac: item.nm_mac || '',
       nm_hostname: item.equipamento?.tp_hierarquia === 'FILHO' ? '' : (item.nm_hostname || ''),
       nr_invent_sup: item.nr_invent_sup ? String(item.nr_invent_sup) : '',
       tp_status: (item.tp_status as TpStatus) || 'ATIVO',
@@ -1205,6 +1220,7 @@ export default function InventarioPage() {
         nr_patrimonio: formData.nr_patrimonio.trim() || null,
         nr_serie: formData.nr_serie.trim() || null,
         nr_ip: formData.nr_ip.trim() || null,
+        nm_mac: normalizarMacSemMascara(formData.nm_mac),
         nm_hostname: tpHierarquia === 'FILHO' ? null : formData.nm_hostname.trim() || null,
         nr_invent_sup: formData.nr_invent_sup ? Number(formData.nr_invent_sup) : null,
         tp_status: formData.tp_status,
@@ -1363,6 +1379,17 @@ export default function InventarioPage() {
                   onChange={(event) => handleChangeForm('nr_ip', event.target.value)}
                   className="rounded-md border border-slate-300 px-3 py-2"
                   placeholder="Ex: 10.0.0.15"
+                />
+              </label>
+
+              <label className="flex flex-col gap-1 text-sm">
+                <FieldDbHint text="inventario.nm_mac" />
+                <span className="font-medium text-slate-700">MAC (opcional)</span>
+                <input
+                  value={formData.nm_mac}
+                  onChange={(event) => handleChangeForm('nm_mac', event.target.value)}
+                  className="rounded-md border border-slate-300 px-3 py-2"
+                  placeholder="Ex: 00:1A:2B:3C:4D:5E"
                 />
               </label>
 
@@ -2182,6 +2209,7 @@ export default function InventarioPage() {
                         <th className="px-4 py-2 text-left font-semibold">Filhos</th>
                         <th className="px-4 py-2 text-left font-semibold">Hostname</th>
                         <th className="px-4 py-2 text-left font-semibold">IP</th>
+                        <th className="px-4 py-2 text-left font-semibold">MAC</th>
                         <th className="px-4 py-2 text-left font-semibold">Serie</th>
                         <th className="px-4 py-2 text-left font-semibold">Status</th>
                       </tr>
@@ -2229,6 +2257,7 @@ export default function InventarioPage() {
                           <td className="px-4 py-2 text-sm">{item.filhosCount}</td>
                           <td className="px-4 py-2 font-mono text-sm">{item.nm_hostname || '-'}</td>
                           <td className="px-4 py-2 font-mono text-sm">{item.nr_ip || '-'}</td>
+                          <td className="px-4 py-2 font-mono text-sm">{item.nm_mac || '-'}</td>
                           <td className="px-4 py-2 text-sm">{item.nr_serie || '-'}</td>
                           <td className="px-4 py-2">
                             <span
