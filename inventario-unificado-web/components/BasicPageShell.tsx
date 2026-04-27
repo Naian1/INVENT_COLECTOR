@@ -51,6 +51,14 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     setTheme(nextTheme);
   };
 
+  const logout = async () => {
+    try {
+      await fetch("/api/auth/logout", { method: "POST" });
+    } finally {
+      window.location.href = "/login";
+    }
+  };
+
   return (
     <div className="ui-shell">
       <aside className="ui-sidebar">
@@ -102,6 +110,9 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
                 </span>
               </span>
               <span className="ui-theme-toggle-text">{theme === "dark" ? "Tema claro" : "Tema escuro"}</span>
+            </button>
+            <button type="button" className="ui-btn" onClick={logout}>
+              Sair
             </button>
           </div>
         </header>

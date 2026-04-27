@@ -1627,3 +1627,82 @@ html[data-theme="dark"] .hover\:bg-gray-50:hover,
 html[data-theme="dark"] .hover\:bg-slate-50:hover {
   background: #18223a;
 }
+
+.ui-login-page {
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at 20% 20%, rgba(37, 99, 235, 0.14), transparent 42%),
+    radial-gradient(circle at 80% 80%, rgba(22, 163, 74, 0.12), transparent 38%),
+    linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 82%, #dbeafe 18%) 100%);
+}
+
+.ui-login-card {
+  width: 100%;
+  max-width: 440px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 24px;
+  background: var(--panel);
+  box-shadow: 0 18px 40px rgba(2, 6, 23, 0.18);
+  display: grid;
+  gap: 14px;
+}
+
+.ui-login-badge {
+  margin: 0;
+  width: fit-content;
+  border-radius: 999px;
+  border: 1px solid #bfdbfe;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 12px;
+  font-weight: 700;
+  padding: 4px 10px;
+}
+
+.ui-login-title {
+  margin: 0;
+  font-size: 30px;
+  line-height: 1.05;
+}
+
+.ui-login-subtitle {
+  margin: 0;
+  color: var(--muted);
+}
+
+.ui-login-form {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-login-form label {
+  display: grid;
+  gap: 6px;
+  font-weight: 600;
+}
+
+.ui-login-error {
+  margin: 0;
+  border: 1px solid #fecaca;
+  border-radius: 10px;
+  background: #fee2e2;
+  color: #991b1b;
+  padding: 9px 10px;
+  font-size: 13px;
+}
+
+html[data-theme="dark"] .ui-login-badge {
+  border-color: #1d4ed8;
+  background: #172554;
+  color: #bfdbfe;
+}
+
+html[data-theme="dark"] .ui-login-error {
+  border-color: #7f1d1d;
+  background: #450a0a;
+  color: #fecaca;
+}
