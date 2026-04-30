@@ -245,10 +245,21 @@ function classePillStatus(status: string) {
   return "warn";
 }
 
+function parseColetaDate(value: string | null) {
+  if (!value) return null;
+  const raw = String(value).trim();
+  if (!raw) return null;
+
+  const hasTimezone = /([zZ]|[+-]\d{2}:\d{2})$/.test(raw);
+  const normalized = hasTimezone ? raw : `${raw}Z`;
+  const dt = new Date(normalized);
+  if (Number.isNaN(dt.getTime())) return null;
+  return dt;
+}
+
 function formatarDataHora(value: string | null) {
-  if (!value) return "-";
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return "-";
+  const dt = parseColetaDate(value);
+  if (!dt) return "-";
   return new Intl.DateTimeFormat("pt-BR", {
     dateStyle: "short",
     timeStyle: "short"
@@ -256,9 +267,8 @@ function formatarDataHora(value: string | null) {
 }
 
 function minutosDesdeColeta(value: string | null) {
-  if (!value) return null;
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return null;
+  const dt = parseColetaDate(value);
+  if (!dt) return null;
   return Math.max(0, Math.floor((Date.now() - dt.getTime()) / 60000));
 }
 
