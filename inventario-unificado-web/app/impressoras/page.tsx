@@ -342,7 +342,7 @@ export default function ImpressorasPage() {
     if (!valor) return "";
     if (valor.valor_texto != null) return String(valor.valor_texto);
     if (valor.valor_numero != null) return String(valor.valor_numero);
-    if (valor.valor_booleano != null) return valor.valor_booleano ? "Sim" : "Nao";
+    if (valor.valor_booleano != null) return valor.valor_booleano ? "Sim" : "Não";
     if (valor.valor_data != null) return String(valor.valor_data);
     if (valor.valor_ip != null) return String(valor.valor_ip).replace(/\/32$/, "");
     if (valor.valor_json != null) return JSON.stringify(valor.valor_json);
@@ -366,15 +366,15 @@ export default function ImpressorasPage() {
       setNaoOperacionaisCarregados(incluirNaoOperacionais);
       if (incluirNaoOperacionais) {
         setSucesso(
-          `Impressoras carregadas: ${total} | Operacionais: ${operacionais} | Nao operacionais: ${naoOperacionais}`
+          `Impressoras carregadas: ${total} | Operacionais: ${operacionais} | Não operacionais: ${naoOperacionais}`
         );
       } else {
         setSucesso(
-          `Impressoras operacionais carregadas: ${operacionais} | Nao operacionais: sob demanda`
+          `Impressoras operacionais carregadas: ${operacionais} | Não operacionais: sob demanda`
         );
       }
     } catch {
-      setErro("Falha de conexao ao carregar impressoras.");
+      setErro("Falha de conexão ao carregar impressoras.");
       setRegistros([]);
     } finally {
       setLoading(false);
@@ -440,7 +440,7 @@ export default function ImpressorasPage() {
 
   const adicionarManual = useCallback(async () => {
     if (!manual.patrimonio || !manual.ip || !manual.modelo || !manual.setor) {
-      setErro("Preencha patrimonio, ip, modelo e setor.");
+      setErro("Preencha patrimônio, IP, modelo e setor.");
       return;
     }
 
@@ -491,35 +491,25 @@ export default function ImpressorasPage() {
     [carregar, naoOperacionaisCarregados]
   );
 
-  const sincronizarOperacionais = useCallback(async () => {
-    setLoading(true);
-    setErro(null);
-    setSucesso(null);
-
+  const carregarImagemComoDataUrl = useCallback(async (src: string) => {
     try {
-      const body = await invokePrintFunction<any>("sincronizar_operacionais_lote", {});
-
-      const total = body.total_sincronizadas || 0;
-      const erros = body.total_erros || 0;
-
-      if (total > 0) {
-        setSucesso(
-          `${total} impressora(s) sincronizada(s) com sucesso${erros > 0 ? `. ${erros} erro(s).` : "."}`
-        );
-        await carregar(naoOperacionaisCarregados);
-      } else {
-        setSucesso(body.mensagem || "Nenhuma impressora para sincronizar.");
-      }
-    } catch (error) {
-      setErro(error instanceof Error ? error.message : "Falha ao sincronizar operacionais.");
-    } finally {
-      setLoading(false);
+      const response = await fetch(src);
+      if (!response.ok) return null;
+      const blob = await response.blob();
+      return await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onloadend = () => resolve(String(reader.result || ""));
+        reader.onerror = () => reject(new Error("Falha ao carregar imagem para PDF."));
+        reader.readAsDataURL(blob);
+      });
+    } catch {
+      return null;
     }
-  }, [carregar, naoOperacionaisCarregados]);
+  }, []);
 
   const adicionarDoInventario = useCallback(async () => {
     if (!linhaSelecionadaId) {
-      setErro("Selecione uma linha do inventario.");
+      setErro("Selecione uma linha do inventário.");
       return;
     }
 
@@ -754,7 +744,7 @@ export default function ImpressorasPage() {
       { key: "offline", label: "Offline", count: contagensRapidas.offline, tone: "offline" },
       {
         key: "nao_operacional",
-        label: "Nao operacional",
+        label: "Não operacional",
         count: contagensRapidas.nao_operacional,
         tone: "offline"
       },
@@ -788,7 +778,7 @@ export default function ImpressorasPage() {
       { key: "offline" as FiltroRapido, titulo: "Offline", valor: contagensRapidas.offline, tone: "offline" as const },
       {
         key: "nao_operacional" as FiltroRapido,
-        titulo: "Nao operacional",
+        titulo: "Não operacional",
         valor: contagensRapidas.nao_operacional,
         tone: "offline" as const
       },
@@ -803,19 +793,159 @@ export default function ImpressorasPage() {
     [contagensRapidas]
   );
 
+  const exportarRelatorioPdf = useCallback(async () => {
+    if (!registrosFiltrados.length) {
+      setErro("Nao ha impressoras para exportar com os filtros atuais.");
+      return;
+    }
+
+    setErro(null);
+    setSucesso(null);
+
+    try {
+      const [{ jsPDF }, autoTableModule, logoDataUrl] = await Promise.all([
+        import("jspdf"),
+        import("jspdf-autotable"),
+        carregarImagemComoDataUrl("/brand/ntech-black.png")
+      ]);
+      const autoTable = (autoTableModule as any).default;
+
+      const doc = new jsPDF({
+        orientation: "landscape",
+        unit: "pt",
+        format: "a4"
+      });
+
+      const margemX = 36;
+      let cursorY = 34;
+
+      if (logoDataUrl) {
+        doc.addImage(logoDataUrl, "PNG", margemX, cursorY - 8, 120, 32);
+      }
+
+      const exportadoEm = new Date();
+      doc.setFontSize(16);
+      doc.text("Relatorio de impressoras", margemX + 132, cursorY + 12);
+      doc.setFontSize(9);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`NTECH | Gerado em ${exportadoEm.toLocaleString("pt-BR")}`, margemX + 132, cursorY + 28);
+      doc.setTextColor(15, 23, 42);
+
+      cursorY += 46;
+
+      const filtrosTexto = [
+        `Operacional: ${filtroOperacional}`,
+        `Status: ${filtroStatus}`,
+        `Suprimento: ${filtroSuprimento || "todos"}`,
+        `Busca: ${buscaDigitada.trim() || "-"}`,
+        `Total filtrado: ${registrosFiltrados.length}`
+      ].join(" | ");
+
+      doc.setFontSize(9);
+      const linhasFiltro = doc.splitTextToSize(filtrosTexto, 1080);
+      doc.text(linhasFiltro, margemX, cursorY);
+      cursorY += linhasFiltro.length * 12 + 6;
+
+      const body = registrosFiltrados.map((row) => {
+        const menorSup = obterMenorSuprimentoInfo(row.resumo_suprimentos);
+        const menorSupTxt = menorSup
+          ? `${menorSup.nome_suprimento} (${formatarIndicadorSuprimento(
+              Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null
+            )})`
+          : "-";
+        const classif = classificarSuprimentos(row.menor_nivel_suprimento, row.resumo_suprimentos);
+        const resumoSup =
+          row.resumo_suprimentos.length > 0
+            ? row.resumo_suprimentos
+                .slice(0, 3)
+                .map((sup) => {
+                  const nivel = resolverNivelPercentualSuprimento(sup);
+                  return `${sup.nome_suprimento}: ${formatarIndicadorSuprimento(nivel)}`;
+                })
+                .join(" | ")
+            : "-";
+
+        return [
+          row.operacional ? "operacional" : "nao operacional",
+          row.patrimonio || "-",
+          row.ip || "-",
+          row.modelo || "-",
+          row.setor || "-",
+          row.localizacao || "-",
+          row.status_atual || "-",
+          formatarDataHora(row.ultima_coleta_em),
+          row.contador_paginas_atual ?? "-",
+          menorSupTxt,
+          classif,
+          resumoSup
+        ];
+      });
+
+      autoTable(doc, {
+        startY: cursorY,
+        margin: { left: margemX, right: margemX },
+        head: [[
+          "Operacional",
+          "Patrimonio",
+          "IP",
+          "Modelo",
+          "Setor",
+          "Localizacao",
+          "Status",
+          "Ultima coleta",
+          "Total paginas",
+          "Menor suprimento",
+          "Classificacao",
+          "Suprimentos"
+        ]],
+        body,
+        styles: {
+          fontSize: 8,
+          cellPadding: 4,
+          overflow: "linebreak"
+        },
+        headStyles: {
+          fillColor: [241, 245, 249],
+          textColor: [15, 23, 42],
+          fontStyle: "bold"
+        },
+        theme: "grid",
+        didDrawPage: () => {
+          doc.setFontSize(8);
+          doc.setTextColor(100, 116, 139);
+          doc.text(
+            `Pagina ${doc.getNumberOfPages()}`,
+            doc.internal.pageSize.getWidth() - 80,
+            doc.internal.pageSize.getHeight() - 12
+          );
+          doc.setTextColor(15, 23, 42);
+        }
+      });
+
+      const stamp = exportadoEm
+        .toISOString()
+        .replace(/[:]/g, "-")
+        .replace(/\..+$/, "");
+      doc.save(`impressoras-relatorio-${stamp}.pdf`);
+      setSucesso("Relatorio PDF exportado com sucesso.");
+    } catch (error) {
+      setErro(error instanceof Error ? error.message : "Falha ao exportar relatorio PDF.");
+    }
+  }, [
+    buscaDigitada,
+    carregarImagemComoDataUrl,
+    filtroOperacional,
+    filtroStatus,
+    filtroSuprimento,
+    registrosFiltrados
+  ]);
+
   return (
     <BasicPageShell
       title="Impressoras Operacionais"
-      subtitle="Visao unica com operacionais e nao operacionais, filtros e acao direta de ativacao."
+      subtitle="Visão única com operacionais e não operacionais, filtros e ação direta de ativação."
       actions={
         <div className="ui-row">
-          <button
-            className="ui-btn ui-btn-warning"
-            onClick={() => void sincronizarOperacionais()}
-            disabled={loading}
-          >
-            {loading ? "Sincronizando..." : "Sincronizar Operacionais"}
-          </button>
           <button
             className="ui-btn ui-btn-primary"
             onClick={() =>
@@ -827,6 +957,9 @@ export default function ImpressorasPage() {
             }
           >
             Atualizar lista
+          </button>
+          <button className="ui-btn" onClick={() => void exportarRelatorioPdf()} disabled={loading}>
+            Exportar relatorio (PDF)
           </button>
         </div>
       }
@@ -863,7 +996,7 @@ export default function ImpressorasPage() {
                 >
                   <option value="todos">Todos</option>
                   <option value="operacional">Somente operacional</option>
-                  <option value="nao_operacional">Somente nao operacional</option>
+                  <option value="nao_operacional">Somente não operacional</option>
                 </select>
               </label>
               <label>
@@ -905,7 +1038,7 @@ export default function ImpressorasPage() {
                     setFiltroRapido("todos");
                     setBuscaDigitada(e.target.value);
                   }}
-                  placeholder="Patrimonio, IP, modelo, setor..."
+                  placeholder="Patrimônio, IP, modelo, setor..."
                 />
               </label>
             </div>
@@ -917,7 +1050,7 @@ export default function ImpressorasPage() {
               </span>
               <div className="ui-row">
                 <label>
-                  <span className="ui-kv">Linhas por pagina</span>
+                <span className="ui-kv">Linhas por página</span>
                   <select
                     className="ui-select"
                     value={linhasPorPagina}
@@ -939,7 +1072,6 @@ export default function ImpressorasPage() {
           <table className="ui-table impressoras-table">
             <thead>
               <tr>
-                <th className="sticky-col sticky-acoes">Acoes</th>
                 <th className="sticky-col sticky-operacional">
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("operacional")}>
                     Operacional <span>{colunaOrdenacao === "operacional" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
@@ -947,7 +1079,7 @@ export default function ImpressorasPage() {
                 </th>
                 <th className="sticky-col sticky-patrimonio">
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("patrimonio")}>
-                    Patrimonio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    Patrimônio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
                 <th className="sticky-col sticky-ip">
@@ -967,7 +1099,7 @@ export default function ImpressorasPage() {
                 </th>
                 <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("localizacao")}>
-                    Localizacao <span>{colunaOrdenacao === "localizacao" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    Localização <span>{colunaOrdenacao === "localizacao" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
                 <th>
@@ -977,12 +1109,12 @@ export default function ImpressorasPage() {
                 </th>
                 <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("ultima_coleta_em")}>
-                    Ultima coleta <span>{colunaOrdenacao === "ultima_coleta_em" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    Última coleta <span>{colunaOrdenacao === "ultima_coleta_em" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
                 <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("contador_paginas_atual")}>
-                    Total paginas <span>{colunaOrdenacao === "contador_paginas_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    Total páginas <span>{colunaOrdenacao === "contador_paginas_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
                 <th>
@@ -1011,23 +1143,9 @@ export default function ImpressorasPage() {
 
                 return (
                   <tr key={row.id} className={classesLinha}>
-                    <td className="sticky-col sticky-acoes">
-                      {!row.operacional && row.origem_linha_id ? (
-                        <button
-                          className="ui-btn ui-btn-sm ui-btn-warning"
-                          onClick={() => void tornarOperacionalPorLinha(row.origem_linha_id as string)}
-                        >
-                          Tornar operacional
-                        </button>
-                      ) : (
-                        <span className="ui-kv" style={{ margin: 0 }}>
-                          -
-                        </span>
-                      )}
-                    </td>
                     <td className="sticky-col sticky-operacional">
                       <span className={`ui-pill ${row.operacional ? "ok" : "warn"}`}>
-                        {row.operacional ? "operacional" : "nao operacional"}
+                        {row.operacional ? "operacional" : "não operacional"}
                       </span>
                     </td>
                     <td className="sticky-col sticky-patrimonio">{row.patrimonio || "-"}</td>
@@ -1094,7 +1212,7 @@ export default function ImpressorasPage() {
 
               {!loading && registrosFiltrados.length === 0 ? (
                 <tr>
-                  <td colSpan={13}>Nenhuma impressora encontrada para os filtros atuais.</td>
+                  <td colSpan={12}>Nenhuma impressora encontrada para os filtros atuais.</td>
                 </tr>
               ) : null}
             </tbody>
@@ -1115,7 +1233,7 @@ export default function ImpressorasPage() {
                   Anterior
                 </button>
                 <span className="ui-kv" style={{ margin: 0 }}>
-                  Pagina <strong>{paginaAtual}</strong> de <strong>{totalPaginas}</strong>
+                  Página <strong>{paginaAtual}</strong> de <strong>{totalPaginas}</strong>
                 </span>
                 <button
                   className="ui-btn"
