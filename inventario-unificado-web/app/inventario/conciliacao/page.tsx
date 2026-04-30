@@ -108,7 +108,7 @@ export default function InventarioConciliacaoPage() {
       setCompetencia(parsed.filtros.competencia || '');
       setPatrimonio(parsed.filtros.patrimonio || '');
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Falha de conexao ao executar conciliacao.';
+      const message = error instanceof Error ? error.message : 'Falha de conexão ao executar conciliação.';
       setErro(message);
     } finally {
       setCarregando(false);
@@ -141,15 +141,15 @@ export default function InventarioConciliacaoPage() {
 
   return (
     <BasicPageShell
-      title="Conciliacao Inventario x Matrix"
-      subtitle="Tela separada para detectar duplicidades e divergencias entre as duas bases"
+      title="Conciliação Inventário x Matrix"
+      subtitle="Tela separada para detectar duplicidades e divergências entre as duas bases"
       actions={
         <div className="flex items-center gap-2">
           <a
             href="/inventario"
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Voltar para inventario
+            Voltar para inventário
           </a>
           <a
             href="/inventario/consolidado"
@@ -165,7 +165,7 @@ export default function InventarioConciliacaoPage() {
 
         <form onSubmit={onSubmit} className="grid grid-cols-1 gap-3 rounded border bg-white p-4 md:grid-cols-4">
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Competencia</span>
+            <span className="font-medium text-slate-700">Competência</span>
             <select
               value={competencia}
               onChange={(event) => setCompetencia(event.target.value)}
@@ -180,7 +180,7 @@ export default function InventarioConciliacaoPage() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm md:col-span-2">
-            <span className="font-medium text-slate-700">Patrimonio (filtro opcional)</span>
+            <span className="font-medium text-slate-700">Patrimônio (filtro opcional)</span>
             <input
               value={patrimonio}
               onChange={(event) => setPatrimonio(event.target.value)}
@@ -195,47 +195,47 @@ export default function InventarioConciliacaoPage() {
               disabled={carregando}
               className="w-full rounded bg-slate-800 px-3 py-2 text-white disabled:opacity-50"
             >
-              {carregando ? 'Processando...' : 'Atualizar conciliacao'}
+              {carregando ? 'Processando...' : 'Atualizar conciliação'}
             </button>
           </div>
         </form>
 
         <div className="rounded border border-amber-200 bg-amber-50 p-3 text-sm text-amber-900">
-          Inventario oficial: esta tela nao altera dados, apenas compara o inventario interno com a Matrix da competencia selecionada.
+          Inventário oficial: esta tela não altera dados, apenas compara o inventário interno com a Matrix da competência selecionada.
         </div>
 
         <div className="flex flex-wrap gap-2 text-sm">
-          <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-800">Inventario: {resumo.totalInventario}</span>
+          <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-800">Inventário: {resumo.totalInventario}</span>
           <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-800">Matrix: {resumo.totalConsolidado}</span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-            Inventario sem patrimonio: {resumo.inventarioSemPatrimonio}
+            Inventário sem patrimônio: {resumo.inventarioSemPatrimonio}
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">
-            Matrix sem patrimonio: {resumo.consolidadoSemPatrimonio}
+            Matrix sem patrimônio: {resumo.consolidadoSemPatrimonio}
           </span>
-          <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">Dup Inventario: {resumo.duplicidadesInventario}</span>
+          <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">Dup. Inventário: {resumo.duplicidadesInventario}</span>
           <span className="rounded-full bg-red-100 px-3 py-1 text-red-800">Dup Matrix: {resumo.duplicidadesConsolidado}</span>
           <span className="rounded-full bg-orange-100 px-3 py-1 text-orange-800">
-            Matrix sem inventario: {resumo.consolidadoNaoNoInventario}
+            Matrix sem inventário: {resumo.consolidadoNaoNoInventario}
           </span>
           <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-800">
-            Inventario sem Matrix: {resumo.inventarioNaoNoConsolidado}
+            Inventário sem Matrix: {resumo.inventarioNaoNoConsolidado}
           </span>
         </div>
 
         <div className="rounded border border-slate-200 bg-slate-50 p-2 text-xs text-slate-600">
-          As tabelas abaixo exibem ate {dados?.filtros.limite || 0} linhas por bloco para manter performance. Os contadores acima representam os totais reais.
+          As tabelas abaixo exibem até {dados?.filtros.limite || 0} linhas por bloco para manter performance. Os contadores acima representam os totais reais.
         </div>
 
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Duplicidades no inventario (mesmo patrimonio)
+              Duplicidades no inventário (mesmo patrimônio)
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 text-left">Patrimonio</th>
+                  <th className="p-2 text-left">Patrimônio</th>
                   <th className="p-2 text-left">Qtd</th>
                   <th className="p-2 text-left">IDs inventario</th>
                 </tr>
@@ -250,7 +250,7 @@ export default function InventarioConciliacaoPage() {
                 ))}
                 {!carregando && (dados?.duplicidades.inventario || []).length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="p-3 text-center text-slate-500">Sem duplicidades no inventario.</td>
+                    <td colSpan={3} className="p-3 text-center text-slate-500">Sem duplicidades no inventário.</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -259,12 +259,12 @@ export default function InventarioConciliacaoPage() {
 
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Duplicidades na Matrix (mesmo patrimonio)
+              Duplicidades na Matrix (mesmo patrimônio)
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 text-left">Patrimonio</th>
+                  <th className="p-2 text-left">Patrimônio</th>
                   <th className="p-2 text-left">Qtd</th>
                   <th className="p-2 text-left">Linhas</th>
                 </tr>
@@ -288,16 +288,16 @@ export default function InventarioConciliacaoPage() {
 
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Matrix que nao existe no inventario
+              Matrix que não existe no inventário
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="p-2 text-left">Linha</th>
-                  <th className="p-2 text-left">Patrimonio</th>
-                  <th className="p-2 text-left">Serie</th>
+                  <th className="p-2 text-left">Patrimônio</th>
+                  <th className="p-2 text-left">Série</th>
                   <th className="p-2 text-left">Tipo</th>
-                  <th className="p-2 text-left">Descricao</th>
+                  <th className="p-2 text-left">Descrição</th>
                 </tr>
               </thead>
               <tbody>
@@ -321,14 +321,14 @@ export default function InventarioConciliacaoPage() {
 
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Inventario que nao existe no consolidado
+              Inventário que não existe no consolidado
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
-                  <th className="p-2 text-left">ID Inventario</th>
-                  <th className="p-2 text-left">Patrimonio</th>
-                  <th className="p-2 text-left">Serie</th>
+                  <th className="p-2 text-left">ID Inventário</th>
+                  <th className="p-2 text-left">Patrimônio</th>
+                  <th className="p-2 text-left">Série</th>
                   <th className="p-2 text-left">Status</th>
                   <th className="p-2 text-left">Setor</th>
                 </tr>
@@ -356,13 +356,13 @@ export default function InventarioConciliacaoPage() {
         <div className="grid grid-cols-1 gap-4 xl:grid-cols-2">
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Inventario sem patrimonio
+              Inventário sem patrimônio
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="p-2 text-left">ID</th>
-                  <th className="p-2 text-left">Serie</th>
+                  <th className="p-2 text-left">Série</th>
                   <th className="p-2 text-left">Status</th>
                 </tr>
               </thead>
@@ -376,7 +376,7 @@ export default function InventarioConciliacaoPage() {
                 ))}
                 {!carregando && (dados?.amostras.inventarioSemPatrimonio || []).length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="p-3 text-center text-slate-500">Nenhum item sem patrimonio.</td>
+                    <td colSpan={3} className="p-3 text-center text-slate-500">Nenhum item sem patrimônio.</td>
                   </tr>
                 ) : null}
               </tbody>
@@ -385,13 +385,13 @@ export default function InventarioConciliacaoPage() {
 
           <section className="overflow-auto rounded border bg-white">
             <div className="border-b bg-slate-50 px-3 py-2 text-sm font-semibold">
-              Consolidado sem patrimonio
+              Consolidado sem patrimônio
             </div>
             <table className="w-full text-sm">
               <thead className="bg-gray-100">
                 <tr>
                   <th className="p-2 text-left">Linha</th>
-                  <th className="p-2 text-left">Serie</th>
+                  <th className="p-2 text-left">Série</th>
                   <th className="p-2 text-left">Tipo</th>
                 </tr>
               </thead>
@@ -405,7 +405,7 @@ export default function InventarioConciliacaoPage() {
                 ))}
                 {!carregando && (dados?.amostras.consolidadoSemPatrimonio || []).length === 0 ? (
                   <tr>
-                    <td colSpan={3} className="p-3 text-center text-slate-500">Nenhuma linha sem patrimonio.</td>
+                    <td colSpan={3} className="p-3 text-center text-slate-500">Nenhuma linha sem patrimônio.</td>
                   </tr>
                 ) : null}
               </tbody>

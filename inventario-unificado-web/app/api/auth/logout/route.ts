@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server";
 
-import { getSessionCookieName } from "@/lib/security/sessionAuth";
-
 export async function POST() {
   const response = NextResponse.json({ sucesso: true });
 
   response.cookies.set({
-    name: getSessionCookieName(),
+    name: "inv_profile",
     value: "",
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

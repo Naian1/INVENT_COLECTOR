@@ -283,7 +283,7 @@ export default function ImportacoesInventarioPage() {
         setEmpresas(lista);
         setEmpresaSelecionada((current) => current || lista[0]?.cd_cgc || '');
       } catch (error: any) {
-        setErro(error?.message || 'Falha ao carregar empresas para importacao.');
+        setErro(error?.message || 'Falha ao carregar empresas para importação.');
       }
     };
 
@@ -338,18 +338,18 @@ export default function ImportacoesInventarioPage() {
     }
 
     if (!validarCompetencia(competencia)) {
-      setErro('Competencia invalida. Use MM/AAAA, por exemplo 04/2026.');
+      setErro('Competência inválida. Use MM/AAAA, por exemplo 04/2026.');
       return;
     }
 
     if (!empresaSelecionada) {
-      setErro('Selecione a empresa responsavel pela carga Matrix.');
+      setErro('Selecione a empresa responsável pela carga Matrix.');
       return;
     }
 
     const empresaEscolhida = empresas.find((item) => item.cd_cgc === empresaSelecionada);
     if (!empresaEscolhida) {
-      setErro('Empresa selecionada nao encontrada. Recarregue a pagina e tente novamente.');
+      setErro('Empresa selecionada não encontrada. Recarregue a página e tente novamente.');
       return;
     }
 
@@ -376,7 +376,7 @@ export default function ImportacoesInventarioPage() {
       }
 
       if (!startData?.ok || !startData?.data?.nr_carga) {
-        throw new Error(startData?.error || 'Edge Function nao retornou nr_carga.');
+        throw new Error(startData?.error || 'Edge Function não retornou nr_carga.');
       }
 
       const nrCarga = Number(startData.data.nr_carga);
@@ -432,8 +432,8 @@ export default function ImportacoesInventarioPage() {
 
   return (
     <BasicPageShell
-      title="Importacoes"
-      subtitle="Importe XLSX/CSV para a Matrix mensal (base de apoio do inventario oficial)"
+      title="Importações"
+      subtitle="Importe XLSX/CSV para a Matrix mensal (base de apoio do inventário oficial)"
       actions={
         <div className="flex flex-wrap gap-2">
           <a
@@ -458,7 +458,7 @@ export default function ImportacoesInventarioPage() {
 
         {faltandoCabecalhos.length > 0 ? (
           <div className="rounded border border-amber-300 bg-amber-50 p-3 text-amber-900">
-            <div className="font-medium">Atencao: colunas-chave nao reconhecidas</div>
+            <div className="font-medium">Atenção: colunas-chave não reconhecidas</div>
             <div className="text-sm">
               Campos faltando no mapeamento atual: <strong>{faltandoCabecalhos.join(', ')}</strong>.
             </div>
@@ -467,9 +467,9 @@ export default function ImportacoesInventarioPage() {
 
         {cabecalhosNaoMapeados.length > 0 ? (
           <div className="rounded border border-slate-200 bg-slate-50 p-3 text-slate-800">
-            <div className="font-medium">Colunas ignoradas nesta importacao</div>
+            <div className="font-medium">Colunas ignoradas nesta importação</div>
             <div className="text-sm">
-              {cabecalhosNaoMapeados.length} coluna(s) nao sao usadas no mapeamento da Matrix.
+              {cabecalhosNaoMapeados.length} coluna(s) não são usadas no mapeamento da Matrix.
             </div>
             <div className="mt-2 text-xs text-slate-700">
               {cabecalhosNaoMapeados.join(' | ')}
@@ -495,7 +495,7 @@ export default function ImportacoesInventarioPage() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Competencia da Matrix (MM/AAAA)</span>
+            <span className="font-medium text-slate-700">Competência da Matrix (MM/AAAA)</span>
             <input
               value={competencia}
               onChange={(event) => setCompetencia(event.target.value)}
@@ -505,16 +505,16 @@ export default function ImportacoesInventarioPage() {
           </label>
 
           <div className="text-xs text-slate-600">
-            A carga da Matrix substitui somente os dados da mesma competencia para a empresa selecionada.
-            Isso evita conflito entre empresas diferentes no mesmo mes.
+            A carga da Matrix substitui somente os dados da mesma competência para a empresa selecionada.
+            Isso evita conflito entre empresas diferentes no mesmo mês.
           </div>
         </div>
 
         <label className="block cursor-pointer rounded border border-dashed p-4 hover:bg-gray-50">
           <div className="font-medium">Selecionar planilha (XLSX/CSV)</div>
           <div className="text-sm text-gray-600">
-            Planilha Matrix/consolidada: Codigo Cliente, Nome do Cliente, ID Equipamento, Equipamento,
-            TIPO, Descricao do Produto e Serie do Equipamento. Campo de IP nao e exigido aqui.
+            Planilha Matrix/consolidada: Código Cliente, Nome do Cliente, ID Equipamento, Equipamento,
+            TIPO, Descrição do Produto e Série do Equipamento. Campo de IP não é exigido aqui.
           </div>
           <input
             type="file"
@@ -544,8 +544,8 @@ export default function ImportacoesInventarioPage() {
         ) : null}
 
         <div className="rounded border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-900">
-          Fluxo oficial ativo: esta tela salva apenas a Matrix mensal (base de apoio). O inventario oficial deve ser
-          cadastrado manualmente na tela de inventario.
+          Fluxo oficial ativo: esta tela salva apenas a Matrix mensal (base de apoio). O inventário oficial deve ser
+          cadastrado manualmente na tela de inventário.
         </div>
 
         {preview.length > 0 ? (
@@ -558,8 +558,8 @@ export default function ImportacoesInventarioPage() {
                   <th className="p-2 text-left">Equipamento</th>
                   <th className="p-2 text-left">Modelo</th>
                   <th className="p-2 text-left">Setor/Local</th>
-                  <th className="p-2 text-left">Patrimonio</th>
-                  <th className="p-2 text-left">Serie</th>
+                  <th className="p-2 text-left">Patrimônio</th>
+                  <th className="p-2 text-left">Série</th>
                 </tr>
               </thead>
               <tbody>

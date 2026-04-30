@@ -15,8 +15,18 @@
 ## Acesso
 
 - Frontend usa chave anonima publica.
+- Edge Functions do app web (`inventory-core`, `inventory-admin`, `inventory-matrix`, `inventory-print`) exigem JWT valido (`verify_jwt=true`).
 - Operacoes administrativas ficam nas Edge Functions.
 - Coletor acessa endpoint com Bearer token dedicado.
+- Telas administrativas no app web:
+  - `/usuarios` e `/inventario/categorias` exigem perfil `ADMIN`.
+  - Perfil `VIEWER` opera em modo somente leitura no inventario (sem criar/editar/movimentar/substituir/resolver).
+
+## Coletor em producao
+
+- Manter `COLLECTOR_API_TOKEN` forte e rotacionado.
+- Preferir `COLLECTOR_PRINTERS_SOURCE=supabase` para listar impressoras direto no Supabase (evita latencia extra do Vercel).
+- Quando usar source `supabase`, preencher `COLLECTOR_SUPABASE_URL` e `COLLECTOR_SUPABASE_KEY` (somente no host do coletor, nunca no browser).
 
 ## Boas praticas de release
 

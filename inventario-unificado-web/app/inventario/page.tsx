@@ -126,6 +126,17 @@ const INITIAL_SUBSTITUICAO_FORM: SubstituicaoFormState = {
 
 const SEM_LOCALIZACAO_VALUE = '__SEM_LOCALIZACAO__';
 
+type UltimaMovimentacao = {
+  dt_movimentacao: string | null;
+  ds_observacao: string | null;
+  nm_usuario: string | null;
+};
+
+type CriacaoInventario = {
+  dt_entrada: string | null;
+  nm_usuario_criacao: string | null;
+};
+
 function normalizarTexto(texto: string): string {
   return texto
     .normalize('NFD')
@@ -177,10 +188,20 @@ function statusFromLegacy(situacao?: string | null): TpStatus {
   return 'ATIVO';
 }
 
+function formatarDataHora(value: string | null): string {
+  if (!value) return '-';
+  const data = new Date(value);
+  if (Number.isNaN(data.getTime())) return '-';
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short',
+  }).format(data);
+}
+
 function getLabelTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'Manutencao';
   if (tpStatus === 'BACKUP') return 'Backup';
-  if (tpStatus === 'DEVOLUCAO') return 'Devolucao';
+  if (tpStatus === 'DEVOLUCAO') return 'Devolução';
   return 'Ativo';
 }
 
@@ -195,9 +216,20 @@ function FieldDbHint({ text }: { text: string }) {
   return <span className="inv-db-hint">Banco: {text}</span>;
 }
 
-async function invokeInventoryCore<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
+async function invokeInventoryCore<T>(
+  action: string,
+  payload?: Record<string, unknown>,
+  actor?: { nm_usuario?: string | null; cd_usuario?: number | null } | null,
+): Promise<T> {
   const { data, error } = await supabase.functions.invoke('inventory-core', {
-    body: { action, payload: payload ?? {} },
+    body: {
+      action,
+      payload: {
+        ...(payload ?? {}),
+        nm_usuario: actor?.nm_usuario ?? null,
+        cd_usuario: actor?.cd_usuario ?? null,
+      },
+    },
   });
 
   if (!error && data?.ok) {
@@ -232,6 +264,12 @@ export default function InventarioPage() {
   const [equipamentos, setEquipamentos] = useState<Equipamento[]>([]);
   const [tiposEquipamento, setTiposEquipamento] = useState<TipoEquipamento[]>([]);
   const [empresas, setEmpresas] = useState<EmpresaResumo[]>([]);
+  const [usuarioSessao, setUsuarioSessao] = useState<{
+    cd_usuario: number;
+    nm_usuario: string;
+    cd_perfil?: number;
+    perfil?: { nm_perfil?: string | null } | null;
+  } | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -254,6 +292,10 @@ export default function InventarioPage() {
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+  const [ultimaMovimentacao, setUltimaMovimentacao] = useState<UltimaMovimentacao | null>(null);
+  const [ultimaMovimentacaoLoading, setUltimaMovimentacaoLoading] = useState(false);
+  const [criacaoInventario, setCriacaoInventario] = useState<CriacaoInventario | null>(null);
 
   const [selectedPiso, setSelectedPiso] = useState<number | null>(null);
   const [selectedSetor, setSelectedSetor] = useState<number | null>(null);
@@ -278,6 +320,8 @@ export default function InventarioPage() {
   const [autoFillItem, setAutoFillItem] = useState<ConsolidadoLookupItem | null>(null);
   const [autoFillMessage, setAutoFillMessage] = useState<string | null>(null);
   const [movimentacaoPisoDestino, setMovimentacaoPisoDestino] = useState<number | null>(null);
+  const perfilNomeAtivo = String(usuarioSessao?.perfil?.nm_perfil || '').trim().toUpperCase();
+  const canEditInventario = perfilNomeAtivo !== 'VIEWER';
 
   const loadData = async () => {
     setLoading(true);
@@ -291,7 +335,7 @@ export default function InventarioPage() {
         equipamentos: Equipamento[];
         tipos: TipoEquipamento[];
         empresas?: EmpresaResumo[];
-      }>('list_context');
+      }>('list_context', undefined, usuarioSessao);
 
       const inventarios = Array.isArray(response.inventarios) ? response.inventarios : [];
       const pisosList = Array.isArray(response.pisos) ? response.pisos : [];
@@ -355,7 +399,7 @@ export default function InventarioPage() {
       setItems(itemsComDetalhes);
     } catch (error) {
       console.error('Erro ao carregar dados:', error);
-      setErrorMessage('Nao foi possivel carregar inventario, setores e equipamentos.');
+      setErrorMessage('Não foi possível carregar inventário, setores e equipamentos.');
     } finally {
       setLoading(false);
     }
@@ -363,6 +407,40 @@ export default function InventarioPage() {
 
   useEffect(() => {
     void loadData();
+  }, []);
+
+  useEffect(() => {
+    let active = true;
+
+    const carregarSessao = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+        if (!token) return;
+        const response = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!response.ok) return;
+        const payload = await response.json();
+        if (!payload?.sucesso || !payload?.dados) return;
+        if (active) {
+          setUsuarioSessao({
+            cd_usuario: payload.dados.cd_usuario,
+            nm_usuario: payload.dados.nm_usuario,
+            cd_perfil: payload.dados.cd_perfil,
+            perfil: payload.dados.perfil ?? null,
+          });
+        }
+      } catch {
+        // Keep without session if unavailable.
+      }
+    };
+
+    void carregarSessao();
+
+    return () => {
+      active = false;
+    };
   }, []);
 
   const equipamentosFiltradosNoFormulario = useMemo(() => {
@@ -652,7 +730,7 @@ export default function InventarioPage() {
     const patrimonio = formData.nr_patrimonio.trim();
 
     if (!patrimonio) {
-      setAutoFillMessage('Informe o patrimonio para auto preencher a partir da Matrix.');
+      setAutoFillMessage('Informe o patrimônio para autopreencher a partir da Matrix.');
       return;
     }
 
@@ -669,11 +747,11 @@ export default function InventarioPage() {
         patrimonio,
         competencia: autoFillCompetencia.trim() || null,
         cd_cgc: equipamentoSelecionadoFormulario?.cd_cgc || null,
-      });
+      }, usuarioSessao);
 
       if (!body.encontrado || !body.item) {
         setAutoFillItem(null);
-        setAutoFillMessage(body.motivo || 'Patrimonio nao encontrado na Matrix.');
+        setAutoFillMessage(body.motivo || 'Patrimônio não encontrado na Matrix.');
         return;
       }
 
@@ -704,11 +782,11 @@ export default function InventarioPage() {
       }));
 
       setAutoFillMessage(
-        `Matrix ${body.competencia}: serie, tipo e descricao localizados para patrimonio ${patrimonio}.`,
+        `Matrix ${body.competencia}: série, tipo e descrição localizados para patrimônio ${patrimonio}.`,
       );
     } catch (error: any) {
       setAutoFillItem(null);
-      setAutoFillMessage(error.message || 'Falha ao auto preencher por patrimonio.');
+      setAutoFillMessage(error.message || 'Falha ao autopreencher por patrimônio.');
     } finally {
       setAutoFillLoading(false);
     }
@@ -779,7 +857,7 @@ export default function InventarioPage() {
       ...previous,
       nr_patrimonio: codigoLimpo,
     }));
-    setScannerStatus(`Codigo lido: ${codigoLimpo}`);
+    setScannerStatus(`Código lido: ${codigoLimpo}`);
     setScannerError(null);
     setScannerOpen(false);
     stopScanner();
@@ -787,10 +865,10 @@ export default function InventarioPage() {
 
   const iniciarScanner = async () => {
     setScannerError(null);
-    setScannerStatus('Solicitando acesso a camera...');
+    setScannerStatus('Solicitando acesso à câmera...');
 
     if (typeof window === 'undefined' || !navigator.mediaDevices?.getUserMedia) {
-      setScannerError('Camera nao disponivel neste navegador/dispositivo.');
+      setScannerError('Câmera não disponível neste navegador/dispositivo.');
       return;
     }
 
@@ -798,7 +876,7 @@ export default function InventarioPage() {
       BarcodeDetector?: BarcodeDetectorConstructor;
     }).BarcodeDetector;
     if (!BarcodeDetectorCtor) {
-      setScannerError('Leitor de codigo nao suportado neste navegador. Use Chrome/Edge atualizado.');
+      setScannerError('Leitor de código não suportado neste navegador. Use Chrome/Edge atualizado.');
       return;
     }
 
@@ -811,13 +889,13 @@ export default function InventarioPage() {
       mediaStreamRef.current = stream;
 
       if (!videoRef.current) {
-        setScannerError('Falha ao iniciar visualizacao da camera.');
+        setScannerError('Falha ao iniciar visualização da câmera.');
         return;
       }
 
       videoRef.current.srcObject = stream;
       await videoRef.current.play();
-      setScannerStatus('Aponte para o codigo de barras do patrimonio.');
+      setScannerStatus('Aponte para o código de barras do patrimônio.');
 
       const detector = new BarcodeDetectorCtor({
         formats: ['code_128', 'code_39', 'ean_13', 'ean_8', 'upc_a', 'upc_e', 'itf'],
@@ -842,7 +920,7 @@ export default function InventarioPage() {
         }
       }, 350);
     } catch {
-      setScannerError('Nao foi possivel acessar a camera. Verifique a permissao do navegador.');
+      setScannerError('Não foi possível acessar a câmera. Verifique a permissão do navegador.');
       stopScanner();
     }
   };
@@ -875,9 +953,46 @@ export default function InventarioPage() {
     setAutoFillMessage(null);
     setErrorMessage(null);
     setSuccessMessage(null);
+    setUltimaMovimentacao(null);
+    setUltimaMovimentacaoLoading(false);
+    setCriacaoInventario(null);
+  };
+
+  const carregarUltimaMovimentacao = async (nrInventario: number) => {
+    setUltimaMovimentacaoLoading(true);
+    setUltimaMovimentacao(null);
+    setCriacaoInventario(null);
+
+    try {
+      const { data } = await supabase.auth.getSession();
+      const token = data.session?.access_token;
+      if (!token) {
+        throw new Error('Sessao invalida.');
+      }
+
+      const response = await fetch(`/api/inventario/auditoria?nr_inventario=${nrInventario}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const payload = await response.json();
+      if (!response.ok || !payload?.sucesso) {
+        throw new Error(payload?.erro || 'Falha ao carregar auditoria do inventario.');
+      }
+
+      setUltimaMovimentacao(payload?.dados?.ultima_movimentacao ?? null);
+      setCriacaoInventario(payload?.dados?.criacao ?? null);
+    } catch {
+      setUltimaMovimentacao(null);
+      setCriacaoInventario(null);
+    } finally {
+      setUltimaMovimentacaoLoading(false);
+    }
   };
 
   const openEditModal = (item: InventarioComDetalhes) => {
+    if (!canEditInventario) {
+      setErrorMessage('Perfil VIEWER possui acesso somente leitura ao inventario.');
+      return;
+    }
     setEditingItem(item);
     setFormTipoEquipamento(item.tipoEquipamento?.cd_tipo_equipamento || null);
     setFormData({
@@ -901,6 +1016,7 @@ export default function InventarioPage() {
     setScannerError(null);
     setErrorMessage(null);
     setSuccessMessage(null);
+    void carregarUltimaMovimentacao(item.nr_inventario);
     setModalOpen(true);
   };
 
@@ -1005,7 +1121,7 @@ export default function InventarioPage() {
     setSuccessMessage(null);
 
     if (!movimentandoItem) {
-      setErrorMessage('Nenhum equipamento selecionado para movimentacao.');
+      setErrorMessage('Nenhum equipamento selecionado para movimentação.');
       return;
     }
 
@@ -1034,9 +1150,9 @@ export default function InventarioPage() {
         nr_chamado: movimentacaoForm.nr_chamado.trim() || undefined,
         observacao: movimentacaoForm.observacao.trim() || null,
         filhos_acoes: filhosAcoesPayload,
-      });
+      }, usuarioSessao);
 
-      setSuccessMessage('Movimentacao registrada com sucesso.');
+      setSuccessMessage('Movimentação registrada com sucesso.');
       await loadData();
       setMovimentacaoModalOpen(false);
       resetMovimentacaoModal();
@@ -1053,13 +1169,13 @@ export default function InventarioPage() {
     setSuccessMessage(null);
 
     if (!substituindoItem) {
-      setErrorMessage('Nenhum equipamento em manutencao selecionado para substituicao.');
+      setErrorMessage('Nenhum equipamento em manutenção selecionado para substituição.');
       return;
     }
 
     const substituto = Number(substituicaoForm.nr_inventario_substituto);
     if (!Number.isFinite(substituto) || substituto <= 0) {
-      setErrorMessage('Selecione o patrimonio que vai substituir o equipamento em manutencao.');
+      setErrorMessage('Selecione o patrimônio que vai substituir o equipamento em manutenção.');
       return;
     }
 
@@ -1078,14 +1194,14 @@ export default function InventarioPage() {
         nr_chamado: substituicaoForm.nr_chamado.trim() || undefined,
         observacao: substituicaoForm.observacao.trim() || null,
         filhos_acoes: filhosAcoesPayload,
-      });
+      }, usuarioSessao);
 
-      setSuccessMessage('Substituicao aplicada com sucesso. O pai original permanece em manutencao ate resolucao.');
+      setSuccessMessage('Substituição aplicada com sucesso. O pai original permanece em manutenção até resolução.');
       await loadData();
       setSubstituicaoModalOpen(false);
       resetSubstituicaoModal();
     } catch (error: any) {
-      setErrorMessage(error.message || 'Falha ao substituir equipamento em manutencao.');
+      setErrorMessage(error.message || 'Falha ao substituir equipamento em manutenção.');
     } finally {
       setSubstituicaoLoading(false);
     }
@@ -1111,7 +1227,7 @@ export default function InventarioPage() {
     setSuccessMessage(null);
 
     if (!resolvendoItem) {
-      setErrorMessage('Nenhum equipamento selecionado para resolucao.');
+      setErrorMessage('Nenhum equipamento selecionado para resolução.');
       return;
     }
 
@@ -1120,7 +1236,7 @@ export default function InventarioPage() {
       && resolucaoForm.destino_resolucao === 'NOVO_SETOR'
       && !resolucaoForm.cd_setor_destino
     ) {
-      setErrorMessage('Selecione o setor de destino para concluir a resolucao.');
+      setErrorMessage('Selecione o setor de destino para concluir a resolução.');
       return;
     }
 
@@ -1138,13 +1254,13 @@ export default function InventarioPage() {
         observacao: resolucaoForm.observacao.trim() || null,
       };
 
-      await invokeInventoryCore('resolver_manutencao', payload);
-      setSuccessMessage('Resolucao aplicada com sucesso.');
+      await invokeInventoryCore('resolver_manutencao', payload, usuarioSessao);
+      setSuccessMessage('Resolução aplicada com sucesso.');
       await loadData();
       setResolucaoModalOpen(false);
       resetResolucaoModal();
     } catch (error: any) {
-      setErrorMessage(error.message || 'Falha ao aplicar resolucao de manutencao.');
+      setErrorMessage(error.message || 'Falha ao aplicar resolução de manutenção.');
     } finally {
       setResolucaoLoading(false);
     }
@@ -1166,7 +1282,7 @@ export default function InventarioPage() {
     const tpHierarquia = (equipamentoSelecionado?.tp_hierarquia || 'AMBOS') as TpHierarquia;
 
     if (tpHierarquia === 'RAIZ' && formData.nr_invent_sup) {
-      setErrorMessage('Equipamento configurado como RAIZ nao pode ter item superior.');
+      setErrorMessage('Equipamento configurado como RAIZ não pode ter item superior.');
       return;
     }
 
@@ -1176,7 +1292,7 @@ export default function InventarioPage() {
     }
 
     if (tpHierarquia !== 'FILHO' && !formData.nm_hostname.trim()) {
-      setErrorMessage('Hostname e obrigatorio para equipamentos RAIZ/AMBOS.');
+      setErrorMessage('Hostname é obrigatório para equipamentos RAIZ/AMBOS.');
       return;
     }
 
@@ -1189,7 +1305,7 @@ export default function InventarioPage() {
 
       if (patrimonioExistente) {
         setErrorMessage(
-          `Patrimonio ${patrimonioDigitado} ja existe no inventario (ID ${patrimonioExistente.nr_inventario}).`,
+          `Patrimônio ${patrimonioDigitado} já existe no inventário (ID ${patrimonioExistente.nr_inventario}).`,
         );
         return;
       }
@@ -1233,7 +1349,7 @@ export default function InventarioPage() {
         ie_situacao: 'A',
       };
 
-      await invokeInventoryCore(editingItem ? 'update_inventario' : 'create_inventario', payload);
+      await invokeInventoryCore(editingItem ? 'update_inventario' : 'create_inventario', payload, usuarioSessao);
 
       setSuccessMessage(editingItem ? 'Equipamento atualizado com sucesso.' : 'Equipamento cadastrado com sucesso.');
       await loadData();
@@ -1260,15 +1376,15 @@ export default function InventarioPage() {
 
   return (
     <BasicPageShell
-      title="Inventario Unificado"
-      subtitle="Gerenciamento oficial do inventario interno com hierarquia, status e leitura por codigo de barras"
+      title="Inventário Unificado"
+      subtitle="Gerenciamento oficial do inventário interno com hierarquia, status e leitura por código de barras"
       actions={
         <div className="ui-row">
           <a
             href="/inventario/importacoes"
             className="ui-btn"
           >
-            Importacoes
+            Importações
           </a>
           <a
             href="/inventario/consolidado"
@@ -1280,21 +1396,26 @@ export default function InventarioPage() {
             href="/inventario/conciliacao"
             className="ui-btn"
           >
-            Conciliacao
+            Conciliação
           </a>
           <a
             href="/inventario/devolucao"
             className="ui-btn"
           >
-            Devolucao
+            Devolução
           </a>
           <button
             type="button"
             onClick={() => {
+              if (!canEditInventario) {
+                setErrorMessage('Perfil VIEWER possui acesso somente leitura ao inventario.');
+                return;
+              }
               resetModalForm();
               setModalOpen(true);
             }}
             className="ui-btn ui-btn-primary"
+            disabled={!canEditInventario}
           >
             Adicionar equipamento
           </button>
@@ -1302,6 +1423,11 @@ export default function InventarioPage() {
       }
     >
       <StatusFeedback loading={loading || saving || resolucaoLoading || movimentacaoLoading || substituicaoLoading} error={errorMessage} success={successMessage} />
+      {!canEditInventario ? (
+        <div className="ui-card text-sm text-slate-600">
+          Perfil VIEWER: leitura habilitada. Edicoes, movimentacoes e substituicoes estao bloqueadas.
+        </div>
+      ) : null}
 
       <Dialog
         open={modalOpen}
@@ -1318,7 +1444,7 @@ export default function InventarioPage() {
             <DialogDescription>
               {editingItem
                 ? `Atualize os dados do item ${editingItem.nr_inventario}.`
-                : 'Cadastre item raiz (CPU) ou item vinculado com leitura de codigo por camera.'}
+                : 'Cadastre item raiz (CPU) ou item vinculado com leitura de código por câmera.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -1326,7 +1452,7 @@ export default function InventarioPage() {
             <div className="grid grid-cols-1 gap-3 md:grid-cols-2 lg:grid-cols-3">
               <label className="flex flex-col gap-1 text-sm">
                 <FieldDbHint text="inventario.nr_patrimonio" />
-                <span className="font-medium text-slate-700">Patrimonio</span>
+                <span className="font-medium text-slate-700">Patrimônio</span>
                 <input
                   value={formData.nr_patrimonio}
                   onChange={(event) => handleChangeForm('nr_patrimonio', event.target.value)}
@@ -1341,8 +1467,8 @@ export default function InventarioPage() {
               </label>
 
               <label className="flex flex-col gap-1 text-sm">
-                <FieldDbHint text="nao salva em tabela; filtro de busca na Matrix" />
-                <span className="font-medium text-slate-700">Competencia Matrix (opcional)</span>
+                <FieldDbHint text="não salva em tabela; filtro de busca na Matrix" />
+                <span className="font-medium text-slate-700">Competência Matrix (opcional)</span>
                 <input
                   value={autoFillCompetencia}
                   onChange={(event) => setAutoFillCompetencia(event.target.value)}
@@ -1358,16 +1484,16 @@ export default function InventarioPage() {
                   disabled={autoFillLoading}
                   className="rounded-md border border-slate-300 px-3 py-2 text-slate-700 hover:bg-slate-50 disabled:opacity-60"
                 >
-                  {autoFillLoading ? 'Buscando Matrix...' : 'Auto preencher por patrimonio'}
+                  {autoFillLoading ? 'Buscando Matrix...' : 'Autopreencher por patrimônio'}
                 </button>
                 <span className="text-xs text-slate-500">
-                  Busca serie (AI), tipo e descricao do produto pela planilha Matrix.
+                  Busca série (AI), tipo e descrição do produto pela planilha Matrix.
                 </span>
               </div>
 
               <label className="flex flex-col gap-1 text-sm">
                 <FieldDbHint text="inventario.nr_serie (auto preenchido pela Matrix coluna AI)" />
-                <span className="font-medium text-slate-700">Serie</span>
+                <span className="font-medium text-slate-700">Série</span>
                 <input
                   value={formData.nr_serie}
                   onChange={(event) => handleChangeForm('nr_serie', event.target.value)}
@@ -1423,6 +1549,7 @@ export default function InventarioPage() {
                     setFormData((previous) => ({ ...previous, cd_setor: '' }));
                   }}
                   className="rounded-md border border-slate-300 px-3 py-2"
+                  disabled={Boolean(editingItem)}
                 >
                   <option value="">Selecione o piso</option>
                   {pisos.map((piso) => (
@@ -1446,6 +1573,7 @@ export default function InventarioPage() {
                   }}
                   className="rounded-md border border-slate-300 px-3 py-2"
                   required
+                  disabled={Boolean(editingItem)}
                 >
                   <option value="">Selecione o setor</option>
                   {setoresFormularioPorPiso.map((setor) => (
@@ -1457,7 +1585,7 @@ export default function InventarioPage() {
               </label>
 
               <label className="flex flex-col gap-1 text-sm">
-                <FieldDbHint text="nao salva em inventario; apenas filtra modelos por tipo" />
+                <FieldDbHint text="não salva em inventário; apenas filtra modelos por tipo" />
                 <span className="font-medium text-slate-700">Tipo do equipamento</span>
                 <select
                   value={formTipoEquipamento || ''}
@@ -1502,14 +1630,29 @@ export default function InventarioPage() {
                   <option value="ATIVO">Ativo</option>
                   <option value="MANUTENCAO">Manutencao</option>
                   <option value="BACKUP">Backup</option>
-                  <option value="DEVOLUCAO">Devolucao</option>
+                  <option value="DEVOLUCAO">Devolução</option>
                 </select>
               </label>
+
+              {editingItem ? (
+                <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 md:col-span-2 lg:col-span-3">
+                  <p className="font-medium text-slate-700">Última movimentação</p>
+                  {ultimaMovimentacaoLoading ? (
+                    <p className="text-xs text-slate-500">Carregando última movimentação...</p>
+                  ) : (
+                    <div className="text-xs text-slate-600">
+                      <p>Data: {formatarDataHora(ultimaMovimentacao?.dt_movimentacao || null)}</p>
+                      <p>Usuário: {ultimaMovimentacao?.nm_usuario || '-'}</p>
+                      <p>Observação: {ultimaMovimentacao?.ds_observacao || '-'}</p>
+                    </div>
+                  )}
+                </div>
+              ) : null}
 
               {(formData.tp_status === 'MANUTENCAO' || formData.tp_status === 'DEVOLUCAO') ? (
                 <label className="flex flex-col gap-1 text-sm">
                   <FieldDbHint text="movimentacao.ds_observacao (chamado opcional para manutencao/devolucao)" />
-                  <span className="font-medium text-slate-700">Numero do chamado (opcional)</span>
+                  <span className="font-medium text-slate-700">Número do chamado (opcional)</span>
                   <input
                     value={formData.nr_chamado}
                     onChange={(event) => handleChangeForm('nr_chamado', event.target.value)}
@@ -1529,7 +1672,7 @@ export default function InventarioPage() {
                   disabled={tpHierarquiaFormulario === 'RAIZ' || !formData.cd_setor}
                 >
                   <option value="">
-                    {formData.cd_setor ? 'Sem vinculo (item raiz)' : 'Selecione primeiro o setor'}
+                    {formData.cd_setor ? 'Sem vínculo (item raiz)' : 'Selecione primeiro o setor'}
                   </option>
                   {itensRaizNoSetorSelecionado.map((item) => (
                     <option key={item.nr_inventario} value={item.nr_inventario}>
@@ -1544,22 +1687,28 @@ export default function InventarioPage() {
                 </span>
               </label>
 
+              {editingItem ? (
+                <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-xs text-slate-600 md:col-span-2 lg:col-span-3">
+                  Para trocar setor/piso use o botão de movimentação. Edições aqui não alteram localização.
+                </div>
+              ) : null}
+
               {tpHierarquiaFormulario === 'RAIZ' ? (
                 <div className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2 text-sm text-amber-800 md:col-span-2 lg:col-span-3">
-                  Modelo RAIZ selecionado: este item nao pode ter item superior.
+                  Modelo RAIZ selecionado: este item não pode ter item superior.
                 </div>
               ) : null}
 
               <div className="flex flex-col gap-2 text-sm md:col-span-2 lg:col-span-3">
-                <FieldDbHint text="nao salva em tabela; camera somente para leitura temporaria de codigo" />
-                <span className="font-medium text-slate-700">Leitor por camera (codigo de barras)</span>
+                <FieldDbHint text="não salva em tabela; câmera somente para leitura temporária de código" />
+                <span className="font-medium text-slate-700">Leitor por câmera (código de barras)</span>
                 <div className="ui-row">
                   <button
                     type="button"
                     onClick={() => setScannerOpen((previous) => !previous)}
                     className="ui-btn"
                   >
-                    {scannerOpen ? 'Fechar camera' : 'Abrir camera para ler codigo'}
+                    {scannerOpen ? 'Fechar câmera' : 'Abrir câmera para ler código'}
                   </button>
                   {scannerStatus ? <span className="text-xs text-slate-600">{scannerStatus}</span> : null}
                 </div>
@@ -1575,7 +1724,7 @@ export default function InventarioPage() {
                       style={{ maxHeight: 260, background: '#0f172a' }}
                     />
                     <p className="text-xs text-slate-600">
-                      Aponte para o codigo de barras do patrimonio. A leitura preenche o campo de patrimonio e nao
+                      Aponte para o código de barras do patrimônio. A leitura preenche o campo de patrimônio e não
                       armazena imagem no sistema.
                     </p>
                   </div>
@@ -1615,11 +1764,11 @@ export default function InventarioPage() {
             {autoFillItem ? (
               <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
                 <p>
-                  <strong>Referencia Matrix:</strong> tipo {autoFillItem.nm_tipo || '-'} | descricao{' '}
+                  <strong>Referência Matrix:</strong> tipo {autoFillItem.nm_tipo || '-'} | descrição{' '}
                   {autoFillItem.ds_produto || '-'}
                 </p>
                 <p>
-                  serie {autoFillItem.nr_serie || '-'} | id equipamento {autoFillItem.nr_id_equipamento || '-'}
+                  série {autoFillItem.nr_serie || '-'} | id equipamento {autoFillItem.nr_id_equipamento || '-'}
                 </p>
               </div>
             ) : null}
@@ -1630,7 +1779,7 @@ export default function InventarioPage() {
                 disabled={saving}
                 className="ui-btn ui-btn-primary"
               >
-                {saving ? 'Salvando...' : editingItem ? 'Salvar alteracoes' : 'Salvar equipamento'}
+                {saving ? 'Salvando...' : editingItem ? 'Salvar alterações' : 'Salvar equipamento'}
               </button>
               {editingItem ? (
                 <button
@@ -1641,7 +1790,7 @@ export default function InventarioPage() {
                   }}
                   className="ui-btn"
                 >
-                  Movimentacao
+                  Movimentação
                 </button>
               ) : null}
               {editingItem?.tp_status === 'MANUTENCAO' ? (
@@ -1666,6 +1815,11 @@ export default function InventarioPage() {
               >
                 Cancelar
               </button>
+              {editingItem ? (
+                <span className="text-xs text-slate-500">
+                  Criado por: {criacaoInventario?.nm_usuario_criacao || '-'} | Data: {formatarDataHora(criacaoInventario?.dt_entrada || null)}
+                </span>
+              ) : null}
             </div>
           </form>
         </DialogContent>
@@ -1682,30 +1836,30 @@ export default function InventarioPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Resolucao de manutencao</DialogTitle>
+            <DialogTitle>Resolução de manutenção</DialogTitle>
             <DialogDescription>
               {resolvendoItem
-                ? `Patrimonio ${resolvendoItem.nr_patrimonio || resolvendoItem.nr_inventario}: finalize com destino adequado.`
-                : 'Defina o destino apos manutencao.'}
+                ? `Patrimônio ${resolvendoItem.nr_patrimonio || resolvendoItem.nr_inventario}: finalize com destino adequado.`
+                : 'Defina o destino após manutenção.'}
             </DialogDescription>
           </DialogHeader>
 
           <form onSubmit={handleSubmitResolucao} className="inv-modal-form space-y-3">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Resultado da manutencao</span>
+              <span className="font-medium text-slate-700">Resultado da manutenção</span>
               <select
                 value={resolucaoForm.tipo_resolucao}
                 onChange={(event) => handleChangeResolucao('tipo_resolucao', event.target.value as TipoResolucao)}
                 className="rounded-md border border-slate-300 px-3 py-2"
               >
                 <option value="RESOLVIDO">Resolvido</option>
-                <option value="SEM_RESOLUCAO">Sem resolucao (vai para devolucao)</option>
+                <option value="SEM_RESOLUCAO">Sem resolução (vai para devolução)</option>
               </select>
             </label>
 
             {resolucaoForm.tipo_resolucao === 'RESOLVIDO' ? (
               <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-slate-700">Destino apos resolucao</span>
+                <span className="font-medium text-slate-700">Destino após resolução</span>
                 <select
                   value={resolucaoForm.destino_resolucao}
                   onChange={(event) => handleChangeResolucao('destino_resolucao', event.target.value as DestinoResolucao)}
@@ -1738,19 +1892,19 @@ export default function InventarioPage() {
 
             {resolucaoForm.tipo_resolucao === 'SEM_RESOLUCAO' ? (
               <label className="flex flex-col gap-1 text-sm">
-                <span className="font-medium text-slate-700">Numero do chamado (opcional)</span>
+                <span className="font-medium text-slate-700">Número do chamado (opcional)</span>
                 <input
                   value={resolucaoForm.nr_chamado}
                   onChange={(event) => handleChangeResolucao('nr_chamado', event.target.value)}
                   className="rounded-md border border-slate-300 px-3 py-2"
                   placeholder="Ex: GLPI-123456"
                 />
-                <span className="text-xs text-slate-500">Se vazio, o sistema tenta reutilizar o ultimo chamado desta manutencao.</span>
+                <span className="text-xs text-slate-500">Se vazio, o sistema tenta reutilizar o último chamado desta manutenção.</span>
               </label>
             ) : null}
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Observacao (opcional)</span>
+              <span className="font-medium text-slate-700">Observação (opcional)</span>
               <textarea
                 value={resolucaoForm.observacao}
                 onChange={(event) => handleChangeResolucao('observacao', event.target.value)}
@@ -1761,7 +1915,7 @@ export default function InventarioPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <button type="submit" disabled={resolucaoLoading} className="ui-btn ui-btn-primary">
-                {resolucaoLoading ? 'Aplicando...' : 'Confirmar resolucao'}
+                {resolucaoLoading ? 'Aplicando...' : 'Confirmar resolução'}
               </button>
               <button
                 type="button"
@@ -1789,10 +1943,10 @@ export default function InventarioPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Substituicao durante manutencao</DialogTitle>
+            <DialogTitle>Substituição durante manutenção</DialogTitle>
             <DialogDescription>
               {substituindoItem
-                ? `Patrimonio ${substituindoItem.nr_patrimonio || substituindoItem.nr_inventario}: selecione o backup que assumira o posto.`
+                ? `Patrimônio ${substituindoItem.nr_patrimonio || substituindoItem.nr_inventario}: selecione o backup que assumirá o posto.`
                 : 'Defina o item backup e as acoes dos filhos.'}
             </DialogDescription>
           </DialogHeader>
@@ -1800,20 +1954,20 @@ export default function InventarioPage() {
           {substituindoItem ? (
             <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700 space-y-1">
               <p>
-                <strong>Item em manutencao:</strong> {labelInventario(substituindoItem)}
+                <strong>Item em manutenção:</strong> {labelInventario(substituindoItem)}
               </p>
               <p>
                 <strong>Setor atual:</strong> {formatSetorLabel(substituindoItem.setor)}
               </p>
               <p>
-                <strong>Regra:</strong> este item permanece em manutencao ate a resolucao.
+                <strong>Regra:</strong> este item permanece em manutenção até a resolução.
               </p>
             </div>
           ) : null}
 
           <form onSubmit={handleSubmitSubstituicao} className="inv-modal-form space-y-3">
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Patrimonio substituto (deve estar em backup)</span>
+              <span className="font-medium text-slate-700">Patrimônio substituto (deve estar em backup)</span>
               <select
                 value={substituicaoForm.nr_inventario_substituto}
                 onChange={(event) => handleChangeSubstituicao('nr_inventario_substituto', event.target.value)}
@@ -1836,7 +1990,7 @@ export default function InventarioPage() {
                 onChange={(event) => handleChangeSubstituicao('cd_setor_destino', event.target.value)}
                 className="rounded-md border border-slate-300 px-3 py-2"
               >
-                <option value="">Automatico (setor de origem da manutencao)</option>
+                <option value="">Automático (setor de origem da manutenção)</option>
                 {setores.map((setor) => (
                   <option key={setor.cd_setor} value={setor.cd_setor}>
                     {formatSetorLabel(setor)}
@@ -1849,7 +2003,7 @@ export default function InventarioPage() {
               <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm space-y-2">
                 <p className="font-medium text-slate-700">Decisao por filho</p>
                 <p className="text-xs text-slate-600">
-                  Escolha o destino de cada filho do equipamento em manutencao.
+                  Escolha o destino de cada filho do equipamento em manutenção.
                 </p>
                 <div className="space-y-2">
                   {filhosDiretosSubstituicao.map((filho) => (
@@ -1871,7 +2025,7 @@ export default function InventarioPage() {
             ) : null}
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Numero do chamado GLPI (opcional)</span>
+              <span className="font-medium text-slate-700">Número do chamado GLPI (opcional)</span>
               <input
                 value={substituicaoForm.nr_chamado}
                 onChange={(event) => handleChangeSubstituicao('nr_chamado', event.target.value)}
@@ -1881,18 +2035,18 @@ export default function InventarioPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Observacao (opcional)</span>
+              <span className="font-medium text-slate-700">Observação (opcional)</span>
               <textarea
                 value={substituicaoForm.observacao}
                 onChange={(event) => handleChangeSubstituicao('observacao', event.target.value)}
                 className="min-h-24 rounded-md border border-slate-300 px-3 py-2"
-                placeholder="Ex: backup enviado para manter operacao da area"
+                placeholder="Ex: backup enviado para manter operação da área"
               />
             </label>
 
             <div className="flex flex-wrap items-center gap-3">
               <button type="submit" disabled={substituicaoLoading} className="ui-btn ui-btn-primary">
-                {substituicaoLoading ? 'Aplicando...' : 'Confirmar substituicao'}
+                {substituicaoLoading ? 'Aplicando...' : 'Confirmar substituição'}
               </button>
               <button
                 type="button"
@@ -1920,11 +2074,11 @@ export default function InventarioPage() {
       >
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Movimentacao de equipamento</DialogTitle>
+            <DialogTitle>Movimentação de equipamento</DialogTitle>
             <DialogDescription>
               {movimentandoItem
-                ? `Patrimonio ${movimentandoItem.nr_patrimonio || movimentandoItem.nr_inventario}: informe o setor de destino.`
-                : 'Defina o setor de destino para movimentacao.'}
+                ? `Patrimônio ${movimentandoItem.nr_patrimonio || movimentandoItem.nr_inventario}: informe o setor de destino.`
+                : 'Defina o setor de destino para movimentação.'}
             </DialogDescription>
           </DialogHeader>
 
@@ -1932,7 +2086,7 @@ export default function InventarioPage() {
             <div className="rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
               <p>
                 <strong>Empresa:</strong>{' '}
-                {empresasByCgc.get(String(movimentandoItem.equipamento?.cd_cgc || '')) || 'Nao identificada'}
+                {empresasByCgc.get(String(movimentandoItem.equipamento?.cd_cgc || '')) || 'Não identificada'}
               </p>
               <p>
                 <strong>Setor atual:</strong> {formatSetorLabel(movimentandoItem.setor)}
@@ -2011,18 +2165,18 @@ export default function InventarioPage() {
             ) : null}
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Numero do chamado GLPI (opcional)</span>
+              <span className="font-medium text-slate-700">Número do chamado GLPI (opcional)</span>
               <input
                 value={movimentacaoForm.nr_chamado}
                 onChange={(event) => handleChangeMovimentacao('nr_chamado', event.target.value)}
                 className="rounded-md border border-slate-300 px-3 py-2"
                 placeholder="Ex: GLPI-123456"
               />
-              <span className="text-xs text-slate-500">Se ficar vazio, o sistema tenta reutilizar o ultimo chamado da movimentacao.</span>
+              <span className="text-xs text-slate-500">Se ficar vazio, o sistema tenta reutilizar o último chamado da movimentação.</span>
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Observacao (opcional)</span>
+              <span className="font-medium text-slate-700">Observação (opcional)</span>
               <textarea
                 value={movimentacaoForm.observacao}
                 onChange={(event) => handleChangeMovimentacao('observacao', event.target.value)}
@@ -2033,7 +2187,7 @@ export default function InventarioPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <button type="submit" disabled={movimentacaoLoading} className="ui-btn ui-btn-primary">
-                {movimentacaoLoading ? 'Movendo...' : 'Confirmar movimentacao'}
+                {movimentacaoLoading ? 'Movendo...' : 'Confirmar movimentação'}
               </button>
               <button
                 type="button"
@@ -2055,7 +2209,7 @@ export default function InventarioPage() {
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Filtros</h2>
             <p className="text-sm text-slate-600">
-              Combine setor, tipo, relacionamento e status para encontrar qualquer item rapido.
+              Combine setor, tipo, relacionamento e status para encontrar qualquer item rápido.
             </p>
           </div>
 
@@ -2065,7 +2219,7 @@ export default function InventarioPage() {
               <input
                 value={searchTerm}
                 onChange={(event) => setSearchTerm(event.target.value)}
-                placeholder="Patrimonio, IP, serie, setor..."
+                placeholder="Patrimônio, IP, série, setor..."
                 className="rounded-md border border-slate-300 px-3 py-2"
               />
             </label>
@@ -2110,14 +2264,14 @@ export default function InventarioPage() {
             </label>
 
             <label className="flex flex-col gap-1 text-sm">
-              <span className="font-medium text-slate-700">Localizacao</span>
+              <span className="font-medium text-slate-700">Localização</span>
               <select
                 value={selectedLocalizacao}
                 onChange={(event) => setSelectedLocalizacao(event.target.value)}
                 className="rounded-md border border-slate-300 px-3 py-2"
               >
                 <option value="">Todas</option>
-                <option value={SEM_LOCALIZACAO_VALUE}>Sem localizacao</option>
+                <option value={SEM_LOCALIZACAO_VALUE}>Sem localização</option>
                 {localizacoesFiltradas.map((localizacao) => (
                   <option key={localizacao} value={localizacao}>
                     {localizacao}
@@ -2150,7 +2304,7 @@ export default function InventarioPage() {
                 className="rounded-md border border-slate-300 px-3 py-2"
               >
                 <option value="todos">Todos</option>
-                <option value="raizes">Apenas raizes</option>
+                <option value="raizes">Apenas raízes</option>
                 <option value="filhos">Apenas vinculados</option>
               </select>
             </label>
@@ -2166,7 +2320,7 @@ export default function InventarioPage() {
                 <option value="ATIVO">Ativo</option>
                 <option value="MANUTENCAO">Manutencao</option>
                 <option value="BACKUP">Backup</option>
-                <option value="DEVOLUCAO">Devolucao</option>
+                <option value="DEVOLUCAO">Devolução</option>
               </select>
             </label>
           </div>
@@ -2178,7 +2332,7 @@ export default function InventarioPage() {
             <span className="rounded-full bg-green-100 px-3 py-1 text-green-700">Ativo: {totalAtivos}</span>
             <span className="rounded-full bg-amber-100 px-3 py-1 text-amber-800">Manutencao: {totalManutencao}</span>
             <span className="rounded-full bg-slate-200 px-3 py-1 text-slate-700">Backup: {totalBackup}</span>
-            <span className="rounded-full bg-red-100 px-3 py-1 text-red-700">Devolucao: {totalDevolucao}</span>
+            <span className="rounded-full bg-red-100 px-3 py-1 text-red-700">Devolução: {totalDevolucao}</span>
             <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700">Exibindo: {paintedItems.length}</span>
           </div>
         </div>
@@ -2204,9 +2358,9 @@ export default function InventarioPage() {
                   <table className="w-full">
                     <thead>
                       <tr className="border-b bg-gray-50">
-                        <th className="px-4 py-2 text-left font-semibold">Acoes</th>
+                <th className="px-4 py-2 text-left font-semibold">Ações</th>
                         <th className="px-4 py-2 text-left font-semibold">ID</th>
-                        <th className="px-4 py-2 text-left font-semibold">Patrimonio</th>
+                        <th className="px-4 py-2 text-left font-semibold">Patrimônio</th>
                         <th className="px-4 py-2 text-left font-semibold">Tipo</th>
                         <th className="px-4 py-2 text-left font-semibold">Modelo</th>
                         <th className="px-4 py-2 text-left font-semibold">Hierarquia</th>
@@ -2215,7 +2369,7 @@ export default function InventarioPage() {
                         <th className="px-4 py-2 text-left font-semibold">Hostname</th>
                         <th className="px-4 py-2 text-left font-semibold">IP</th>
                         <th className="px-4 py-2 text-left font-semibold">MAC</th>
-                        <th className="px-4 py-2 text-left font-semibold">Serie</th>
+                        <th className="px-4 py-2 text-left font-semibold">Série</th>
                         <th className="px-4 py-2 text-left font-semibold">Status</th>
                       </tr>
                     </thead>
@@ -2228,6 +2382,7 @@ export default function InventarioPage() {
                                 type="button"
                                 onClick={() => openEditModal(item)}
                                 className="rounded-md border border-slate-300 px-2 py-1 text-xs text-slate-700 hover:bg-slate-50"
+                                disabled={!canEditInventario}
                               >
                                 Editar
                               </button>
@@ -2236,6 +2391,7 @@ export default function InventarioPage() {
                                   type="button"
                                   onClick={() => openSubstituicaoModal(item)}
                                   className="rounded-md border border-blue-300 bg-blue-50 px-2 py-1 text-xs text-blue-800 hover:bg-blue-100"
+                                  disabled={!canEditInventario}
                                 >
                                   Substituir
                                 </button>
@@ -2245,8 +2401,9 @@ export default function InventarioPage() {
                                   type="button"
                                   onClick={() => openResolucaoModal(item)}
                                   className="rounded-md border border-amber-300 bg-amber-50 px-2 py-1 text-xs text-amber-800 hover:bg-amber-100"
+                                  disabled={!canEditInventario}
                                 >
-                                  Resolucao
+                                  Resolução
                                 </button>
                               ) : null}
                             </div>
@@ -2281,8 +2438,8 @@ export default function InventarioPage() {
 
             <div className="rounded-xl border bg-white p-4 shadow-sm space-y-3">
               <div>
-                <h2 className="text-lg font-semibold text-slate-900">Composicao das estacoes</h2>
-                <p className="text-sm text-slate-600">Visualizacao rapida de itens raiz e equipamentos vinculados.</p>
+                <h2 className="text-lg font-semibold text-slate-900">Composição das estações</h2>
+                <p className="text-sm text-slate-600">Visualização rápida de itens raiz e equipamentos vinculados.</p>
               </div>
 
               <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">

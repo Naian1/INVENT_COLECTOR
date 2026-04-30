@@ -157,6 +157,14 @@ Acoes:
 }
 ```
 
+### Regra de chamado (importante)
+
+- `nr_chamado` e opcional.
+- Se nao for enviado, a movimentacao **nao** herda chamado antigo automaticamente.
+- Nesse caso a observacao final fica:
+  - `OBS: ...` quando houver observacao manual.
+  - ou texto padrao de movimentacao quando chamado e observacao estiverem vazios.
+
 ## Action: substituir_manutencao
 
 ### Request
@@ -196,6 +204,11 @@ Acoes:
 }
 ```
 
+### Regra de chamado
+
+- `nr_chamado` e opcional para substituicao.
+- Se vier vazio, o backend nao reaproveita chamado anterior automaticamente.
+
 ## Action: resolver_manutencao
 
 ### Request
@@ -218,6 +231,7 @@ Acoes:
 - `tipo_resolucao`: `RESOLVIDO` ou `SEM_RESOLUCAO`
 - `destino_resolucao` (quando resolvido): `ORIGEM`, `NOVO_SETOR` ou `ESTOQUE`
 - sem resolucao envia para `DEVOLUCAO` e exige chamado valido
+- chamado nao e herdado automaticamente de movimentacoes anteriores
 
 ## Action: matrix_lookup
 

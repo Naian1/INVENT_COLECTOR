@@ -30,6 +30,11 @@ Coletar telemetria de impressoras via SNMP em ciclos, com envio autenticado ao b
 - Rodar em intervalo estavel (ex.: 300s).
 - Monitorar crescimento de fila pendente.
 - Validar token e conectividade periodicamente.
+- Em producao, preferir `COLLECTOR_PRINTERS_SOURCE=supabase` para reduzir dependencia/latencia do frontend (Vercel).
+- Se usar source `supabase`, configurar:
+  - `COLLECTOR_SUPABASE_URL`
+  - `COLLECTOR_SUPABASE_KEY`
+  - `COLLECTOR_SUPABASE_PRINTERS_TABLE` (`impressoras` ou `inventario`)
 
 ## Check rapido
 

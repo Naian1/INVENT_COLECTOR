@@ -1291,6 +1291,198 @@ EXECUTE FUNCTION public.fn_inventario_validar_hierarquia_status();
 COMMIT;
 
 
+
+-- ========================================================
+-- SOURCE: 20260428_auditoria_inventario_compat_nm_usuario.sql
+-- ========================================================
+
+BEGIN;
+
+-- =========================================================
+-- AJUSTE DE AUDITORIA (COMPATIVEL COM MOVIMENTACAO.nm_usuario)
+-- Contexto:
+-- - Alguns ambientes nao possuem movimentacao.cd_usuario.
+-- - A auditoria do inventario deve funcionar com nm_usuario.
+-- =========================================================
+
+ALTER TABLE public.inventario
+  ADD COLUMN IF NOT EXISTS cd_usuario_criacao INTEGER,
+  ADD COLUMN IF NOT EXISTS cd_usuario_ultima_alteracao INTEGER;
+
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'fk_inventario_usuario_criacao'
+      AND conrelid = 'public.inventario'::regclass
+  ) THEN
+    ALTER TABLE public.inventario
+      ADD CONSTRAINT fk_inventario_usuario_criacao
+      FOREIGN KEY (cd_usuario_criacao)
+      REFERENCES public.usuario(cd_usuario)
+      ON UPDATE CASCADE
+      ON DELETE SET NULL;
+  END IF;
+
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'fk_inventario_usuario_ultima_alteracao'
+      AND conrelid = 'public.inventario'::regclass
+  ) THEN
+    ALTER TABLE public.inventario
+      ADD CONSTRAINT fk_inventario_usuario_ultima_alteracao
+      FOREIGN KEY (cd_usuario_ultima_alteracao)
+      REFERENCES public.usuario(cd_usuario)
+      ON UPDATE CASCADE
+      ON DELETE SET NULL;
+  END IF;
+END;
+$$;
+
+CREATE INDEX IF NOT EXISTS idx_inventario_usuario_criacao
+  ON public.inventario (cd_usuario_criacao);
+
+CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
+  ON public.inventario (cd_usuario_ultima_alteracao);
+
+CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_atualizacao()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  -- So atualiza se a coluna existir no schema atual.
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'inventario'
+      AND column_name = 'dt_atualizacao'
+  ) THEN
+    NEW.dt_atualizacao = CURRENT_TIMESTAMP;
+  END IF;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_inventario_touch_dt_atualizacao ON public.inventario;
+
+CREATE TRIGGER trg_inventario_touch_dt_atualizacao
+BEFORE UPDATE ON public.inventario
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_inventario_touch_dt_atualizacao();
+
+CREATE OR REPLACE FUNCTION public.fn_inventario_auditoria_fill()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_nm_usuario TEXT;
+  v_cd_usuario INTEGER;
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    IF NEW.cd_usuario_criacao IS NULL THEN
+      SELECT m.nm_usuario
+        INTO v_nm_usuario
+      FROM public.movimentacao m
+      WHERE m.nr_inventario = NEW.nr_inventario
+        AND m.nm_usuario IS NOT NULL
+        AND BTRIM(m.nm_usuario) <> ''
+      ORDER BY m.dt_movimentacao DESC
+      LIMIT 1;
+
+      IF v_nm_usuario IS NOT NULL THEN
+        SELECT u.cd_usuario
+          INTO v_cd_usuario
+        FROM public.usuario u
+        WHERE LOWER(BTRIM(u.nm_usuario)) = LOWER(BTRIM(v_nm_usuario))
+        LIMIT 1;
+      ELSE
+        v_cd_usuario := NULL;
+      END IF;
+
+      NEW.cd_usuario_criacao := v_cd_usuario;
+    END IF;
+
+    IF NEW.cd_usuario_ultima_alteracao IS NULL THEN
+      NEW.cd_usuario_ultima_alteracao := NEW.cd_usuario_criacao;
+    END IF;
+  ELSE
+    IF NEW.cd_usuario_ultima_alteracao IS NULL THEN
+      SELECT m.nm_usuario
+        INTO v_nm_usuario
+      FROM public.movimentacao m
+      WHERE m.nr_inventario = NEW.nr_inventario
+        AND m.nm_usuario IS NOT NULL
+        AND BTRIM(m.nm_usuario) <> ''
+      ORDER BY m.dt_movimentacao DESC
+      LIMIT 1;
+
+      IF v_nm_usuario IS NOT NULL THEN
+        SELECT u.cd_usuario
+          INTO v_cd_usuario
+        FROM public.usuario u
+        WHERE LOWER(BTRIM(u.nm_usuario)) = LOWER(BTRIM(v_nm_usuario))
+        LIMIT 1;
+      ELSE
+        v_cd_usuario := NULL;
+      END IF;
+
+      NEW.cd_usuario_ultima_alteracao :=
+        COALESCE(v_cd_usuario, OLD.cd_usuario_ultima_alteracao, OLD.cd_usuario_criacao);
+    END IF;
+
+    IF OLD.cd_usuario_criacao IS NOT NULL
+       AND NEW.cd_usuario_criacao IS DISTINCT FROM OLD.cd_usuario_criacao THEN
+      NEW.cd_usuario_criacao := OLD.cd_usuario_criacao;
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_inventario_auditoria_fill ON public.inventario;
+
+CREATE TRIGGER trg_inventario_auditoria_fill
+BEFORE INSERT OR UPDATE ON public.inventario
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_inventario_auditoria_fill();
+
+-- Backfill legado
+WITH primeira_mov AS (
+  SELECT DISTINCT ON (m.nr_inventario)
+    m.nr_inventario,
+    m.nm_usuario
+  FROM public.movimentacao m
+  WHERE m.nm_usuario IS NOT NULL
+    AND BTRIM(m.nm_usuario) <> ''
+  ORDER BY m.nr_inventario, m.dt_movimentacao ASC
+)
+UPDATE public.inventario inv
+SET cd_usuario_criacao = u.cd_usuario
+FROM primeira_mov pm
+JOIN public.usuario u
+  ON LOWER(BTRIM(u.nm_usuario)) = LOWER(BTRIM(pm.nm_usuario))
+WHERE inv.nr_inventario = pm.nr_inventario
+  AND inv.cd_usuario_criacao IS NULL;
+
+UPDATE public.inventario inv
+SET cd_usuario_criacao = adm.cd_usuario
+FROM (
+  SELECT cd_usuario
+  FROM public.usuario
+  WHERE LOWER(BTRIM(ds_login)) = 'admin'
+  LIMIT 1
+) adm
+WHERE inv.cd_usuario_criacao IS NULL;
+
+UPDATE public.inventario
+SET cd_usuario_ultima_alteracao = cd_usuario_criacao
+WHERE cd_usuario_ultima_alteracao IS NULL;
+
+COMMIT;
 -- ========================================================
 -- SOURCE: 20260408_inventario_gerenciamento_full.sql
 -- ========================================================
@@ -1947,6 +2139,7 @@ CREATE TABLE IF NOT EXISTS public.usuario (
   ds_email VARCHAR NOT NULL,
   ds_login VARCHAR NOT NULL,
   ds_senha_hash VARCHAR NOT NULL,
+  auth_user_id UUID,
   cd_perfil INTEGER NOT NULL,
   ie_situacao CHAR(1) NOT NULL DEFAULT 'A',
   dt_ultimo_login TIMESTAMP,
@@ -1961,6 +2154,7 @@ ALTER TABLE public.usuario
   ADD COLUMN IF NOT EXISTS ds_email VARCHAR,
   ADD COLUMN IF NOT EXISTS ds_login VARCHAR,
   ADD COLUMN IF NOT EXISTS ds_senha_hash VARCHAR,
+  ADD COLUMN IF NOT EXISTS auth_user_id UUID,
   ADD COLUMN IF NOT EXISTS cd_perfil INTEGER,
   ADD COLUMN IF NOT EXISTS ie_situacao CHAR(1) DEFAULT 'A',
   ADD COLUMN IF NOT EXISTS dt_ultimo_login TIMESTAMP,
@@ -1989,6 +2183,20 @@ $$;
 
 DO $$
 BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'fk_usuario_auth_user'
+      AND conrelid = 'public.usuario'::regclass
+  ) THEN
+    ALTER TABLE public.usuario
+      ADD CONSTRAINT fk_usuario_auth_user
+      FOREIGN KEY (auth_user_id)
+      REFERENCES auth.users(id)
+      ON UPDATE CASCADE
+      ON DELETE SET NULL;
+  END IF;
+
   IF NOT EXISTS (
     SELECT 1
     FROM pg_constraint
@@ -2039,11 +2247,41 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_usuario_login_ci
 CREATE UNIQUE INDEX IF NOT EXISTS uq_usuario_email_ci
   ON public.usuario (LOWER(BTRIM(ds_email)));
 
+CREATE UNIQUE INDEX IF NOT EXISTS uq_usuario_auth_user_id
+  ON public.usuario (auth_user_id)
+  WHERE auth_user_id IS NOT NULL;
+
 CREATE INDEX IF NOT EXISTS idx_usuario_perfil
   ON public.usuario (cd_perfil);
 
 CREATE INDEX IF NOT EXISTS idx_usuario_situacao
   ON public.usuario (ie_situacao);
+
+-- =========================================================
+-- 2.1) USUARIO_PERFIL (vinculos multiplos de perfil)
+-- =========================================================
+CREATE TABLE IF NOT EXISTS public.usuario_perfil (
+  cd_usuario_perfil SERIAL PRIMARY KEY,
+  cd_usuario INTEGER NOT NULL REFERENCES public.usuario(cd_usuario) ON UPDATE CASCADE ON DELETE CASCADE,
+  cd_perfil INTEGER NOT NULL REFERENCES public.perfil(cd_perfil) ON UPDATE CASCADE ON DELETE RESTRICT,
+  ie_situacao CHAR(1) NOT NULL DEFAULT 'A',
+  dt_cadastro TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT ck_usuario_perfil_situacao CHECK (ie_situacao IN ('A', 'I')),
+  CONSTRAINT uq_usuario_perfil UNIQUE (cd_usuario, cd_perfil)
+);
+
+CREATE INDEX IF NOT EXISTS idx_usuario_perfil_usuario
+  ON public.usuario_perfil (cd_usuario);
+
+CREATE INDEX IF NOT EXISTS idx_usuario_perfil_perfil
+  ON public.usuario_perfil (cd_perfil);
+
+INSERT INTO public.usuario_perfil (cd_usuario, cd_perfil, ie_situacao)
+SELECT u.cd_usuario, u.cd_perfil, 'A'
+FROM public.usuario u
+WHERE u.cd_perfil IS NOT NULL
+ON CONFLICT (cd_usuario, cd_perfil)
+DO UPDATE SET ie_situacao = EXCLUDED.ie_situacao;
 
 CREATE OR REPLACE FUNCTION public.fn_usuario_touch_dt_atualizacao()
 RETURNS trigger

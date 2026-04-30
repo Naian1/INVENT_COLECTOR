@@ -37,6 +37,16 @@
 - telemetria_pagecount -> inventario
 - inventario_consolidado_linha -> inventario_consolidado_carga
 
+## Compatibilidade de auditoria (inventario x movimentacao)
+
+- Ambientes legados podem nao ter `movimentacao.cd_usuario`.
+- Nesses casos, a auditoria do inventario usa `movimentacao.nm_usuario` com match por `usuario.nm_usuario`.
+- Campos de auditoria em inventario:
+  - `cd_usuario_criacao`
+  - `cd_usuario_ultima_alteracao`
+- Trigger de touch:
+  - `fn_inventario_touch_dt_atualizacao` so atualiza `dt_atualizacao` quando a coluna existe no schema do ambiente.
+
 ## Regras criticas
 
 1. Hierarquia de inventario

@@ -27,6 +27,84 @@ function getAdminClient() {
   });
 }
 
+function getUserClient(authHeader: string) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+
+  if (!supabaseUrl || !anonKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
+  }
+
+  return createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+async function resolveAuthActor(
+  req: Request,
+  supabaseAdmin: ReturnType<typeof getAdminClient>,
+): Promise<{ cd_usuario: number; auth_user_id: string; is_admin: boolean }> {
+  const authHeader = req.headers.get("Authorization") || req.headers.get("authorization") || "";
+  if (!authHeader.toLowerCase().startsWith("bearer ")) {
+    throw new Error("Token ausente.");
+  }
+
+  const userClient = getUserClient(authHeader);
+  const { data: authData, error: authError } = await userClient.auth.getUser();
+  if (authError || !authData?.user?.id) {
+    throw new Error("Token invalido.");
+  }
+
+  const usuario = await supabaseAdmin
+    .from("usuario")
+    .select("cd_usuario, cd_perfil, ie_situacao")
+    .eq("auth_user_id", authData.user.id)
+    .eq("ie_situacao", "A")
+    .limit(1)
+    .maybeSingle();
+
+  if (usuario.error) {
+    throw new Error(`Falha ao validar usuario: ${usuario.error.message}`);
+  }
+  if (!usuario.data?.cd_usuario) {
+    throw new Error("Usuario inativo ou inexistente.");
+  }
+
+  const perfis = await supabaseAdmin
+    .from("usuario_perfil")
+    .select("perfil:perfil (nm_perfil)")
+    .eq("cd_usuario", usuario.data.cd_usuario)
+    .eq("ie_situacao", "A");
+
+  if (perfis.error) {
+    throw new Error(`Falha ao validar perfis: ${perfis.error.message}`);
+  }
+
+  const perfilNome = (perfis.data || [])
+    .map((row: any) => Array.isArray(row?.perfil) ? row.perfil?.[0]?.nm_perfil : row?.perfil?.nm_perfil)
+    .map((nome: unknown) => String(nome || "").trim().toUpperCase());
+
+  let isAdmin = perfilNome.includes("ADMIN");
+  if (!isAdmin && Number(usuario.data.cd_perfil) > 0) {
+    const perfilPrincipal = await supabaseAdmin
+      .from("perfil")
+      .select("nm_perfil")
+      .eq("cd_perfil", Number(usuario.data.cd_perfil))
+      .limit(1)
+      .maybeSingle();
+    if (!perfilPrincipal.error && perfilPrincipal.data?.nm_perfil) {
+      isAdmin = String(perfilPrincipal.data.nm_perfil).trim().toUpperCase() === "ADMIN";
+    }
+  }
+
+  return {
+    cd_usuario: Number(usuario.data.cd_usuario),
+    auth_user_id: authData.user.id,
+    is_admin: isAdmin,
+  };
+}
+
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
 }
@@ -117,6 +195,11 @@ Deno.serve(async (req) => {
     }
 
     const supabase = getAdminClient();
+    const actor = await resolveAuthActor(req, supabase);
+
+    if (!actor.is_admin) {
+      return jsonResponse({ ok: false, error: "Acesso restrito a administradores." }, 403);
+    }
 
     if (action === "list") {
       const [pisRes, empRes, tipRes, setRes, eqRes] = await Promise.all([

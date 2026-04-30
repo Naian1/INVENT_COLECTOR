@@ -82,6 +82,22 @@ Onde fica:
 2. Backend de regras: supabase/functions/inventory-core/index.ts.
 3. Frontend de bloqueio imediato: app/inventario/page.tsx.
 
+## Movimentacao herdando chamado antigo
+
+Comportamento esperado (atual):
+
+- Se `nr_chamado` vier vazio no payload, o backend nao deve reaproveitar chamado anterior.
+- A observacao da movimentacao deve ficar apenas com:
+  - `OBS: ...` (quando observacao foi informada), ou
+  - texto padrao de movimentacao.
+
+Se aparecer `CHAMADO:` mesmo sem preencher:
+
+1. Verificar se a versao publicada da function `inventory-core` esta atualizada.
+2. Republicar function:
+   - `npx supabase functions deploy inventory-core --project-ref <ref>`
+3. Confirmar no codigo publicado que `nrChamado = nrChamadoInformado` (sem fallback para historico).
+
 ## Importacao Matrix parcial (sem serie, descricao ou codigo)
 
 Possiveis causas:

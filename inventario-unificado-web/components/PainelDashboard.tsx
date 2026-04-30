@@ -140,16 +140,16 @@ export function PainelDashboard() {
       <section className="ui-card" style={{ marginBottom: 12 }}>
         <h2 style={{ marginTop: 0 }}>Dashboard de Impressoras</h2>
         <p className="ui-kv" style={{ marginTop: 0 }}>
-          Visao analitica por periodo com foco em suprimentos delicados e volume de paginas.
+          Visão analítica por período com foco em suprimentos delicados e volume de páginas.
         </p>
 
         <div className="ui-grid-4">
           <label>
             <span className="ui-kv">Periodo</span>
             <select className="ui-select" value={dias} onChange={(e) => setDias(Number(e.target.value))}>
-              <option value={7}>Ultimos 7 dias</option>
-              <option value={30}>Ultimos 30 dias</option>
-              <option value={90}>Ultimos 90 dias</option>
+              <option value={7}>Últimos 7 dias</option>
+              <option value={30}>Últimos 30 dias</option>
+              <option value={90}>Últimos 90 dias</option>
             </select>
           </label>
 
@@ -161,7 +161,7 @@ export function PainelDashboard() {
               onChange={(e) => setAgrupamento(e.target.value === "mes" ? "mes" : "dia")}
             >
               <option value="dia">Por dia</option>
-              <option value="mes">Por mes</option>
+              <option value="mes">Por mês</option>
             </select>
           </label>
 
@@ -178,7 +178,7 @@ export function PainelDashboard() {
           </label>
 
           <label>
-            <span className="ui-kv">Localizacao</span>
+            <span className="ui-kv">Localização</span>
             <select
               className="ui-select"
               value={localizacao}
@@ -217,7 +217,7 @@ export function PainelDashboard() {
               </p>
             </article>
             <article className="ui-card ui-dash-card">
-              <h3>Paginas no periodo</h3>
+              <h3>Páginas no período</h3>
               <p className="big">{formatNumber(data.resumo.paginas_periodo_total)}</p>
             </article>
             <article className="ui-card ui-dash-card">
@@ -232,16 +232,16 @@ export function PainelDashboard() {
 
           <section className="ui-card" style={{ marginBottom: 12 }}>
             <p className="ui-kv" style={{ margin: 0 }}>
-              Base historica valida de paginas:{" "}
+              Base histórica válida de páginas:{" "}
               <strong>{formatDateTime(data.faixa_historica_global.primeira_coleta)}</strong>
-              {" "}ate{" "}
+              {" "}até{" "}
               <strong>{formatDateTime(data.faixa_historica_global.ultima_coleta)}</strong>.
             </p>
           </section>
 
           <section className="ui-insight-grid" style={{ marginBottom: 12 }}>
             <article className="ui-card">
-              <h3 style={{ marginTop: 0 }}>Paginas por {agrupamento === "dia" ? "dia" : "mes"}</h3>
+              <h3 style={{ marginTop: 0 }}>Páginas por {agrupamento === "dia" ? "dia" : "mês"}</h3>
               <div className="ui-mini-bars">
                 {data.paginas_por_periodo.map((item) => {
                   const width =
@@ -292,14 +292,14 @@ export function PainelDashboard() {
                 })}
                 {!data.ranking_setores.length ? (
                   <span className="ui-kv" style={{ margin: 0 }}>
-                    Sem dados de paginas para ranking de setores.
+                    Sem dados de páginas para ranking de setores.
                   </span>
                 ) : null}
               </div>
             </article>
 
             <article className="ui-card">
-              <h3 style={{ marginTop: 0 }}>Localizacoes que mais imprimem</h3>
+              <h3 style={{ marginTop: 0 }}>Localizações que mais imprimem</h3>
               <div className="ui-mini-bars">
                 {data.ranking_localizacoes.map((item) => {
                   const width =
@@ -322,7 +322,7 @@ export function PainelDashboard() {
                 })}
                 {!data.ranking_localizacoes.length ? (
                   <span className="ui-kv" style={{ margin: 0 }}>
-                    Sem dados de paginas para ranking de localizacoes.
+                    Sem dados de páginas para ranking de localizações.
                   </span>
                 ) : null}
               </div>
@@ -334,9 +334,9 @@ export function PainelDashboard() {
                 <table className="ui-table">
                   <thead>
                     <tr>
-                      <th>Patrimonio</th>
+                      <th>Patrimônio</th>
                       <th>Setor</th>
-                      <th>Localizacao</th>
+                      <th>Localização</th>
                       <th>Suprimento</th>
                       <th>Nivel</th>
                       <th>Status</th>
@@ -365,7 +365,7 @@ export function PainelDashboard() {
                     ))}
                     {!data.suprimentos_delicados.length ? (
                       <tr>
-                        <td colSpan={6}>Nenhum suprimento baixo/critico no filtro atual.</td>
+                        <td colSpan={6}>Nenhum suprimento baixo/crítico no filtro atual.</td>
                       </tr>
                     ) : null}
                   </tbody>
@@ -377,8 +377,8 @@ export function PainelDashboard() {
           {data.historico_truncado ? (
             <section className="ui-card" style={{ marginBottom: 12 }}>
               <p className="ui-kv" style={{ margin: 0 }}>
-                Historico muito grande para uma unica consulta. O resultado foi truncado para manter a
-                tela rapida.
+                Histórico muito grande para uma única consulta. O resultado foi truncado para manter a
+                tela rápida.
               </p>
             </section>
           ) : null}

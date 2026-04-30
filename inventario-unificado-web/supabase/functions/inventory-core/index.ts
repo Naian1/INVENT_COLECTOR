@@ -44,6 +44,76 @@ function getAdminClient() {
   });
 }
 
+function getUserClient(authHeader: string) {
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+
+  if (!supabaseUrl || !anonKey) {
+    throw new Error("Missing SUPABASE_URL or SUPABASE_ANON_KEY");
+  }
+
+  return createClient(supabaseUrl, anonKey, {
+    global: { headers: { Authorization: authHeader } },
+    auth: { persistSession: false, autoRefreshToken: false },
+  });
+}
+
+async function resolveAuthActor(req: Request, supabaseAdmin: ReturnType<typeof getAdminClient>) {
+  const authHeader = req.headers.get("Authorization") || req.headers.get("authorization") || "";
+  if (!authHeader.toLowerCase().startsWith("bearer ")) {
+    return {
+      errorResponse: jsonResponse({ ok: false, error: "Token ausente." }, 401),
+      cd_usuario: null,
+      nm_usuario: null,
+      auth_user_id: null,
+    };
+  }
+
+  const userClient = getUserClient(authHeader);
+  const { data: authData, error: authError } = await userClient.auth.getUser();
+  if (authError || !authData?.user?.id) {
+    return {
+      errorResponse: jsonResponse({ ok: false, error: "Token invalido." }, 401),
+      cd_usuario: null,
+      nm_usuario: null,
+      auth_user_id: null,
+    };
+  }
+
+  const usuario = await supabaseAdmin
+    .from("usuario")
+    .select("cd_usuario, nm_usuario, ie_situacao")
+    .eq("auth_user_id", authData.user.id)
+    .eq("ie_situacao", "A")
+    .limit(1)
+    .maybeSingle();
+
+  if (usuario.error) {
+    return {
+      errorResponse: jsonResponse({ ok: false, error: `Falha ao validar usuario: ${usuario.error.message}` }, 500),
+      cd_usuario: null,
+      nm_usuario: null,
+      auth_user_id: null,
+    };
+  }
+
+  if (!usuario.data?.cd_usuario) {
+    return {
+      errorResponse: jsonResponse({ ok: false, error: "Usuario inativo ou inexistente." }, 401),
+      cd_usuario: null,
+      nm_usuario: null,
+      auth_user_id: null,
+    };
+  }
+
+  return {
+    errorResponse: null,
+    cd_usuario: Number(usuario.data.cd_usuario),
+    nm_usuario: limparTexto(usuario.data.nm_usuario),
+    auth_user_id: authData.user.id,
+  };
+}
+
 async function fetchAllPaginated<T>(
   fetchChunk: (from: number, to: number) => Promise<{ data: T[] | null; error: { message: string } | null }>,
   batchSize = 1000,
@@ -244,10 +314,11 @@ function normalizarMac(value: string | null): string | null {
   if (!text) return null;
   const hex = text.replace(/[^0-9a-fA-F]/g, "").toUpperCase();
   if (hex.length === 12) {
-    const pares = hex.match(/.{1,2}/g);
-    return pares ? pares.join(":") : null;
+    // Schema atual usa varchar(12) para nm_mac.
+    // Persistimos sem separadores para evitar overflow.
+    return hex;
   }
-  return text.toUpperCase();
+  return null;
 }
 
 function mapearErroDuplicidadeInventario(message: string): string {
@@ -653,6 +724,7 @@ async function registrarMovimentacaoSeNecessario(params: {
   nr_inventario: number;
   cd_setor_origem: number | null;
   cd_setor_destino: number;
+  cd_usuario?: number | null;
   nm_usuario?: string | null;
   ds_observacao?: string | null;
 }): Promise<void> {
@@ -692,14 +764,21 @@ async function registrarMovimentacaoSeNecessario(params: {
     }
   }
 
+  const hasCdUsuario = await columnExists(params.supabase, "movimentacao", "cd_usuario");
+  const payloadInsert: Record<string, unknown> = {
+    nr_inventario: params.nr_inventario,
+    cd_setor_origem: params.cd_setor_origem,
+    cd_setor_destino: params.cd_setor_destino,
+    nm_usuario: limparTexto(params.nm_usuario) || "inventory-core",
+    ds_observacao: limparTexto(params.ds_observacao),
+  };
+
+  if (hasCdUsuario && Number.isFinite(Number(params.cd_usuario))) {
+    payloadInsert.cd_usuario = Number(params.cd_usuario);
+  }
+
   const { error: insertError } = await params.supabase.from("movimentacao").insert([
-    {
-      nr_inventario: params.nr_inventario,
-      cd_setor_origem: params.cd_setor_origem,
-      cd_setor_destino: params.cd_setor_destino,
-      nm_usuario: limparTexto(params.nm_usuario) || "inventory-core",
-      ds_observacao: limparTexto(params.ds_observacao),
-    },
+    payloadInsert,
   ]);
 
   if (insertError) {
@@ -1321,6 +1400,12 @@ Deno.serve(async (req) => {
     }
 
     const supabase = getAdminClient();
+    const actor = await resolveAuthActor(req, supabase);
+    if (actor.errorResponse) {
+      return actor.errorResponse;
+    }
+    const nmUsuario = actor.nm_usuario;
+    const cdUsuario = actor.cd_usuario;
 
     if (action === "list_context") {
       const hasEmpresa = await tableExists(supabase, "empresa");
@@ -1570,6 +1655,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario: Number(data.nr_inventario),
         cd_setor_origem: null,
         cd_setor_destino: Number(payloadInsert.cd_setor),
@@ -1671,6 +1758,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario,
         cd_setor_origem: Number(existente.cd_setor || 0) || null,
         cd_setor_destino: Number(payloadUpdate.cd_setor),
@@ -1739,10 +1828,7 @@ Deno.serve(async (req) => {
         tp_status: tpStatusAtual,
       });
 
-      const nrChamado = nrChamadoInformado || (await buscarUltimoChamadoMovimentacao({
-        supabase,
-        nr_inventario,
-      }));
+      const nrChamado = nrChamadoInformado;
 
       const { data: filhosDiretos, error: filhosError } = await supabase
         .from("inventario")
@@ -1770,6 +1856,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario,
         cd_setor_origem: setorOrigem,
         cd_setor_destino,
@@ -1802,6 +1890,8 @@ Deno.serve(async (req) => {
 
           await registrarMovimentacaoSeNecessario({
             supabase,
+            nm_usuario: nmUsuario,
+            cd_usuario: cdUsuario,
             nr_inventario: filhoId,
             cd_setor_origem: setorFilhoOrigem,
             cd_setor_destino,
@@ -1835,6 +1925,8 @@ Deno.serve(async (req) => {
 
         await registrarMovimentacaoSeNecessario({
           supabase,
+          nm_usuario: nmUsuario,
+          cd_usuario: cdUsuario,
           nr_inventario: filhoId,
           cd_setor_origem: setorFilhoOrigem,
           cd_setor_destino: setorEstoque,
@@ -1963,10 +2055,7 @@ Deno.serve(async (req) => {
         throw new Error(`Erro ao listar filhos do item em manutencao: ${filhosError.message}`);
       }
 
-      const nrChamado = nrChamadoInformado || (await buscarUltimoChamadoMovimentacao({
-        supabase,
-        nr_inventario: nrInventarioManutencao,
-      }));
+      const nrChamado = nrChamadoInformado;
 
       const partesObs: string[] = [
         `SUBSTITUICAO: ${itemManutencao.nr_patrimonio || nrInventarioManutencao} -> ${itemSubstituto.nr_patrimonio || nrInventarioSubstituto}`,
@@ -1995,6 +2084,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario: nrInventarioSubstituto,
         cd_setor_origem: cdSetorSubstitutoOrigem,
         cd_setor_destino: cdSetorDestino,
@@ -2030,6 +2121,8 @@ Deno.serve(async (req) => {
 
           await registrarMovimentacaoSeNecessario({
             supabase,
+            nm_usuario: nmUsuario,
+            cd_usuario: cdUsuario,
             nr_inventario: filhoId,
             cd_setor_origem: setorFilhoOrigem,
             cd_setor_destino: cdSetorDestino,
@@ -2064,6 +2157,8 @@ Deno.serve(async (req) => {
 
           await registrarMovimentacaoSeNecessario({
             supabase,
+            nm_usuario: nmUsuario,
+            cd_usuario: cdUsuario,
             nr_inventario: filhoId,
             cd_setor_origem: setorFilhoOrigem,
             cd_setor_destino: setorEstoque,
@@ -2198,10 +2293,7 @@ Deno.serve(async (req) => {
         throw new Error(`Erro ao listar filhos do item em manutencao: ${filhosError.message}`);
       }
 
-      const nrChamado = nrChamadoInformado || (await buscarUltimoChamadoMovimentacao({
-        supabase,
-        nr_inventario: nrInventarioManutencao,
-      }));
+      const nrChamado = nrChamadoInformado;
 
       const partesObs: string[] = [
         `SUBSTITUICAO: ${itemManutencao.nr_patrimonio || nrInventarioManutencao} -> ${itemSubstituto.nr_patrimonio || nrInventarioSubstituto}`,
@@ -2230,6 +2322,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario: nrInventarioSubstituto,
         cd_setor_origem: cdSetorSubstitutoOrigem,
         cd_setor_destino: cdSetorDestino,
@@ -2265,6 +2359,8 @@ Deno.serve(async (req) => {
 
           await registrarMovimentacaoSeNecessario({
             supabase,
+            nm_usuario: nmUsuario,
+            cd_usuario: cdUsuario,
             nr_inventario: filhoId,
             cd_setor_origem: setorFilhoOrigem,
             cd_setor_destino: cdSetorDestino,
@@ -2299,6 +2395,8 @@ Deno.serve(async (req) => {
 
           await registrarMovimentacaoSeNecessario({
             supabase,
+            nm_usuario: nmUsuario,
+            cd_usuario: cdUsuario,
             nr_inventario: filhoId,
             cd_setor_origem: setorFilhoOrigem,
             cd_setor_destino: setorEstoque,
@@ -2377,10 +2475,7 @@ Deno.serve(async (req) => {
           ? Number(existente.nr_invent_sup)
           : null;
 
-      const nrChamado = nrChamadoInformado || (await buscarUltimoChamadoMovimentacao({
-        supabase,
-        nr_inventario,
-      }));
+      const nrChamado = nrChamadoInformado;
 
       if (tipoResolucao === "SEM_RESOLUCAO") {
         if (!nrChamado) {
@@ -2462,6 +2557,8 @@ Deno.serve(async (req) => {
 
       await registrarMovimentacaoSeNecessario({
         supabase,
+        nm_usuario: nmUsuario,
+        cd_usuario: cdUsuario,
         nr_inventario,
         cd_setor_origem: setorAtual,
         cd_setor_destino: novoCdSetor,

@@ -135,7 +135,7 @@ export default function InventarioConsolidadoPage() {
       setPagina(parsed.paginacao?.pagina || paginaSolicitada);
       setTamanhoPagina(parsed.paginacao?.tamanhoPagina || tamanhoSolicitado);
     } catch (error) {
-      const message = error instanceof Error ? error.message : 'Falha de conexao ao consultar Matrix.';
+      const message = error instanceof Error ? error.message : 'Falha de conexão ao consultar Matrix.';
       setErro(message);
     } finally {
       setCarregando(false);
@@ -200,20 +200,20 @@ export default function InventarioConsolidadoPage() {
   return (
     <BasicPageShell
       title="Matrix Mensal"
-      subtitle="Base externa Matrix para apoio de preenchimento; o inventario oficial fica na tela de inventario"
+      subtitle="Base externa Matrix para apoio de preenchimento; o inventário oficial fica na tela de inventário"
       actions={
         <div className="flex items-center gap-2">
           <a
             href="/inventario/importacoes"
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Voltar para importacoes
+            Voltar para importações
           </a>
           <a
             href="/inventario/conciliacao"
             className="rounded-md border border-slate-300 px-3 py-2 text-sm font-medium text-slate-700 hover:bg-slate-50"
           >
-            Ir para conciliacao
+            Ir para conciliação
           </a>
         </div>
       }
@@ -239,7 +239,7 @@ export default function InventarioConsolidadoPage() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Competencia</span>
+            <span className="font-medium text-slate-700">Competência</span>
             <select
               value={competencia}
               onChange={(event) => setCompetencia(event.target.value)}
@@ -254,7 +254,7 @@ export default function InventarioConsolidadoPage() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Patrimonio</span>
+            <span className="font-medium text-slate-700">Patrimônio</span>
             <input
               value={patrimonio}
               onChange={(event) => setPatrimonio(event.target.value)}
@@ -264,7 +264,7 @@ export default function InventarioConsolidadoPage() {
           </label>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Serie</span>
+            <span className="font-medium text-slate-700">Série</span>
             <input
               value={serie}
               onChange={(event) => setSerie(event.target.value)}
@@ -304,7 +304,7 @@ export default function InventarioConsolidadoPage() {
           </div>
 
           <label className="flex flex-col gap-1 text-sm">
-            <span className="font-medium text-slate-700">Linhas por pagina</span>
+            <span className="font-medium text-slate-700">Linhas por página</span>
             <select
               value={tamanhoPagina}
               onChange={(event) => {
@@ -329,9 +329,9 @@ export default function InventarioConsolidadoPage() {
           </span>
           <span className="rounded-full bg-slate-100 px-3 py-1 text-slate-700">Total Matrix: {resumo.total}</span>
           <span className="rounded-full bg-blue-100 px-3 py-1 text-blue-700">Exibidas: {resumo.exibidas}</span>
-          <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700">Com patrimonio (geral): {resumo.comPatrimonio}</span>
-          <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-700">Com serie (geral): {resumo.comSerie}</span>
-          <span className="rounded-full bg-cyan-100 px-3 py-1 text-cyan-700">Pagina: {pagina}</span>
+          <span className="rounded-full bg-indigo-100 px-3 py-1 text-indigo-700">Com patrimônio (geral): {resumo.comPatrimonio}</span>
+          <span className="rounded-full bg-violet-100 px-3 py-1 text-violet-700">Com série (geral): {resumo.comSerie}</span>
+          <span className="rounded-full bg-cyan-100 px-3 py-1 text-cyan-700">Página: {pagina}</span>
           <span className="rounded-full bg-emerald-100 px-3 py-1 text-emerald-700">
             Arquivo: {dados?.cargaSelecionada?.nm_arquivo || '-'}
           </span>
@@ -339,7 +339,7 @@ export default function InventarioConsolidadoPage() {
 
         <div className="flex flex-wrap items-center justify-between gap-2 rounded border bg-white px-3 py-2 text-sm">
           <span>
-            Pagina {dados?.paginacao?.pagina || 1} de {dados?.paginacao?.totalPaginas || 1} | Total filtrado: {dados?.paginacao?.total || 0}
+            Página {dados?.paginacao?.pagina || 1} de {dados?.paginacao?.totalPaginas || 1} | Total filtrado: {dados?.paginacao?.total || 0}
           </span>
           <div className="flex gap-2">
             <button
@@ -356,7 +356,7 @@ export default function InventarioConsolidadoPage() {
               disabled={!dados?.paginacao?.temProxima || carregando}
               className="rounded border border-slate-300 px-3 py-1 disabled:opacity-50"
             >
-              Proxima
+              Próxima
             </button>
           </div>
         </div>
@@ -366,11 +366,11 @@ export default function InventarioConsolidadoPage() {
             <thead className="bg-gray-100">
               <tr>
                 <th className="p-2 text-left">Linha</th>
-                <th className="p-2 text-left">Patrimonio</th>
-                <th className="p-2 text-left">Serie</th>
+                <th className="p-2 text-left">Patrimônio</th>
+                <th className="p-2 text-left">Série</th>
                 <th className="p-2 text-left">ID Equip.</th>
                 <th className="p-2 text-left">Tipo</th>
-                <th className="p-2 text-left">Descricao</th>
+                <th className="p-2 text-left">Descrição</th>
                 <th className="p-2 text-left">Empresa</th>
                 <th className="p-2 text-left">Cliente</th>
                 <th className="p-2 text-left">Local</th>
@@ -408,7 +408,7 @@ export default function InventarioConsolidadoPage() {
           </table>
 
           <div className="border-t bg-slate-50 px-3 py-2 text-center text-sm text-slate-500">
-            {carregando ? 'Carregando pagina atual...' : 'Use a paginacao para navegar pelos resultados.'}
+            {carregando ? 'Carregando página atual...' : 'Use a paginação para navegar pelos resultados.'}
           </div>
         </div>
       </div>

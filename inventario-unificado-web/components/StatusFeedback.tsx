@@ -14,7 +14,7 @@ type ToastItem = {
 
 function normalizarMensagemToast(input: string): string {
   const mensagem = String(input || "").trim();
-  if (!mensagem) return "Operacao finalizada.";
+  if (!mensagem) return "Operação finalizada.";
   return mensagem.replace(/^Falha ao executar inventory-core:\s*/i, "").trim() || mensagem;
 }
 
@@ -101,7 +101,7 @@ export function StatusFeedback({ loading, error, success }: StatusFeedbackProps)
                   type="button"
                   className="ui-toast-close"
                   onClick={() => removerToast(toast.id)}
-                  aria-label="Fechar notificacao"
+                  aria-label="Fechar notificação"
                 >
                   x
                 </button>

@@ -1,0 +1,2487 @@
+{
+  "total_ips": 116,
+  "ok": 98,
+  "failed": 18,
+  "failed_ips": [
+    "10.6.13.236",
+    "172.18.132.7",
+    "172.18.132.19",
+    "172.18.132.22",
+    "172.18.132.28",
+    "172.18.132.43",
+    "172.18.132.63",
+    "172.18.132.72",
+    "172.18.132.77",
+    "172.18.132.112",
+    "172.18.132.158",
+    "172.18.132.163",
+    "172.18.132.195",
+    "172.18.132.239",
+    "172.18.132.254",
+    "172.18.132.255",
+    "172.18.133.16",
+    "172.18.134.7"
+  ],
+  "supplies_by_ip": [
+    {
+      "ip": "10.6.0.10",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 44400,
+          "raw_max": 60000,
+          "percent": 74
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 18750,
+          "raw_max": 25000,
+          "percent": 75
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 178000,
+          "raw_max": 200000,
+          "percent": 89
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.11",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 54000,
+          "raw_max": 60000,
+          "percent": 90
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 16250,
+          "raw_max": 25000,
+          "percent": 65
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 134000,
+          "raw_max": 200000,
+          "percent": 67
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.16",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 45000,
+          "raw_max": 60000,
+          "percent": 75
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20500,
+          "raw_max": 25000,
+          "percent": 82
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 152000,
+          "raw_max": 200000,
+          "percent": 76
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.17",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 54000,
+          "raw_max": 60000,
+          "percent": 90
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 21500,
+          "raw_max": 25000,
+          "percent": 86
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 70000,
+          "raw_max": 200000,
+          "percent": 35
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.18",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 11400,
+          "raw_max": 60000,
+          "percent": 19
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5500,
+          "raw_max": 25000,
+          "percent": 22
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 130000,
+          "raw_max": 200000,
+          "percent": 65
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.25",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 37800,
+          "raw_max": 60000,
+          "percent": 63
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 4500,
+          "raw_max": 25000,
+          "percent": 18
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 144000,
+          "raw_max": 200000,
+          "percent": 72
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.26",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 43800,
+          "raw_max": 60000,
+          "percent": 73
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 7250,
+          "raw_max": 25000,
+          "percent": 29
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 130000,
+          "raw_max": 200000,
+          "percent": 65
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.40",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 39600,
+          "raw_max": 60000,
+          "percent": 66
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 9250,
+          "raw_max": 25000,
+          "percent": 37
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 117999,
+          "raw_max": 200000,
+          "percent": 59
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.80",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 54000,
+          "raw_max": 60000,
+          "percent": 90
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 1000,
+          "raw_max": 25000,
+          "percent": 4
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 138000,
+          "raw_max": 200000,
+          "percent": 69
+        }
+      ]
+    },
+    {
+      "ip": "10.6.0.243",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 184000,
+          "raw_max": 200000,
+          "percent": 92
+        },
+        {
+          "name": "ADF Kit",
+          "raw_current": 198000,
+          "raw_max": 200000,
+          "percent": 99
+        },
+        {
+          "name": "Black Photoconductor",
+          "raw_current": 68730,
+          "raw_max": 87000,
+          "percent": 79
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 2800,
+          "raw_max": 28000,
+          "percent": 10
+        },
+        {
+          "name": "Cyan Photoconductor",
+          "raw_current": 76560,
+          "raw_max": 87000,
+          "percent": 88
+        },
+        {
+          "name": "Cyan Cartridge",
+          "raw_current": 500,
+          "raw_max": 5000,
+          "percent": 10
+        },
+        {
+          "name": "Developer kit",
+          "raw_current": 1410000,
+          "raw_max": 1500000,
+          "percent": 94
+        },
+        {
+          "name": "Multipurpose feeder roller",
+          "raw_current": 49500,
+          "raw_max": 50000,
+          "percent": 99
+        },
+        {
+          "name": "Magenta Photoconductor",
+          "raw_current": 76560,
+          "raw_max": 87000,
+          "percent": 88
+        },
+        {
+          "name": "Magenta Cartridge",
+          "raw_current": 3550,
+          "raw_max": 5000,
+          "percent": 71
+        },
+        {
+          "name": "Waste Toner Bottle",
+          "raw_current": 40000,
+          "raw_max": 40000,
+          "percent": 100
+        },
+        {
+          "name": "Yellow Photoconductor",
+          "raw_current": 76560,
+          "raw_max": 87000,
+          "percent": 88
+        },
+        {
+          "name": "Yellow Cartridge",
+          "raw_current": 11880,
+          "raw_max": 16500,
+          "percent": 72
+        }
+      ]
+    },
+    {
+      "ip": "10.6.1.20",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 37800,
+          "raw_max": 60000,
+          "percent": 63
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22250,
+          "raw_max": 25000,
+          "percent": 89
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 180000,
+          "raw_max": 200000,
+          "percent": 90
+        }
+      ]
+    },
+    {
+      "ip": "10.6.1.30",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5880,
+          "raw_max": 10500,
+          "percent": 56
+        },
+        {
+          "name": "Cyan Cartridge",
+          "raw_current": 1890,
+          "raw_max": 7000,
+          "percent": 27
+        },
+        {
+          "name": "Transfer Module",
+          "raw_current": 125000,
+          "raw_max": 125000,
+          "percent": 100
+        },
+        {
+          "name": "Imaging Kit",
+          "raw_current": 86250,
+          "raw_max": 125000,
+          "percent": 69
+        },
+        {
+          "name": "Magenta Cartridge",
+          "raw_current": 350,
+          "raw_max": 7000,
+          "percent": 5
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 96250,
+          "raw_max": 125000,
+          "percent": 77
+        },
+        {
+          "name": "Waste Toner Bottle",
+          "raw_current": 16000,
+          "raw_max": 25000,
+          "percent": 64
+        },
+        {
+          "name": "Yellow Cartridge",
+          "raw_current": 2850,
+          "raw_max": 5000,
+          "percent": 57
+        }
+      ]
+    },
+    {
+      "ip": "10.6.1.31",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 37800,
+          "raw_max": 60000,
+          "percent": 63
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 3750,
+          "raw_max": 25000,
+          "percent": 15
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 117999,
+          "raw_max": 200000,
+          "percent": 59
+        }
+      ]
+    },
+    {
+      "ip": "10.6.1.81",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 19800,
+          "raw_max": 60000,
+          "percent": 33
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 19000,
+          "raw_max": 25000,
+          "percent": 76
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 166000,
+          "raw_max": 200000,
+          "percent": 83
+        }
+      ]
+    },
+    {
+      "ip": "10.6.5.10",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 5400,
+          "raw_max": 60000,
+          "percent": 9
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17750,
+          "raw_max": 25000,
+          "percent": 71
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 164000,
+          "raw_max": 200000,
+          "percent": 82
+        }
+      ]
+    },
+    {
+      "ip": "10.6.7.10",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 12600,
+          "raw_max": 60000,
+          "percent": 21
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 11000,
+          "raw_max": 25000,
+          "percent": 44
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 154000,
+          "raw_max": 200000,
+          "percent": 77
+        }
+      ]
+    },
+    {
+      "ip": "10.6.8.10",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 11400,
+          "raw_max": 60000,
+          "percent": 19
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 4750,
+          "raw_max": 25000,
+          "percent": 19
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 96000,
+          "raw_max": 200000,
+          "percent": 48
+        }
+      ]
+    },
+    {
+      "ip": "10.6.9.10",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 16800,
+          "raw_max": 60000,
+          "percent": 28
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 12750,
+          "raw_max": 25000,
+          "percent": 51
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 144000,
+          "raw_max": 200000,
+          "percent": 72
+        }
+      ]
+    },
+    {
+      "ip": "10.6.26.13",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 1200,
+          "raw_max": 60000,
+          "percent": 2
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 2500,
+          "raw_max": 25000,
+          "percent": 10
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 116000,
+          "raw_max": 200000,
+          "percent": 58
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.4",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 4800,
+          "raw_max": 60000,
+          "percent": 8
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22000,
+          "raw_max": 25000,
+          "percent": 88
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 28000,
+          "raw_max": 200000,
+          "percent": 14
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.12",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51600,
+          "raw_max": 60000,
+          "percent": 86
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 2040,
+          "raw_max": 6000,
+          "percent": 34
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 200000,
+          "raw_max": 200000,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.21",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51000,
+          "raw_max": 150000,
+          "percent": 34
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 19250,
+          "raw_max": 55000,
+          "percent": 35
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 123750,
+          "raw_max": 225000,
+          "percent": 55
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.23",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 600,
+          "raw_max": 60000,
+          "percent": 1
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 13000,
+          "raw_max": 25000,
+          "percent": 52
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 170000,
+          "raw_max": 200000,
+          "percent": 85
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.25",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51000,
+          "raw_max": 60000,
+          "percent": 85
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 9250,
+          "raw_max": 25000,
+          "percent": 37
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 130000,
+          "raw_max": 200000,
+          "percent": 65
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.30",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 24000,
+          "raw_max": 60000,
+          "percent": 40
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 21500,
+          "raw_max": 25000,
+          "percent": 86
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 40000,
+          "raw_max": 200000,
+          "percent": 20
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.31",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 43200,
+          "raw_max": 60000,
+          "percent": 72
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20750,
+          "raw_max": 25000,
+          "percent": 83
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 128000,
+          "raw_max": 200000,
+          "percent": 64
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.32",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22500,
+          "raw_max": 25000,
+          "percent": 90
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 78000,
+          "raw_max": 200000,
+          "percent": 39
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.34",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 16200,
+          "raw_max": 60000,
+          "percent": 27
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20250,
+          "raw_max": 25000,
+          "percent": 81
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 160000,
+          "raw_max": 200000,
+          "percent": 80
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.44",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 8400,
+          "raw_max": 60000,
+          "percent": 14
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 14500,
+          "raw_max": 25000,
+          "percent": 58
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 122000,
+          "raw_max": 200000,
+          "percent": 61
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.48",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 37200,
+          "raw_max": 60000,
+          "percent": 62
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 8250,
+          "raw_max": 25000,
+          "percent": 33
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 110000,
+          "raw_max": 200000,
+          "percent": 55
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.54",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51000,
+          "raw_max": 60000,
+          "percent": 85
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 16750,
+          "raw_max": 25000,
+          "percent": 67
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 176000,
+          "raw_max": 200000,
+          "percent": 88
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.58",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 28200,
+          "raw_max": 60000,
+          "percent": 47
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 172000,
+          "raw_max": 200000,
+          "percent": 86
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.59",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 44400,
+          "raw_max": 60000,
+          "percent": 74
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 13500,
+          "raw_max": 25000,
+          "percent": 54
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 144000,
+          "raw_max": 200000,
+          "percent": 72
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.60",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 48600,
+          "raw_max": 60000,
+          "percent": 81
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20000,
+          "raw_max": 25000,
+          "percent": 80
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 98000,
+          "raw_max": 200000,
+          "percent": 49
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.64",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 13500,
+          "raw_max": 25000,
+          "percent": 54
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 176000,
+          "raw_max": 200000,
+          "percent": 88
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.70",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 49200,
+          "raw_max": 60000,
+          "percent": 82
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 10750,
+          "raw_max": 25000,
+          "percent": 43
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 146000,
+          "raw_max": 200000,
+          "percent": 73
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.71",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 47400,
+          "raw_max": 60000,
+          "percent": 79
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 13750,
+          "raw_max": 25000,
+          "percent": 55
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 130000,
+          "raw_max": 200000,
+          "percent": 65
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.80",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 41400,
+          "raw_max": 60000,
+          "percent": 69
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 9250,
+          "raw_max": 25000,
+          "percent": 37
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 74000,
+          "raw_max": 200000,
+          "percent": 37
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.90",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 19800,
+          "raw_max": 60000,
+          "percent": 33
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 21500,
+          "raw_max": 25000,
+          "percent": 86
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 48000,
+          "raw_max": 200000,
+          "percent": 24
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.121",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 40800,
+          "raw_max": 60000,
+          "percent": 68
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 15000,
+          "raw_max": 20000,
+          "percent": 75
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 184000,
+          "raw_max": 200000,
+          "percent": 92
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.127",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 28200,
+          "raw_max": 60000,
+          "percent": 47
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 152000,
+          "raw_max": 200000,
+          "percent": 76
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.151",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 19200,
+          "raw_max": 60000,
+          "percent": 32
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5250,
+          "raw_max": 25000,
+          "percent": 21
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 110000,
+          "raw_max": 200000,
+          "percent": 55
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.154",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 34200,
+          "raw_max": 60000,
+          "percent": 57
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 9000,
+          "raw_max": 25000,
+          "percent": 36
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 182000,
+          "raw_max": 200000,
+          "percent": 91
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.157",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 21500,
+          "raw_max": 25000,
+          "percent": 86
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 72000,
+          "raw_max": 200000,
+          "percent": 36
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.162",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 49800,
+          "raw_max": 60000,
+          "percent": 83
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 19000,
+          "raw_max": 25000,
+          "percent": 76
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 74000,
+          "raw_max": 200000,
+          "percent": 37
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.185",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 11400,
+          "raw_max": 60000,
+          "percent": 19
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17000,
+          "raw_max": 25000,
+          "percent": 68
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 18000,
+          "raw_max": 200000,
+          "percent": 9
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.191",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 10200,
+          "raw_max": 60000,
+          "percent": 17
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 6000,
+          "raw_max": 200000,
+          "percent": 3
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.193",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 6000,
+          "raw_max": 60000,
+          "percent": 10
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 124000,
+          "raw_max": 200000,
+          "percent": 62
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.220",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 49800,
+          "raw_max": 60000,
+          "percent": 83
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 12500,
+          "raw_max": 25000,
+          "percent": 50
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 104000,
+          "raw_max": 200000,
+          "percent": 52
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.241",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 38400,
+          "raw_max": 60000,
+          "percent": 64
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 4750,
+          "raw_max": 25000,
+          "percent": 19
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 184000,
+          "raw_max": 200000,
+          "percent": 92
+        }
+      ]
+    },
+    {
+      "ip": "172.18.132.245",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 20400,
+          "raw_max": 60000,
+          "percent": 34
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5000,
+          "raw_max": 25000,
+          "percent": 20
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 100000,
+          "raw_max": 200000,
+          "percent": 50
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.14",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "ADF Kit",
+          "raw_current": 106700,
+          "raw_max": 110000,
+          "percent": 97
+        },
+        {
+          "name": "Imaging Unit",
+          "raw_current": 61500,
+          "raw_max": 75000,
+          "percent": 82
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25420,
+          "raw_max": 31000,
+          "percent": 82
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 200000,
+          "raw_max": 200000,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.19",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 6600,
+          "raw_max": 60000,
+          "percent": 11
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 19500,
+          "raw_max": 25000,
+          "percent": 78
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 88000,
+          "raw_max": 200000,
+          "percent": 44
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.41",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51000,
+          "raw_max": 60000,
+          "percent": 85
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 1750,
+          "raw_max": 25000,
+          "percent": 7
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 74000,
+          "raw_max": 200000,
+          "percent": 37
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.43",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51600,
+          "raw_max": 60000,
+          "percent": 86
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 18000,
+          "raw_max": 25000,
+          "percent": 72
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 130000,
+          "raw_max": 200000,
+          "percent": 65
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.47",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 19800,
+          "raw_max": 60000,
+          "percent": 33
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5250,
+          "raw_max": 25000,
+          "percent": 21
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 114000,
+          "raw_max": 200000,
+          "percent": 57
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.51",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 10200,
+          "raw_max": 60000,
+          "percent": 17
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20250,
+          "raw_max": 25000,
+          "percent": 81
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 88000,
+          "raw_max": 200000,
+          "percent": 44
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.52",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 33000,
+          "raw_max": 60000,
+          "percent": 55
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 9750,
+          "raw_max": 25000,
+          "percent": 39
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 30000,
+          "raw_max": 200000,
+          "percent": 15
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.59",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 13200,
+          "raw_max": 60000,
+          "percent": 22
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 12250,
+          "raw_max": 25000,
+          "percent": 49
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 154000,
+          "raw_max": 200000,
+          "percent": 77
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.63",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 55200,
+          "raw_max": 60000,
+          "percent": 92
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22000,
+          "raw_max": 25000,
+          "percent": 88
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 56000,
+          "raw_max": 200000,
+          "percent": 28
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.73",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 16800,
+          "raw_max": 60000,
+          "percent": 28
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 76000,
+          "raw_max": 200000,
+          "percent": 38
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.80",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 25800,
+          "raw_max": 60000,
+          "percent": 43
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 15250,
+          "raw_max": 25000,
+          "percent": 61
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 160000,
+          "raw_max": 200000,
+          "percent": 80
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.86",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 20400,
+          "raw_max": 60000,
+          "percent": 34
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22500,
+          "raw_max": 25000,
+          "percent": 90
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 78000,
+          "raw_max": 200000,
+          "percent": 39
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.95",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 26400,
+          "raw_max": 60000,
+          "percent": 44
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 15500,
+          "raw_max": 25000,
+          "percent": 62
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 166000,
+          "raw_max": 200000,
+          "percent": 83
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.99",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "ADF Kit",
+          "raw_current": 108900,
+          "raw_max": 110000,
+          "percent": 99
+        },
+        {
+          "name": "Imaging Unit",
+          "raw_current": 11250,
+          "raw_max": 75000,
+          "percent": 15
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 10540,
+          "raw_max": 31000,
+          "percent": 34
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 140000,
+          "raw_max": 200000,
+          "percent": 70
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.118",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 36600,
+          "raw_max": 60000,
+          "percent": 61
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 172000,
+          "raw_max": 200000,
+          "percent": 86
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.124",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 15000,
+          "raw_max": 60000,
+          "percent": 25
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22000,
+          "raw_max": 25000,
+          "percent": 88
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 156000,
+          "raw_max": 200000,
+          "percent": 78
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.129",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 13800,
+          "raw_max": 60000,
+          "percent": 23
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 14000,
+          "raw_max": 25000,
+          "percent": 56
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 116000,
+          "raw_max": 200000,
+          "percent": 58
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.131",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 40200,
+          "raw_max": 60000,
+          "percent": 67
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5500,
+          "raw_max": 25000,
+          "percent": 22
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 184000,
+          "raw_max": 200000,
+          "percent": 92
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.133",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 51000,
+          "raw_max": 60000,
+          "percent": 85
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20250,
+          "raw_max": 25000,
+          "percent": 81
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 200000,
+          "raw_max": 200000,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.139",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 28800,
+          "raw_max": 60000,
+          "percent": 48
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17500,
+          "raw_max": 25000,
+          "percent": 70
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 170000,
+          "raw_max": 200000,
+          "percent": 85
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.140",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 20400,
+          "raw_max": 60000,
+          "percent": 34
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 128000,
+          "raw_max": 200000,
+          "percent": 64
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.142",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 15000,
+          "raw_max": 60000,
+          "percent": 25
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 6000,
+          "raw_max": 25000,
+          "percent": 24
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 148000,
+          "raw_max": 200000,
+          "percent": 74
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.146",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 50000,
+          "raw_max": 200000,
+          "percent": 25
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.150",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 25800,
+          "raw_max": 60000,
+          "percent": 43
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 21750,
+          "raw_max": 25000,
+          "percent": 87
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 108000,
+          "raw_max": 200000,
+          "percent": 54
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.154",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 30000,
+          "raw_max": 60000,
+          "percent": 50
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17750,
+          "raw_max": 25000,
+          "percent": 71
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 132000,
+          "raw_max": 200000,
+          "percent": 66
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.158",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 43200,
+          "raw_max": 60000,
+          "percent": 72
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17500,
+          "raw_max": 25000,
+          "percent": 70
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 188000,
+          "raw_max": 200000,
+          "percent": 94
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.187",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 16200,
+          "raw_max": 60000,
+          "percent": 27
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 12500,
+          "raw_max": 25000,
+          "percent": 50
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 160000,
+          "raw_max": 200000,
+          "percent": 80
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.192",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 15000,
+          "raw_max": 60000,
+          "percent": 25
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 156000,
+          "raw_max": 200000,
+          "percent": 78
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.193",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 54000,
+          "raw_max": 60000,
+          "percent": 90
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 138000,
+          "raw_max": 200000,
+          "percent": 69
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.201",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 15000,
+          "raw_max": 60000,
+          "percent": 25
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 14500,
+          "raw_max": 25000,
+          "percent": 58
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 188000,
+          "raw_max": 200000,
+          "percent": 94
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.212",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 600,
+          "raw_max": 60000,
+          "percent": 1
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 25000,
+          "raw_max": 25000,
+          "percent": 100
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 140000,
+          "raw_max": 200000,
+          "percent": 70
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.216",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 11500,
+          "raw_max": 25000,
+          "percent": 46
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 138000,
+          "raw_max": 200000,
+          "percent": 69
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.220",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 8400,
+          "raw_max": 60000,
+          "percent": 14
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 22500,
+          "raw_max": 25000,
+          "percent": 90
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 108000,
+          "raw_max": 200000,
+          "percent": 54
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.231",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 50400,
+          "raw_max": 60000,
+          "percent": 84
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 19250,
+          "raw_max": 25000,
+          "percent": 77
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 128000,
+          "raw_max": 200000,
+          "percent": 64
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.249",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 10250,
+          "raw_max": 25000,
+          "percent": 41
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 70000,
+          "raw_max": 200000,
+          "percent": 35
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.251",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "ADF Kit",
+          "raw_current": 93500,
+          "raw_max": 110000,
+          "percent": 85
+        },
+        {
+          "name": "Imaging Unit",
+          "raw_current": 65250,
+          "raw_max": 75000,
+          "percent": 87
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 26660,
+          "raw_max": 31000,
+          "percent": 86
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 200000,
+          "raw_max": 200000,
+          "percent": 100
+        }
+      ]
+    },
+    {
+      "ip": "172.18.133.252",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 55200,
+          "raw_max": 60000,
+          "percent": 92
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 5000,
+          "raw_max": 25000,
+          "percent": 20
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 72000,
+          "raw_max": 200000,
+          "percent": 36
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.76",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 60000,
+          "raw_max": 60000,
+          "percent": 100
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 250,
+          "raw_max": 25000,
+          "percent": 1
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 90000,
+          "raw_max": 200000,
+          "percent": 45
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.81",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 36600,
+          "raw_max": 60000,
+          "percent": 61
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 4250,
+          "raw_max": 25000,
+          "percent": 17
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 182000,
+          "raw_max": 200000,
+          "percent": 91
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.94",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 55200,
+          "raw_max": 60000,
+          "percent": 92
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 250,
+          "raw_max": 25000,
+          "percent": 1
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 136000,
+          "raw_max": 200000,
+          "percent": 68
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.102",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 26400,
+          "raw_max": 60000,
+          "percent": 44
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 15500,
+          "raw_max": 25000,
+          "percent": 62
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 24000,
+          "raw_max": 200000,
+          "percent": 12
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.109",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 24000,
+          "raw_max": 60000,
+          "percent": 40
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 18750,
+          "raw_max": 25000,
+          "percent": 75
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 112000,
+          "raw_max": 200000,
+          "percent": 56
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.115",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 18000,
+          "raw_max": 60000,
+          "percent": 30
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 3750,
+          "raw_max": 25000,
+          "percent": 15
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 176000,
+          "raw_max": 200000,
+          "percent": 88
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.116",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 23400,
+          "raw_max": 60000,
+          "percent": 39
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 20750,
+          "raw_max": 25000,
+          "percent": 83
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 164000,
+          "raw_max": 200000,
+          "percent": 82
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.129",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 26400,
+          "raw_max": 60000,
+          "percent": 44
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 12250,
+          "raw_max": 25000,
+          "percent": 49
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 18000,
+          "raw_max": 200000,
+          "percent": 9
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.133",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 8400,
+          "raw_max": 60000,
+          "percent": 14
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 250,
+          "raw_max": 25000,
+          "percent": 1
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 150000,
+          "raw_max": 200000,
+          "percent": 75
+        }
+      ]
+    },
+    {
+      "ip": "172.18.134.177",
+      "ok": true,
+      "supplies": [
+        {
+          "name": "Imaging Unit",
+          "raw_current": 32400,
+          "raw_max": 60000,
+          "percent": 54
+        },
+        {
+          "name": "Black Cartridge",
+          "raw_current": 17250,
+          "raw_max": 25000,
+          "percent": 69
+        },
+        {
+          "name": "Maintenance Kit",
+          "raw_current": 117999,
+          "raw_max": 200000,
+          "percent": 59
+        }
+      ]
+    }
+  ]
+}

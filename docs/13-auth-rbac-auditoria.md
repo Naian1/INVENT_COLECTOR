@@ -115,6 +115,7 @@ Campo adicionado:
 
 Observacao:
 - nm_usuario legado foi mantido para compatibilidade historica
+- Em ambientes onde `cd_usuario` nao existe, a auditoria de inventario usa `nm_usuario` para resolver o usuario executor.
 
 ## Cardinalidades (modelo relacional)
 
@@ -138,6 +139,7 @@ Observacao:
 
 6) usuario (1) -> (N) movimentacao
 - Um usuario pode registrar varias movimentacoes
+- Quando `movimentacao.cd_usuario` nao existir, a referencia e inferida por `movimentacao.nm_usuario`.
 
 7) inventario (1) -> (N) movimentacao [ja existente no modelo]
 - Um item de inventario pode ter varias movimentacoes
@@ -176,6 +178,9 @@ Politicas de FK aplicadas:
 5) Auditoria operacional
 - inventario e movimentacao mantem referencia do usuario executor
 - Permite rastrear quem criou, quem alterou e quem movimentou
+- Observacao de chamado:
+  - Chamado nao e herdado automaticamente.
+  - Se `nr_chamado` nao for enviado na acao, a movimentacao nao reaproveita chamado anterior.
 
 ## Impacto para aplicacao
 

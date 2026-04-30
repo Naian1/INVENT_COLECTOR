@@ -60,7 +60,24 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
     return data.data as T;
   }
 
-  const fnError = error?.message || data?.error || 'inventory-admin indisponivel';
+  let fnError = data?.error || error?.message || 'inventory-admin indisponivel';
+
+  // Supabase wraps non-2xx into a generic message; try to parse response body for the root cause.
+  const responseContext = (error as any)?.context;
+  if (responseContext && typeof responseContext.text === 'function') {
+    try {
+      const rawText = await responseContext.text();
+      if (rawText) {
+        const parsed = JSON.parse(rawText);
+        if (parsed?.error) {
+          fnError = String(parsed.error);
+        }
+      }
+    } catch {
+      // Keep fallback message.
+    }
+  }
+
   throw new Error(`Falha ao executar inventory-admin: ${fnError}`);
 }
 
@@ -79,6 +96,8 @@ function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
 }
 
 export default function GerenciarCategoriasPage() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
   const [ok, setOk] = useState<string | null>(null);
@@ -193,8 +212,47 @@ export default function GerenciarCategoriasPage() {
   }
 
   useEffect(() => {
-    void carregarTudo();
+    let active = true;
+
+    const loadAuth = async () => {
+      try {
+        const { data } = await supabase.auth.getSession();
+        const token = data.session?.access_token;
+        if (!token) {
+          setIsAdmin(false);
+          setAuthChecked(true);
+          return;
+        }
+
+        const response = await fetch('/api/auth/me', {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const payload = await response.json();
+        if (!response.ok || !payload?.sucesso || !active) {
+          setIsAdmin(false);
+          setAuthChecked(true);
+          return;
+        }
+
+        const perfilNome = String(payload?.dados?.perfil?.nm_perfil || '').trim().toUpperCase();
+        setIsAdmin(perfilNome === 'ADMIN');
+      } catch {
+        setIsAdmin(false);
+      } finally {
+        if (active) setAuthChecked(true);
+      }
+    };
+
+    void loadAuth();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  useEffect(() => {
+    if (!authChecked || !isAdmin) return;
+    void carregarTudo();
+  }, [authChecked, isAdmin]);
 
   useEffect(() => {
     if (!empresaSelecionada) return;
@@ -410,7 +468,7 @@ export default function GerenciarCategoriasPage() {
     }
 
     if (!edicaoEmpresa.nm_empresa.trim()) {
-      setErro('Nome da empresa e obrigatorio.');
+      setErro('Nome da empresa é obrigatório.');
       return;
     }
 
@@ -438,7 +496,7 @@ export default function GerenciarCategoriasPage() {
     }
 
     if (!edicaoTipo.nm_tipo_equipamento.trim()) {
-      setErro('Nome do tipo e obrigatorio.');
+      setErro('Nome do tipo é obrigatório.');
       return;
     }
 
@@ -464,7 +522,7 @@ export default function GerenciarCategoriasPage() {
     }
 
     if (!edicaoPiso.nm_piso.trim()) {
-      setErro('Nome do piso e obrigatorio.');
+      setErro('Nome do piso é obrigatório.');
       return;
     }
 
@@ -490,12 +548,12 @@ export default function GerenciarCategoriasPage() {
     }
 
     if (!edicaoSetor.nm_setor.trim()) {
-      setErro('Nome do setor e obrigatorio.');
+      setErro('Nome do setor é obrigatório.');
       return;
     }
 
     if (!edicaoSetor.cd_piso) {
-      setErro('Piso e obrigatorio.');
+      setErro('Piso é obrigatório.');
       return;
     }
 
@@ -557,6 +615,22 @@ export default function GerenciarCategoriasPage() {
     [pisos.length, empresas.length, tipos.length, setores.length, equipamentos.length]
   );
 
+  if (!authChecked) {
+    return (
+      <BasicPageShell title="Gerenciar Inventário (Admin)" subtitle="Cadastre empresas, tipos, setores e equipamentos">
+        <div className="ui-card">Validando permissão...</div>
+      </BasicPageShell>
+    );
+  }
+
+  if (!isAdmin) {
+    return (
+      <BasicPageShell title="Gerenciar Inventário (Admin)" subtitle="Cadastre empresas, tipos, setores e equipamentos">
+        <div className="ui-card">Acesso restrito. Esta tela exige perfil ADMIN.</div>
+      </BasicPageShell>
+    );
+  }
+
   return (
     <BasicPageShell title="Gerenciar Inventário (Admin)" subtitle="Cadastre empresas, tipos, setores e equipamentos">
       <div style={{ display: 'grid', gap: 12 }}>
@@ -572,25 +646,25 @@ export default function GerenciarCategoriasPage() {
 
         <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
           Configure primeiro empresa, tipo e setor. Depois cadastre o modelo com tp_hierarquia para controlar o
-          vinculo CPU/monitor/nobreak no inventario.
+          vínculo CPU/monitor/nobreak no inventário.
         </div>
 
         <div className="ui-grid-3">
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
-            <strong>Piso + Setor:</strong> cada setor/localizacao pertence a um piso cadastrado (ex.: 1o Andar &gt; SAME &gt; Sala de Equipamentos).
+            <strong>Piso + Setor:</strong> cada setor/localização pertence a um piso cadastrado (ex.: 1º Andar &gt; SAME &gt; Sala de Equipamentos).
           </div>
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
             <strong>Tipo:</strong> classe do equipamento (CPU, MONITOR, NOBREAK, TABLET, IMPRESSORA).
           </div>
           <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
-            <strong>Modelo:</strong> catalogo tecnico usado no inventario oficial para criar cada item fisico.
+            <strong>Modelo:</strong> catálogo técnico usado no inventário oficial para criar cada item físico.
           </div>
         </div>
 
         <div className="ui-card" style={{ display: 'grid', gap: 12 }}>
           <h2 style={{ margin: 0 }}>Fluxos de cadastro</h2>
           <p style={{ margin: 0, color: '#64748b', fontSize: 14 }}>
-            Escolha o fluxo para abrir no modal: novo cadastro ou edicao de cadastros existentes.
+            Escolha o fluxo para abrir no modal: novo cadastro ou edição de cadastros existentes.
           </p>
           <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
             <button className="ui-btn ui-btn-primary" onClick={() => setNovoCadastroModalOpen(true)}>
@@ -625,14 +699,14 @@ export default function GerenciarCategoriasPage() {
                 <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
                   <h2 style={{ margin: 0 }}>Novo Tipo de Equipamento</h2>
                   <input className="ui-field" placeholder="Nome do tipo" value={novoTipo.nm_tipo_equipamento} onChange={(e) => setNovoTipo(v => ({ ...v, nm_tipo_equipamento: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={novoTipo.ds_tipo_equipamento} onChange={(e) => setNovoTipo(v => ({ ...v, ds_tipo_equipamento: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={novoTipo.ds_tipo_equipamento} onChange={(e) => setNovoTipo(v => ({ ...v, ds_tipo_equipamento: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarTipo}>Salvar Tipo</button>
                 </div>
 
                 <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
                   <h2 style={{ margin: 0 }}>Novo Piso</h2>
-                  <input className="ui-field" placeholder="Nome do piso (ex.: 1o Andar, Terreo, Anexo A)" value={novoPiso.nm_piso} onChange={(e) => setNovoPiso(v => ({ ...v, nm_piso: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao do piso (opcional)" value={novoPiso.ds_piso} onChange={(e) => setNovoPiso(v => ({ ...v, ds_piso: e.target.value }))} />
+                  <input className="ui-field" placeholder="Nome do piso (ex.: 1º Andar, Térreo, Anexo A)" value={novoPiso.nm_piso} onChange={(e) => setNovoPiso(v => ({ ...v, nm_piso: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição do piso (opcional)" value={novoPiso.ds_piso} onChange={(e) => setNovoPiso(v => ({ ...v, ds_piso: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarPiso}>Salvar Piso</button>
                 </div>
 
@@ -643,8 +717,8 @@ export default function GerenciarCategoriasPage() {
                     {pisos.map((p) => <option key={p.cd_piso} value={p.cd_piso}>{formatPisoLabel(p)}</option>)}
                   </select>
                   <input className="ui-field" placeholder="Nome do setor" value={novoSetor.nm_setor} onChange={(e) => setNovoSetor(v => ({ ...v, nm_setor: e.target.value }))} />
-                  <input className="ui-field" placeholder="Localizacao (opcional)" value={novoSetor.nm_localizacao} onChange={(e) => setNovoSetor(v => ({ ...v, nm_localizacao: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={novoSetor.ds_setor} onChange={(e) => setNovoSetor(v => ({ ...v, ds_setor: e.target.value }))} />
+                  <input className="ui-field" placeholder="Localização (opcional)" value={novoSetor.nm_localizacao} onChange={(e) => setNovoSetor(v => ({ ...v, nm_localizacao: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={novoSetor.ds_setor} onChange={(e) => setNovoSetor(v => ({ ...v, ds_setor: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarSetor}>Salvar Setor</button>
                 </div>
 
@@ -659,7 +733,7 @@ export default function GerenciarCategoriasPage() {
                     {tipos.map((t) => <option key={t.cd_tipo_equipamento} value={t.cd_tipo_equipamento}>{t.nm_tipo_equipamento}</option>)}
                   </select>
                   <input className="ui-field" placeholder="Nome equipamento" value={novoEquipamento.nm_equipamento} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_equipamento: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={novoEquipamento.ds_equipamento} onChange={(e) => setNovoEquipamento(v => ({ ...v, ds_equipamento: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={novoEquipamento.ds_equipamento} onChange={(e) => setNovoEquipamento(v => ({ ...v, ds_equipamento: e.target.value }))} />
                   <input className="ui-field" placeholder="Marca" value={novoEquipamento.nm_marca} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_marca: e.target.value }))} />
                   <input className="ui-field" placeholder="Modelo" value={novoEquipamento.nm_modelo} onChange={(e) => setNovoEquipamento(v => ({ ...v, nm_modelo: e.target.value }))} />
                   <select
@@ -667,9 +741,9 @@ export default function GerenciarCategoriasPage() {
                     value={novoEquipamento.tp_hierarquia}
                     onChange={(e) => setNovoEquipamento(v => ({ ...v, tp_hierarquia: e.target.value as 'RAIZ' | 'FILHO' | 'AMBOS' }))}
                   >
-                    <option value="RAIZ">RAIZ (nao pode ter item superior)</option>
+                    <option value="RAIZ">RAIZ (não pode ter item superior)</option>
                     <option value="FILHO">FILHO (ativo exige item superior)</option>
-                    <option value="AMBOS">AMBOS (pode ter ou nao)</option>
+                    <option value="AMBOS">AMBOS (pode ter ou não)</option>
                   </select>
                   <button className="ui-btn ui-btn-primary" onClick={criarEquipamento}>Salvar Modelo</button>
                 </div>
@@ -683,7 +757,7 @@ export default function GerenciarCategoriasPage() {
             <DialogHeader>
               <DialogTitle>Editar Cadastro</DialogTitle>
               <DialogDescription>
-                Selecione um registro para carregar os campos e salvar alteracoes.
+                Selecione um registro para carregar os campos e salvar alterações.
               </DialogDescription>
             </DialogHeader>
             <div style={{ padding: 18, display: 'grid', gap: 12 }}>
@@ -713,7 +787,7 @@ export default function GerenciarCategoriasPage() {
                     ))}
                   </select>
                   <input className="ui-field" placeholder="Nome do tipo" value={edicaoTipo.nm_tipo_equipamento} onChange={(e) => setEdicaoTipo((v) => ({ ...v, nm_tipo_equipamento: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={edicaoTipo.ds_tipo_equipamento} onChange={(e) => setEdicaoTipo((v) => ({ ...v, ds_tipo_equipamento: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={edicaoTipo.ds_tipo_equipamento} onChange={(e) => setEdicaoTipo((v) => ({ ...v, ds_tipo_equipamento: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={atualizarTipo}>Salvar Tipo</button>
                 </div>
 
@@ -726,7 +800,7 @@ export default function GerenciarCategoriasPage() {
                     ))}
                   </select>
                   <input className="ui-field" placeholder="Nome do piso" value={edicaoPiso.nm_piso} onChange={(e) => setEdicaoPiso((v) => ({ ...v, nm_piso: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao (opcional)" value={edicaoPiso.ds_piso} onChange={(e) => setEdicaoPiso((v) => ({ ...v, ds_piso: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição (opcional)" value={edicaoPiso.ds_piso} onChange={(e) => setEdicaoPiso((v) => ({ ...v, ds_piso: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={atualizarPiso}>Salvar Piso</button>
                 </div>
 
@@ -745,8 +819,8 @@ export default function GerenciarCategoriasPage() {
                     ))}
                   </select>
                   <input className="ui-field" placeholder="Nome do setor" value={edicaoSetor.nm_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_setor: e.target.value }))} />
-                  <input className="ui-field" placeholder="Localizacao (opcional)" value={edicaoSetor.nm_localizacao} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_localizacao: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={edicaoSetor.ds_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, ds_setor: e.target.value }))} />
+                  <input className="ui-field" placeholder="Localização (opcional)" value={edicaoSetor.nm_localizacao} onChange={(e) => setEdicaoSetor((v) => ({ ...v, nm_localizacao: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={edicaoSetor.ds_setor} onChange={(e) => setEdicaoSetor((v) => ({ ...v, ds_setor: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={atualizarSetor}>Salvar Setor</button>
                 </div>
 
@@ -771,7 +845,7 @@ export default function GerenciarCategoriasPage() {
                     ))}
                   </select>
                   <input className="ui-field" placeholder="Nome equipamento" value={edicaoEquipamento.nm_equipamento} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, nm_equipamento: e.target.value }))} />
-                  <input className="ui-field" placeholder="Descricao" value={edicaoEquipamento.ds_equipamento} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, ds_equipamento: e.target.value }))} />
+                  <input className="ui-field" placeholder="Descrição" value={edicaoEquipamento.ds_equipamento} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, ds_equipamento: e.target.value }))} />
                   <input className="ui-field" placeholder="Marca" value={edicaoEquipamento.nm_marca} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, nm_marca: e.target.value }))} />
                   <input className="ui-field" placeholder="Modelo" value={edicaoEquipamento.nm_modelo} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, nm_modelo: e.target.value }))} />
                   <select className="ui-select" value={edicaoEquipamento.tp_hierarquia} onChange={(e) => setEdicaoEquipamento((v) => ({ ...v, tp_hierarquia: e.target.value as 'RAIZ' | 'FILHO' | 'AMBOS' }))}>

@@ -134,6 +134,11 @@ function isMissingTableError(error: unknown): boolean {
   );
 }
 
+function isMissingColumnError(error: unknown): boolean {
+  const message = String((error as any)?.message ?? "");
+  return /column .* does not exist/i.test(message) || /Could not find the .* column/i.test(message);
+}
+
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
 
@@ -345,6 +350,7 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
 
   const ids = base.map((item) => item.nr_inventario);
   const telemetriaRecente = new Map<number, { nr_paginas_total: number | null; dt_leitura: string | null; status: string }>();
+  const statusRecentePorChave = new Map<string, { status: string; coletado_em: string | null }>();
   const suprimentosByInventario = new Map<
     number,
     {
@@ -359,6 +365,81 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
       }>;
     }
   >();
+
+  if (await tableExists(supabase, "telemetria_impressoras")) {
+    const ips = Array.from(
+      new Set(
+        base
+          .map((item) => normalizarIp(item.ip))
+          .filter((item) => item.length > 0),
+      ),
+    );
+    const patrimonios = Array.from(
+      new Set(
+        base
+          .map((item) => String(item.patrimonio || "").trim())
+          .filter((item) => item.length > 0),
+      ),
+    );
+
+    const statusRows: any[] = [];
+
+    try {
+      if (ips.length) {
+        const { data, error } = await supabase
+          .from("telemetria_impressoras")
+          .select("ip,patrimonio,status,coletado_em")
+          .in("ip", ips)
+          .order("coletado_em", { ascending: false })
+          .limit(10000);
+        if (error) throw error;
+        statusRows.push(...(data || []));
+      }
+
+      if (patrimonios.length) {
+        const { data, error } = await supabase
+          .from("telemetria_impressoras")
+          .select("ip,patrimonio,status,coletado_em")
+          .in("patrimonio", patrimonios)
+          .order("coletado_em", { ascending: false })
+          .limit(10000);
+        if (error) throw error;
+        statusRows.push(...(data || []));
+      }
+    } catch (error) {
+      // Mantém a tela funcional mesmo em ambientes legados sem colunas de vínculo na telemetria.
+      if (!isMissingColumnError(error) && !isMissingTableError(error)) {
+        throw new Error((error as any)?.message || "Falha ao carregar fallback de status por telemetria.");
+      }
+    }
+
+    for (const row of statusRows) {
+      const status = normalizarStatusOperacional(row.status);
+      const coletadoEm = limparTexto(row.coletado_em);
+
+      const ipKey = normalizarIp(String(row.ip || ""));
+      if (ipKey) {
+        const key = `ip:${ipKey}`;
+        if (!statusRecentePorChave.has(key)) {
+          statusRecentePorChave.set(key, {
+            status,
+            coletado_em: coletadoEm,
+          });
+        }
+      }
+
+      const patrimonioKey = normalizarTexto(row.patrimonio);
+      if (patrimonioKey) {
+        const key = `pat:${patrimonioKey}`;
+        if (!statusRecentePorChave.has(key)) {
+          statusRecentePorChave.set(key, {
+            status,
+            coletado_em: coletadoEm,
+          });
+        }
+      }
+    }
+  }
 
   if (await tableExists(supabase, "telemetria_pagecount")) {
     const { data: telemetriaRows, error: telemetriaError } = await supabase
@@ -459,6 +540,10 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
 
   return base.map((item) => {
     const telemetria = telemetriaRecente.get(item.nr_inventario);
+    const statusRecente =
+      statusRecentePorChave.get(`pat:${normalizarTexto(item.patrimonio)}`) ||
+      statusRecentePorChave.get(`ip:${normalizarIp(item.ip)}`) ||
+      null;
     const suprimentos = suprimentosByInventario.get(item.nr_inventario);
     return {
       id: String(item.nr_inventario),
@@ -471,8 +556,8 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
       numero_serie: item.numero_serie,
       hostname: null,
       ativo: true,
-      ultima_coleta_em: telemetria?.dt_leitura ?? suprimentos?.ultima_coleta ?? null,
-      status_atual: telemetria?.status || "unknown",
+      ultima_coleta_em: telemetria?.dt_leitura ?? statusRecente?.coletado_em ?? suprimentos?.ultima_coleta ?? null,
+      status_atual: telemetria?.status || statusRecente?.status || "unknown",
       contador_paginas_atual: telemetria?.nr_paginas_total ?? null,
       menor_nivel_suprimento: suprimentos?.menor_nivel ?? null,
       resumo_suprimentos: suprimentos?.resumo || [],

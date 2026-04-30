@@ -76,9 +76,9 @@ export default function InventarioDevolucaoPage() {
       const data = await invokeInventoryCore<DevolucaoItem[]>('list_devolucao');
       const lista = Array.isArray(data) ? data : [];
       setItems(lista);
-      setSuccessMessage(`Itens em devolucao carregados: ${lista.length}.`);
+      setSuccessMessage(`Itens em devolução carregados: ${lista.length}.`);
     } catch (error: any) {
-      setErrorMessage(error.message || 'Falha ao carregar devolucao.');
+      setErrorMessage(error.message || 'Falha ao carregar devolução.');
       setItems([]);
     } finally {
       setLoading(false);
@@ -152,7 +152,7 @@ export default function InventarioDevolucaoPage() {
 
   const exportarPlanilha = async () => {
     if (!filtrados.length) {
-      setErrorMessage('Nao ha itens para exportar.');
+      setErrorMessage('Não há itens para exportar.');
       return;
     }
 
@@ -186,7 +186,7 @@ export default function InventarioDevolucaoPage() {
 
   const exportarCsv = () => {
     if (!filtrados.length) {
-      setErrorMessage('Nao ha itens para exportar.');
+      setErrorMessage('Não há itens para exportar.');
       return;
     }
 
@@ -243,7 +243,7 @@ export default function InventarioDevolucaoPage() {
 
   const exportarPdf = async () => {
     if (!gruposEmpresa.length) {
-      setErrorMessage('Nao ha itens para exportar.');
+      setErrorMessage('Não há itens para exportar.');
       return;
     }
 
@@ -264,7 +264,7 @@ export default function InventarioDevolucaoPage() {
       let cursorY = 36;
 
       doc.setFontSize(16);
-      doc.text('Inventario em devolucao por empresa', margemX, cursorY);
+      doc.text('Inventário em devolução por empresa', margemX, cursorY);
       cursorY += 16;
       doc.setFontSize(10);
       doc.setTextColor(71, 85, 105);
@@ -286,13 +286,13 @@ export default function InventarioDevolucaoPage() {
           margin: { left: margemX, right: margemX },
           head: [[
             'ID',
-            'Patrimonio',
+            'Patrimônio',
             'Modelo',
             'Setor atual',
             'Chamado',
-            'Serie',
+            'Série',
             'IP',
-            'Ultima movimentacao',
+            'Última movimentação',
           ]],
           body: grupo.itens.map((item) => [
             item.nr_inventario,
@@ -320,7 +320,7 @@ export default function InventarioDevolucaoPage() {
             doc.setFontSize(8);
             doc.setTextColor(100, 116, 139);
             doc.text(
-              `Pagina ${doc.getNumberOfPages()}`,
+              `Página ${doc.getNumberOfPages()}`,
               doc.internal.pageSize.getWidth() - 70,
               doc.internal.pageSize.getHeight() - 12,
             );
@@ -341,8 +341,8 @@ export default function InventarioDevolucaoPage() {
 
   return (
     <BasicPageShell
-      title="Inventario - Devolucao"
-      subtitle="Itens em devolucao agrupados por empresa, com numero de chamado e exportacao."
+      title="Inventário - Devolução"
+      subtitle="Itens em devolução agrupados por empresa, com número de chamado e exportação."
       actions={
         <div className="ui-row">
           <button type="button" className="ui-btn" onClick={() => void carregar()}>
@@ -386,7 +386,7 @@ export default function InventarioDevolucaoPage() {
               className="ui-field"
               value={busca}
               onChange={(event) => setBusca(event.target.value)}
-              placeholder="Patrimonio, modelo, setor, chamado..."
+              placeholder="Patrimônio, modelo, setor, chamado..."
             />
           </label>
 
@@ -414,7 +414,7 @@ export default function InventarioDevolucaoPage() {
 
       <section style={{ display: 'grid', gap: 16 }}>
         {!gruposEmpresa.length ? (
-          <div className="ui-card">Nenhum item de devolucao encontrado para os filtros atuais.</div>
+          <div className="ui-card">Nenhum item de devolução encontrado para os filtros atuais.</div>
         ) : null}
 
         {gruposEmpresa.map((grupo) => (
@@ -424,14 +424,14 @@ export default function InventarioDevolucaoPage() {
               <thead>
                 <tr>
                   <th>ID</th>
-                  <th>Patrimonio</th>
+                  <th>Patrimônio</th>
                   <th>Modelo</th>
                   <th>Setor atual</th>
                   <th>Chamado</th>
-                  <th>Serie</th>
+                  <th>Série</th>
                   <th>IP</th>
-                  <th>Ultima movimentacao</th>
-                  <th>Observacao</th>
+                  <th>Última movimentação</th>
+                  <th>Observação</th>
                 </tr>
               </thead>
               <tbody>
