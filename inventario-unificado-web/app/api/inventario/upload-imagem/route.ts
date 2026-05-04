@@ -1,8 +1,37 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
+const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
+
+function hasPrefix(bytes: Uint8Array, prefix: number[]) {
+  if (bytes.length < prefix.length) return false;
+  for (let index = 0; index < prefix.length; index += 1) {
+    if (bytes[index] !== prefix[index]) return false;
+  }
+  return true;
+}
+
+function matchesImageSignature(bytes: Uint8Array, mime: string) {
+  if (mime === 'image/jpeg') {
+    return hasPrefix(bytes, [0xff, 0xd8, 0xff]);
+  }
+
+  if (mime === 'image/png') {
+    return hasPrefix(bytes, PNG_SIGNATURE);
+  }
+
+  if (mime === 'image/webp') {
+    if (bytes.length < 12) return false;
+    const riff = String.fromCharCode(...bytes.slice(0, 4));
+    const webp = String.fromCharCode(...bytes.slice(8, 12));
+    return riff === 'RIFF' && webp === 'WEBP';
+  }
+
+  return false;
+}
 
 function extensionFromMime(mime: string): string {
   if (mime === 'image/png') return 'png';
@@ -12,6 +41,9 @@ function extensionFromMime(mime: string): string {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const formData = await request.formData();
     const file = formData.get('file');
 
@@ -42,7 +74,14 @@ export async function POST(request: NextRequest) {
     const random = Math.random().toString(36).slice(2, 10);
     const filePath = `${ano}/${mes}/inventario-${timestamp}-${random}.${extension}`;
 
-    const bytes = Buffer.from(await file.arrayBuffer());
+    const bytes = new Uint8Array(await file.arrayBuffer());
+
+    if (!matchesImageSignature(bytes, file.type)) {
+      return NextResponse.json(
+        { error: 'Arquivo invalido para o tipo informado.' },
+        { status: 400 },
+      );
+    }
 
     const { error: uploadError } = await supabase.storage
       .from('inventario-imagens')

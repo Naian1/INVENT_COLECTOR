@@ -35,6 +35,12 @@
 3. Auditar uso de chaves em scripts.
 4. Remover credenciais antigas apos rotacao.
 
+## Atualizacao 2026-05-04 (telemetria)
+
+- Consolidacao diaria foi movida para trigger SQL no Supabase.
+- Isso reduz superficie de erro no app (menos logica de agregacao no cliente).
+- `telemetria_pagecount` usa upsert por inventario, evitando duplicacao descontrolada por ingestao.
+
 ## Incidentes
 
 Em caso de suspeita de exposicao:

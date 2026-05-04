@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type ConsolidadoRow = Record<string, unknown>;
@@ -122,8 +123,11 @@ function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
 }
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const supabase = getSupabaseServerClient();
 
     const { data, error } = await supabase
@@ -145,6 +149,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const body = await request.json();
     const rows = Array.isArray(body?.rows) ? (body.rows as ConsolidadoRow[]) : [];
     const competencia = String(body?.competencia || '').trim();

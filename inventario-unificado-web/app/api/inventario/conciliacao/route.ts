@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type CargaConsolidado = {
@@ -52,6 +53,9 @@ function contemFiltro(value: string | null, filtroNormalizado: string | null): b
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const params = request.nextUrl.searchParams;
     const competenciaParam = limparTexto(params.get('competencia'));
     const patrimonioParam = limparTexto(params.get('patrimonio'));

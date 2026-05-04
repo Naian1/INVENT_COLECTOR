@@ -3,6 +3,9 @@
 *.pyc
 
 logs/*.log
+logs/
+build/
+dist/
 dados_cache.json
 
 # Runtime queues and snapshots

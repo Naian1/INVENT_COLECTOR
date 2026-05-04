@@ -1,12 +1,8 @@
-import { supabase } from '@/lib/supabase/client';
+import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Suprimentos, CreateSuprimentosInput, UpdateSuprimentosInput } from '@/types/suprimentos';
 
-/**
- * Serviço de Suprimentos (estado atual apenas)
- * Operação principal: UPSERT (update se existe, insert se novo)
- */
-
 export async function getSuprimentos(): Promise<Suprimentos[]> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .select('*')
@@ -17,6 +13,7 @@ export async function getSuprimentos(): Promise<Suprimentos[]> {
 }
 
 export async function getSuprimentosById(id: number): Promise<Suprimentos | null> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .select('*')
@@ -28,44 +25,44 @@ export async function getSuprimentosById(id: number): Promise<Suprimentos | null
 }
 
 export async function getSuprimentosByInventario(inventarioId: number): Promise<Suprimentos[]> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .select('*')
     .eq('nr_inventario', inventarioId)
     .order('dt_coleta', { ascending: false });
 
-  if (error) throw new Error(`Erro ao listar suprimentos por inventário: ${error.message}`);
+  if (error) throw new Error(`Erro ao listar suprimentos por inventario: ${error.message}`);
   return data || [];
 }
 
 export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Suprimentos[]> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .select('*')
     .eq('nr_patrimonio', patrimonio.toLowerCase())
     .order('dt_coleta', { ascending: false });
 
-  if (error) throw new Error(`Erro ao listar suprimentos por patrimônio: ${error.message}`);
+  if (error) throw new Error(`Erro ao listar suprimentos por patrimonio: ${error.message}`);
   return data || [];
 }
 
-/**
- * UPSERT suprimento - atualiza ou insere dependendo se já existe
- * This is the main operation for SNMP collector updates
- */
 export async function upsertSuprimento(
   input: CreateSuprimentosInput,
 ): Promise<Suprimentos> {
-  // Primeiro, tenta atualizar se existe combinação unique (nr_inventario + cd_tipo_suprimento)
-  const { data: existing } = await supabase
+  const supabase = getSupabaseServerClient();
+
+  const { data: existing, error: existingError } = await supabase
     .from('suprimentos')
     .select('cd_suprimento')
     .eq('nr_inventario', input.nr_inventario)
     .eq('cd_tipo_suprimento', input.cd_tipo_suprimento)
-    .single();
+    .maybeSingle();
 
-  if (existing) {
-    // Existe - fazer UPDATE
+  if (existingError) throw new Error(`Erro ao verificar suprimento existente: ${existingError.message}`);
+
+  if (existing?.cd_suprimento) {
     const { data, error } = await supabase
       .from('suprimentos')
       .update(input)
@@ -75,22 +72,22 @@ export async function upsertSuprimento(
 
     if (error) throw new Error(`Erro ao atualizar suprimento: ${error.message}`);
     return data;
-  } else {
-    // Não existe - fazer INSERT
-    const { data, error } = await supabase
-      .from('suprimentos')
-      .insert([input])
-      .select()
-      .single();
-
-    if (error) throw new Error(`Erro ao criar suprimento: ${error.message}`);
-    return data;
   }
+
+  const { data, error } = await supabase
+    .from('suprimentos')
+    .insert([input])
+    .select()
+    .single();
+
+  if (error) throw new Error(`Erro ao criar suprimento: ${error.message}`);
+  return data;
 }
 
 export async function createSuprimento(
   input: CreateSuprimentosInput,
 ): Promise<Suprimentos> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .insert([input])
@@ -105,6 +102,7 @@ export async function updateSuprimento(
   id: number,
   input: UpdateSuprimentosInput,
 ): Promise<Suprimentos> {
+  const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
     .from('suprimentos')
     .update(input)
@@ -117,6 +115,7 @@ export async function updateSuprimento(
 }
 
 export async function deleteSuprimento(id: number): Promise<void> {
+  const supabase = getSupabaseServerClient();
   const { error } = await supabase
     .from('suprimentos')
     .delete()

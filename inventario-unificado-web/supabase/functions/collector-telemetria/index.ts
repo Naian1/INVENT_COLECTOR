@@ -54,6 +54,7 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -509,7 +510,7 @@ async function gravarTelemetriaPagecount(
 ) {
   if (evento.contador_total_paginas === null) return;
 
-  const payload = {
+  const payloadAtual = {
     nr_inventario: inventarioId,
     nr_paginas_total: Math.max(0, evento.contador_total_paginas),
     dt_leitura: evento.coletado_em,
@@ -517,8 +518,24 @@ async function gravarTelemetriaPagecount(
     ds_observacao: null,
   };
 
-  const { error } = await supabase.from("telemetria_pagecount").insert([payload]);
-  if (error) throw new Error(`telemetria_pagecount: ${error.message}`);
+  const tentativaUpsert = await supabase
+    .from("telemetria_pagecount")
+    .upsert([payloadAtual], { onConflict: "nr_inventario", ignoreDuplicates: false });
+
+  if (!tentativaUpsert.error) return;
+
+  const mensagem = String(tentativaUpsert.error.message || "");
+  const conflitoSemConstraint =
+    /no unique or exclusion constraint matching the ON CONFLICT specification/i.test(mensagem) ||
+    /there is no unique or exclusion constraint/i.test(mensagem);
+
+  if (!conflitoSemConstraint) {
+    throw new Error(`telemetria_pagecount: ${mensagem}`);
+  }
+
+  // Fallback para ambiente antigo sem UNIQUE(nr_inventario).
+  const { error: insertError } = await supabase.from("telemetria_pagecount").insert([payloadAtual]);
+  if (insertError) throw new Error(`telemetria_pagecount: ${insertError.message}`);
 }
 
 function isMissingColumnError(message: string): boolean {

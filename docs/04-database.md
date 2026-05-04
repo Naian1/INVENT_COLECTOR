@@ -17,6 +17,7 @@
 - movimentacao
 - suprimentos
 - telemetria_pagecount
+- telemetria_pagecount_diaria
 
 ## Entidades Matrix
 
@@ -35,6 +36,7 @@
 - movimentacao -> setor (origem/destino)
 - suprimentos -> inventario
 - telemetria_pagecount -> inventario
+- telemetria_pagecount_diaria -> inventario
 - inventario_consolidado_linha -> inventario_consolidado_carga
 
 ## Compatibilidade de auditoria (inventario x movimentacao)
@@ -81,3 +83,25 @@
 - Toda alteracao de schema deve entrar em migration versionada.
 - Alteracao de regra de negocio deve atualizar docs de API e ADR quando aplicavel.
 - Operacoes destrutivas devem ter estrategia de rollback.
+
+## Atualizacao 2026-05-04 - Pagecount diario
+
+Modelo em producao:
+
+1. `telemetria_pagecount`
+- Estado atual da impressora por `nr_inventario`.
+- Constraint unica em `nr_inventario` para upsert.
+
+2. `telemetria_pagecount_diaria`
+- Historico diario por (`nr_inventario`, `dt_referencia`).
+- Armazena minimo, maximo e delta do dia.
+
+3. Trigger
+- `fn_sync_telemetria_pagecount_diaria` + `trg_sync_telemetria_pagecount_diaria`.
+- Atualiza consolidado diario a cada escrita em `telemetria_pagecount`.
+
+4. Retencao
+- Funcao `limpar_telemetria_pagecount_diaria_antiga(p_dias default 365)`.
+- Piso minimo de retenção: 90 dias.
+
+Detalhes: [16-telemetria-pagecount-modelo-diario](16-telemetria-pagecount-modelo-diario.md).

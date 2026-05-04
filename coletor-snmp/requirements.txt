@@ -1,1 +1,4 @@
 pysnmp>=7.1.0
+# Optional (UI app with system tray):
+# pystray>=0.19.5
+# pillow>=10.0.0

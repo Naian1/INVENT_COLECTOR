@@ -1,10 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getInventarios, createInventario } from '@/services/inventarioService';
 import { CreateInventarioSchema } from '@/types/inventario';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 
 // GET /api/inventario - list all inventario items
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const inventarios = await getInventarios();
     return NextResponse.json(inventarios);
   } catch (error: any) {
@@ -16,6 +20,9 @@ export async function GET() {
 // POST /api/inventario - create new inventario item
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const body = await request.json();
     const createData = CreateInventarioSchema.parse(body);
     const result = await createInventario(createData);

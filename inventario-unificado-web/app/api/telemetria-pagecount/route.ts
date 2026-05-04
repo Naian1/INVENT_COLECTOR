@@ -1,60 +1,94 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
-import { CreateTelemetriaPagecountInput } from '@/types/telemetria';
+import { NextRequest, NextResponse } from "next/server";
+import { z } from "zod";
 
-// GET /api/telemetria-pagecount - list all telemetria records
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
+import { getSupabaseServerClient } from "@/lib/supabase/server";
+
+const TelemetriaPagecountCreateSchema = z.object({
+  nr_inventario: z.coerce.number().int().positive(),
+  nr_paginas_total: z.coerce.number().int().min(0),
+  ds_status_impressora: z.string().trim().min(1).max(32).optional().default("unknown"),
+  ds_observacao: z.string().trim().max(500).optional().nullable(),
+  dt_leitura: z.coerce.date().optional(),
+});
+
+function hasOnConflictConstraintError(message: string) {
+  return (
+    /no unique or exclusion constraint matching the ON CONFLICT specification/i.test(message) ||
+    /there is no unique or exclusion constraint/i.test(message)
+  );
+}
+
+// GET /api/telemetria-pagecount - estado atual de pagecount por inventario
 export async function GET(request: NextRequest) {
   try {
-    const { searchParams } = request.nextUrl;
-    const inventarioId = searchParams.get('nr_inventario');
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
 
-    let query = supabase.from('telemetria_pagecount').select('*');
+    const inventarioId = request.nextUrl.searchParams.get("nr_inventario");
+    const supabase = getSupabaseServerClient();
 
-    if (inventarioId) {
-      query = query.eq('nr_inventario', parseInt(inventarioId));
+    let query = supabase
+      .from("telemetria_pagecount")
+      .select("*")
+      .order("dt_leitura", { ascending: false })
+      .limit(1000);
+
+    if (inventarioId && /^\d+$/.test(inventarioId)) {
+      query = query.eq("nr_inventario", Number(inventarioId));
     }
 
-    const { data, error } = await query.order('dt_coleta', { ascending: false }).limit(1000);
-
+    const { data, error } = await query;
     if (error) throw new Error(`Erro ao listar telemetria: ${error.message}`);
+
     return NextResponse.json(data || []);
   } catch (error: any) {
-    console.error('[GET /api/telemetria-pagecount]', error);
+    console.error("[GET /api/telemetria-pagecount]", error);
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
 
-// POST /api/telemetria-pagecount - insert new telemetria record (append-only)
+// POST /api/telemetria-pagecount - upsert por inventario (1 linha por impressora)
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const body = await request.json();
+    const payload = TelemetriaPagecountCreateSchema.parse(body);
+    const dtLeituraIso = (payload.dt_leitura ?? new Date()).toISOString();
 
-    // Validar campos obrigatórios
-    if (!body.nr_inventario || body.nr_paginas_impressas === undefined) {
-      return NextResponse.json(
-        { error: 'nr_inventario e nr_paginas_impressas são obrigatórios' },
-        { status: 400 },
-      );
-    }
-
-    const payload: CreateTelemetriaPagecountInput = {
-      nr_inventario: body.nr_inventario,
-      nr_patrimonio: body.nr_patrimonio,
-      nr_paginas_impressas: body.nr_paginas_impressas,
-      dt_coleta: body.dt_coleta ? new Date(body.dt_coleta) : new Date(),
+    const supabase = getSupabaseServerClient();
+    const row = {
+      nr_inventario: payload.nr_inventario,
+      nr_paginas_total: payload.nr_paginas_total,
+      ds_status_impressora: payload.ds_status_impressora,
+      ds_observacao: payload.ds_observacao ?? null,
+      dt_leitura: dtLeituraIso,
     };
 
-    const { data, error } = await supabase
-      .from('telemetria_pagecount')
-      .insert([payload])
+    const upsert = await supabase
+      .from("telemetria_pagecount")
+      .upsert([row], { onConflict: "nr_inventario", ignoreDuplicates: false })
       .select()
       .single();
 
-    if (error) throw new Error(`Erro ao inserir telemetria: ${error.message}`);
+    if (!upsert.error) {
+      return NextResponse.json(upsert.data, { status: 200 });
+    }
 
-    return NextResponse.json(data, { status: 201 });
+    const message = String(upsert.error.message || "");
+    if (!hasOnConflictConstraintError(message)) {
+      throw new Error(`Erro ao gravar telemetria: ${message}`);
+    }
+
+    // Fallback para schema antigo sem UNIQUE(nr_inventario).
+    const insert = await supabase.from("telemetria_pagecount").insert([row]).select().single();
+    if (insert.error) throw new Error(`Erro ao inserir telemetria: ${insert.error.message}`);
+
+    return NextResponse.json(insert.data, { status: 201 });
   } catch (error: any) {
-    console.error('[POST /api/telemetria-pagecount]', error);
+    console.error("[POST /api/telemetria-pagecount]", error);
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

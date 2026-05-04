@@ -1,11 +1,15 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { buscarStatusSuprimentosImpressora } from "@/services/statusSuprimentosImpressorasService";
 
 type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
   const { id } = await context.params;
   const result = await buscarStatusSuprimentosImpressora(id);
 

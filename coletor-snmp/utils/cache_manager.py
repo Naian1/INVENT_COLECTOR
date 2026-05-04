@@ -728,8 +728,16 @@ def atualizar_cache():
                 except Exception as printer_exc:
                     logging.error("Erro ao acessar impressora %s: %s", ip, printer_exc)
 
+    # Protecao de estabilidade: limita o tamanho do cache local para evitar crescimento excessivo.
+    try:
+        cache_max_rows = int(str(os.getenv("COLLECTOR_CACHE_MAX_ROWS", "3000")).strip())
+    except Exception:
+        cache_max_rows = 3000
+    if cache_max_rows > 0 and len(dados) > cache_max_rows:
+        dados = dados[:cache_max_rows]
+
     with open(CACHE_FILE, "w", encoding="utf-8") as file:
-        json.dump(dados, file, ensure_ascii=False, indent=2)
+        json.dump(dados, file, ensure_ascii=False, separators=(",", ":"))
 
     if replay_pending:
         replay_pending_payloads(max_items=replay_max_per_cycle, log_prefix="[collector-replay]")

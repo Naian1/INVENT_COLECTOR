@@ -64,6 +64,10 @@ const SEMANTICOS_RELEVANTES = [
 ];
 
 const HISTORICO_PAGINAS_DIAS_MAX = 92;
+const STATUS_HISTORY_WINDOW = 4;
+const STATUS_OFFLINE_CONFIRM_MINUTES = 18;
+const STATUS_OFFLINE_HARD_MINUTES = 120;
+const STATUS_RECENT_ONLINE_GRACE_MINUTES = 75;
 
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -123,6 +127,115 @@ function normalizarStatusSuprimento(statusRaw: unknown, nivelPercentual: number 
 
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
+}
+
+function parseDateMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const ts = new Date(value).getTime();
+  return Number.isFinite(ts) ? ts : null;
+}
+
+function minutesSince(value: string | null | undefined): number | null {
+  const ts = parseDateMs(value);
+  if (ts === null) return null;
+  const diffMs = Date.now() - ts;
+  if (!Number.isFinite(diffMs)) return null;
+  return diffMs / 60000;
+}
+
+function isOfflineLikeStatus(status: string): boolean {
+  return ["offline", "error"].includes(status);
+}
+
+function isOnlineLikeStatus(status: string): boolean {
+  return ["online", "warning"].includes(status);
+}
+
+function normalizeStatusHistoryRows(
+  rows: Array<{ status: string; coletado_em: string | null }>
+): Array<{ status: string; coletado_em: string | null }> {
+  return rows
+    .map((row) => ({
+      status: normalizarStatusOperacional(row.status),
+      coletado_em: limparTexto(row.coletado_em),
+    }))
+    .filter((row) => Boolean(row.status));
+}
+
+function resolverStatusOperacionalConfiavel(
+  rows: Array<{ status: string; coletado_em: string | null }>,
+  fallbackStatus?: string | null,
+  fallbackTimestamp?: string | null
+): string {
+  const history = normalizeStatusHistoryRows(rows);
+  const fallback = normalizarStatusOperacional(fallbackStatus ?? "");
+
+  if (!history.length) {
+    return fallback || "unknown";
+  }
+
+  const latest = history[0];
+  const latestAgeMin = minutesSince(latest.coletado_em ?? fallbackTimestamp ?? null);
+  const recentWindow = history.slice(0, STATUS_HISTORY_WINDOW);
+
+  if (latest.status === "online") {
+    if (latestAgeMin !== null && latestAgeMin > STATUS_OFFLINE_HARD_MINUTES) {
+      return "warning";
+    }
+    return "online";
+  }
+
+  if (latest.status === "warning") {
+    return "warning";
+  }
+
+  if (latest.status === "unknown") {
+    return fallback || "unknown";
+  }
+
+  if (latest.status === "error") {
+    if (latestAgeMin !== null && latestAgeMin >= STATUS_OFFLINE_HARD_MINUTES) {
+      return "offline";
+    }
+    return "warning";
+  }
+
+  if (latest.status === "offline") {
+    let consecutiveOffline = 0;
+    for (const item of recentWindow) {
+      if (isOfflineLikeStatus(item.status)) {
+        consecutiveOffline += 1;
+        continue;
+      }
+      break;
+    }
+
+    const hasRecentOnline = recentWindow.some((item) => isOnlineLikeStatus(item.status));
+
+    if (latestAgeMin !== null && latestAgeMin < STATUS_OFFLINE_CONFIRM_MINUTES) {
+      return "warning";
+    }
+
+    if (
+      hasRecentOnline &&
+      latestAgeMin !== null &&
+      latestAgeMin <= STATUS_RECENT_ONLINE_GRACE_MINUTES
+    ) {
+      return "warning";
+    }
+
+    if (consecutiveOffline >= 2) {
+      return "offline";
+    }
+
+    if (latestAgeMin !== null && latestAgeMin >= STATUS_OFFLINE_HARD_MINUTES) {
+      return "offline";
+    }
+
+    return "warning";
+  }
+
+  return fallback || latest.status || "unknown";
 }
 
 function isMissingTableError(error: unknown): boolean {
@@ -350,7 +463,7 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
 
   const ids = base.map((item) => item.nr_inventario);
   const telemetriaRecente = new Map<number, { nr_paginas_total: number | null; dt_leitura: string | null; status: string }>();
-  const statusRecentePorChave = new Map<string, { status: string; coletado_em: string | null }>();
+  const statusRecentePorChave = new Map<string, Array<{ status: string; coletado_em: string | null }>>();
   const suprimentosByInventario = new Map<
     number,
     {
@@ -420,22 +533,20 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
       const ipKey = normalizarIp(String(row.ip || ""));
       if (ipKey) {
         const key = `ip:${ipKey}`;
-        if (!statusRecentePorChave.has(key)) {
-          statusRecentePorChave.set(key, {
-            status,
-            coletado_em: coletadoEm,
-          });
+        const bucket = statusRecentePorChave.get(key) ?? [];
+        if (bucket.length < STATUS_HISTORY_WINDOW + 2) {
+          bucket.push({ status, coletado_em: coletadoEm });
+          statusRecentePorChave.set(key, bucket);
         }
       }
 
       const patrimonioKey = normalizarTexto(row.patrimonio);
       if (patrimonioKey) {
         const key = `pat:${patrimonioKey}`;
-        if (!statusRecentePorChave.has(key)) {
-          statusRecentePorChave.set(key, {
-            status,
-            coletado_em: coletadoEm,
-          });
+        const bucket = statusRecentePorChave.get(key) ?? [];
+        if (bucket.length < STATUS_HISTORY_WINDOW + 2) {
+          bucket.push({ status, coletado_em: coletadoEm });
+          statusRecentePorChave.set(key, bucket);
         }
       }
     }
@@ -543,8 +654,14 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
     const statusRecente =
       statusRecentePorChave.get(`pat:${normalizarTexto(item.patrimonio)}`) ||
       statusRecentePorChave.get(`ip:${normalizarIp(item.ip)}`) ||
-      null;
+      [];
+    const statusTelemetriaRecente = statusRecente[0] ?? null;
     const suprimentos = suprimentosByInventario.get(item.nr_inventario);
+    const statusAtual = resolverStatusOperacionalConfiavel(
+      statusRecente,
+      telemetria?.status ?? statusTelemetriaRecente?.status ?? "unknown",
+      telemetria?.dt_leitura ?? statusTelemetriaRecente?.coletado_em ?? null
+    );
     return {
       id: String(item.nr_inventario),
       patrimonio: item.patrimonio,
@@ -556,8 +673,12 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
       numero_serie: item.numero_serie,
       hostname: null,
       ativo: true,
-      ultima_coleta_em: telemetria?.dt_leitura ?? statusRecente?.coletado_em ?? suprimentos?.ultima_coleta ?? null,
-      status_atual: telemetria?.status || statusRecente?.status || "unknown",
+      ultima_coleta_em:
+        telemetria?.dt_leitura ??
+        statusTelemetriaRecente?.coletado_em ??
+        suprimentos?.ultima_coleta ??
+        null,
+      status_atual: statusAtual,
       contador_paginas_atual: telemetria?.nr_paginas_total ?? null,
       menor_nivel_suprimento: suprimentos?.menor_nivel ?? null,
       resumo_suprimentos: suprimentos?.resumo || [],
@@ -598,6 +719,9 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
 
     if (impressoras.length) {
       const ids = impressoras.map((item) => item.id);
+      const statusQueryLimit = clamp(ids.length * (STATUS_HISTORY_WINDOW + 2), 400, 4000);
+      const leituraQueryLimit = clamp(ids.length * 2, 240, 2200);
+      const suprimentoQueryLimit = clamp(ids.length * 8, 320, 2600);
 
       let statusRows: any[] = [];
       let leituraRows: any[] = [];
@@ -609,7 +733,7 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
           .select("impressora_id,status,coletado_em")
           .in("impressora_id", ids)
           .order("coletado_em", { ascending: false })
-          .limit(1000);
+          .limit(statusQueryLimit);
         if (error) throw new Error(error.message);
         statusRows = data || [];
       }
@@ -621,7 +745,7 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
           .eq("valido", true)
           .in("impressora_id", ids)
           .order("coletado_em", { ascending: false })
-          .limit(1000);
+          .limit(leituraQueryLimit);
         if (error) {
           if (!isMissingTableError(error)) {
             throw new Error(error.message);
@@ -638,18 +762,38 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
           .eq("valido", true)
           .in("impressora_id", ids)
           .order("coletado_em", { ascending: false })
-          .limit(2000);
+          .limit(suprimentoQueryLimit);
         if (error) throw new Error(error.message);
         suprimentoRows = data || [];
       }
 
-      const latestStatus = new Map<string, { status: string; coletado_em: string }>();
+      const latestStatus = new Map<string, { status: string; coletado_em: string | null }>();
+      const statusHistoryByImpressora = new Map<
+        string,
+        Array<{ status: string; coletado_em: string | null }>
+      >();
       for (const row of statusRows) {
-        if (!latestStatus.has(String(row.impressora_id))) {
-          latestStatus.set(String(row.impressora_id), {
-            status: String(row.status || "unknown"),
-            coletado_em: String(row.coletado_em || ""),
-          });
+        const impressoraId = String(row.impressora_id || "");
+        if (!impressoraId) continue;
+        const normalized = {
+          status: normalizarStatusOperacional(row.status),
+          coletado_em: limparTexto(row.coletado_em),
+        };
+
+        if (!latestStatus.has(impressoraId)) {
+          latestStatus.set(impressoraId, normalized);
+        }
+
+        if (!statusHistoryByImpressora.has(impressoraId)) {
+          statusHistoryByImpressora.set(impressoraId, []);
+        }
+
+        const bucket = statusHistoryByImpressora.get(impressoraId) as Array<{
+          status: string;
+          coletado_em: string | null;
+        }>;
+        if (bucket.length < STATUS_HISTORY_WINDOW + 2) {
+          bucket.push(normalized);
         }
       }
 
@@ -718,8 +862,15 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
 
       operacionais = impressoras.map((imp) => {
         const status = latestStatus.get(String(imp.id));
+        const statusHistory = statusHistoryByImpressora.get(String(imp.id)) ?? [];
         const leitura = latestLeitura.get(String(imp.id));
         const suprimentos = suprimentosByImpressora.get(String(imp.id));
+        const ultimaColeta = limparTexto(imp.ultima_coleta_em) ?? status?.coletado_em ?? null;
+        const statusAtual = resolverStatusOperacionalConfiavel(
+          statusHistory,
+          status?.status ?? "unknown",
+          ultimaColeta
+        );
 
         return {
           id: String(imp.id),
@@ -732,8 +883,8 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
           numero_serie: limparTexto(imp.numero_serie),
           hostname: limparTexto(imp.hostname),
           ativo: Boolean(imp.ativo),
-          ultima_coleta_em: limparTexto(imp.ultima_coleta_em),
-          status_atual: String(status?.status || "unknown").toLowerCase(),
+          ultima_coleta_em: ultimaColeta,
+          status_atual: statusAtual,
           contador_paginas_atual: toFiniteNumber(leitura?.contador_total_paginas),
           menor_nivel_suprimento: suprimentos?.menor_nivel ?? null,
           resumo_suprimentos: suprimentos?.resumo || [],
@@ -1349,7 +1500,7 @@ Deno.serve(async (req) => {
     }
 
     if (action === "dashboard_analitico") {
-      const dias = clamp(Number(payload?.dias || 30), 1, HISTORICO_PAGINAS_DIAS_MAX);
+      let dias = clamp(Number(payload?.dias || 30), 1, HISTORICO_PAGINAS_DIAS_MAX);
       const agrupamento = payload?.agrupamento === "mes" ? "mes" : "dia";
       const setorFiltroRaw = normalizarTexto(payload?.setor || "");
       const localizacaoFiltroRaw = normalizarTexto(payload?.localizacao || "");
@@ -1357,6 +1508,37 @@ Deno.serve(async (req) => {
       const localizacaoFiltro = ["", "todos", "todas"].includes(localizacaoFiltroRaw)
         ? ""
         : localizacaoFiltroRaw;
+
+      let modoPeriodo: "relativo" | "custom" = "relativo";
+      let deIso = inicioPeriodoIso(dias);
+      let ateIso = new Date().toISOString();
+
+      const dePayload = limparTexto(payload?.de);
+      const atePayload = limparTexto(payload?.ate);
+      if ((dePayload && !atePayload) || (!dePayload && atePayload)) {
+        return badRequest("Informe data inicial e final para período personalizado.");
+      }
+
+      if (dePayload && atePayload) {
+        const deDate = new Date(dePayload);
+        const ateDate = new Date(atePayload);
+        if (!Number.isFinite(deDate.getTime()) || !Number.isFinite(ateDate.getTime())) {
+          return badRequest("Período personalizado inválido.");
+        }
+        if (ateDate.getTime() < deDate.getTime()) {
+          return badRequest("Data final deve ser maior ou igual à data inicial.");
+        }
+
+        const diffDays = Math.floor((ateDate.getTime() - deDate.getTime()) / 86400000) + 1;
+        if (diffDays > HISTORICO_PAGINAS_DIAS_MAX) {
+          return badRequest(`Período máximo permitido é ${HISTORICO_PAGINAS_DIAS_MAX} dias.`);
+        }
+
+        dias = clamp(diffDays, 1, HISTORICO_PAGINAS_DIAS_MAX);
+        deIso = deDate.toISOString();
+        ateIso = ateDate.toISOString();
+        modoPeriodo = "custom";
+      }
 
       const visao = await loadVisaoGeral(supabase, false);
       const operacionais = visao.filter((item) => item.operacional);
@@ -1387,8 +1569,19 @@ Deno.serve(async (req) => {
         return Number.isFinite(paginas) && paginas > 0 ? acc + paginas : acc;
       }, 0);
 
-      const online = impressorasFiltradas.filter((item) => normalizarTexto(item.status_atual) === "online").length;
-      const offline = impressorasFiltradas.filter((item) => normalizarTexto(item.status_atual) === "offline").length;
+      let online = 0;
+      let offline = 0;
+      let warning = 0;
+      let error = 0;
+      let unknown = 0;
+      for (const impressora of impressorasFiltradas) {
+        const status = normalizarStatusOperacional(impressora.status_atual);
+        if (status === "online") online += 1;
+        else if (status === "offline") offline += 1;
+        else if (status === "warning") warning += 1;
+        else if (status === "error") error += 1;
+        else unknown += 1;
+      }
 
       const criticos = impressorasFiltradas.filter((item) => {
         const nivel = Number(item.menor_nivel_suprimento);
@@ -1400,8 +1593,6 @@ Deno.serve(async (req) => {
         return Number.isFinite(nivel) && nivel > 10 && nivel <= 20;
       }).length;
 
-      const deIso = inicioPeriodoIso(dias);
-      const ateIso = new Date().toISOString();
       const impressoraIds = impressorasFiltradas.map((item) => item.id);
       const impressoraMeta = new Map(impressorasFiltradas.map((item) => [item.id, item]));
 
@@ -1456,6 +1647,7 @@ Deno.serve(async (req) => {
         string,
         { localizacao: string; total_paginas: number; impressoras_ativas: number }
       >();
+      const rankingModelosMap = new Map<string, { modelo: string; total_paginas: number; impressoras_ativas: number }>();
 
       for (const [impressoraId, faixa] of trackerPeriodoPorImpressora.entries()) {
         const delta = Math.max(0, faixa.max - faixa.min);
@@ -1464,6 +1656,7 @@ Deno.serve(async (req) => {
         const meta = impressoraMeta.get(impressoraId);
         const setor = limparTexto(meta?.setor) || "Sem setor";
         const localizacao = limparTexto(meta?.localizacao) || "Sem localizacao";
+        const modelo = limparTexto(meta?.modelo) || "Modelo nao informado";
 
         if (!rankingSetoresMap.has(setor)) {
           rankingSetoresMap.set(setor, { setor, total_paginas: 0, impressoras_ativas: 0 });
@@ -1490,6 +1683,21 @@ Deno.serve(async (req) => {
         };
         localBucket.total_paginas += delta;
         localBucket.impressoras_ativas += 1;
+
+        if (!rankingModelosMap.has(modelo)) {
+          rankingModelosMap.set(modelo, {
+            modelo,
+            total_paginas: 0,
+            impressoras_ativas: 0,
+          });
+        }
+        const modeloBucket = rankingModelosMap.get(modelo) as {
+          modelo: string;
+          total_paginas: number;
+          impressoras_ativas: number;
+        };
+        modeloBucket.total_paginas += delta;
+        modeloBucket.impressoras_ativas += 1;
       }
 
       const rankingSetores = Array.from(rankingSetoresMap.values())
@@ -1499,6 +1707,10 @@ Deno.serve(async (req) => {
       const rankingLocalizacoes = Array.from(rankingLocalizacoesMap.values())
         .sort((a, b) => b.total_paginas - a.total_paginas)
         .slice(0, 12);
+
+      const rankingModelos = Array.from(rankingModelosMap.values())
+        .sort((a, b) => b.total_paginas - a.total_paginas)
+        .slice(0, 20);
 
       const suprimentosDelicados = impressorasFiltradas
         .flatMap((impressora) =>
@@ -1519,6 +1731,28 @@ Deno.serve(async (req) => {
         .sort((a, b) => Number(a.nivel_percentual) - Number(b.nivel_percentual))
         .slice(0, 20);
 
+      const impressorasComparativoBase = impressorasFiltradas.map((item) => ({
+        id: String(item.id),
+        patrimonio: String(item.patrimonio || ""),
+        ip: normalizarIp(String(item.ip || "")),
+        modelo: String(item.modelo || "Desconhecido"),
+        setor: limparTexto(item.setor) || "Sem setor",
+        localizacao: limparTexto(item.localizacao) || "Sem localizacao",
+        status_atual: normalizarStatusOperacional(item.status_atual),
+        ultima_coleta_em: limparTexto(item.ultima_coleta_em),
+        contador_paginas_atual:
+          Number.isFinite(Number(item.contador_paginas_atual)) && Number(item.contador_paginas_atual) >= 0
+            ? Number(item.contador_paginas_atual)
+            : null,
+      }));
+
+      const impressorasComDadosPeriodo = trackerPeriodoPorImpressora.size;
+      const impressorasSemDadosPeriodo = Math.max(0, impressorasFiltradas.length - impressorasComDadosPeriodo);
+      const coberturaPeriodoPercentual =
+        impressorasFiltradas.length > 0
+          ? Math.round((impressorasComDadosPeriodo / impressorasFiltradas.length) * 100)
+          : 0;
+
       return jsonResponse({
         ok: true,
         data: {
@@ -1529,6 +1763,9 @@ Deno.serve(async (req) => {
             agrupamento,
             setor: setorFiltro || "todos",
             localizacao: localizacaoFiltro || "todos",
+            modo_periodo: modoPeriodo,
+            de: modoPeriodo === "custom" ? deIso : null,
+            ate: modoPeriodo === "custom" ? ateIso : null,
           },
           setores_disponiveis: setoresDisponiveis,
           localizacoes_disponiveis: localizacoesDisponiveis,
@@ -1536,16 +1773,24 @@ Deno.serve(async (req) => {
             total_impressoras: impressorasFiltradas.length,
             online,
             offline,
+            warning,
+            error,
+            unknown,
             suprimentos_criticos: criticos,
             suprimentos_baixos: baixos,
             paginas_acumuladas_total_filtro: totalPaginasAcumuladasFiltro,
             paginas_periodo_total: totalPaginasPeriodo,
             paginas_acumuladas_total_geral: totalPaginasAcumuladasGeral,
+            impressoras_com_dados_periodo: impressorasComDadosPeriodo,
+            impressoras_sem_dados_periodo: impressorasSemDadosPeriodo,
+            cobertura_periodo_percentual: coberturaPeriodoPercentual,
           },
           faixa_historica_global: faixaHistoricaGlobal,
           paginas_por_periodo: paginasPorPeriodo,
           ranking_setores: rankingSetores,
           ranking_localizacoes: rankingLocalizacoes,
+          ranking_modelos: rankingModelos,
+          impressoras_comparativo_base: impressorasComparativoBase,
           suprimentos_delicados: suprimentosDelicados,
           historico_truncado: leituras.truncado,
         },

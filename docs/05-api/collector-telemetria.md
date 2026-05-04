@@ -91,6 +91,11 @@ Contrato:
 }
 ```
 
+Observacao (2026-05-04):
+
+- Em ambiente atualizado, o contador de paginas e gravado em `telemetria_pagecount` por upsert (`nr_inventario`).
+- O historico diario (min/max/delta) e derivado por trigger em `telemetria_pagecount_diaria`.
+
 ## Resposta parcial
 
 Quando parte do lote falha:

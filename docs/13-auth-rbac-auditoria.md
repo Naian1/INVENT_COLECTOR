@@ -206,3 +206,10 @@ Com esta modelagem, o backend pode:
 4. UI de auditoria:
 - Exibir criado por / ultima alteracao por no modal de inventario
 - Exibir usuario da movimentacao no historico
+
+## Nota de compatibilidade (2026-05-04)
+
+- A mudanca de telemetria de paginas para modelo diario em 2 tabelas nao altera RBAC de usuario.
+- Controle de acesso permanece igual:
+  - APIs protegidas por Bearer JWT + perfil.
+  - Coletor protegido por token dedicado.

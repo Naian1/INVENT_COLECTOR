@@ -61,3 +61,12 @@ Criterios de pronto:
 
 - [ADR 001 - Edge First](ADR/001-edge-first.md)
 - [ADR 002 - Matrix Separada](ADR/002-matrix-separada.md)
+
+## Atualizacao 2026-05-04
+
+- Camada de telemetria foi simplificada para reduzir volume de dados.
+- Padrao atual:
+  - tabela de estado (`telemetria_pagecount`)
+  - tabela de historico diario (`telemetria_pagecount_diaria`)
+  - trigger no banco para consolidacao automatica por dia.
+- Referencia: [16-telemetria-pagecount-modelo-diario](16-telemetria-pagecount-modelo-diario.md).

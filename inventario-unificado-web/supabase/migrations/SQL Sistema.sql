@@ -2655,3 +2655,180 @@ COMMIT;
 
 
 
+
+-- ========================================================
+-- SOURCE: 20260504_telemetria_pagecount_diaria.sql
+-- ========================================================
+
+-- Modelo em duas tabelas:
+-- 1) telemetria_pagecount        -> estado atual por inventario (1 linha por impressora)
+-- 2) telemetria_pagecount_diaria -> consolidado diario (min/max/delta)
+--
+-- Observacao: este script zera os dados atuais de telemetria para iniciar limpo.
+
+BEGIN;
+
+-- ---------------------------------------------------------------------------
+-- 1) RESET CONTROLADO DA TELEMETRIA ATUAL (solicitado)
+-- ---------------------------------------------------------------------------
+TRUNCATE TABLE public.telemetria_pagecount RESTART IDENTITY;
+
+-- Garante uma linha por inventario na tabela "estado atual"
+DO $$
+BEGIN
+  IF NOT EXISTS (
+    SELECT 1
+    FROM pg_constraint
+    WHERE conname = 'uq_telemetria_pagecount_inventario'
+      AND conrelid = 'public.telemetria_pagecount'::regclass
+  ) THEN
+    ALTER TABLE public.telemetria_pagecount
+      ADD CONSTRAINT uq_telemetria_pagecount_inventario UNIQUE (nr_inventario);
+  END IF;
+END;
+$$;
+
+-- ---------------------------------------------------------------------------
+-- 2) TABELA DIARIA (minimo e maximo por dia)
+-- ---------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS public.telemetria_pagecount_diaria (
+  nr_telemetria_diaria BIGSERIAL PRIMARY KEY,
+  nr_inventario INTEGER NOT NULL REFERENCES public.inventario(nr_inventario) ON DELETE CASCADE,
+  dt_referencia DATE NOT NULL,
+  nr_paginas_inicio_dia BIGINT NOT NULL DEFAULT 0,
+  nr_paginas_fim_dia BIGINT NOT NULL DEFAULT 0,
+  nr_paginas_dia BIGINT NOT NULL DEFAULT 0,
+  nr_ciclos_coleta INTEGER NOT NULL DEFAULT 0,
+  dt_primeira_leitura TIMESTAMP,
+  dt_ultima_leitura TIMESTAMP,
+  ds_status_ultima VARCHAR,
+  dt_atualizacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  CONSTRAINT uq_telemetria_pagecount_diaria UNIQUE (nr_inventario, dt_referencia),
+  CONSTRAINT ck_telemetria_dia_min_max CHECK (nr_paginas_fim_dia >= nr_paginas_inicio_dia),
+  CONSTRAINT ck_telemetria_dia_delta CHECK (nr_paginas_dia >= 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_data
+  ON public.telemetria_pagecount_diaria (dt_referencia DESC);
+
+CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_inventario_data
+  ON public.telemetria_pagecount_diaria (nr_inventario, dt_referencia DESC);
+
+CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_ultima_leitura
+  ON public.telemetria_pagecount_diaria (dt_ultima_leitura DESC);
+
+-- ---------------------------------------------------------------------------
+-- 3) TRIGGER: sync pagecount atual -> consolidado diario
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.fn_sync_telemetria_pagecount_diaria()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_data_ref DATE;
+  v_total BIGINT;
+  v_dt_leitura TIMESTAMP;
+BEGIN
+  v_total := GREATEST(COALESCE(NEW.nr_paginas_total, 0), 0);
+  v_dt_leitura := COALESCE(NEW.dt_leitura, CURRENT_TIMESTAMP);
+  v_data_ref := ((v_dt_leitura AT TIME ZONE 'UTC') AT TIME ZONE 'America/Sao_Paulo')::date;
+
+  INSERT INTO public.telemetria_pagecount_diaria (
+    nr_inventario,
+    dt_referencia,
+    nr_paginas_inicio_dia,
+    nr_paginas_fim_dia,
+    nr_paginas_dia,
+    nr_ciclos_coleta,
+    dt_primeira_leitura,
+    dt_ultima_leitura,
+    ds_status_ultima,
+    dt_atualizacao
+  )
+  VALUES (
+    NEW.nr_inventario,
+    v_data_ref,
+    v_total,
+    v_total,
+    0,
+    1,
+    v_dt_leitura,
+    v_dt_leitura,
+    NEW.ds_status_impressora,
+    CURRENT_TIMESTAMP
+  )
+  ON CONFLICT (nr_inventario, dt_referencia)
+  DO UPDATE SET
+    nr_paginas_inicio_dia = LEAST(
+      public.telemetria_pagecount_diaria.nr_paginas_inicio_dia,
+      EXCLUDED.nr_paginas_inicio_dia
+    ),
+    nr_paginas_fim_dia = GREATEST(
+      public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
+      EXCLUDED.nr_paginas_fim_dia
+    ),
+    nr_paginas_dia = GREATEST(
+      public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
+      EXCLUDED.nr_paginas_fim_dia
+    ) - LEAST(
+      public.telemetria_pagecount_diaria.nr_paginas_inicio_dia,
+      EXCLUDED.nr_paginas_inicio_dia
+    ),
+    nr_ciclos_coleta = public.telemetria_pagecount_diaria.nr_ciclos_coleta + 1,
+    dt_primeira_leitura = CASE
+      WHEN public.telemetria_pagecount_diaria.dt_primeira_leitura IS NULL THEN EXCLUDED.dt_primeira_leitura
+      WHEN EXCLUDED.dt_primeira_leitura < public.telemetria_pagecount_diaria.dt_primeira_leitura THEN EXCLUDED.dt_primeira_leitura
+      ELSE public.telemetria_pagecount_diaria.dt_primeira_leitura
+    END,
+    dt_ultima_leitura = CASE
+      WHEN public.telemetria_pagecount_diaria.dt_ultima_leitura IS NULL THEN EXCLUDED.dt_ultima_leitura
+      WHEN EXCLUDED.dt_ultima_leitura > public.telemetria_pagecount_diaria.dt_ultima_leitura THEN EXCLUDED.dt_ultima_leitura
+      ELSE public.telemetria_pagecount_diaria.dt_ultima_leitura
+    END,
+    ds_status_ultima = EXCLUDED.ds_status_ultima,
+    dt_atualizacao = CURRENT_TIMESTAMP;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_sync_telemetria_pagecount_diaria ON public.telemetria_pagecount;
+
+CREATE TRIGGER trg_sync_telemetria_pagecount_diaria
+AFTER INSERT OR UPDATE OF nr_paginas_total, dt_leitura, ds_status_impressora
+ON public.telemetria_pagecount
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_sync_telemetria_pagecount_diaria();
+
+-- ---------------------------------------------------------------------------
+-- 4) RETENCAO: diario por mais de 3 meses (default 12 meses = 365 dias)
+-- ---------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION public.limpar_telemetria_pagecount_diaria_antiga(p_dias INTEGER DEFAULT 365)
+RETURNS INTEGER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_deletadas INTEGER := 0;
+BEGIN
+  DELETE FROM public.telemetria_pagecount_diaria
+  WHERE dt_referencia < ((CURRENT_TIMESTAMP AT TIME ZONE 'America/Sao_Paulo')::date - GREATEST(p_dias, 90));
+
+  GET DIAGNOSTICS v_deletadas = ROW_COUNT;
+  RETURN v_deletadas;
+END;
+$$;
+
+-- Mantem compatibilidade com o nome legado ja existente no projeto.
+CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
+RETURNS VOID
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  PERFORM public.limpar_telemetria_pagecount_diaria_antiga(365);
+END;
+$$;
+
+-- Inicia diario limpo
+TRUNCATE TABLE public.telemetria_pagecount_diaria RESTART IDENTITY;
+
+COMMIT;

@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateTipoEquipamentoSchema } from '@/types/tipoEquipamento';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import {
   createTipoEquipamento,
   getTiposEquipamento,
 } from '@/services/tipoEquipamentoService';
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const data = await getTiposEquipamento();
     return NextResponse.json(data);
   } catch (error: any) {
@@ -16,6 +20,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const body = await request.json();
     const input = CreateTipoEquipamentoSchema.parse(body);
     const data = await createTipoEquipamento(input);

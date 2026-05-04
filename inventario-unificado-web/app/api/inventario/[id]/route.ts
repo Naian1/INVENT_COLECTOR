@@ -1,49 +1,50 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { getInventarioById, updateInventario, deleteInventario, moveInventarioToSetor } from '@/services/inventarioService';
-import { getSupabaseServerClient } from '@/lib/supabase/server';
+﻿import { NextRequest, NextResponse } from 'next/server';
+import { z } from 'zod';
+
+import {
+  deleteInventario,
+  getInventarioById,
+  moveInventarioToSetor,
+  updateInventario,
+} from '@/services/inventarioService';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
+import { CreateInventarioSchema } from '@/types/inventario';
+
+function parseIdOrThrow(raw: string) {
+  if (!/^\d+$/.test(raw)) {
+    throw new Error('Identificador invalido.');
+  }
+
+  const id = Number(raw);
+  if (!Number.isFinite(id) || id <= 0) {
+    throw new Error('Identificador invalido.');
+  }
+
+  return id;
+}
+
+const MoveInventarioSchema = z.object({
+  action: z.literal('move'),
+  novoSetorId: z.coerce.number().int().positive(),
+  motivo: z.string().trim().max(500).optional().nullable(),
+});
+
+const UpdateInventarioSchema = CreateInventarioSchema.partial();
 
 // GET /api/inventario/[id] - get specific inventario item
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const resolvedParams = await params;
     id = resolvedParams.id;
 
-    // Backward-compatible behavior: non-numeric path segment is treated as dynamic table name.
-    if (!/^\d+$/.test(id)) {
-      const tabela = id;
-      const { searchParams } = new URL(request.url);
-      const aba = searchParams.get('aba');
-      const search = searchParams.get('search');
-
-      const supabase = getSupabaseServerClient();
-      let query = supabase
-        .from(tabela)
-        .select('id,aba,setor,local_descricao,hostname_referencia,status_posto,observacao,ativo,criado_em,atualizado_em')
-        .limit(500);
-
-      if (aba) {
-        query = query.eq('aba', aba);
-      }
-
-      if (search) {
-        query = query.or(`patrimonio.ilike.%${search}%,hostname.ilike.%${search}%,nm_ip.ilike.%${search}%`);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.error(`Erro ao buscar ${tabela}:`, error);
-        return NextResponse.json({ erro: `Erro ao buscar registros de ${tabela}` }, { status: 500 });
-      }
-
-      return NextResponse.json(data || []);
-    }
-
-    const inventario = await getInventarioById(parseInt(id));
+    const inventario = await getInventarioById(parseIdOrThrow(id));
 
     if (!inventario) {
-      return NextResponse.json({ error: 'Inventário não encontrado' }, { status: 404 });
+      return NextResponse.json({ error: 'Inventario nao encontrado' }, { status: 404 });
     }
 
     return NextResponse.json(inventario);
@@ -57,22 +58,27 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const resolvedParams = await params;
     id = resolvedParams.id;
-    const body = await request.json();
+    const inventarioId = parseIdOrThrow(id);
 
-    // Check if this is a move operation
-    if (body.action === 'move' && body.novoSetorId) {
+    const body = (await request.json()) as Record<string, unknown>;
+
+    const tentativaMovimento = MoveInventarioSchema.safeParse(body);
+    if (tentativaMovimento.success) {
       const result = await moveInventarioToSetor(
-        parseInt(id),
-        body.novoSetorId,
-        body.motivo,
+        inventarioId,
+        tentativaMovimento.data.novoSetorId,
+        tentativaMovimento.data.motivo ?? undefined,
       );
       return NextResponse.json(result);
     }
 
-    // Regular update
-    const result = await updateInventario(parseInt(id), body);
+    const payload = UpdateInventarioSchema.parse(body);
+    const result = await updateInventario(inventarioId, payload);
     return NextResponse.json(result);
   } catch (error: any) {
     console.error(`[PUT /api/inventario/${id}]`, error);
@@ -84,9 +90,12 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const resolvedParams = await params;
     id = resolvedParams.id;
-    await deleteInventario(parseInt(id));
+    await deleteInventario(parseIdOrThrow(id));
     return NextResponse.json({ success: true });
   } catch (error: any) {
     console.error(`[DELETE /api/inventario/${id}]`, error);

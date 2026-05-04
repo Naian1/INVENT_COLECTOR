@@ -15,7 +15,7 @@ Coletar telemetria de impressoras via SNMP em ciclos, com envio autenticado ao b
 1. Carrega lista de impressoras alvo.
 2. Executa consultas SNMP.
 3. Normaliza payload de telemetria e suprimentos.
-4. Envia para endpoint de coleta.
+4. Envia para endpoint de coleta (upsert em `telemetria_pagecount`).
 5. Se falhar, mantem fila local para reenvio.
 
 ## Arquivos relevantes
@@ -35,6 +35,12 @@ Coletar telemetria de impressoras via SNMP em ciclos, com envio autenticado ao b
   - `COLLECTOR_SUPABASE_URL`
   - `COLLECTOR_SUPABASE_KEY`
   - `COLLECTOR_SUPABASE_PRINTERS_TABLE` (`impressoras` ou `inventario`)
+
+## Atualizacao 2026-05-04
+
+- A cada ingestao o coletor grava estado atual em `telemetria_pagecount`.
+- Consolidacao diaria (min/max/delta) e feita no banco por trigger.
+- Resultado: menor volume de linhas sem perder bilhetagem diaria.
 
 ## Check rapido
 

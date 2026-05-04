@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { buscarImpressoraPorId } from "@/services/impressorasService";
 import { buscarMetricasImpressoraPorPeriodo } from "@/services/metricasImpressorasService";
 
@@ -19,7 +20,10 @@ function isValidDateString(value: string) {
   return !Number.isNaN(Date.parse(value));
 }
 
-export async function GET(request: Request, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
   const { id } = await context.params;
 
   const impressora = await buscarImpressoraPorId(id);
@@ -30,7 +34,7 @@ export async function GET(request: Request, context: RouteContext) {
     );
   }
 
-  const { searchParams } = new URL(request.url);
+  const { searchParams } = request.nextUrl;
   const defaults = getDefaultMonthRange();
 
   const de = searchParams.get("de") ?? searchParams.get("from") ?? defaults.de;

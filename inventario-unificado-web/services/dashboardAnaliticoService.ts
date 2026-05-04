@@ -12,9 +12,11 @@ type LeituraRow = {
 type ImpressoraVisao = {
   id: string;
   patrimonio: string;
+  ip: string;
   modelo: string;
   setor: string;
   localizacao: string | null;
+  ultima_coleta_em: string | null;
   contador_paginas_atual: number | null;
   status_atual: string;
   menor_nivel_suprimento: number | null;
@@ -138,11 +140,14 @@ export async function buscarDashboardAnalitico(options?: {
   agrupamento?: AgrupamentoPeriodo;
   setor?: string | null;
   localizacao?: string | null;
+  de?: string | null;
+  ate?: string | null;
 }) {
-  const dias = clamp(Number(options?.dias ?? 30), 1, HISTORICO_PAGINAS_DIAS_MAX);
+  let dias = clamp(Number(options?.dias ?? 30), 1, HISTORICO_PAGINAS_DIAS_MAX);
   const agrupamento: AgrupamentoPeriodo = options?.agrupamento === "mes" ? "mes" : "dia";
   const setorFiltro = normalizarFiltro(String(options?.setor ?? ""));
   const localizacaoFiltro = normalizarFiltro(String(options?.localizacao ?? ""));
+  let modoPeriodo: "relativo" | "custom" = "relativo";
 
   const visao = await listarVisaoGeralImpressoras();
   if (!visao.success) {
@@ -180,8 +185,19 @@ export async function buscarDashboardAnalitico(options?: {
   }, 0);
   const impressoraMeta = new Map(impressorasFiltradas.map((item) => [item.id, item]));
 
-  const online = impressorasFiltradas.filter((item) => item.status_atual === "online").length;
-  const offline = impressorasFiltradas.filter((item) => item.status_atual === "offline").length;
+  let online = 0;
+  let offline = 0;
+  let warning = 0;
+  let error = 0;
+  let unknown = 0;
+  for (const item of impressorasFiltradas) {
+    const status = normalizarFiltro(item.status_atual);
+    if (status === "online") online += 1;
+    else if (status === "offline") offline += 1;
+    else if (status === "warning") warning += 1;
+    else if (status === "error") error += 1;
+    else unknown += 1;
+  }
   const criticos = impressorasFiltradas.filter((item) => {
     const nivel = Number(item.menor_nivel_suprimento);
     return Number.isFinite(nivel) && nivel <= 10;
@@ -191,8 +207,47 @@ export async function buscarDashboardAnalitico(options?: {
     return Number.isFinite(nivel) && nivel > 10 && nivel <= 20;
   }).length;
 
-  const deIso = inicioPeriodoIso(dias);
-  const ateIso = new Date().toISOString();
+  let deIso = inicioPeriodoIso(dias);
+  let ateIso = new Date().toISOString();
+  const deCustom = String(options?.de ?? "").trim();
+  const ateCustom = String(options?.ate ?? "").trim();
+  if (deCustom || ateCustom) {
+    if (!deCustom || !ateCustom) {
+      return {
+        success: false as const,
+        status: 400,
+        error: "Informe data inicial e final para período personalizado."
+      };
+    }
+    const deDate = new Date(deCustom);
+    const ateDate = new Date(ateCustom);
+    if (!Number.isFinite(deDate.getTime()) || !Number.isFinite(ateDate.getTime())) {
+      return {
+        success: false as const,
+        status: 400,
+        error: "Período personalizado inválido."
+      };
+    }
+    if (ateDate.getTime() < deDate.getTime()) {
+      return {
+        success: false as const,
+        status: 400,
+        error: "Data final deve ser maior ou igual à data inicial."
+      };
+    }
+    const diffDays = Math.floor((ateDate.getTime() - deDate.getTime()) / 86400000) + 1;
+    if (diffDays > HISTORICO_PAGINAS_DIAS_MAX) {
+      return {
+        success: false as const,
+        status: 400,
+        error: `Período máximo permitido é ${HISTORICO_PAGINAS_DIAS_MAX} dias.`
+      };
+    }
+    dias = clamp(diffDays, 1, HISTORICO_PAGINAS_DIAS_MAX);
+    deIso = deDate.toISOString();
+    ateIso = ateDate.toISOString();
+    modoPeriodo = "custom";
+  }
   const impressoraIds = impressorasFiltradas.map((item) => item.id);
 
   const [leituras, faixaHistoricaGlobal] = await Promise.all([
@@ -254,6 +309,10 @@ export async function buscarDashboardAnalitico(options?: {
     string,
     { localizacao: string; total_paginas: number; impressoras_ativas: number }
   >();
+  const rankingModelosMap = new Map<
+    string,
+    { modelo: string; total_paginas: number; impressoras_ativas: number }
+  >();
   for (const [impressoraId, faixa] of trackerPeriodoPorImpressora.entries()) {
     const delta = Math.max(0, faixa.max - faixa.min);
     if (delta <= 0) continue;
@@ -261,6 +320,7 @@ export async function buscarDashboardAnalitico(options?: {
     const meta = impressoraMeta.get(impressoraId);
     const setor = nomeSetor(meta?.setor);
     const localizacao = nomeLocalizacao(meta?.localizacao);
+    const modelo = String(meta?.modelo ?? "").trim() || "Modelo nao informado";
     if (!rankingSetoresMap.has(setor)) {
       rankingSetoresMap.set(setor, {
         setor,
@@ -290,6 +350,21 @@ export async function buscarDashboardAnalitico(options?: {
     };
     atualLocalizacao.total_paginas += delta;
     atualLocalizacao.impressoras_ativas += 1;
+
+    if (!rankingModelosMap.has(modelo)) {
+      rankingModelosMap.set(modelo, {
+        modelo,
+        total_paginas: 0,
+        impressoras_ativas: 0
+      });
+    }
+    const atualModelo = rankingModelosMap.get(modelo) as {
+      modelo: string;
+      total_paginas: number;
+      impressoras_ativas: number;
+    };
+    atualModelo.total_paginas += delta;
+    atualModelo.impressoras_ativas += 1;
   }
   const rankingSetores = Array.from(rankingSetoresMap.values())
     .sort((a, b) => b.total_paginas - a.total_paginas)
@@ -297,6 +372,9 @@ export async function buscarDashboardAnalitico(options?: {
   const rankingLocalizacoes = Array.from(rankingLocalizacoesMap.values())
     .sort((a, b) => b.total_paginas - a.total_paginas)
     .slice(0, 12);
+  const rankingModelos = Array.from(rankingModelosMap.values())
+    .sort((a, b) => b.total_paginas - a.total_paginas)
+    .slice(0, 20);
 
   const suprimentosDelicados = impressorasFiltradas
     .flatMap((impressora) =>
@@ -316,6 +394,28 @@ export async function buscarDashboardAnalitico(options?: {
     .sort((a, b) => Number(a.nivel_percentual) - Number(b.nivel_percentual))
     .slice(0, 20);
 
+  const impressorasComparativoBase = impressorasFiltradas.map((item) => ({
+    id: item.id,
+    patrimonio: item.patrimonio,
+    ip: item.ip,
+    modelo: item.modelo,
+    setor: nomeSetor(item.setor),
+    localizacao: nomeLocalizacao(item.localizacao),
+    status_atual: item.status_atual,
+    ultima_coleta_em: item.ultima_coleta_em,
+    contador_paginas_atual:
+      Number.isFinite(Number(item.contador_paginas_atual)) && Number(item.contador_paginas_atual) >= 0
+        ? Number(item.contador_paginas_atual)
+        : null
+  }));
+
+  const impressorasComDadosPeriodo = trackerPeriodoPorImpressora.size;
+  const impressorasSemDadosPeriodo = Math.max(0, impressorasFiltradas.length - impressorasComDadosPeriodo);
+  const coberturaPeriodoPercentual =
+    impressorasFiltradas.length > 0
+      ? Math.round((impressorasComDadosPeriodo / impressorasFiltradas.length) * 100)
+      : 0;
+
   return {
     success: true as const,
     data: {
@@ -325,7 +425,10 @@ export async function buscarDashboardAnalitico(options?: {
         dias_maximo_historico: HISTORICO_PAGINAS_DIAS_MAX,
         agrupamento,
         setor: setorFiltro || "todos",
-        localizacao: localizacaoFiltro || "todos"
+        localizacao: localizacaoFiltro || "todos",
+        modo_periodo: modoPeriodo,
+        de: modoPeriodo === "custom" ? deIso : null,
+        ate: modoPeriodo === "custom" ? ateIso : null
       },
       setores_disponiveis: setoresDisponiveis,
       localizacoes_disponiveis: localizacoesDisponiveis,
@@ -333,16 +436,24 @@ export async function buscarDashboardAnalitico(options?: {
         total_impressoras: impressorasFiltradas.length,
         online,
         offline,
+        warning,
+        error,
+        unknown,
         suprimentos_criticos: criticos,
         suprimentos_baixos: baixos,
         paginas_acumuladas_total_filtro: totalPaginasAcumuladasFiltro,
         paginas_periodo_total: totalPaginasPeriodo,
-        paginas_acumuladas_total_geral: totalPaginasAcumuladasGeral
+        paginas_acumuladas_total_geral: totalPaginasAcumuladasGeral,
+        impressoras_com_dados_periodo: impressorasComDadosPeriodo,
+        impressoras_sem_dados_periodo: impressorasSemDadosPeriodo,
+        cobertura_periodo_percentual: coberturaPeriodoPercentual
       },
       faixa_historica_global: faixaHistoricaGlobal,
       paginas_por_periodo: paginasPorPeriodo,
       ranking_setores: rankingSetores,
       ranking_localizacoes: rankingLocalizacoes,
+      ranking_modelos: rankingModelos,
+      impressoras_comparativo_base: impressorasComparativoBase,
       suprimentos_delicados: suprimentosDelicados,
       historico_truncado: leituras.truncado
     }

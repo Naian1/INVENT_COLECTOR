@@ -113,3 +113,10 @@ As permissões são avaliadas no backend/functions para impedir bypass apenas po
 
 “O sistema unifica inventário e monitoramento de impressoras em uma arquitetura moderna com Next.js, Supabase e coletor SNMP. A autenticação foi migrada para Supabase Auth com vínculo controlado em tabela de negócio, garantindo segurança e governança. O fluxo de impressoras foi automatizado: origem no inventário, coleta SNMP, persistência e visualização analítica, reduzindo dependência de controles manuais e aumentando rastreabilidade operacional.”
 
+
+## Atualizacao 2026-05-04 (bilhetagem diaria)
+
+- O modelo de telemetria de paginas foi simplificado para duas tabelas.
+- `telemetria_pagecount` guarda o contador atual por patrimonio/inventario.
+- `telemetria_pagecount_diaria` guarda minimo, maximo e delta diario.
+- Isso reduz volume de banco e facilita explicacao metodologica no TCC.

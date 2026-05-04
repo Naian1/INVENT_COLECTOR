@@ -41,6 +41,7 @@ Fase 2 (medio prazo)
 - Testes de contrato das actions inventory-matrix.
 - Smoke test da tela de conciliacao com pagina e totais.
 - Teste de envio do coletor com token valido.
+- Teste de consolidacao diaria: inserir 2 leituras no mesmo dia e validar `nr_paginas_dia`.
 
 ## Comandos existentes
 
@@ -59,3 +60,11 @@ cd coletor-snmp
 .venv\Scripts\activate
 python scripts\test_collector_push.py
 ```
+
+## Atualizacao 2026-05-04
+
+Adicionar teste SQL rapido apos deploy:
+
+1. Atualizar `telemetria_pagecount` para um `nr_inventario` de teste.
+2. Verificar se a trigger atualiza `telemetria_pagecount_diaria`.
+3. Confirmar regra `nr_paginas_dia = nr_paginas_fim_dia - nr_paginas_inicio_dia`.

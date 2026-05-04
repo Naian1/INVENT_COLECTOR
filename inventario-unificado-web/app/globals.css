@@ -1144,6 +1144,81 @@ a {
   gap: 12px;
 }
 
+.ui-analytics-shell {
+  display: grid;
+  gap: 10px;
+  border-color: #dbeafe;
+  background:
+    radial-gradient(circle at 5% 0%, rgba(37, 99, 235, 0.06), transparent 40%),
+    linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);
+}
+
+.ui-analytics-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ui-analytics-range {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ui-analytics-chart-card {
+  display: grid;
+  gap: 10px;
+}
+
+.ui-chart-wrap {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(37, 99, 235, 0.08), transparent 42%),
+    linear-gradient(180deg, #f8fbff 0%, #f1f5f9 100%);
+}
+
+.ui-chart-svg {
+  width: 100%;
+  min-width: 760px;
+  display: block;
+}
+
+.ui-chart-gridline {
+  stroke: #dbeafe;
+  stroke-width: 1;
+  stroke-dasharray: 4 4;
+}
+
+.ui-chart-line {
+  fill: none;
+  stroke: #2563eb;
+  stroke-width: 3;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ui-chart-dot {
+  fill: #2563eb;
+  stroke: #ffffff;
+  stroke-width: 2;
+}
+
+.ui-chart-label {
+  fill: #475569;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.ui-analytics-billing-head {
+  display: grid;
+  grid-template-columns: minmax(160px, 240px) minmax(220px, 1fr) auto;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
 .ui-supply-list {
   display: grid;
   gap: 8px;
@@ -1287,8 +1362,14 @@ a {
   .ui-grid-2,
   .ui-dashboard-grid,
   .ui-insight-grid,
+  .ui-analytics-filters,
+  .ui-analytics-range,
   .ui-sheet-toolbar,
   .ui-kpi-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ui-analytics-billing-head {
     grid-template-columns: 1fr;
   }
 
@@ -1542,6 +1623,37 @@ html[data-theme="dark"] .ui-theme-toggle:hover {
 html[data-theme="dark"] .ui-stage-overview {
   border-color: #1d4ed8;
   background: linear-gradient(135deg, #10213b 0%, #0f172a 65%);
+}
+
+html[data-theme="dark"] .ui-analytics-shell {
+  border-color: #1d4ed8;
+  background:
+    radial-gradient(circle at 5% 0%, rgba(96, 165, 250, 0.12), transparent 42%),
+    linear-gradient(180deg, #0f172a 0%, #0b1220 100%);
+}
+
+html[data-theme="dark"] .ui-chart-wrap {
+  border-color: #334155;
+  background:
+    radial-gradient(circle at 85% 0%, rgba(96, 165, 250, 0.14), transparent 48%),
+    linear-gradient(180deg, #0f172a 0%, #111827 100%);
+}
+
+html[data-theme="dark"] .ui-chart-gridline {
+  stroke: #334155;
+}
+
+html[data-theme="dark"] .ui-chart-line {
+  stroke: #60a5fa;
+}
+
+html[data-theme="dark"] .ui-chart-dot {
+  fill: #93c5fd;
+  stroke: #0f172a;
+}
+
+html[data-theme="dark"] .ui-chart-label {
+  fill: #94a3b8;
 }
 
 html[data-theme="dark"] .ui-brand-icon {

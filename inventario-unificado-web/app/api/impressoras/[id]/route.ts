@@ -1,4 +1,5 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { atualizarImpressoraSchema } from "@/lib/validation/impressoraSchemas";
 import {
   buscarImpressoraPorId,
@@ -9,7 +10,10 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
-export async function GET(_request: Request, context: RouteContext) {
+export async function GET(request: NextRequest, context: RouteContext) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
   const { id } = await context.params;
   const result = await buscarImpressoraPorId(id);
 
@@ -26,7 +30,10 @@ export async function GET(_request: Request, context: RouteContext) {
   });
 }
 
-export async function PATCH(request: Request, context: RouteContext) {
+export async function PATCH(request: NextRequest, context: RouteContext) {
+  const auth = await authenticateApiRequest(request, { requireAdmin: true });
+  if (auth.response) return auth.response;
+
   const { id } = await context.params;
 
   const existente = await buscarImpressoraPorId(id);

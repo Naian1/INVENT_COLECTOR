@@ -69,6 +69,12 @@ type LinhaValorRow = {
 };
 
 const LIMITE_MAXIMO_ROWS_QUERY = 1000;
+const STATUS_HISTORY_WINDOW = 4;
+const STATUS_OFFLINE_CONFIRM_MINUTES = 18;
+const STATUS_OFFLINE_HARD_MINUTES = 120;
+const STATUS_RECENT_ONLINE_GRACE_MINUTES = 75;
+const STATUS_STALE_WARNING_MINUTES = 45;
+const STATUS_STALE_OFFLINE_MINUTES = 180;
 
 function normalizarIp(value: string) {
   return value.replace(/\/32$/, "");
@@ -113,6 +119,117 @@ function normalizarTextoComparacao(value: string | null | undefined) {
 
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
+}
+
+function normalizarStatusOperacional(value: unknown): string {
+  const status = String(value ?? "").trim().toLowerCase();
+  if (!status) return "unknown";
+  if (["ok", "online", "ativo", "up"].includes(status)) return "online";
+  if (["offline", "down", "inativo"].includes(status)) return "offline";
+  if (["erro", "error", "critical", "critico"].includes(status)) return "error";
+  if (["warning", "warn", "alerta"].includes(status)) return "warning";
+  return "unknown";
+}
+
+function parseDateMs(value: string | null | undefined): number | null {
+  if (!value) return null;
+  const ts = new Date(value).getTime();
+  return Number.isFinite(ts) ? ts : null;
+}
+
+function minutesSince(value: string | null | undefined): number | null {
+  const ts = parseDateMs(value);
+  if (ts === null) return null;
+  const diff = Date.now() - ts;
+  if (!Number.isFinite(diff)) return null;
+  return diff / 60000;
+}
+
+function isOfflineLikeStatus(status: string): boolean {
+  return ["offline", "error"].includes(status);
+}
+
+function isOnlineLikeStatus(status: string): boolean {
+  return ["online", "warning"].includes(status);
+}
+
+function resolverStatusOperacionalConfiavel(
+  rows: Array<{ status: string; coletado_em: string | null }>,
+  fallbackStatus?: string | null,
+  fallbackTimestamp?: string | null
+): string {
+  const history = rows
+    .map((row) => ({
+      status: normalizarStatusOperacional(row.status),
+      coletado_em: limparTexto(row.coletado_em),
+    }))
+    .filter((row) => Boolean(row.status));
+  const fallback = normalizarStatusOperacional(fallbackStatus ?? "");
+
+  if (!history.length) {
+    const fallbackAgeMin = minutesSince(fallbackTimestamp ?? null);
+    if (fallbackAgeMin !== null) {
+      if (fallbackAgeMin >= STATUS_STALE_OFFLINE_MINUTES) return "offline";
+      if (fallbackAgeMin >= STATUS_STALE_WARNING_MINUTES) return "warning";
+    }
+    return fallback || "unknown";
+  }
+
+  const latest = history[0];
+  const latestAgeMin = minutesSince(latest.coletado_em ?? fallbackTimestamp ?? null);
+  const recentWindow = history.slice(0, STATUS_HISTORY_WINDOW);
+
+  if (latest.status === "online") {
+    if (latestAgeMin !== null) {
+      if (latestAgeMin >= STATUS_STALE_OFFLINE_MINUTES) return "offline";
+      if (latestAgeMin > STATUS_OFFLINE_HARD_MINUTES) return "warning";
+    }
+    return "online";
+  }
+
+  if (latest.status === "warning") return "warning";
+  if (latest.status === "unknown") {
+    if (latestAgeMin !== null) {
+      if (latestAgeMin >= STATUS_STALE_OFFLINE_MINUTES) return "offline";
+      if (latestAgeMin >= STATUS_STALE_WARNING_MINUTES) return "warning";
+    }
+    return fallback || "unknown";
+  }
+
+  if (latest.status === "error") {
+    if (latestAgeMin !== null && latestAgeMin >= STATUS_OFFLINE_HARD_MINUTES) {
+      return "offline";
+    }
+    return "warning";
+  }
+
+  if (latest.status === "offline") {
+    let consecutiveOffline = 0;
+    for (const item of recentWindow) {
+      if (isOfflineLikeStatus(item.status)) {
+        consecutiveOffline += 1;
+        continue;
+      }
+      break;
+    }
+
+    const hasRecentOnline = recentWindow.some((item) => isOnlineLikeStatus(item.status));
+    if (latestAgeMin !== null && latestAgeMin < STATUS_OFFLINE_CONFIRM_MINUTES) {
+      return "warning";
+    }
+    if (
+      hasRecentOnline &&
+      latestAgeMin !== null &&
+      latestAgeMin <= STATUS_RECENT_ONLINE_GRACE_MINUTES
+    ) {
+      return "warning";
+    }
+    if (consecutiveOffline >= 2) return "offline";
+    if (latestAgeMin !== null && latestAgeMin >= STATUS_OFFLINE_HARD_MINUTES) return "offline";
+    return "warning";
+  }
+
+  return fallback || latest.status || "unknown";
 }
 
 async function carregarPendentesInventario(
@@ -311,7 +428,11 @@ export async function listarVisaoGeralImpressoras(options?: {
   }
 
   const impressoraIds = impressorasRows.map((row) => row.id);
-  const limiteStatusInicial = clamp(impressoraIds.length * 2, 160, 700);
+  const limiteStatusInicial = clamp(
+    impressoraIds.length * (STATUS_HISTORY_WINDOW + 2),
+    220,
+    LIMITE_MAXIMO_ROWS_QUERY
+  );
   const limiteLeituraInicial = clamp(impressoraIds.length * 2, 160, 700);
   const limiteSuprimentoInicial = clamp(impressoraIds.length * 6, 240, 900);
 
@@ -357,11 +478,29 @@ export async function listarVisaoGeralImpressoras(options?: {
   }
 
   const latestStatusByImpressora = new Map<string, StatusRow>();
-  for (const row of (statusRows ?? []) as StatusRow[]) {
-    if (!latestStatusByImpressora.has(row.impressora_id)) {
-      latestStatusByImpressora.set(row.impressora_id, row);
+  const statusHistoryByImpressora = new Map<string, Array<{ status: string; coletado_em: string | null }>>();
+  const registrarStatus = (rows: StatusRow[]) => {
+    for (const row of rows) {
+      if (!latestStatusByImpressora.has(row.impressora_id)) {
+        latestStatusByImpressora.set(row.impressora_id, row);
+      }
+
+      if (!statusHistoryByImpressora.has(row.impressora_id)) {
+        statusHistoryByImpressora.set(row.impressora_id, []);
+      }
+      const bucket = statusHistoryByImpressora.get(row.impressora_id) as Array<{
+        status: string;
+        coletado_em: string | null;
+      }>;
+      if (bucket.length < STATUS_HISTORY_WINDOW + 2) {
+        bucket.push({
+          status: String(row.status || "unknown"),
+          coletado_em: limparTexto(row.coletado_em)
+        });
+      }
     }
-  }
+  };
+  registrarStatus((statusRows ?? []) as StatusRow[]);
 
   const latestLeituraByImpressora = new Map<string, LeituraRow>();
   for (const row of (leituraRows ?? []) as LeituraRow[]) {
@@ -472,11 +611,7 @@ export async function listarVisaoGeralImpressoras(options?: {
       };
     }
 
-    for (const row of (statusFallbackRows ?? []) as StatusRow[]) {
-      if (!latestStatusByImpressora.has(row.impressora_id)) {
-        latestStatusByImpressora.set(row.impressora_id, row);
-      }
-    }
+    registrarStatus((statusFallbackRows ?? []) as StatusRow[]);
 
     for (const row of (leituraFallbackRows ?? []) as LeituraRow[]) {
       if (!latestLeituraByImpressora.has(row.impressora_id)) {
@@ -489,8 +624,15 @@ export async function listarVisaoGeralImpressoras(options?: {
 
   const visaoOperacional: ImpressoraVisaoGeral[] = impressorasRows.map((impressora) => {
     const latestStatus = latestStatusByImpressora.get(impressora.id);
+    const statusHistory = statusHistoryByImpressora.get(impressora.id) ?? [];
     const latestLeitura = latestLeituraByImpressora.get(impressora.id);
     const latestSuprimentos = snapshotSuprimentosByImpressora.get(impressora.id);
+    const ultimaColeta = limparTexto(impressora.ultima_coleta_em) ?? limparTexto(latestStatus?.coletado_em) ?? null;
+    const statusAtual = resolverStatusOperacionalConfiavel(
+      statusHistory,
+      latestStatus?.status ?? "unknown",
+      ultimaColeta
+    );
 
     return {
       id: impressora.id,
@@ -503,8 +645,8 @@ export async function listarVisaoGeralImpressoras(options?: {
       numero_serie: impressora.numero_serie ?? null,
       hostname: impressora.hostname ?? null,
       ativo: impressora.ativo,
-      ultima_coleta_em: impressora.ultima_coleta_em,
-      status_atual: latestStatus?.status ?? "unknown",
+      ultima_coleta_em: ultimaColeta,
+      status_atual: statusAtual,
       contador_paginas_atual: latestLeitura ? Number(latestLeitura.contador_total_paginas) : null,
       menor_nivel_suprimento: latestSuprimentos?.menor_nivel ?? null,
       resumo_suprimentos: latestSuprimentos?.resumo ?? [],

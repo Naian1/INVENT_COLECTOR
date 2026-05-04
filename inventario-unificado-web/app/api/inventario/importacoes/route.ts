@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type LinhaImportacao = {
@@ -15,6 +16,7 @@ type LinhaImportacao = {
   nr_serie?: string;
   nr_ip?: string;
 };
+const MAX_IMPORT_ROWS = 5000;
 
 function txt(v: unknown): string | null {
   if (v === null || v === undefined) return null;
@@ -182,11 +184,21 @@ async function upsertInventario(
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const body = await request.json();
     const rows = (body?.rows ?? []) as LinhaImportacao[];
 
     if (!Array.isArray(rows) || rows.length === 0) {
       return NextResponse.json({ erro: 'Nenhuma linha para importar.' }, { status: 400 });
+    }
+
+    if (rows.length > MAX_IMPORT_ROWS) {
+      return NextResponse.json(
+        { erro: `Limite excedido. Envie no maximo ${MAX_IMPORT_ROWS} linhas por importacao.` },
+        { status: 413 },
+      );
     }
 
     const supabase = getSupabaseServerClient();

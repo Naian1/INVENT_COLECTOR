@@ -1,12 +1,13 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasService";
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const incluirNaoOperacionais = url.searchParams.get("incluir_nao_operacionais") === "true";
-  const cacheControl = incluirNaoOperacionais
-    ? "public, s-maxage=10, stale-while-revalidate=30"
-    : "public, s-maxage=20, stale-while-revalidate=60";
+export async function GET(request: NextRequest) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
+  const incluirNaoOperacionais = request.nextUrl.searchParams.get("incluir_nao_operacionais") === "true";
+  const cacheControl = "private, no-store";
 
   const result = await listarVisaoGeralImpressoras({
     incluir_nao_operacionais: incluirNaoOperacionais

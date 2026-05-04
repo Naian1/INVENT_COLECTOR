@@ -267,7 +267,18 @@ export default function ImportacoesInventarioPage() {
   useEffect(() => {
     const carregarEmpresas = async () => {
       try {
-        const response = await fetch(`/api/empresas?ts=${Date.now()}`, { cache: 'no-store' });
+        const { data: sessionData } = await supabase.auth.getSession();
+        const token = sessionData?.session?.access_token;
+        if (!token) {
+          throw new Error('Sessão expirada. Faça login novamente.');
+        }
+
+        const response = await fetch(`/api/empresas?ts=${Date.now()}`, {
+          cache: 'no-store',
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const body = await response.json();
         if (!response.ok) {
           throw new Error(body?.error || 'Falha ao carregar empresas.');

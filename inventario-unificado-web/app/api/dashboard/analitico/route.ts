@@ -1,18 +1,25 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { buscarDashboardAnalitico } from "@/services/dashboardAnaliticoService";
 
-export async function GET(request: Request) {
-  const url = new URL(request.url);
-  const dias = Number(url.searchParams.get("dias") ?? 30);
-  const agrupamento = url.searchParams.get("agrupamento") === "mes" ? "mes" : "dia";
-  const setor = url.searchParams.get("setor");
-  const localizacao = url.searchParams.get("localizacao");
+export async function GET(request: NextRequest) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
+  const dias = Number(request.nextUrl.searchParams.get("dias") ?? 30);
+  const agrupamento = request.nextUrl.searchParams.get("agrupamento") === "mes" ? "mes" : "dia";
+  const setor = request.nextUrl.searchParams.get("setor");
+  const localizacao = request.nextUrl.searchParams.get("localizacao");
+  const de = request.nextUrl.searchParams.get("de");
+  const ate = request.nextUrl.searchParams.get("ate");
 
   const result = await buscarDashboardAnalitico({
     dias,
     agrupamento,
     setor,
-    localizacao
+    localizacao,
+    de,
+    ate
   });
 
   if (!result.success) {
@@ -30,6 +37,6 @@ export async function GET(request: Request) {
       sucesso: true,
       dados: result.data
     },
-    { headers: { "Cache-Control": "public, s-maxage=30, stale-while-revalidate=60" } }
+    { headers: { "Cache-Control": "private, no-store" } }
   );
 }

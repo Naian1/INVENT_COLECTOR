@@ -1,12 +1,16 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateEmpresaSchema } from '@/types/empresa';
 import { createEmpresa, getEmpresas } from '@/services/empresaService';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const data = await getEmpresas();
     return NextResponse.json(data, {
       headers: {
@@ -20,6 +24,9 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request, { requireAdmin: true });
+    if (auth.response) return auth.response;
+
     const body = await request.json();
     const input = CreateEmpresaSchema.parse(body);
     const data = await createEmpresa(input);

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 function validarCompetencia(competencia: string): boolean {
@@ -13,6 +14,9 @@ function limparTexto(value: string | null): string | null {
 
 export async function GET(request: NextRequest) {
   try {
+    const auth = await authenticateApiRequest(request);
+    if (auth.response) return auth.response;
+
     const params = request.nextUrl.searchParams;
     const patrimonio = limparTexto(params.get('patrimonio'));
     const competencia = limparTexto(params.get('competencia'));

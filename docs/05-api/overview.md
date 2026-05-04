@@ -73,3 +73,8 @@ Rotas Next ainda existentes para coletor:
 - POST /api/coletor/telemetria
 
 Essas rotas devem convergir para Edge conforme plano em [02-architecture](../02-architecture.md#migracao-de-legado-para-edge-functions).
+
+## Atualizacao 2026-05-04
+
+- Coletor de telemetria passou a operar com upsert de pagecount por `nr_inventario`.
+- Consolidacao diaria foi movida para trigger SQL no banco (`telemetria_pagecount_diaria`).

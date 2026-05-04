@@ -1,8 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { criarImpressoraSchema } from "@/lib/validation/impressoraSchemas";
 import { criarImpressora, listarImpressoras } from "@/services/impressorasService";
 
-export async function GET() {
+export async function GET(request: NextRequest) {
+  const auth = await authenticateApiRequest(request);
+  if (auth.response) return auth.response;
+
   const result = await listarImpressoras();
 
   if (!result.success) {
@@ -18,7 +22,10 @@ export async function GET() {
   });
 }
 
-export async function POST(request: Request) {
+export async function POST(request: NextRequest) {
+  const auth = await authenticateApiRequest(request, { requireAdmin: true });
+  if (auth.response) return auth.response;
+
   let body: unknown;
 
   try {

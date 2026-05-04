@@ -76,8 +76,22 @@ npx supabase link --project-ref tcxaktsleilbdgxcstqo
 npx supabase db push
 ```
 
+Observacao (2026-05-04):
+
+- A migration de telemetria diaria foi consolidada no arquivo unico:
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql`
+- Nao usar arquivo avulso para esse bloco.
+
 ## Validacao inicial
 
 1. Abrir tela web local e validar carregamento.
 2. Rodar chamada de teste para uma Edge Function.
 3. Executar coletor com check de conexao antes do loop continuo.
+
+## Validacao extra (telemetria diaria)
+
+1. Confirmar trigger ativa: `trg_sync_telemetria_pagecount_diaria`.
+2. Rodar um ciclo do coletor.
+3. Verificar crescimento de linhas:
+- `telemetria_pagecount` ~= quantidade de impressoras monitoradas.
+- `telemetria_pagecount_diaria` ~= impressoras x dias com coleta.

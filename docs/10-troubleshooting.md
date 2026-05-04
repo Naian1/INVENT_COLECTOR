@@ -56,6 +56,23 @@ Acoes:
 2. Validar COLLECTOR_API_BASE_URL e token.
 3. Inspecionar arquivos em coletor-snmp/data.
 
+## Pagecount nao atualiza no dashboard novo
+
+Possiveis causas:
+
+- Trigger `trg_sync_telemetria_pagecount_diaria` ausente.
+- Upsert sem constraint unica em `telemetria_pagecount.nr_inventario`.
+- Coletor ainda em versao antiga.
+
+Acoes:
+
+1. Validar constraint `uq_telemetria_pagecount_inventario`.
+2. Validar trigger no banco:
+   - `fn_sync_telemetria_pagecount_diaria`
+   - `trg_sync_telemetria_pagecount_diaria`
+3. Reimplantar `collector-telemetria`.
+4. Rodar 1 ciclo do coletor e conferir dados nas duas tabelas.
+
 ## Erro "Edge Function returned a non-2xx status code" no inventario
 
 Possiveis causas:

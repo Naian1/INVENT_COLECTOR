@@ -123,6 +123,12 @@ Acoes:
 }
 ```
 
+## Atualizacao 2026-05-04
+
+- O dashboard de paginas passou a consumir consolidacao diaria por patrimonio quando disponivel.
+- Fonte primaria: `telemetria_pagecount_diaria`.
+- Fallback de compatibilidade: agregacao sobre `telemetria_pagecount` legado.
+
 ### Response (resumo)
 
 ```json

@@ -42,3 +42,12 @@ npx vercel --prod --yes
 5. Validar ingestao do coletor (telemetria e suprimentos) com token dedicado.
 6. Conferir logs iniciais de erro no Supabase.
 7. Atualizar [11-release-review](11-release-review.md).
+
+## Checklist extra (telemetria diaria - 2026-05-04)
+
+1. Confirmar migration consolidada em `SQL Sistema.sql` aplicada.
+2. Confirmar trigger `trg_sync_telemetria_pagecount_diaria` criada.
+3. Reimplantar `collector-telemetria`.
+4. Rodar coletor por 1 ciclo e validar:
+- `telemetria_pagecount` com 1 linha por inventario.
+- `telemetria_pagecount_diaria` com linha do dia atual.

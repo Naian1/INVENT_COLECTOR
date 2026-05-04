@@ -107,3 +107,11 @@ python scripts/run_collector_loop.py --once --log-level INFO
 ```
 4. Validar telas protegidas sem login (deve redirecionar para `/login`).
 
+
+## Atualizacao complementar (2026-05-04)
+
+- Telemetria de paginas evoluiu para modelo em duas tabelas com trigger SQL diaria.
+- Fonte oficial para bilhetagem diaria:
+  - `telemetria_pagecount_diaria`
+- Estado atual da impressora:
+  - `telemetria_pagecount`

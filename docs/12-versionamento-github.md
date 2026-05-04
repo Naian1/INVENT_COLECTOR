@@ -96,3 +96,12 @@ git commit -m "chore: baseline inicial do projeto com docs e hardening de versio
 - Exigir pull request para alteracoes de producao.
 - Revisar segredos do ambiente periodicamente.
 - Manter este guia atualizado a cada novo risco identificado.
+
+## Atualizacao 2026-05-04
+
+- Modelo de telemetria diaria consolidado em `SQL Sistema.sql`.
+- Removida migration avulsa de telemetria diaria apos aplicacao em producao.
+- Reforco para nao versionar artefatos locais do coletor:
+  - `coletor-snmp/build/`
+  - `coletor-snmp/logs/`
+  - `coletor-snmp/dist/`

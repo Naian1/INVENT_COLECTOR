@@ -68,3 +68,13 @@ Uma release so e concluida quando:
 - Processo de reimportacao Matrix documentado com reset seguro da carga (`TRUNCATE public.inventario_consolidado_carga RESTART IDENTITY CASCADE`).
 - Deploy frontend publicado em producao com validacao de disponibilidade HTTP 200 na URL principal.
 - Preparacao para versionamento GitHub: reforco de `.gitignore` no coletor para ignorar `.env` local e higienizacao de arquivos texto com placeholders de segredo.
+
+## Ultimas atualizacoes (2026-05-04)
+
+- Telemetria pagecount migrada para modelo em 2 tabelas:
+  - `telemetria_pagecount` (estado atual)
+  - `telemetria_pagecount_diaria` (min/max/delta por dia)
+- Trigger SQL criada para consolidacao diaria automatica por `nr_inventario`.
+- Retencao de telemetria diaria definida para manter historico acima de 3 meses (default 365 dias, piso 90 dias).
+- Home trocada para resumo diario orientado a patrimonio.
+- Migration avulsa removida e consolidada em `SQL Sistema.sql`.
