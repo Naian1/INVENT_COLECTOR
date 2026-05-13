@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\equipamentos\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { getEquipamentos, createEquipamento } from '@/services/equipamentoService';
 import { CreateEquipamentoSchema } from '@/types/equipamento';
@@ -32,3 +36,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
+

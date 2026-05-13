@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\coletor\impressoras\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextResponse } from "next/server";
 import { validateCollectorBearerToken } from "@/lib/security/collectorAuth";
 import { listarImpressoras } from "@/services/impressorasService";
@@ -44,4 +48,5 @@ export async function GET(request: Request) {
     }
   });
 }
+
 

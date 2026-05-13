@@ -1,4 +1,6 @@
-﻿import json
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\cache_manager.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+import json
 import ipaddress
 import logging
 import os
@@ -755,3 +757,4 @@ def atualizar_cache():
 
     logging.info("Atualizacao do cache concluida.")
     return dados
+

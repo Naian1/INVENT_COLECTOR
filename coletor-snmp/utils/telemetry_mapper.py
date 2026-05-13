@@ -1,3 +1,5 @@
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\telemetry_mapper.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import re
 import unicodedata
 from datetime import datetime, timezone
@@ -309,3 +311,4 @@ def build_payload_from_cache_entries(coletor_id, ip, printer_info, cache_entries
             "entries": len(entries),
         },
     )
+

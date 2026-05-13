@@ -1,3 +1,5 @@
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\scripts\test_collector_push.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import argparse
 import json
 import os
@@ -149,3 +151,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

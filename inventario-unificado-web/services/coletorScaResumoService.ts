@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\coletorScaResumoService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type ScaResumoItem = {
@@ -113,3 +117,4 @@ export async function listarResumoSca(limit = 1800): Promise<ResultadoServico<Sc
 
   return { success: true, data: itens };
 }
+

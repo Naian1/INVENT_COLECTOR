@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: 
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { buscarImpressoraPorId } from "@/services/impressorasService";
@@ -70,3 +74,4 @@ export async function GET(request: NextRequest, context: RouteContext) {
     dados: metricas.data
   });
 }
+

@@ -1,3 +1,5 @@
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\scripts\run_collector_loop.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import argparse
 import logging
 import os
@@ -203,3 +205,4 @@ def main():
 
 if __name__ == "__main__":
     raise SystemExit(main())
+

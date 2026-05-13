@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\setor.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const SetorSchema = z.object({
@@ -20,3 +24,4 @@ export const CreateSetorSchema = SetorSchema.omit({
 
 export type CreateSetorInput = z.infer<typeof CreateSetorSchema>;
 export type UpdateSetorInput = Partial<CreateSetorInput>;
+

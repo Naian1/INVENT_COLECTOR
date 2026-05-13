@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\ui\dialog.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import React, { ReactNode, useEffect } from 'react';
 
 interface DialogProps {
@@ -127,3 +131,4 @@ export function DialogDescription({
     </p>
   );
 }
+

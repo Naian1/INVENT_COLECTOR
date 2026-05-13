@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\security\sessionAuth.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { createHash, createHmac, timingSafeEqual } from "crypto";
 
 const SESSION_COOKIE_NAME = "inv_session";
@@ -118,3 +122,4 @@ export function verifyPassword(inputPassword: string, storedHash: string | null 
 
   return safeCompare(inputPassword, normalizedHash);
 }
+

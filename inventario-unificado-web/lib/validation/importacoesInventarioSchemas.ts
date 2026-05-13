@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\validation\importacoesInventarioSchemas.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from "zod";
 
 const estrategiaMatchingSchema = z
@@ -82,3 +86,4 @@ export const importacaoInventarioExecutarSchema = z
     message: "Informe importacao_id existente ou payload completo para executar.",
     path: ["importacao_id"]
   });
+

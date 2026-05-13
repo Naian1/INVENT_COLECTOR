@@ -1,4 +1,8 @@
-﻿'use client';
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\inventario\importacoes\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
+'use client';
 
 import { useEffect, useMemo, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
@@ -593,3 +597,4 @@ export default function ImportacoesInventarioPage() {
     </BasicPageShell>
   );
 }
+

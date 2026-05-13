@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\usuarios\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 'use client';
 
 import { useEffect, useMemo, useState } from 'react';
@@ -590,3 +594,4 @@ export default function UsuariosPage() {
     </BasicPageShell>
   );
 }
+

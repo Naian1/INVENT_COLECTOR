@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\printers\naming.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 const UNKNOWN_VALUES = new Set([
   "",
   "desconhecido",
@@ -53,3 +57,4 @@ export function buildPrinterDisplayName(input: {
   if (ipAddress) return ipAddress;
   return null;
 }
+

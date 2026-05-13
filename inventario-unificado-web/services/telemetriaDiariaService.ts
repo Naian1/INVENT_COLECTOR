@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\telemetriaDiariaService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 type DailyRow = {
@@ -991,3 +995,4 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     };
   }
 }
+

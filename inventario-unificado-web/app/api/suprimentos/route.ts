@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\suprimentos\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { getSuprimentos, upsertSuprimento } from '@/services/suprimentosService';
 import { SuprimentosSchema } from '@/types/suprimentos';
@@ -37,3 +41,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }
+

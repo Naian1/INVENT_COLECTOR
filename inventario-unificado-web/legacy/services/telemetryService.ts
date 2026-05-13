@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\services\telemetryService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type {
   CollectorTelemetryEvent,
@@ -202,3 +206,4 @@ export async function ingestCollectorTelemetry(
 
   return result;
 }
+

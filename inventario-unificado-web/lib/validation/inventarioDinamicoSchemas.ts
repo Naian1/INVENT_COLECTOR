@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\validation\inventarioDinamicoSchemas.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from "zod";
 
 const ipv4Regex =
@@ -243,3 +247,4 @@ export const moverCamposLinhaSchema = z.object({
   manter_ativo: z.boolean().optional(),
   remover_origem: z.boolean().optional()
 });
+

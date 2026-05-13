@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\dashboardAnaliticoService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasService";
 
@@ -459,3 +463,4 @@ export async function buscarDashboardAnalitico(options?: {
     }
   };
 }
+

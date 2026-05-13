@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\suprimentosService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Suprimentos, CreateSuprimentosInput, UpdateSuprimentosInput } from '@/types/suprimentos';
 
@@ -123,3 +127,4 @@ export async function deleteSuprimento(id: number): Promise<void> {
 
   if (error) throw new Error(`Erro ao deletar suprimento: ${error.message}`);
 }
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\importacaoInventarioService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 export type ResultadoServico<T> =
@@ -1031,3 +1035,4 @@ export async function executarImportacaoInventario(
 
   return { success: true, data: exec };
 }
+

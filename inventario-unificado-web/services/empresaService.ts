@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\empresaService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Empresa, CreateEmpresaInput, UpdateEmpresaInput } from '@/types/empresa';
 
@@ -59,3 +63,4 @@ export async function deleteEmpresa(cdCgc: string): Promise<void> {
 
   if (error) throw new Error(`Erro ao inativar empresa: ${error.message}`);
 }
+

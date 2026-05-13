@@ -1,3 +1,5 @@
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\snmp_client.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import asyncio
 import logging
 from typing import Any, Dict, List
@@ -312,3 +314,4 @@ def snmp_get_value(
     if not result.get("ok"):
         return None
     return result.get("value")
+

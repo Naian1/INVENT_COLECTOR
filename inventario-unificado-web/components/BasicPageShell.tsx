@@ -1,4 +1,8 @@
-﻿"use client";
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\BasicPageShell.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
+"use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
@@ -319,3 +323,4 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     </div>
   );
 }
+

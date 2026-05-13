@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\googleSheetsSyncService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { google } from "googleapis";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
@@ -375,3 +379,4 @@ export async function sincronizarCategoriaCompletaNaPlanilha(categoriaId: string
 
   return { success: true, data: { categoria_id: categoriaId } };
 }
+

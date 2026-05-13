@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\equipamentoService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Equipamento, CreateEquipamentoInput, UpdateEquipamentoInput } from '@/types/equipamento';
 
@@ -80,3 +84,4 @@ export async function deleteEquipamento(id: number): Promise<void> {
 
   if (error) throw new Error(`Erro ao deletar equipamento: ${error.message}`);
 }
+

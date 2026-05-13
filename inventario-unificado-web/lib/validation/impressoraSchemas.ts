@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\validation\impressoraSchemas.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from "zod";
 
 const ipv4Regex =
@@ -50,3 +54,4 @@ export const atualizarImpressoraSchema = criarImpressoraSchema.partial().refine(
     message: "Forneca ao menos um campo para atualizacao"
   }
 );
+

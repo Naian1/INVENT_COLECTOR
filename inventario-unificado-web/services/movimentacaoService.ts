@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\movimentacaoService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Movimentacao, CreateMovimentacaoInput } from '@/types/movimentacao';
 
@@ -98,3 +102,4 @@ export async function getHistoricoEquipamento(patrimonio: string): Promise<{
     movimentacoes,
   };
 }
+

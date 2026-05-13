@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\telemetria\resumo-diario\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from "next/server";
 
 import { authenticateApiRequest } from "@/lib/security/apiAuth";
@@ -42,3 +46,4 @@ export async function GET(request: NextRequest) {
     { headers: { "Cache-Control": "private, no-store" } },
   );
 }
+

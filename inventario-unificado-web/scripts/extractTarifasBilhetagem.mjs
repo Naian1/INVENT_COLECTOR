@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\scripts\extractTarifasBilhetagem.mjs
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -79,3 +83,4 @@ function main() {
 }
 
 main();
+

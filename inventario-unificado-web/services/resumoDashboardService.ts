@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\resumoDashboardService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasService";
 import type { ResumoDashboard } from "@/types/impressora";
@@ -91,3 +95,4 @@ export async function buscarResumoDashboard(): Promise<ResumoDashboard> {
     paginas_impressas_mes_atual: paginasMes
   };
 }
+

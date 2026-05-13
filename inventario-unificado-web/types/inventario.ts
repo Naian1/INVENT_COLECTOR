@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\inventario.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const TpStatusSchema = z.enum(['ATIVO', 'MANUTENCAO', 'BACKUP', 'DEVOLUCAO']);
@@ -33,3 +37,4 @@ export const CreateInventarioSchema = InventarioSchema.omit({
 
 export type CreateInventarioInput = z.infer<typeof CreateInventarioSchema>;
 export type UpdateInventarioInput = Partial<CreateInventarioInput>;
+

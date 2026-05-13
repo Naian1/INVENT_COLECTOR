@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\suprimentos.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const SuprimentosSchema = z.object({
@@ -20,3 +24,4 @@ export type CreateSuprimentosInput = Omit<
   'cd_suprimento' | 'dt_criacao' | 'dt_atualizacao'
 >;
 export type UpdateSuprimentosInput = Partial<CreateSuprimentosInput>;
+

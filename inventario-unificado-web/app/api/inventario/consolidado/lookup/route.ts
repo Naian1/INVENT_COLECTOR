@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\inventario\consolidado\lookup\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
@@ -113,3 +117,4 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Falha ao buscar patrimonio.' }, { status: 500 });
   }
 }
+

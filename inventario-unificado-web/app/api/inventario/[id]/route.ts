@@ -1,4 +1,8 @@
-﻿import { NextRequest, NextResponse } from 'next/server';
+﻿/**
+ * [DOC-CODEMAP] Arquivo: 
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
+import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
 
 import {
@@ -102,3 +106,4 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\importacaoInventarioDinamicoService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { sincronizarCategoriaCompletaNaPlanilha } from "@/services/googleSheetsSyncService";
 
@@ -843,3 +847,4 @@ export async function executarImportacaoDinamica(
 
   return { success: true, data: resumo };
 }
+

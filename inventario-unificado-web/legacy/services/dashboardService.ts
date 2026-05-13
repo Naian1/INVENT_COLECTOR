@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\services\dashboardService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getPrintersOverview } from "@/legacy/services/printerOverviewService";
 
@@ -106,3 +110,4 @@ export async function getDashboardSummary(): Promise<DashboardSummary> {
     pages_printed_current_month: monthPages
   };
 }
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import Link from "next/link";
 
 import { BasicPageShell } from "@/components/BasicPageShell";
@@ -28,3 +32,4 @@ export default function HomePage() {
     </BasicPageShell>
   );
 }
+

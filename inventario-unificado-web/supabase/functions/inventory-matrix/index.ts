@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\supabase\functions\inventory-matrix\index.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 
@@ -208,3 +212,4 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: false, error: message }, 500);
   }
 });
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\next.config.mjs
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
@@ -26,3 +30,4 @@ const nextConfig = {
 };
 
 export default nextConfig;
+

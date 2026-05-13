@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\scripts\importLegacyPrintersToInventario.mjs
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import fs from "fs";
 import path from "path";
 import XLSX from "xlsx";
@@ -374,3 +378,4 @@ main().catch((err) => {
   console.error("Erro na importacao:", err.message || err);
   process.exit(1);
 });
+

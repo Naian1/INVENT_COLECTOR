@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\ui\select.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import React, { ReactNode } from 'react';
 import { ChevronDown } from 'lucide-react';
 
@@ -76,3 +80,4 @@ export function SelectItem({
     </div>
   );
 }
+

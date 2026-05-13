@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\services\printerService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { buildPrinterDisplayName, sanitizeOptionalText } from "@/lib/printers/naming";
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { CreatePrinterInput, Printer, UpdatePrinterInput } from "@/legacy/types/printer";
@@ -388,3 +392,4 @@ export async function upsertPrinterFromCollector(
 
   return createResult;
 }
+

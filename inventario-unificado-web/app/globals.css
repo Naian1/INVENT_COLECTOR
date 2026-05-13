@@ -1,4 +1,6 @@
-﻿@import "@flaticon/flaticon-uicons/css/regular/rounded.css";
+﻿/* [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\globals.css
+   [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema. */
+@import "@flaticon/flaticon-uicons/css/regular/rounded.css";
 
 :root {
   --bg: #f5f7fb;
@@ -2982,3 +2984,4 @@ html[data-theme="dark"] .ui-login-info {
     gap: 8px;
   }
 }
+

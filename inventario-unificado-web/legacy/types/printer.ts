@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\types\printer.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 export type Printer = {
   id: string;
   display_name: string | null;
@@ -31,3 +35,4 @@ export type CreatePrinterInput = {
 };
 
 export type UpdatePrinterInput = Partial<CreatePrinterInput>;
+

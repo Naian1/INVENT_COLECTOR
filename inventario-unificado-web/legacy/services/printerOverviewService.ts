@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\services\printerOverviewService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { ServiceResult } from "@/legacy/services/printerService";
 
@@ -196,3 +200,4 @@ export async function getPrintersOverview(): Promise<ServiceResult<PrinterOvervi
     data: overview
   };
 }
+

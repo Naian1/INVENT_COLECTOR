@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\visaoGeralImpressorasService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { ResultadoServico } from "@/services/impressorasService";
 import type { ImpressoraVisaoGeral, SuprimentoResumo } from "@/types/impressora";
@@ -674,3 +678,4 @@ export async function listarVisaoGeralImpressoras(options?: {
 
   return { success: true, data: merged };
 }
+

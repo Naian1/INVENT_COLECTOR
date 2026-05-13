@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\impressorasService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type {
   AtualizarImpressoraInput,
@@ -272,3 +276,4 @@ export async function upsertImpressoraPorColetor(input: any): Promise<ResultadoS
   };
 }
 */
+

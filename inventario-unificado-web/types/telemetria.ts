@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\telemetria.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const TelemetriaPagecountSchema = z.object({
@@ -16,3 +20,4 @@ export type CreateTelemetriaPagecountInput = Omit<
   'cd_telemetria' | 'mes_ano'
 >;
 export type UpdateTelemetriaPagecountInput = Partial<CreateTelemetriaPagecountInput>;
+

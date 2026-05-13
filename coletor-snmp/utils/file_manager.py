@@ -1,4 +1,6 @@
-﻿"""Funcoes utilitarias de persistencia local do coletor SNMP."""
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\file_manager.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+"""Funcoes utilitarias de persistencia local do coletor SNMP."""
 
 import json
 import logging
@@ -111,3 +113,4 @@ def save_history(ip, data):
             json.dump(history, f, ensure_ascii=False, indent=2)
     except Exception as exc:
         logging.error("Erro ao salvar historico: %s", exc)
+

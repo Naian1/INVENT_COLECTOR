@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\tipos-equipamento\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateTipoEquipamentoSchema } from '@/types/tipoEquipamento';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
@@ -31,3 +35,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Erro ao criar tipo' }, { status: 400 });
   }
 }
+

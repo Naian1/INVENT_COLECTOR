@@ -1,4 +1,6 @@
-﻿import json
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\api_client.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+import json
 import logging
 import os
 import time
@@ -997,3 +999,4 @@ def replay_pending_payloads(max_items=None, log_prefix="[collector-replay]"):
         "dropped_invalid": dropped_invalid,
         "remaining": remaining,
     }
+

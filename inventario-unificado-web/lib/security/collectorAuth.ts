@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\security\collectorAuth.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { timingSafeEqual } from "crypto";
 
 function safeCompare(valueA: string, valueB: string) {
@@ -33,3 +37,4 @@ export function validateCollectorBearerToken(authorizationHeader: string | null)
 
   return { valid: true as const };
 }
+

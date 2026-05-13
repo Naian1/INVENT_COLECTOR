@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\statusSuprimentosImpressorasService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import {
   buscarImpressoraPorId,
@@ -158,3 +162,4 @@ export async function buscarStatusSuprimentosImpressora(
     }
   };
 }
+

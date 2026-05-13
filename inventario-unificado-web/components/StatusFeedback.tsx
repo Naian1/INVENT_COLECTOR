@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\StatusFeedback.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { useEffect, useRef, useState } from "react";
 
 type StatusFeedbackProps = {
@@ -114,3 +118,4 @@ export function StatusFeedback({ loading, error, success }: StatusFeedbackProps)
     </>
   );
 }
+

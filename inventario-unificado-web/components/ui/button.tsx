@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\ui\button.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import React from 'react';
 
 export const Button = React.forwardRef<
@@ -29,3 +33,4 @@ export const Button = React.forwardRef<
   );
 });
 Button.displayName = 'Button';
+

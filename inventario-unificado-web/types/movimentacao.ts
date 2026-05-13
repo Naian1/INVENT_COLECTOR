@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\movimentacao.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const MovimentacaoSchema = z.object({
@@ -17,3 +21,4 @@ export type Movimentacao = z.infer<typeof MovimentacaoSchema>;
 
 export type CreateMovimentacaoInput = Omit<Movimentacao, 'nr_movimentacao'>;
 export type UpdateMovimentacaoInput = Partial<CreateMovimentacaoInput>;
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\login\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
@@ -203,3 +207,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

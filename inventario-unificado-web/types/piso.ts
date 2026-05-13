@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\piso.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const PisoSchema = z.object({
@@ -17,3 +21,4 @@ export const CreatePisoSchema = PisoSchema.omit({
 
 export type CreatePisoInput = z.infer<typeof CreatePisoSchema>;
 export type UpdatePisoInput = Partial<CreatePisoInput>;
+

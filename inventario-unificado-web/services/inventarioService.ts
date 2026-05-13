@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\inventarioService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Inventario, CreateInventarioInput, UpdateInventarioInput } from '@/types/inventario';
 
@@ -250,3 +254,4 @@ export async function deleteInventario(id: number): Promise<void> {
 
   if (error) throw new Error(`Erro ao deletar inventário: ${error.message}`);
 }
+

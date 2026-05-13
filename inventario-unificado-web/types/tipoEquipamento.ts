@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\tipoEquipamento.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const TipoEquipamentoSchema = z.object({
@@ -17,3 +21,4 @@ export const CreateTipoEquipamentoSchema = TipoEquipamentoSchema.omit({
 
 export type CreateTipoEquipamentoInput = z.infer<typeof CreateTipoEquipamentoSchema>;
 export type UpdateTipoEquipamentoInput = Partial<CreateTipoEquipamentoInput>;
+

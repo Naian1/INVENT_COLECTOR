@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\empresas\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { CreateEmpresaSchema } from '@/types/empresa';
 import { createEmpresa, getEmpresas } from '@/services/empresaService';
@@ -35,3 +39,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Erro ao criar empresa' }, { status: 400 });
   }
 }
+

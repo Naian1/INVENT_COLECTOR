@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\validation\inventarioSchemas.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from "zod";
 
 const ipv4Regex =
@@ -112,3 +116,4 @@ export const listarItensInventarioQuerySchema = z.object({
   pagina: numeroPositivoComDefault(1),
   limite: numeroPositivoComDefault(50).transform((value) => Math.min(value, 200))
 });
+

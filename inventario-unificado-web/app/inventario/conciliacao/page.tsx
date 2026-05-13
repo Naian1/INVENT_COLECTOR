@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\inventario\conciliacao\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 'use client';
 
 import { FormEvent, useEffect, useMemo, useState } from 'react';
@@ -416,3 +420,4 @@ export default function InventarioConciliacaoPage() {
     </BasicPageShell>
   );
 }
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\empresa.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from 'zod';
 
 export const EmpresaSchema = z.object({
@@ -18,3 +22,4 @@ export const CreateEmpresaSchema = EmpresaSchema.omit({
 
 export type CreateEmpresaInput = z.infer<typeof CreateEmpresaSchema>;
 export type UpdateEmpresaInput = Partial<CreateEmpresaInput>;
+

@@ -1,4 +1,8 @@
-#!/usr/bin/env node
+﻿#!/usr/bin/env node
+/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web/scripts/backfillLegacyPrinters.mjs
+ * [DOC-CODEMAP] Papel: Script operacional: automacao para carga, migracao ou extracao de dados.
+ */
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";

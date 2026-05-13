@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\coletor\telemetria\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextResponse } from "next/server";
 import { validateCollectorBearerToken } from "@/lib/security/collectorAuth";
 import {
@@ -70,3 +74,4 @@ export async function POST(request: Request) {
     { status: 200 }
   );
 }
+

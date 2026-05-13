@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\ui\card.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import React from 'react';
 
 export const Card = React.forwardRef<
@@ -51,3 +55,4 @@ export const CardContent = React.forwardRef<
   <div ref={ref} className={`p-6 pt-0 ${className}`} {...props} />
 ));
 CardContent.displayName = 'CardContent';
+

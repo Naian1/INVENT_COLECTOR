@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\types\impressora.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 export type Impressora = {
   id: string;
   patrimonio: string;
@@ -127,3 +131,4 @@ export type ResultadoIngestaoColetor = {
   gravacoes_suprimentos: number;
   erros: Array<{ ingestao_id: string; erro: string }>;
 };
+

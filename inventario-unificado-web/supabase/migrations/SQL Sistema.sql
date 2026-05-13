@@ -1,3 +1,5 @@
+﻿/* [DOC-CODEMAP] Arquivo: inventario-unificado-web\supabase\migrations\SQL Sistema.sql
+   [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema. */
 -- MIGRATION UNICA CONSOLIDADA
 -- Gerada automaticamente a partir das migrations existentes em ordem alfabetica
 
@@ -3028,3 +3030,4 @@ FOR EACH ROW
 EXECUTE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at();
 
 COMMIT;
+

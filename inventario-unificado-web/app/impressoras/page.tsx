@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\impressoras\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 "use client";
 
 import { useCallback, useEffect, useMemo, useState } from "react";
@@ -1261,3 +1265,4 @@ export default function ImpressorasPage() {
     </BasicPageShell>
   );
 }
+

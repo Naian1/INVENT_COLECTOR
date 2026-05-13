@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\ui\input.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import React from 'react';
 
 export const Input = React.forwardRef<
@@ -12,3 +16,4 @@ export const Input = React.forwardRef<
   />
 ));
 Input.displayName = 'Input';
+

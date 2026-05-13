@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\lib\validation\coletorSchemasPtBr.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { z } from "zod";
 
 const ipv4Regex =
@@ -149,3 +153,4 @@ export function normalizarPayloadColetorPtParaLote(
 ): LoteTelemetriaColetorPt {
   return "eventos" in payload ? payload : toLote(payload);
 }
+

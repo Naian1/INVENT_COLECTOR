@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\layout.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import type { Metadata } from "next";
 import "./globals.css";
 
@@ -33,3 +37,4 @@ export default function RootLayout({
     </html>
   );
 }
+

@@ -1,4 +1,6 @@
-﻿import json
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\scripts\collector_control_app.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+import json
 import msvcrt
 import os
 import shutil
@@ -789,3 +791,4 @@ def main():
 
 if __name__ == "__main__":
     main()
+

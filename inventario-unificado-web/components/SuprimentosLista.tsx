@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\components\SuprimentosLista.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 type SuprimentoItem = {
   chave_suprimento: string;
   nome_suprimento: string;
@@ -106,3 +110,4 @@ export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaPr
     </div>
   );
 }
+

@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\api\inventario\upload-imagem\route.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
@@ -108,3 +112,4 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Falha ao enviar imagem.' }, { status: 500 });
   }
 }
+

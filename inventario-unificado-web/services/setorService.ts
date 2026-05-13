@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\setorService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Setor, CreateSetorInput, UpdateSetorInput } from '@/types/setor';
 
@@ -80,3 +84,4 @@ export async function deleteSetor(id: number): Promise<void> {
 
   if (error) throw new Error(`Erro ao deletar setor: ${error.message}`);
 }
+

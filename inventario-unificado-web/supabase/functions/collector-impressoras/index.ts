@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\supabase\functions\collector-impressoras\index.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 // @ts-nocheck
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -203,3 +207,4 @@ Deno.serve(async (req) => {
     return jsonResponse({ sucesso: false, erro: message }, 500);
   }
 });
+

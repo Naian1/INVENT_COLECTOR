@@ -1,3 +1,5 @@
+﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\utils\runtime_trace.py
+# [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import json
 import os
 from datetime import datetime, timezone
@@ -45,3 +47,4 @@ def append_backend_trace(event: str, **payload: Dict[str, Any]):
     except Exception:
         # Nao deve quebrar o coletor por falha de telemetria local.
         pass
+

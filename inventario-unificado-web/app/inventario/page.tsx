@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\inventario\page.tsx
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 'use client';
 
 import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
@@ -2473,3 +2477,4 @@ export default function InventarioPage() {
     </BasicPageShell>
   );
 }
+

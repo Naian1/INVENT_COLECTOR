@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\services\coletorTelemetriaPtService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { LoteTelemetriaColetorPt } from "@/lib/validation/coletorSchemasPtBr";
 // import { upsertImpressoraPorColetor } from "@/services/impressorasService";
@@ -97,3 +101,4 @@ export async function ingerirTelemetriaColetorPt(
 
   return result;
 }
+

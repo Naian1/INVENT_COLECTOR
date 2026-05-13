@@ -1,3 +1,7 @@
+﻿/**
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web\legacy\services\printerStatusSuppliesService.ts
+ * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { getPrinterById, type ServiceResult } from "@/legacy/services/printerService";
 import type { Printer } from "@/legacy/types/printer";
@@ -155,3 +159,4 @@ export async function getPrinterStatusSupplies(
     }
   };
 }
+
