@@ -50,10 +50,10 @@ type UsuarioSessao = {
 
 /**
  * [DOC-FUNC] BasicPageShell
- * O que faz: Orquestra a etapa 'BasicPageShell' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados ({ title, subtitle, children, actions }) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'BasicPageShell', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: { title, subtitle, children, actions }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 export function BasicPageShell({ title, subtitle, children, actions }: BasicPageShellProps) {
   const pathname = usePathname();
@@ -66,10 +66,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] getAccessToken
-   * O que faz: Consulta informacoes na funcao 'getAccessToken' e organiza o retorno para consumo pelas camadas superiores.
-   * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
-   * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-   * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+   * O que faz: Consulta e organiza informacoes na funcao 'getAccessToken', entregando retorno confiavel para camadas superiores.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const getAccessToken = async () => {
     const { data } = await supabase.auth.getSession();
@@ -94,10 +94,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
     /**
      * [DOC-FUNC] loadSession
-     * O que faz: Consulta informacoes na funcao 'loadSession' e organiza o retorno para consumo pelas camadas superiores.
-     * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
-     * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-     * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+     * O que faz: Consulta e organiza informacoes na funcao 'loadSession', entregando retorno confiavel para camadas superiores.
+     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
      */
     const loadSession = async () => {
       try {
@@ -147,10 +147,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
     /**
      * [DOC-FUNC] handleClick
-     * O que faz: Orquestra a etapa 'handleClick' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-     * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
-     * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-     * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+     * O que faz: Executa a responsabilidade central da funcao 'handleClick', conectando validacao, processamento e retorno de forma didatica.
+     * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+     * Como executa: Valida pre-condicoes e regras de negocio.
+     * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
      */
     const handleClick = (event: MouseEvent) => {
       if (!profileMenuRef.current) return;
@@ -164,10 +164,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] alternarTema
-   * O que faz: Orquestra a etapa 'alternarTema' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'alternarTema', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const alternarTema = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
@@ -179,10 +179,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] logout
-   * O que faz: Orquestra a etapa 'logout' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Consulta e organiza informacoes na funcao 'logout', entregando retorno confiavel para camadas superiores.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const logout = async () => {
     try {
@@ -195,10 +195,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] getUserInitials
-   * O que faz: Consulta informacoes na funcao 'getUserInitials' e organiza o retorno para consumo pelas camadas superiores.
-   * Entradas: Recebe filtros/chaves (name) e usa o contexto atual para montar a consulta na origem de dados.
-   * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-   * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+   * O que faz: Consulta e organiza informacoes na funcao 'getUserInitials', entregando retorno confiavel para camadas superiores.
+   * Entradas: Parametros esperados: name; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const getUserInitials = (name: string | null | undefined) => {
     const safeName = String(name || "").trim();
@@ -210,10 +210,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] handleSwitchPerfil
-   * O que faz: Orquestra a etapa 'handleSwitchPerfil' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (cdPerfil) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Consulta e organiza informacoes na funcao 'handleSwitchPerfil', entregando retorno confiavel para camadas superiores.
+   * Entradas: Parametros esperados: cdPerfil; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const handleSwitchPerfil = async (cdPerfil: number) => {
     if (!usuarioSessao || cdPerfil === usuarioSessao.cd_perfil) {

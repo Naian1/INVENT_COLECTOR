@@ -38,10 +38,10 @@ type UsuarioPerfil = {
 
 /**
  * [DOC-FUNC] badRequest
- * O que faz: Orquestra a etapa 'badRequest' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (message) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'badRequest', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: message; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function badRequest(message: string) {
   return NextResponse.json({ sucesso: false, erro: message }, { status: 400 });
@@ -49,10 +49,10 @@ function badRequest(message: string) {
 
 /**
  * [DOC-FUNC] getBearerToken
- * O que faz: Consulta informacoes na funcao 'getBearerToken' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (request) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getBearerToken', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getBearerToken(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
@@ -62,10 +62,10 @@ function getBearerToken(request: NextRequest) {
 
 /**
  * [DOC-FUNC] parsePerfilIds
- * O que faz: Normaliza valores na funcao 'parsePerfilIds', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'parsePerfilIds', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function parsePerfilIds(value: unknown): number[] {
   if (!Array.isArray(value)) return [];
@@ -80,10 +80,10 @@ type PerfilNomeLookupRow = {
 
 /**
  * [DOC-FUNC] getPerfilNome
- * O que faz: Consulta informacoes na funcao 'getPerfilNome' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (value) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPerfilNome', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) {
@@ -94,10 +94,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
 
 /**
  * [DOC-FUNC] getAuthActor
- * O que faz: Consulta informacoes na funcao 'getAuthActor' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (request) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getAuthActor', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 async function getAuthActor(request: NextRequest) {
   const token = getBearerToken(request);
@@ -206,10 +206,10 @@ async function getAuthActor(request: NextRequest) {
 
 /**
  * [DOC-FUNC] syncUsuarioPerfis
- * O que faz: Sincroniza dados na funcao 'syncUsuarioPerfis', conectando este modulo a outra camada, servico ou fonte externa.
- * Entradas: Usa identificadores, payload e contexto operacional (usuarioId, perfilPrincipal, perfisExtras) para localizar e transferir os dados corretos.
- * Como executa: Valida pre-condicoes, executa leitura/escrita nas pontas envolvidas e trata falhas com mensagens rastreaveis.
- * Retorno/Efeitos: Retorna status da sincronizacao e metadados de sucesso/erro para monitoramento e retentativa.
+ * O que faz: Remove/inativa dados na funcao 'syncUsuarioPerfis', respeitando regras de ciclo de vida e dependencias.
+ * Entradas: Parametros esperados: usuarioId, perfilPrincipal, perfisExtras; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function syncUsuarioPerfis(
   usuarioId: number,
@@ -247,10 +247,10 @@ async function syncUsuarioPerfis(
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
- * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request.
- * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
- * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
+ * O que faz: Implementa o endpoint HTTP GET 'GET' para leitura de dados com resposta padronizada.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function GET(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -315,10 +315,10 @@ export async function GET(request: NextRequest) {
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Implementa o endpoint HTTP POST 'POST', recebendo dados para criacao, ingestao ou processamento.
- * Entradas: Consome body da requisicao, identidade/permissoes e argumentos auxiliares; assinatura local: request.
- * Como executa: Valida o corpo recebido, aplica regras de negocio, chama servicos de escrita/processamento e concentra tratamento de excecoes.
- * Retorno/Efeitos: Retorna JSON com resultado da operacao e status HTTP adequado; pode gerar persistencia, auditoria e eventos internos.
+ * O que faz: Implementa o endpoint HTTP POST 'POST' para receber payload, validar regras e processar/gravar dados.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function POST(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -412,10 +412,10 @@ export async function POST(request: NextRequest) {
 
 /**
  * [DOC-FUNC] PUT
- * O que faz: Implementa o endpoint HTTP PUT 'PUT', alterando o estado de um recurso conforme a regra da rota.
- * Entradas: Recebe id/chave do recurso, payload de alteracao e contexto de seguranca; assinatura local: request.
- * Como executa: Confere pre-condicoes e autorizacao, executa a mutacao no servico/repositorio e traduz falhas em resposta HTTP clara.
- * Retorno/Efeitos: Responde com status e corpo consistentes com a mudanca aplicada (atualizacao, remocao ou inativacao).
+ * O que faz: Implementa o endpoint HTTP PUT 'PUT' para mutar estado com seguranca e consistencia.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function PUT(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -560,10 +560,10 @@ export async function PUT(request: NextRequest) {
 
 /**
  * [DOC-FUNC] PATCH
- * O que faz: Implementa o endpoint HTTP PATCH 'PATCH', alterando parcialmente um recurso conforme a regra da rota.
- * Entradas: Recebe id/chave do recurso, campos mutaveis e contexto de seguranca; assinatura local: request.
- * Como executa: Confere pre-condicoes e autorizacao, executa a mutacao no servico/repositorio e traduz falhas em resposta HTTP clara.
- * Retorno/Efeitos: Responde com status e corpo consistentes com a mudanca aplicada (atualizacao, remocao ou inativacao).
+ * O que faz: Implementa o endpoint HTTP PATCH 'PATCH' para mutar estado com seguranca e consistencia.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function PATCH(request: NextRequest) {
   const actor = await getAuthActor(request);

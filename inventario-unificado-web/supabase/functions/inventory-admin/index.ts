@@ -20,10 +20,10 @@ type Action =
 
 /**
  * [DOC-FUNC] getAdminClient
- * O que faz: Consulta informacoes na funcao 'getAdminClient' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getAdminClient', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -40,10 +40,10 @@ function getAdminClient() {
 
 /**
  * [DOC-FUNC] getUserClient
- * O que faz: Consulta informacoes na funcao 'getUserClient' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (authHeader) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getUserClient', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: authHeader; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getUserClient(authHeader: string) {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -61,10 +61,10 @@ function getUserClient(authHeader: string) {
 
 /**
  * [DOC-FUNC] resolveAuthActor
- * O que faz: Orquestra a etapa 'resolveAuthActor' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (req, supabaseAdmin) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'resolveAuthActor', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: req, supabaseAdmin; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 async function resolveAuthActor(
   req: Request,
@@ -132,10 +132,10 @@ async function resolveAuthActor(
 
 /**
  * [DOC-FUNC] badRequest
- * O que faz: Orquestra a etapa 'badRequest' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (message) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'badRequest', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: message; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
@@ -143,10 +143,10 @@ function badRequest(message: string) {
 
 /**
  * [DOC-FUNC] isMissingPisoTable
- * O que faz: Avalia uma condicao booleana na funcao 'isMissingPisoTable' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (message) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Cria e persiste dados na funcao 'isMissingPisoTable', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: message; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 function isMissingPisoTable(message: string): boolean {
   return /relation\s+"?piso"?\s+does not exist/i.test(message);
@@ -206,10 +206,10 @@ async function resolveCdPiso(
 
 /**
  * [DOC-FUNC] enrichSetoresComPiso
- * O que faz: Orquestra a etapa 'enrichSetoresComPiso' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (setores) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Atualiza estado na funcao 'enrichSetoresComPiso', mantendo coerencia entre dados atuais e alteracoes recebidas.
+ * Entradas: Parametros esperados: setores; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 function enrichSetoresComPiso(setores: any[]): any[] {
   return [...(setores || [])]

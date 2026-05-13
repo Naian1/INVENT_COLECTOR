@@ -148,10 +148,10 @@ export type CollectorTelemetryEvent = z.infer<typeof collectorTelemetryEventSche
 
 /**
  * [DOC-FUNC] normalizeSinglePayloadToBatch
- * O que faz: Normaliza valores na funcao 'normalizeSinglePayloadToBatch', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizeSinglePayloadToBatch', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */
@@ -194,10 +194,10 @@ function normalizeSinglePayloadToBatch(
 
 /**
  * [DOC-FUNC] normalizeCollectorTelemetryPayload
- * O que faz: Normaliza valores na funcao 'normalizeCollectorTelemetryPayload', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizeCollectorTelemetryPayload', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */

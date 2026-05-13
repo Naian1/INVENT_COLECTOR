@@ -87,10 +87,10 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
 
 /**
  * [DOC-FUNC] formatSetorLabel
- * O que faz: Normaliza valores na funcao 'formatSetorLabel', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatSetorLabel', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>): string {
   const piso = (setor.nm_piso || '').trim();
@@ -102,10 +102,10 @@ function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_locali
 
 /**
  * [DOC-FUNC] formatPisoLabel
- * O que faz: Normaliza valores na funcao 'formatPisoLabel', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (piso, 'nm_piso' | 'ds_piso'>) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatPisoLabel', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: piso, 'nm_piso' | 'ds_piso'>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
   const nome = (piso.nm_piso || '').trim();
@@ -206,10 +206,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] carregarTudo
-   * O que faz: Orquestra a etapa 'carregarTudo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'carregarTudo', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   async function carregarTudo() {
     setLoading(true);
@@ -241,10 +241,10 @@ export default function GerenciarCategoriasPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * O que faz: Consulta informacoes na funcao 'loadAuth' e organiza o retorno para consumo pelas camadas superiores.
-     * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
-     * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-     * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+     * O que faz: Consulta e organiza informacoes na funcao 'loadAuth', entregando retorno confiavel para camadas superiores.
+     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
      */
     const loadAuth = async () => {
       try {
@@ -357,10 +357,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEmpresa
-   * O que faz: Orquestra a etapa 'criarEmpresa' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'criarEmpresa', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   async function criarEmpresa() {
     if (!novaEmpresa.cd_cgc || !novaEmpresa.nm_empresa) {
@@ -390,10 +390,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarTipo
-   * O que faz: Orquestra a etapa 'criarTipo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'criarTipo', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   async function criarTipo() {
     if (!novoTipo.nm_tipo_equipamento) {
@@ -420,10 +420,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarPiso
-   * O que faz: Orquestra a etapa 'criarPiso' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'criarPiso', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   async function criarPiso() {
     if (!novoPiso.nm_piso.trim()) {
@@ -450,10 +450,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarSetor
-   * O que faz: Orquestra a etapa 'criarSetor' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'criarSetor', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   async function criarSetor() {
     if (!novoSetor.cd_piso || !novoSetor.nm_setor) {
@@ -482,10 +482,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEquipamento
-   * O que faz: Orquestra a etapa 'criarEquipamento' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'criarEquipamento', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   async function criarEquipamento() {
     if (
@@ -530,10 +530,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEmpresa
-   * O que faz: Atualiza dados na funcao 'atualizarEmpresa', mantendo consistencia entre o estado atual e as novas informacoes.
-   * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-   * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-   * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+   * O que faz: Atualiza estado na funcao 'atualizarEmpresa', mantendo coerencia entre dados atuais e alteracoes recebidas.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   async function atualizarEmpresa() {
     if (!empresaSelecionada) {
@@ -565,10 +565,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarTipo
-   * O que faz: Atualiza dados na funcao 'atualizarTipo', mantendo consistencia entre o estado atual e as novas informacoes.
-   * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-   * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-   * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+   * O que faz: Atualiza estado na funcao 'atualizarTipo', mantendo coerencia entre dados atuais e alteracoes recebidas.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   async function atualizarTipo() {
     if (!tipoSelecionado) {
@@ -598,10 +598,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarPiso
-   * O que faz: Atualiza dados na funcao 'atualizarPiso', mantendo consistencia entre o estado atual e as novas informacoes.
-   * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-   * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-   * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+   * O que faz: Atualiza estado na funcao 'atualizarPiso', mantendo coerencia entre dados atuais e alteracoes recebidas.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   async function atualizarPiso() {
     if (!pisoSelecionado) {
@@ -631,10 +631,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarSetor
-   * O que faz: Atualiza dados na funcao 'atualizarSetor', mantendo consistencia entre o estado atual e as novas informacoes.
-   * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-   * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-   * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+   * O que faz: Atualiza estado na funcao 'atualizarSetor', mantendo coerencia entre dados atuais e alteracoes recebidas.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   async function atualizarSetor() {
     if (!setorSelecionado) {
@@ -671,10 +671,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEquipamento
-   * O que faz: Atualiza dados na funcao 'atualizarEquipamento', mantendo consistencia entre o estado atual e as novas informacoes.
-   * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-   * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-   * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+   * O que faz: Atualiza estado na funcao 'atualizarEquipamento', mantendo coerencia entre dados atuais e alteracoes recebidas.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   async function atualizarEquipamento() {
     if (!equipamentoSelecionado) {

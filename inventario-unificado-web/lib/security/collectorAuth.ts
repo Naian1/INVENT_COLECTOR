@@ -6,10 +6,10 @@ import { timingSafeEqual } from "crypto";
 
 /**
  * [DOC-FUNC] safeCompare
- * O que faz: Orquestra a etapa 'safeCompare' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (valueA, valueB) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'safeCompare', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: valueA, valueB; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -21,10 +21,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] validateCollectorBearerToken
- * O que faz: Orquestra a etapa 'validateCollectorBearerToken' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (authorizationHeader) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'validateCollectorBearerToken', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: authorizationHeader; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 export function validateCollectorBearerToken(authorizationHeader: string | null) {
   const expectedToken = process.env.COLLECTOR_API_TOKEN?.trim();

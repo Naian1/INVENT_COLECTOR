@@ -16,10 +16,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
- * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request, context.
- * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
- * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
+ * O que faz: Implementa o endpoint HTTP GET 'GET' para leitura de dados com resposta padronizada.
+ * Entradas: Parametros esperados: request, context; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
 /**
  * [DOC-FUNC] PATCH
- * O que faz: Implementa o endpoint HTTP PATCH 'PATCH', alterando parcialmente um recurso conforme a regra da rota.
- * Entradas: Recebe id/chave do recurso, campos mutaveis e contexto de seguranca; assinatura local: request, context.
- * Como executa: Confere pre-condicoes e autorizacao, executa a mutacao no servico/repositorio e traduz falhas em resposta HTTP clara.
- * Retorno/Efeitos: Responde com status e corpo consistentes com a mudanca aplicada (atualizacao, remocao ou inativacao).
+ * O que faz: Implementa o endpoint HTTP PATCH 'PATCH' para mutar estado com seguranca e consistencia.
+ * Entradas: Parametros esperados: request, context; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request, { requireAdmin: true });

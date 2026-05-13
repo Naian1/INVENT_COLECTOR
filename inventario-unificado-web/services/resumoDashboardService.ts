@@ -8,10 +8,10 @@ import type { ResumoDashboard } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] getInicioDoMesUtc
- * O que faz: Consulta informacoes na funcao 'getInicioDoMesUtc' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (now) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInicioDoMesUtc', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: now; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getInicioDoMesUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -19,10 +19,10 @@ function getInicioDoMesUtc(now: Date) {
 
 /**
  * [DOC-FUNC] calcularPaginasMesAtual
- * O que faz: Consulta informacoes na funcao 'calcularPaginasMesAtual' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (agoraIso) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'calcularPaginasMesAtual', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: agoraIso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 async function calcularPaginasMesAtual(agoraIso: string) {
   const supabase = getSupabaseServerClient();
@@ -60,10 +60,10 @@ async function calcularPaginasMesAtual(agoraIso: string) {
 
 /**
  * [DOC-FUNC] calcularContadoresOperacionais
- * O que faz: Orquestra a etapa 'calcularContadoresOperacionais' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'calcularContadoresOperacionais', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 async function calcularContadoresOperacionais() {
   const visaoGeral = await listarVisaoGeralImpressoras();
@@ -96,10 +96,10 @@ async function calcularContadoresOperacionais() {
 
 /**
  * [DOC-FUNC] buscarResumoDashboard
- * O que faz: Consulta informacoes na funcao 'buscarResumoDashboard' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarResumoDashboard', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function buscarResumoDashboard(): Promise<ResumoDashboard> {
   const supabase = getSupabaseServerClient();

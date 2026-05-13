@@ -17,10 +17,10 @@ const store =
 
 /**
  * [DOC-FUNC] getClientIp
- * O que faz: Consulta informacoes na funcao 'getClientIp' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (request) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getClientIp', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for") || "";
@@ -31,10 +31,10 @@ function getClientIp(request: NextRequest) {
 
 /**
  * [DOC-FUNC] applyRateLimit
- * O que faz: Orquestra a etapa 'applyRateLimit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (key, limit, windowMs) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'applyRateLimit', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: key, limit, windowMs; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function applyRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
@@ -57,10 +57,10 @@ function applyRateLimit(key: string, limit: number, windowMs: number) {
 
 /**
  * [DOC-FUNC] withSecurityHeaders
- * O que faz: Orquestra a etapa 'withSecurityHeaders' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (response) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'withSecurityHeaders', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: response; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -92,10 +92,10 @@ function withSecurityHeaders(response: NextResponse) {
 
 /**
  * [DOC-FUNC] middleware
- * O que faz: Orquestra a etapa 'middleware' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (request) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'middleware', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

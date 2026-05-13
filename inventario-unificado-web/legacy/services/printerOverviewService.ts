@@ -54,10 +54,10 @@ type SupplyRow = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Consulta informacoes na funcao 'toFiniteNumber' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (value) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Normaliza entradas na funcao 'toFiniteNumber', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -66,10 +66,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] getPrintersOverview
- * O que faz: Consulta informacoes na funcao 'getPrintersOverview' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPrintersOverview', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getPrintersOverview(): Promise<ServiceResult<PrinterOverviewItem[]>> {
   const supabase = getSupabaseServerClient();

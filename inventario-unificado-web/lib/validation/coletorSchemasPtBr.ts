@@ -115,10 +115,10 @@ export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema
 
 /**
  * [DOC-FUNC] toLote
- * O que faz: Orquestra a etapa 'toLote' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (payload) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'toLote', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
@@ -157,10 +157,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
 
 /**
  * [DOC-FUNC] normalizarPayloadColetorPtParaLote
- * O que faz: Normaliza valores na funcao 'normalizarPayloadColetorPtParaLote', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarPayloadColetorPtParaLote', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt

@@ -9,10 +9,10 @@ import type { ResultadoIngestaoColetor } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] deveAtualizarUltimaColeta
- * O que faz: Avalia uma condicao booleana na funcao 'deveAtualizarUltimaColeta' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (ultimaColetaAtual, candidatoIso) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Atualiza estado na funcao 'deveAtualizarUltimaColeta', mantendo coerencia entre dados atuais e alteracoes recebidas.
+ * Entradas: Parametros esperados: ultimaColetaAtual, candidatoIso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 function deveAtualizarUltimaColeta(
   ultimaColetaAtual: string | null,
@@ -28,10 +28,10 @@ function deveAtualizarUltimaColeta(
 
 /**
  * [DOC-FUNC] normalizarIpSemMascara
- * O que faz: Normaliza valores na funcao 'normalizarIpSemMascara', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (ip) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarIpSemMascara', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: ip; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarIpSemMascara(ip: string | null | undefined) {
   if (!ip) return null;
@@ -42,10 +42,10 @@ function normalizarIpSemMascara(ip: string | null | undefined) {
 
 /**
  * [DOC-FUNC] resolverStatusSuprimento
- * O que faz: Monta/comp?e estruturas na funcao 'resolverStatusSuprimento', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (statusExplcito, nivelPercentual) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'resolverStatusSuprimento', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: statusExplcito, nivelPercentual; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 function resolverStatusSuprimento(
   statusExplcito: string | undefined,
@@ -61,10 +61,10 @@ function resolverStatusSuprimento(
 
 /**
  * [DOC-FUNC] gravarEvento
- * O que faz: Grava novos dados na funcao 'gravarEvento', aplicando validacoes para preservar integridade do dominio.
- * Entradas: Recebe payload/chaves (coletorId, evento, coletadoEmPadrao) e verifica campos obrigatorios antes da persistencia.
- * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
- * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+ * O que faz: Cria e persiste dados na funcao 'gravarEvento', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: coletorId, evento, coletadoEmPadrao; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function gravarEvento(
   coletorId: string,
@@ -105,10 +105,10 @@ async function gravarEvento(
 
 /**
  * [DOC-FUNC] ingerirTelemetriaColetorPt
- * O que faz: Orquestra a etapa 'ingerirTelemetriaColetorPt' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (payload) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'ingerirTelemetriaColetorPt', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 export async function ingerirTelemetriaColetorPt(
   payload: LoteTelemetriaColetorPt

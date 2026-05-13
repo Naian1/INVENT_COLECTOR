@@ -12,10 +12,10 @@ const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
 /**
  * [DOC-FUNC] hasPrefix
- * O que faz: Avalia uma condicao booleana na funcao 'hasPrefix' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (bytes, prefix) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Avalia condicoes de controle na funcao 'hasPrefix' para decidir se o fluxo pode avancar.
+ * Entradas: Parametros esperados: bytes, prefix; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
  */
 function hasPrefix(bytes: Uint8Array, prefix: number[]) {
   if (bytes.length < prefix.length) return false;
@@ -27,10 +27,10 @@ function hasPrefix(bytes: Uint8Array, prefix: number[]) {
 
 /**
  * [DOC-FUNC] matchesImageSignature
- * O que faz: Orquestra a etapa 'matchesImageSignature' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (bytes, mime) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'matchesImageSignature', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: bytes, mime; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function matchesImageSignature(bytes: Uint8Array, mime: string) {
   if (mime === 'image/jpeg') {
@@ -53,10 +53,10 @@ function matchesImageSignature(bytes: Uint8Array, mime: string) {
 
 /**
  * [DOC-FUNC] extensionFromMime
- * O que faz: Orquestra a etapa 'extensionFromMime' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (mime) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'extensionFromMime', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: mime; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function extensionFromMime(mime: string): string {
   if (mime === 'image/png') return 'png';
@@ -66,10 +66,10 @@ function extensionFromMime(mime: string): string {
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Implementa o endpoint HTTP POST 'POST', recebendo dados para criacao, ingestao ou processamento.
- * Entradas: Consome body da requisicao, identidade/permissoes e argumentos auxiliares; assinatura local: request.
- * Como executa: Valida o corpo recebido, aplica regras de negocio, chama servicos de escrita/processamento e concentra tratamento de excecoes.
- * Retorno/Efeitos: Retorna JSON com resultado da operacao e status HTTP adequado; pode gerar persistencia, auditoria e eventos internos.
+ * O que faz: Implementa o endpoint HTTP POST 'POST' para receber payload, validar regras e processar/gravar dados.
+ * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function POST(request: NextRequest) {
   try {

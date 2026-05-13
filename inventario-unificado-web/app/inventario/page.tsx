@@ -143,10 +143,10 @@ type CriacaoInventario = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Normaliza valores na funcao 'normalizarTexto', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (texto) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: texto; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarTexto(texto: string): string {
   return texto
@@ -157,10 +157,10 @@ function normalizarTexto(texto: string): string {
 
 /**
  * [DOC-FUNC] normalizarIpSemMascara
- * O que faz: Normaliza valores na funcao 'normalizarIpSemMascara', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (ip) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarIpSemMascara', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: ip; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarIpSemMascara(ip: string | null | undefined): string | null {
   if (!ip) return null;
@@ -171,10 +171,10 @@ function normalizarIpSemMascara(ip: string | null | undefined): string | null {
 
 /**
  * [DOC-FUNC] normalizarMacSemMascara
- * O que faz: Normaliza valores na funcao 'normalizarMacSemMascara', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (mac) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarMacSemMascara', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: mac; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarMacSemMascara(mac: string | null | undefined): string | null {
   if (!mac) return null;
@@ -189,10 +189,10 @@ function normalizarMacSemMascara(mac: string | null | undefined): string | null 
 
 /**
  * [DOC-FUNC] labelInventario
- * O que faz: Orquestra a etapa 'labelInventario' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'labelInventario', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function labelInventario(item: InventarioComDetalhes): string {
   const patrimonio = item.nr_patrimonio || `ID ${item.nr_inventario}`;
@@ -202,10 +202,10 @@ function labelInventario(item: InventarioComDetalhes): string {
 
 /**
  * [DOC-FUNC] labelInventarioComHostname
- * O que faz: Orquestra a etapa 'labelInventarioComHostname' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'labelInventarioComHostname', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function labelInventarioComHostname(item: InventarioComDetalhes): string {
   const base = labelInventario(item);
@@ -215,10 +215,10 @@ function labelInventarioComHostname(item: InventarioComDetalhes): string {
 
 /**
  * [DOC-FUNC] formatSetorLabel
- * O que faz: Normaliza valores na funcao 'formatSetorLabel', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (setor?, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatSetorLabel', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: setor?, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null): string {
   if (!setor) return '-';
@@ -230,10 +230,10 @@ function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_local
 
 /**
  * [DOC-FUNC] statusFromLegacy
- * O que faz: Orquestra a etapa 'statusFromLegacy' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (situacao?) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'statusFromLegacy', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: situacao?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function statusFromLegacy(situacao?: string | null): TpStatus {
   if (situacao === 'M') return 'MANUTENCAO';
@@ -243,10 +243,10 @@ function statusFromLegacy(situacao?: string | null): TpStatus {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Orquestra a etapa 'formatarDataHora' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'formatarDataHora', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
@@ -260,10 +260,10 @@ function formatarDataHora(value: string | null): string {
 
 /**
  * [DOC-FUNC] getLabelTpStatus
- * O que faz: Consulta informacoes na funcao 'getLabelTpStatus' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (tpStatus) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getLabelTpStatus', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: tpStatus; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getLabelTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'Manutencao';
@@ -274,10 +274,10 @@ function getLabelTpStatus(tpStatus: TpStatus): string {
 
 /**
  * [DOC-FUNC] getClassTpStatus
- * O que faz: Consulta informacoes na funcao 'getClassTpStatus' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (tpStatus) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getClassTpStatus', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: tpStatus; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function getClassTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'bg-amber-100 text-amber-800';
@@ -288,10 +288,10 @@ function getClassTpStatus(tpStatus: TpStatus): string {
 
 /**
  * [DOC-FUNC] FieldDbHint
- * O que faz: Orquestra a etapa 'FieldDbHint' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados ({ text }) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'FieldDbHint', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: { text }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function FieldDbHint({ text }: { text: string }) {
   return <span className="inv-db-hint">Banco: {text}</span>;
@@ -406,10 +406,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] loadData
-   * O que faz: Consulta informacoes na funcao 'loadData' e organiza o retorno para consumo pelas camadas superiores.
-   * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
-   * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-   * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+   * O que faz: Consulta e organiza informacoes na funcao 'loadData', entregando retorno confiavel para camadas superiores.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const loadData = async () => {
     setLoading(true);
@@ -502,10 +502,10 @@ export default function InventarioPage() {
 
     /**
      * [DOC-FUNC] carregarSessao
-     * O que faz: Orquestra a etapa 'carregarSessao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-     * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-     * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-     * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+     * O que faz: Consulta e organiza informacoes na funcao 'carregarSessao', entregando retorno confiavel para camadas superiores.
+     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
      */
     const carregarSessao = async () => {
       try {
@@ -775,10 +775,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * O que faz: Orquestra a etapa 'handleChangeForm' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (campo, valor) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'handleChangeForm', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: campo, valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const handleChangeForm = (campo: keyof FormInventarioState, valor: string) => {
     if (campo === 'nr_patrimonio') {
@@ -830,10 +830,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] autoPreencherPorPatrimonio
-   * O que faz: Orquestra a etapa 'autoPreencherPorPatrimonio' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'autoPreencherPorPatrimonio', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const autoPreencherPorPatrimonio = async () => {
     const patrimonio = formData.nr_patrimonio.trim();
@@ -903,10 +903,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectTipoFormulario
-   * O que faz: Orquestra a etapa 'handleSelectTipoFormulario' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSelectTipoFormulario', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSelectTipoFormulario = (value: string) => {
     const tipoId = value ? Number(value) : null;
@@ -929,10 +929,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectEquipamento
-   * O que faz: Orquestra a etapa 'handleSelectEquipamento' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSelectEquipamento', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSelectEquipamento = (value: string) => {
     const equipamento = equipamentos.find((item) => item.cd_equipamento === Number(value));
@@ -947,10 +947,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectItemSuperior
-   * O que faz: Orquestra a etapa 'handleSelectItemSuperior' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSelectItemSuperior', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSelectItemSuperior = (value: string) => {
     const itemSuperior = items.find((item) => item.nr_inventario === Number(value));
@@ -963,10 +963,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] stopScanner
-   * O que faz: Orquestra a etapa 'stopScanner' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'stopScanner', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const stopScanner = () => {
     if (scannerTimerRef.current !== null) {
@@ -988,10 +988,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] applyScannedCode
-   * O que faz: Orquestra a etapa 'applyScannedCode' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (codigo) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'applyScannedCode', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: codigo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const applyScannedCode = (codigo: string) => {
     const codigoLimpo = codigo.trim();
@@ -1009,10 +1009,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] iniciarScanner
-   * O que faz: Orquestra a etapa 'iniciarScanner' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'iniciarScanner', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const iniciarScanner = async () => {
     setScannerError(null);
@@ -1091,10 +1091,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetModalForm
-   * O que faz: Orquestra a etapa 'resetModalForm' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'resetModalForm', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const resetModalForm = () => {
     setEditingItem(null);
@@ -1118,10 +1118,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] carregarUltimaMovimentacao
-   * O que faz: Orquestra a etapa 'carregarUltimaMovimentacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (nrInventario) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Consulta e organiza informacoes na funcao 'carregarUltimaMovimentacao', entregando retorno confiavel para camadas superiores.
+   * Entradas: Parametros esperados: nrInventario; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const carregarUltimaMovimentacao = async (nrInventario: number) => {
     setUltimaMovimentacaoLoading(true);
@@ -1155,10 +1155,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * O que faz: Orquestra a etapa 'openEditModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'openEditModal', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const openEditModal = (item: InventarioComDetalhes) => {
     if (!canEditInventario) {
@@ -1194,10 +1194,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetResolucaoModal
-   * O que faz: Orquestra a etapa 'resetResolucaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'resetResolucaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const resetResolucaoModal = () => {
     setResolvendoItem(null);
@@ -1209,10 +1209,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openResolucaoModal
-   * O que faz: Orquestra a etapa 'openResolucaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'openResolucaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const openResolucaoModal = (item: InventarioComDetalhes) => {
     setResolvendoItem(item);
@@ -1225,10 +1225,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetMovimentacaoModal
-   * O que faz: Orquestra a etapa 'resetMovimentacaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'resetMovimentacaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const resetMovimentacaoModal = () => {
     setMovimentandoItem(null);
@@ -1242,10 +1242,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openMovimentacaoModal
-   * O que faz: Orquestra a etapa 'openMovimentacaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'openMovimentacaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const openMovimentacaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
@@ -1270,10 +1270,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetSubstituicaoModal
-   * O que faz: Orquestra a etapa 'resetSubstituicaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'resetSubstituicaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const resetSubstituicaoModal = () => {
     setSubstituindoItem(null);
@@ -1286,10 +1286,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openSubstituicaoModal
-   * O que faz: Orquestra a etapa 'openSubstituicaoModal' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (item) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'openSubstituicaoModal', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const openSubstituicaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
@@ -1316,10 +1316,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeAcaoFilhoMovimentacao
-   * O que faz: Orquestra a etapa 'handleChangeAcaoFilhoMovimentacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (nrInventarioFilho, acao) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'handleChangeAcaoFilhoMovimentacao', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: nrInventarioFilho, acao; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const handleChangeAcaoFilhoMovimentacao = (nrInventarioFilho: number, acao: AcaoFilhoMovimentacao) => {
     setMovimentacaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
@@ -1334,10 +1334,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeAcaoFilhoSubstituicao
-   * O que faz: Orquestra a etapa 'handleChangeAcaoFilhoSubstituicao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (nrInventarioFilho, acao) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'handleChangeAcaoFilhoSubstituicao', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: nrInventarioFilho, acao; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const handleChangeAcaoFilhoSubstituicao = (nrInventarioFilho: number, acao: AcaoFilhoSubstituicao) => {
     setSubstituicaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
@@ -1345,10 +1345,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitMovimentacao
-   * O que faz: Orquestra a etapa 'handleSubmitMovimentacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSubmitMovimentacao', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSubmitMovimentacao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1400,10 +1400,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitSubstituicao
-   * O que faz: Orquestra a etapa 'handleSubmitSubstituicao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSubmitSubstituicao', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSubmitSubstituicao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1465,10 +1465,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitResolucao
-   * O que faz: Orquestra a etapa 'handleSubmitResolucao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'handleSubmitResolucao', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const handleSubmitResolucao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1517,10 +1517,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleCreateInventario
-   * O que faz: Grava novos dados na funcao 'handleCreateInventario', aplicando validacoes para preservar integridade do dominio.
-   * Entradas: Recebe payload/chaves (event) e verifica campos obrigatorios antes da persistencia.
-   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
-   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+   * O que faz: Cria e persiste dados na funcao 'handleCreateInventario', aplicando validacao para preservar integridade do dominio.
+   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   const handleCreateInventario = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

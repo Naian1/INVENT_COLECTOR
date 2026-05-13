@@ -14,10 +14,10 @@ type TpStatus = 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO';
 
 /**
  * [DOC-FUNC] situacaoParaTpStatus
- * O que faz: Consulta informacoes na funcao 'situacaoParaTpStatus' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (ieSituacao?) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Executa a responsabilidade central da funcao 'situacaoParaTpStatus', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: ieSituacao?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function situacaoParaTpStatus(ieSituacao?: string | null): TpStatus {
   if (ieSituacao === 'M') return 'MANUTENCAO';
@@ -27,10 +27,10 @@ function situacaoParaTpStatus(ieSituacao?: string | null): TpStatus {
 
 /**
  * [DOC-FUNC] tpStatusParaSituacao
- * O que faz: Consulta informacoes na funcao 'tpStatusParaSituacao' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (tpStatus) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Executa a responsabilidade central da funcao 'tpStatusParaSituacao', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: tpStatus; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function tpStatusParaSituacao(tpStatus: TpStatus): 'A' | 'M' | 'I' {
   if (tpStatus === 'MANUTENCAO') return 'M';
@@ -40,10 +40,10 @@ function tpStatusParaSituacao(tpStatus: TpStatus): 'A' | 'M' | 'I' {
 
 /**
  * [DOC-FUNC] getTpHierarquiaEquipamento
- * O que faz: Consulta informacoes na funcao 'getTpHierarquiaEquipamento' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (cdEquipamento) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getTpHierarquiaEquipamento', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: cdEquipamento; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHierarquia> {
   const supabase = getSupabaseServerClient();
@@ -62,10 +62,10 @@ async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHier
 
 /**
  * [DOC-FUNC] validarHierarquiaInventario
- * O que faz: Consulta informacoes na funcao 'validarHierarquiaInventario' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'validarHierarquiaInventario', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 async function validarHierarquiaInventario(params: {
   cd_equipamento: number;
@@ -114,10 +114,10 @@ async function validarHierarquiaInventario(params: {
 
 /**
  * [DOC-FUNC] getInventarios
- * O que faz: Consulta informacoes na funcao 'getInventarios' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInventarios', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getInventarios(): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -132,10 +132,10 @@ export async function getInventarios(): Promise<Inventario[]> {
 
 /**
  * [DOC-FUNC] getInventarioById
- * O que faz: Consulta informacoes na funcao 'getInventarioById' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (id) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInventarioById', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getInventarioById(id: number): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
@@ -151,10 +151,10 @@ export async function getInventarioById(id: number): Promise<Inventario | null> 
 
 /**
  * [DOC-FUNC] getInventarioByPatrimonio
- * O que faz: Consulta informacoes na funcao 'getInventarioByPatrimonio' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (patrimonio) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInventarioByPatrimonio', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: patrimonio; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
@@ -171,10 +171,10 @@ export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inv
 
 /**
  * [DOC-FUNC] getInventariosBySetor
- * O que faz: Consulta informacoes na funcao 'getInventariosBySetor' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (setorId) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInventariosBySetor', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: setorId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getInventariosBySetor(setorId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -190,10 +190,10 @@ export async function getInventariosBySetor(setorId: number): Promise<Inventario
 
 /**
  * [DOC-FUNC] getInventariosByEquipamento
- * O que faz: Consulta informacoes na funcao 'getInventariosByEquipamento' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (equipamentoId) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getInventariosByEquipamento', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: equipamentoId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getInventariosByEquipamento(equipamentoId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -209,10 +209,10 @@ export async function getInventariosByEquipamento(equipamentoId: number): Promis
 
 /**
  * [DOC-FUNC] createInventario
- * O que faz: Grava novos dados na funcao 'createInventario', aplicando validacoes para preservar integridade do dominio.
- * Entradas: Recebe payload/chaves (input) e verifica campos obrigatorios antes da persistencia.
- * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
- * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+ * O que faz: Cria e persiste dados na funcao 'createInventario', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function createInventario(input: CreateInventarioInput): Promise<Inventario> {
   const supabase = getSupabaseServerClient();
@@ -243,10 +243,10 @@ export async function createInventario(input: CreateInventarioInput): Promise<In
 
 /**
  * [DOC-FUNC] updateInventario
- * O que faz: Atualiza dados na funcao 'updateInventario', mantendo consistencia entre o estado atual e as novas informacoes.
- * Entradas: Recebe identificador e campos para alteracao (id, input), com validacao de formato e regra de negocio.
- * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
- * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+ * O que faz: Atualiza estado na funcao 'updateInventario', mantendo coerencia entre dados atuais e alteracoes recebidas.
+ * Entradas: Parametros esperados: id, input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function updateInventario(
   id: number,
@@ -296,10 +296,10 @@ export async function updateInventario(
 
 /**
  * [DOC-FUNC] moveInventarioToSetor
- * O que faz: Grava novos dados na funcao 'moveInventarioToSetor', aplicando validacoes para preservar integridade do dominio.
- * Entradas: Recebe payload/chaves (id, novoSetorId, motivo?) e verifica campos obrigatorios antes da persistencia.
- * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
- * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+ * O que faz: Cria e persiste dados na funcao 'moveInventarioToSetor', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: id, novoSetorId, motivo?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function moveInventarioToSetor(
   id: number,
@@ -330,10 +330,10 @@ export async function moveInventarioToSetor(
 
 /**
  * [DOC-FUNC] deleteInventario
- * O que faz: Remove ou inativa registros na funcao 'deleteInventario', conforme a politica de ciclo de vida do modulo.
- * Entradas: Recebe chaves/filtros do alvo (id) e valida dependencias antes da exclusao.
- * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
- * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
+ * O que faz: Remove/inativa dados na funcao 'deleteInventario', respeitando regras de ciclo de vida e dependencias.
+ * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function deleteInventario(id: number): Promise<void> {
   // Soft delete

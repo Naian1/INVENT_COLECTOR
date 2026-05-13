@@ -46,10 +46,10 @@ export type PrinterStatusSupplies = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Orquestra a etapa 'toFiniteNumber' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'toFiniteNumber', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -58,10 +58,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] isEmptyValue
- * O que faz: Avalia uma condicao booleana na funcao 'isEmptyValue' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (value) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Avalia condicoes de controle na funcao 'isEmptyValue' para decidir se o fluxo pode avancar.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
  */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
@@ -69,10 +69,10 @@ function isEmptyValue(value: unknown) {
 
 /**
  * [DOC-FUNC] isAlertOpen
- * O que faz: Avalia uma condicao booleana na funcao 'isAlertOpen' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (alert, unknown>) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Avalia condicoes de controle na funcao 'isAlertOpen' para decidir se o fluxo pode avancar.
+ * Entradas: Parametros esperados: alert, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
  */
 function isAlertOpen(alert: Record<string, unknown>) {
   if (typeof alert.is_open === "boolean") return alert.is_open;
@@ -92,10 +92,10 @@ function isAlertOpen(alert: Record<string, unknown>) {
 
 /**
  * [DOC-FUNC] getPrinterStatusSupplies
- * O que faz: Consulta informacoes na funcao 'getPrinterStatusSupplies' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (printerId) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPrinterStatusSupplies', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: printerId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getPrinterStatusSupplies(
   printerId: string

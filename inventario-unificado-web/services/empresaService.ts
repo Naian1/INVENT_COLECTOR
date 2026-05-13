@@ -7,10 +7,10 @@ import { Empresa, CreateEmpresaInput, UpdateEmpresaInput } from '@/types/empresa
 
 /**
  * [DOC-FUNC] getEmpresas
- * O que faz: Consulta informacoes na funcao 'getEmpresas' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getEmpresas', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getEmpresas(): Promise<Empresa[]> {
   const supabase = getSupabaseServerClient();
@@ -26,10 +26,10 @@ export async function getEmpresas(): Promise<Empresa[]> {
 
 /**
  * [DOC-FUNC] getEmpresaByCgc
- * O que faz: Consulta informacoes na funcao 'getEmpresaByCgc' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (cdCgc) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'getEmpresaByCgc', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: cdCgc; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
   const supabase = getSupabaseServerClient();
@@ -45,10 +45,10 @@ export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
 
 /**
  * [DOC-FUNC] createEmpresa
- * O que faz: Grava novos dados na funcao 'createEmpresa', aplicando validacoes para preservar integridade do dominio.
- * Entradas: Recebe payload/chaves (input) e verifica campos obrigatorios antes da persistencia.
- * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
- * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+ * O que faz: Cria e persiste dados na funcao 'createEmpresa', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
@@ -64,10 +64,10 @@ export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa>
 
 /**
  * [DOC-FUNC] updateEmpresa
- * O que faz: Atualiza dados na funcao 'updateEmpresa', mantendo consistencia entre o estado atual e as novas informacoes.
- * Entradas: Recebe identificador e campos para alteracao (cdCgc, input), com validacao de formato e regra de negocio.
- * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
- * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+ * O que faz: Atualiza estado na funcao 'updateEmpresa', mantendo coerencia entre dados atuais e alteracoes recebidas.
+ * Entradas: Parametros esperados: cdCgc, input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
@@ -84,10 +84,10 @@ export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): P
 
 /**
  * [DOC-FUNC] deleteEmpresa
- * O que faz: Remove ou inativa registros na funcao 'deleteEmpresa', conforme a politica de ciclo de vida do modulo.
- * Entradas: Recebe chaves/filtros do alvo (cdCgc) e valida dependencias antes da exclusao.
- * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
- * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
+ * O que faz: Remove/inativa dados na funcao 'deleteEmpresa', respeitando regras de ciclo de vida e dependencias.
+ * Entradas: Parametros esperados: cdCgc; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 export async function deleteEmpresa(cdCgc: string): Promise<void> {
   const supabase = getSupabaseServerClient();

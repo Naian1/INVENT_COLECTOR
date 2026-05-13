@@ -17,10 +17,10 @@ type SuprimentosListaProps = {
 
 /**
  * [DOC-FUNC] normalizarNivel
- * O que faz: Normaliza valores na funcao 'normalizarNivel', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarNivel', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return null;
@@ -31,10 +31,10 @@ function normalizarNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] resolverNivel
- * O que faz: Monta/comp?e estruturas na funcao 'resolverNivel', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (item) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'resolverNivel', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 function resolverNivel(item: SuprimentoItem) {
   const nivel = normalizarNivel(item.nivel_percentual);
@@ -46,10 +46,10 @@ function resolverNivel(item: SuprimentoItem) {
 
 /**
  * [DOC-FUNC] formatNivel
- * O que faz: Normaliza valores na funcao 'formatNivel', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatNivel', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -60,10 +60,10 @@ function formatNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] formatIndicador
- * O que faz: Normaliza valores na funcao 'formatIndicador', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatIndicador', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatIndicador(value: number | null) {
   const nivel = formatNivel(value);
@@ -73,10 +73,10 @@ function formatIndicador(value: number | null) {
 
 /**
  * [DOC-FUNC] tomPorNivel
- * O que faz: Orquestra a etapa 'tomPorNivel' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'tomPorNivel', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function tomPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -88,10 +88,10 @@ function tomPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] statusPorNivel
- * O que faz: Orquestra a etapa 'statusPorNivel' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'statusPorNivel', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function statusPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -103,10 +103,10 @@ function statusPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] classePillPorStatus
- * O que faz: Orquestra a etapa 'classePillPorStatus' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (status) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'classePillPorStatus', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: status; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function classePillPorStatus(status: string) {
   const s = String(status ?? "").toLowerCase();
@@ -117,10 +117,10 @@ function classePillPorStatus(status: string) {
 
 /**
  * [DOC-FUNC] SuprimentosLista
- * O que faz: Orquestra a etapa 'SuprimentosLista' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados ({ suprimentos, filtroNome }) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'SuprimentosLista', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: { suprimentos, filtroNome }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaProps) {
   const filtro = String(filtroNome ?? "")

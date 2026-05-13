@@ -119,10 +119,10 @@ def _oid_suffix(oid_base: str, full_oid: str) -> str:
 
 
 # [DOC-FUNC] _index_sort_key
-# O que faz: Normaliza valores na funcao '_index_sort_key', reduzindo variacoes de formato antes do processamento principal.
-# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (index) e trata nulos, strings vazias e tipos mistos.
-# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
-# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+# O que faz: Normaliza entradas na funcao '_index_sort_key', reduzindo variacoes de formato antes da regra principal.
+# Entradas: Parametros esperados: index; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
 def _index_sort_key(index: str):
     parts = []
     for chunk in index.split("."):
@@ -633,10 +633,10 @@ def _coletar_e_enviar_impressora(
 
 
 # [DOC-FUNC] atualizar_cache
-# O que faz: Atualiza dados na funcao 'atualizar_cache', mantendo consistencia entre o estado atual e as novas informacoes.
-# Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
-# Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
-# Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+# O que faz: Atualiza estado na funcao 'atualizar_cache', mantendo coerencia entre dados atuais e alteracoes recebidas.
+# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+# Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 def atualizar_cache():
     """Atualiza o cache local e envia 1 payload por impressora para a API nova."""
     logging.info("Iniciando atualizacao do cache.")

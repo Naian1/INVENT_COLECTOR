@@ -101,10 +101,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] carregar
-   * O que faz: Orquestra a etapa 'carregar' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (filtros?) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'carregar', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: filtros?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const carregar = async (filtros?: { competencia?: string; patrimonio?: string }) => {
     setCarregando(true);
@@ -147,10 +147,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Orquestra a etapa 'onSubmit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'onSubmit', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

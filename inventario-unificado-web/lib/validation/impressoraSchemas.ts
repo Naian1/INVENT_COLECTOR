@@ -20,10 +20,10 @@ const termosInvalidos = new Set([
 
 /**
  * [DOC-FUNC] textoObrigatorio
- * O que faz: Orquestra a etapa 'textoObrigatorio' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (campo) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'textoObrigatorio', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: campo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 const textoObrigatorio = (campo: string) =>
   z

@@ -62,10 +62,10 @@ const INITIAL_FORM: UsuarioFormState = {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Orquestra a etapa 'formatarDataHora' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'formatarDataHora', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function formatarDataHora(value: string | null | undefined): string {
   if (!value) return '-';
@@ -130,10 +130,10 @@ export default function UsuariosPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * O que faz: Consulta informacoes na funcao 'loadAuth' e organiza o retorno para consumo pelas camadas superiores.
-     * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
-     * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
-     * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+     * O que faz: Consulta e organiza informacoes na funcao 'loadAuth', entregando retorno confiavel para camadas superiores.
+     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
+     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
      */
     const loadAuth = async () => {
       try {
@@ -173,10 +173,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] carregarUsuarios
-   * O que faz: Orquestra a etapa 'carregarUsuarios' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'carregarUsuarios', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const carregarUsuarios = async () => {
     setLoading(true);
@@ -259,10 +259,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] resetForm
-   * O que faz: Orquestra a etapa 'resetForm' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'resetForm', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const resetForm = () => {
     setFormData(INITIAL_FORM);
@@ -273,10 +273,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openCreateModal
-   * O que faz: Grava novos dados na funcao 'openCreateModal', aplicando validacoes para preservar integridade do dominio.
-   * Entradas: Recebe payload/chaves (sem parametros obrigatorios) e verifica campos obrigatorios antes da persistencia.
-   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
-   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+   * O que faz: Cria e persiste dados na funcao 'openCreateModal', aplicando validacao para preservar integridade do dominio.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   const openCreateModal = () => {
     resetForm();
@@ -285,10 +285,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * O que faz: Remove ou inativa registros na funcao 'openEditModal', conforme a politica de ciclo de vida do modulo.
-   * Entradas: Recebe chaves/filtros do alvo (usuario) e valida dependencias antes da exclusao.
-   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
-   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
+   * O que faz: Normaliza entradas na funcao 'openEditModal', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: usuario; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const openEditModal = (usuario: Usuario) => {
     const perfisSelecionados = usuarioPerfis[usuario.cd_usuario] || [];
@@ -307,10 +307,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * O que faz: Remove ou inativa registros na funcao 'handleChangeForm', conforme a politica de ciclo de vida do modulo.
-   * Entradas: Recebe chaves/filtros do alvo (campo, valor) e valida dependencias antes da exclusao.
-   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
-   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
+   * O que faz: Executa a responsabilidade central da funcao 'handleChangeForm', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: campo, valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const handleChangeForm = (campo: keyof UsuarioFormState, valor: string) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
@@ -318,10 +318,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] togglePerfilSelecionado
-   * O que faz: Remove ou inativa registros na funcao 'togglePerfilSelecionado', conforme a politica de ciclo de vida do modulo.
-   * Entradas: Recebe chaves/filtros do alvo (perfilId) e valida dependencias antes da exclusao.
-   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
-   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
+   * O que faz: Remove/inativa dados na funcao 'togglePerfilSelecionado', respeitando regras de ciclo de vida e dependencias.
+   * Entradas: Parametros esperados: perfilId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa remocao de forma controlada.
+   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
    */
   const togglePerfilSelecionado = (perfilId: number) => {
     setFormData((prev) => {
@@ -337,10 +337,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleSubmit
-   * O que faz: Orquestra a etapa 'handleSubmit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Consulta e organiza informacoes na funcao 'handleSubmit', entregando retorno confiavel para camadas superiores.
+   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
    */
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -404,10 +404,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleToggleStatus
-   * O que faz: Orquestra a etapa 'handleToggleStatus' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (usuario) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Executa a responsabilidade central da funcao 'handleToggleStatus', conectando validacao, processamento e retorno de forma didatica.
+   * Entradas: Parametros esperados: usuario; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
    */
   const handleToggleStatus = async (usuario: Usuario) => {
     setErrorMessage(null);

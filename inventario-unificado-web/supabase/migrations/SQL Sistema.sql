@@ -65,10 +65,10 @@ create type public.conceito_semantico_campo_t as enum (
 -- FUNCAO TRIGGER atualizado_em
 -- =========================================================
 -- [DOC-FUNC] fn_touch_atualizado_em
--- O que faz: Orquestra a etapa 'fn_touch_atualizado_em' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados () returns trigger language plpgsql as $$ begin new.atualizado_em) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Atualiza estado na funcao 'fn_touch_atualizado_em', mantendo coerencia entre dados atuais e alteracoes recebidas.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 create or replace function public.fn_touch_atualizado_em()
 returns trigger
 language plpgsql
@@ -262,10 +262,10 @@ create index idx_alertas_ip on public.alertas_impressoras (ip);
 -- RETENCAO DE LEITURAS DE PAGINAS (3 MESES ROLLING)
 -- =========================================================
 -- [DOC-FUNC] fn_purgar_leituras_paginas_antigas
--- O que faz: Orquestra a etapa 'fn_purgar_leituras_paginas_antigas' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (meses_manter integer default 3) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_purgar_leituras_paginas_antigas', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 create or replace function public.fn_purgar_leituras_paginas_antigas(meses_manter integer default 3)
 returns integer
 language plpgsql
@@ -759,7 +759,7 @@ commit;
 begin;
 
 -- 1) Higieniza legado: se houver mais de uma categoria ativa na mesma aba,
--- mantém a mais recente ativa e desativa as demais.
+-- mantm a mais recente ativa e desativa as demais.
 with ranqueadas as (
   select
     id,
@@ -856,7 +856,7 @@ $$;
 -- ========================================================
 
 -- =========================================================
--- MIGRATION: Daniel Schema ? Public (LIMPEZA TOTAL + RECREAÇÃO)
+-- MIGRATION: Daniel Schema ? Public (LIMPEZA TOTAL + RECREAO)
 -- Data: 2026-04-02
 -- Objetivo: DROPAR TODAS as tabelas antigas (v2, ativos, impressoras, etc)
 --           CRIAR apenas as 6 tabelas do schema daniel puro
@@ -865,7 +865,7 @@ $$;
 BEGIN;
 
 -- =========================================================
--- 1. DROPAR TODAS AS VIEWS PRIMEIRO (para não bloquear DROP)
+-- 1. DROPAR TODAS AS VIEWS PRIMEIRO (para no bloquear DROP)
 -- =========================================================
 DROP VIEW IF EXISTS public.vw_duplicidades CASCADE;
 
@@ -890,7 +890,7 @@ DROP TABLE IF EXISTS public.alertas_impressoras CASCADE;
 DROP TABLE IF EXISTS public.leituras_paginas_impressoras CASCADE;
 DROP TABLE IF EXISTS public.telemetria_impressoras CASCADE;
 
--- Tabelas antigas de configuração dinâmica
+-- Tabelas antigas de configurao dinmica
 DROP TABLE IF EXISTS public.ativos CASCADE;
 DROP TABLE IF EXISTS public.configuracao_abas CASCADE;
 DROP TABLE IF EXISTS public.configuracao_colunas CASCADE;
@@ -958,7 +958,7 @@ CREATE TABLE public.setor (
 
 CREATE INDEX idx_setor_situacao ON public.setor(ie_situacao);
 
--- 2.5 - TABELA: inventario (instância física)
+-- 2.5 - TABELA: inventario (instncia fsica)
 CREATE TABLE public.inventario (
   nr_inventario SERIAL PRIMARY KEY,
   cd_equipamento INTEGER NOT NULL REFERENCES public.equipamento(cd_equipamento),
@@ -977,7 +977,7 @@ CREATE INDEX idx_inventario_setor ON public.inventario(cd_setor);
 CREATE INDEX idx_inventario_ip ON public.inventario(nr_ip);
 CREATE INDEX idx_inventario_situacao ON public.inventario(ie_situacao);
 
--- 2.6 - TABELA: movimentacao (auditoria de mudanças de setor)
+-- 2.6 - TABELA: movimentacao (auditoria de mudanas de setor)
 CREATE TABLE public.movimentacao (
   nr_movimentacao SERIAL PRIMARY KEY,
   nr_inventario INTEGER NOT NULL REFERENCES public.inventario(nr_inventario),
@@ -995,7 +995,7 @@ CREATE INDEX idx_movimentacao_data ON public.movimentacao(dt_movimentacao);
 -- 3. TABELAS DE TELEMETRIA DE IMPRESSORA
 -- =========================================================
 
--- 3.1 - TABELA: suprimentos (estado atual de consumíveis)
+-- 3.1 - TABELA: suprimentos (estado atual de consumveis)
 CREATE TABLE public.suprimentos (
   nr_suprimento SERIAL PRIMARY KEY,
   nr_inventario INTEGER NOT NULL REFERENCES public.inventario(nr_inventario) ON DELETE CASCADE,
@@ -1013,12 +1013,12 @@ CREATE INDEX idx_suprimentos_inventario ON public.suprimentos(nr_inventario);
 CREATE INDEX idx_suprimentos_tipo ON public.suprimentos(tp_suprimento);
 CREATE INDEX idx_suprimentos_situacao ON public.suprimentos(ie_situacao);
 
--- Trigger para atualizar data de última atualização
+-- Trigger para atualizar data de ltima atualizao
 -- [DOC-FUNC] atualizar_timestamp_suprimentos
--- O que faz: Atualiza dados na funcao 'atualizar_timestamp_suprimentos', mantendo consistencia entre o estado atual e as novas informacoes.
--- Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
--- Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
--- Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+-- O que faz: Atualiza estado na funcao 'atualizar_timestamp_suprimentos', mantendo coerencia entre dados atuais e alteracoes recebidas.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.atualizar_timestamp_suprimentos()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -1032,7 +1032,7 @@ BEFORE UPDATE ON public.suprimentos
 FOR EACH ROW
 EXECUTE FUNCTION public.atualizar_timestamp_suprimentos();
 
--- 3.2 - TABELA: telemetria_pagecount (histórico de contadores de página)
+-- 3.2 - TABELA: telemetria_pagecount (histrico de contadores de pgina)
 CREATE TABLE public.telemetria_pagecount (
   nr_telemetria SERIAL PRIMARY KEY,
   nr_inventario INTEGER NOT NULL REFERENCES public.inventario(nr_inventario) ON DELETE CASCADE,
@@ -1052,10 +1052,10 @@ CREATE INDEX idx_telemetria_pagecount_inventario ON public.telemetria_pagecount(
 CREATE INDEX idx_telemetria_pagecount_data ON public.telemetria_pagecount(dt_leitura);
 
 -- [DOC-FUNC] fn_guardar_pagecount_consistente
--- O que faz: Orquestra a etapa 'fn_guardar_pagecount_consistente' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_guardar_pagecount_consistente', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_guardar_pagecount_consistente()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1093,12 +1093,12 @@ BEFORE INSERT OR UPDATE OF nr_paginas_total ON public.telemetria_pagecount
 FOR EACH ROW
 EXECUTE FUNCTION public.fn_guardar_pagecount_consistente();
 
--- Função para limpar histórico de telemetria com mais de 3 meses
+-- Funo para limpar histrico de telemetria com mais de 3 meses
 -- [DOC-FUNC] limpar_telemetria_antiga
--- O que faz: Normaliza valores na funcao 'limpar_telemetria_antiga', reduzindo variacoes de formato antes do processamento principal.
--- Entradas: Recebe dados possivelmente incompletos ou heterogeneos (sem parametros obrigatorios) e trata nulos, strings vazias e tipos mistos.
--- Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
--- Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+-- O que faz: Remove/inativa dados na funcao 'limpar_telemetria_antiga', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; executa escrita/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS void AS $$
 BEGIN
@@ -1111,8 +1111,8 @@ $$ LANGUAGE plpgsql;
 -- 4. AJUSTE FINAL DO SCHEMA DANIEL
 -- =========================================================
 -- Schema daniel puro criado com sucesso: 6 tabelas core + 2 tabelas telemetria
--- RLS desabilitado para desenvolvimento (ativar após testes)
--- Próximo passo: Executar função de limpeza periodicamente (ex: via cron)
+-- RLS desabilitado para desenvolvimento (ativar aps testes)
+-- Prximo passo: Executar funo de limpeza periodicamente (ex: via cron)
 
 COMMIT;
 
@@ -1121,13 +1121,13 @@ COMMIT;
 -- =========================================================
 -- 1. Schema daniel puro: 6 tabelas core + 2 tabelas telemetria = 8 tabelas total
 --    Core: empresa, tipo_equipamento, equipamento, setor, inventario, movimentacao
---    Telemetria: suprimentos (estado), telemetria_pagecount (histórico com limpeza 3 meses)
--- 2. Todas as tabelas antigas foram dropadas (nenhum resíduo de v2)
--- 3. RLS desabilitado para desenvolvimento (ativar após testes)
--- 4. Triggers automáticos:
+--    Telemetria: suprimentos (estado), telemetria_pagecount (histrico com limpeza 3 meses)
+-- 2. Todas as tabelas antigas foram dropadas (nenhum resduo de v2)
+-- 3. RLS desabilitado para desenvolvimento (ativar aps testes)
+-- 4. Triggers automticos:
 --    - suprimentos: atualiza dt_ultima_atualizacao antes de UPDATE
---    - telemetria_pagecount: função limpar_telemetria_antiga() para remover dados > 3 meses
--- 5. Próximo passo: 
+--    - telemetria_pagecount: funo limpar_telemetria_antiga() para remover dados > 3 meses
+-- 5. Prximo passo: 
 --    a) Inserir dados iniciais (empresa, tipo_equipamento, setor, equipamento, inventario)
 --    b) Testar coletor SNMP para validar telemetria
 
@@ -1178,10 +1178,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_sup
   ON public.inventario(nr_invent_sup);
 
 -- [DOC-FUNC] fn_inventario_evitar_ciclo
--- O que faz: Orquestra a etapa 'fn_inventario_evitar_ciclo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_evitar_ciclo', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1307,10 +1307,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_tp_status
   ON public.inventario(tp_status);
 
 -- [DOC-FUNC] fn_inventario_validar_hierarquia_status
--- O que faz: Orquestra a etapa 'fn_inventario_validar_hierarquia_status' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_validar_hierarquia_status', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1422,10 +1422,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
 -- [DOC-FUNC] fn_inventario_touch_dt_atualizacao
--- O que faz: Orquestra a etapa 'fn_inventario_touch_dt_atualizacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_touch_dt_atualizacao', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1453,10 +1453,10 @@ FOR EACH ROW
 EXECUTE FUNCTION public.fn_inventario_touch_dt_atualizacao();
 
 -- [DOC-FUNC] fn_inventario_auditoria_fill
--- O que faz: Orquestra a etapa 'fn_inventario_auditoria_fill' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_auditoria_fill', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_auditoria_fill()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1698,10 +1698,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_sup
 
 -- Evita ciclos: A -> B -> C -> A
 -- [DOC-FUNC] fn_inventario_evitar_ciclo
--- O que faz: Orquestra a etapa 'fn_inventario_evitar_ciclo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_evitar_ciclo', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1750,10 +1750,10 @@ EXECUTE FUNCTION public.fn_inventario_evitar_ciclo();
 
 -- Valida regra de negocio combinando tp_hierarquia + tp_status
 -- [DOC-FUNC] fn_inventario_validar_hierarquia_status
--- O que faz: Orquestra a etapa 'fn_inventario_validar_hierarquia_status' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_validar_hierarquia_status', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2378,10 +2378,10 @@ ON CONFLICT (cd_usuario, cd_perfil)
 DO UPDATE SET ie_situacao = EXCLUDED.ie_situacao;
 
 -- [DOC-FUNC] fn_usuario_touch_dt_atualizacao
--- O que faz: Orquestra a etapa 'fn_usuario_touch_dt_atualizacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_usuario_touch_dt_atualizacao', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_usuario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2549,10 +2549,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
 -- [DOC-FUNC] fn_inventario_touch_dt_ultima_alteracao
--- O que faz: Orquestra a etapa 'fn_inventario_touch_dt_ultima_alteracao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_inventario_touch_dt_ultima_alteracao', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_ultima_alteracao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2669,10 +2669,10 @@ WHERE ie_situacao = 'I'
 -- 2) Trigger: registra quem/quando ativou ou inativou
 -- =========================================================
 -- [DOC-FUNC] fn_usuario_controlar_status_auditoria
--- O que faz: Orquestra a etapa 'fn_usuario_controlar_status_auditoria' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_usuario_controlar_status_auditoria', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_usuario_controlar_status_auditoria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2719,10 +2719,10 @@ EXECUTE FUNCTION public.fn_usuario_controlar_status_auditoria();
 -- 3) Login: usuario inativo nao autentica
 -- =========================================================
 -- [DOC-FUNC] fn_usuario_autenticavel
--- O que faz: Orquestra a etapa 'fn_usuario_autenticavel' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Cria e persiste dados na funcao 'fn_usuario_autenticavel', aplicando validacao para preservar integridade do dominio.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_usuario_autenticavel(p_login VARCHAR)
 RETURNS TABLE (
   cd_usuario INTEGER,
@@ -2752,10 +2752,10 @@ AS $$
 $$;
 
 -- [DOC-FUNC] fn_usuario_registrar_login
--- O que faz: Grava novos dados na funcao 'fn_usuario_registrar_login', aplicando validacoes para preservar integridade do dominio.
--- Entradas: Recebe payload/chaves (p_cd_usuario INTEGER) e verifica campos obrigatorios antes da persistencia.
--- Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
--- Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
+-- O que faz: Remove/inativa dados na funcao 'fn_usuario_registrar_login', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_usuario_registrar_login(p_cd_usuario INTEGER)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -2913,10 +2913,10 @@ CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_ultima_leitura
 -- 3) TRIGGER: sync pagecount atual -> consolidado diario
 -- ---------------------------------------------------------------------------
 -- [DOC-FUNC] fn_sync_telemetria_pagecount_diaria
--- O que faz: Sincroniza dados na funcao 'fn_sync_telemetria_pagecount_diaria', conectando este modulo a outra camada, servico ou fonte externa.
--- Entradas: Usa identificadores, payload e contexto operacional (sem parametros obrigatorios) para localizar e transferir os dados corretos.
--- Como executa: Valida pre-condicoes, executa leitura/escrita nas pontas envolvidas e trata falhas com mensagens rastreaveis.
--- Retorno/Efeitos: Retorna status da sincronizacao e metadados de sucesso/erro para monitoramento e retentativa.
+-- O que faz: Remove/inativa dados na funcao 'fn_sync_telemetria_pagecount_diaria', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_sync_telemetria_pagecount_diaria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -3012,10 +3012,10 @@ EXECUTE FUNCTION public.fn_sync_telemetria_pagecount_diaria();
 -- 4) RETENCAO: diario por mais de 3 meses (default 12 meses = 365 dias)
 -- ---------------------------------------------------------------------------
 -- [DOC-FUNC] limpar_telemetria_pagecount_diaria_antiga
--- O que faz: Normaliza valores na funcao 'limpar_telemetria_pagecount_diaria_antiga', reduzindo variacoes de formato antes do processamento principal.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
--- Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+-- O que faz: Remove/inativa dados na funcao 'limpar_telemetria_pagecount_diaria_antiga', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Executa escrita/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_pagecount_diaria_antiga(p_dias INTEGER DEFAULT 365)
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -3033,10 +3033,10 @@ $$;
 
 -- Mantem compatibilidade com o nome legado ja existente no projeto.
 -- [DOC-FUNC] limpar_telemetria_antiga
--- O que faz: Normaliza valores na funcao 'limpar_telemetria_antiga', reduzindo variacoes de formato antes do processamento principal.
--- Entradas: Parametros SQL declarados na assinatura da funcao (quando houver), alem do contexto de trigger/linha quando aplicavel.
--- Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
--- Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+-- O que faz: Remove/inativa dados na funcao 'limpar_telemetria_antiga', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; executa escrita/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS VOID
 LANGUAGE plpgsql
@@ -3108,10 +3108,10 @@ CREATE INDEX IF NOT EXISTS idx_tarifas_bilhetagem_ativo
   ON public.tarifas_bilhetagem (ativo, competencia_ano DESC, competencia_mes DESC);
 
 -- [DOC-FUNC] fn_tarifas_bilhetagem_touch_updated_at
--- O que faz: Orquestra a etapa 'fn_tarifas_bilhetagem_touch_updated_at' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
--- Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
--- Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
--- Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+-- O que faz: Remove/inativa dados na funcao 'fn_tarifas_bilhetagem_touch_updated_at', respeitando regras de ciclo de vida e dependencias.
+-- Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+-- Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao/remocao de forma controlada.
+-- Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
 CREATE OR REPLACE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at()
 RETURNS trigger
 LANGUAGE plpgsql

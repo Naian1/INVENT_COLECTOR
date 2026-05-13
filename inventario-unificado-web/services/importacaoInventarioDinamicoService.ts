@@ -90,10 +90,10 @@ type ResultadoExecucao = {
 
 /**
  * [DOC-FUNC] atualizarStatusLinhaImportacao
- * O que faz: Atualiza dados na funcao 'atualizarStatusLinhaImportacao', mantendo consistencia entre o estado atual e as novas informacoes.
- * Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
- * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
- * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
+ * O que faz: Atualiza estado na funcao 'atualizarStatusLinhaImportacao', mantendo coerencia entre dados atuais e alteracoes recebidas.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function atualizarStatusLinhaImportacao(
   importacaoId: string | null,
@@ -152,10 +152,10 @@ const campoSemanticoPorChave: Array<{ hint: string; semantico: TipoSemantico; ti
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Normaliza valores na funcao 'normalizarTexto', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -169,10 +169,10 @@ function normalizarTexto(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizarChave
- * O que faz: Normaliza valores na funcao 'normalizarChave', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarChave', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarChave(value: string) {
   return value
@@ -186,10 +186,10 @@ function normalizarChave(value: string) {
 
 /**
  * [DOC-FUNC] chaveTecnica
- * O que faz: Orquestra a etapa 'chaveTecnica' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'chaveTecnica', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function chaveTecnica(value: string) {
   const base = normalizarChave(value).replace(/[^a-z0-9_]/g, "");
@@ -208,10 +208,10 @@ const gruposAliasChaveCampo = [
 
 /**
  * [DOC-FUNC] chavesEquivalentes
- * O que faz: Orquestra a etapa 'chavesEquivalentes' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (chave) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Consulta e organiza informacoes na funcao 'chavesEquivalentes', entregando retorno confiavel para camadas superiores.
+ * Entradas: Parametros esperados: chave; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 function chavesEquivalentes(chave: string) {
   const alvo = chaveTecnica(chave);
@@ -229,10 +229,10 @@ function chavesEquivalentes(chave: string) {
 
 /**
  * [DOC-FUNC] syncPlanilhaEstrito
- * O que faz: Avalia uma condicao booleana na funcao 'syncPlanilhaEstrito' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (sem parametros obrigatorios) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Avalia condicoes de controle na funcao 'syncPlanilhaEstrito' para decidir se o fluxo pode avancar.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
  */
 function syncPlanilhaEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true" && process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
@@ -240,10 +240,10 @@ function syncPlanilhaEstrito() {
 
 /**
  * [DOC-FUNC] inferirCampo
- * O que faz: Orquestra a etapa 'inferirCampo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (header, destino?) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'inferirCampo', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Parametros esperados: header, destino?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function inferirCampo(header: string, destino?: string): CampoDefinicao {
   const chave = chaveTecnica(destino && destino !== "dados_extras" ? destino : header);
@@ -262,10 +262,10 @@ function inferirCampo(header: string, destino?: string): CampoDefinicao {
 
 /**
  * [DOC-FUNC] montarCampos
- * O que faz: Monta/comp?e estruturas na funcao 'montarCampos', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (input) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'montarCampos', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 function montarCampos(input: PreviewInput): CampoDefinicao[] {
   if (input.campos_definicao && input.campos_definicao.length > 0) {
@@ -308,10 +308,10 @@ function montarCampos(input: PreviewInput): CampoDefinicao[] {
 
 /**
  * [DOC-FUNC] normalizarValorPorTipo
- * O que faz: Normaliza valores na funcao 'normalizarValorPorTipo', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (tipo, raw) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizarValorPorTipo', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: tipo, raw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown; erro?: string } {
   const text = normalizarTexto(raw);
@@ -345,10 +345,10 @@ function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown
 
 /**
  * [DOC-FUNC] linhaNormalizada
- * O que faz: Orquestra a etapa 'linhaNormalizada' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (row, unknown>, campos, headers, mapeamento, string>) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'linhaNormalizada', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: row, unknown>, campos, headers, mapeamento, string>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function linhaNormalizada(
   row: Record<string, unknown>,
@@ -389,10 +389,10 @@ function linhaNormalizada(
 
 /**
  * [DOC-FUNC] persistirPreview
- * O que faz: Consulta informacoes na funcao 'persistirPreview' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (input, linhas, campos) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Cria e persiste dados na funcao 'persistirPreview', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: input, linhas, campos; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita de forma controlada.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], campos: CampoDefinicao[]) {
   const supabase = getSupabaseServerClient();
@@ -472,10 +472,10 @@ async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], cam
 
 /**
  * [DOC-FUNC] gerarPreviewImportacaoDinamica
- * O que faz: Monta/comp?e estruturas na funcao 'gerarPreviewImportacaoDinamica', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (input) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'gerarPreviewImportacaoDinamica', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promise<ResultadoServico<PreviewResultado>> {
   const headers = input.headers ?? Object.keys(input.rows[0] ?? {});
@@ -520,10 +520,10 @@ export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promi
 
 /**
  * [DOC-FUNC] resolverAba
- * O que faz: Monta/comp?e estruturas na funcao 'resolverAba', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (abaId, nomeAba) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Cria e persiste dados na funcao 'resolverAba', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Parametros esperados: abaId, nomeAba; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function resolverAba(abaId: string | null, nomeAba: string | null): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -545,10 +545,10 @@ async function resolverAba(abaId: string | null, nomeAba: string | null): Promis
 
 /**
  * [DOC-FUNC] resolverCategoria
- * O que faz: Monta/comp?e estruturas na funcao 'resolverCategoria', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (sem parametros obrigatorios) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Cria e persiste dados na funcao 'resolverCategoria', aplicando validacao para preservar integridade do dominio.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita de forma controlada.
+ * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
  */
 async function resolverCategoria(
   abaInventarioId: string,
@@ -685,10 +685,10 @@ async function resolverCategoria(
 
 /**
  * [DOC-FUNC] executarImportacaoDinamica
- * O que faz: Consulta informacoes na funcao 'executarImportacaoDinamica' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'executarImportacaoDinamica', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export async function executarImportacaoDinamica(
   input:

@@ -34,10 +34,10 @@ const textoOpcionalNulo = z
 
 /**
  * [DOC-FUNC] uuidObrigatorio
- * O que faz: Orquestra a etapa 'uuidObrigatorio' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (campo) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'uuidObrigatorio', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: campo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 const uuidObrigatorio = (campo: string) =>
   z.string().uuid(`${campo} deve ser UUID valido`);
@@ -104,10 +104,10 @@ const boolFromQuery = z
 
 /**
  * [DOC-FUNC] numeroPositivoComDefault
- * O que faz: Orquestra a etapa 'numeroPositivoComDefault' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (defaultValue) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'numeroPositivoComDefault', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: defaultValue; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z

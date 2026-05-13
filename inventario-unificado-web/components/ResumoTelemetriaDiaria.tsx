@@ -129,10 +129,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 /**
  * [DOC-FUNC] formatNumber
- * O que faz: Normaliza valores na funcao 'formatNumber', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatNumber', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatNumber(value: number | null | undefined) {
   const n = Number(value ?? 0);
@@ -142,10 +142,10 @@ function formatNumber(value: number | null | undefined) {
 
 /**
  * [DOC-FUNC] formatCurrency
- * O que faz: Normaliza valores na funcao 'formatCurrency', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatCurrency', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) return currencyFormatter.format(0);
@@ -154,10 +154,10 @@ function formatCurrency(value: number) {
 
 /**
  * [DOC-FUNC] formatDateTime
- * O que faz: Normaliza valores na funcao 'formatDateTime', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatDateTime', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatDateTime(value: string | null | undefined) {
   if (!value) return "-";
@@ -171,10 +171,10 @@ function formatDateTime(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] formatDateBr
- * O que faz: Normaliza valores na funcao 'formatDateBr', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (dateKey) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'formatDateBr', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: dateKey; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function formatDateBr(dateKey: string) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -184,10 +184,10 @@ function formatDateBr(dateKey: string) {
 
 /**
  * [DOC-FUNC] shiftDateKey
- * O que faz: Normaliza valores na funcao 'shiftDateKey', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (dateKey, days) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'shiftDateKey', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: dateKey, days; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function shiftDateKey(dateKey: string, days: number) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -202,10 +202,10 @@ function shiftDateKey(dateKey: string, days: number) {
 
 /**
  * [DOC-FUNC] normalizeText
- * O que faz: Normaliza valores na funcao 'normalizeText', reduzindo variacoes de formato antes do processamento principal.
- * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
- * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
- * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
+ * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function normalizeText(value: string) {
   return value
@@ -217,10 +217,10 @@ function normalizeText(value: string) {
 
 /**
  * [DOC-FUNC] defaultDateRange
- * O que faz: Orquestra a etapa 'defaultDateRange' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Executa a responsabilidade central da funcao 'defaultDateRange', conectando validacao, processamento e retorno de forma didatica.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
  */
 function defaultDateRange() {
   const end = new Date();
@@ -228,10 +228,10 @@ function defaultDateRange() {
   start.setDate(start.getDate() - 6);
   /**
    * [DOC-FUNC] toIso
-   * O que faz: Orquestra a etapa 'toIso' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
-   * Entradas: Trabalha com os parametros declarados (date) e com contexto local carregado durante a execucao.
-   * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
-   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+   * O que faz: Normaliza entradas na funcao 'toIso', reduzindo variacoes de formato antes da regra principal.
+   * Entradas: Parametros esperados: date; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+   * Como executa: Padroniza campos para evitar divergencia de formato.
+   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
    */
   const toIso = (date: Date) => {
     const year = date.getFullYear();
@@ -244,10 +244,10 @@ function defaultDateRange() {
 
 /**
  * [DOC-FUNC] buildChart
- * O que faz: Monta/comp?e estruturas na funcao 'buildChart', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (pointsRaw) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'buildChart', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: pointsRaw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   const points = pointsRaw.map((item) => ({
@@ -285,10 +285,10 @@ function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
 
 /**
  * [DOC-FUNC] toneFromStatus
- * O que faz: Orquestra a etapa 'toneFromStatus' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
- * Entradas: Trabalha com os parametros declarados (status) e com contexto local carregado durante a execucao.
- * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
- * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
+ * O que faz: Normaliza entradas na funcao 'toneFromStatus', reduzindo variacoes de formato antes da regra principal.
+ * Entradas: Parametros esperados: status; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
  */
 function toneFromStatus(status: string) {
   const s = normalizeText(status);
@@ -300,10 +300,10 @@ function toneFromStatus(status: string) {
 
 /**
  * [DOC-FUNC] isColorModel
- * O que faz: Avalia uma condicao booleana na funcao 'isColorModel' para decidir o caminho de execucao do modulo.
- * Entradas: Analisa parametros/contexto (modeloRaw) e possiveis variaveis de ambiente/estado atual.
- * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
- * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
+ * O que faz: Avalia condicoes de controle na funcao 'isColorModel' para decidir se o fluxo pode avancar.
+ * Entradas: Parametros esperados: modeloRaw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Padroniza campos para evitar divergencia de formato.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
  */
 function isColorModel(modeloRaw: string) {
   const modelo = String(modeloRaw || "")
@@ -315,10 +315,10 @@ function isColorModel(modeloRaw: string) {
 
 /**
  * [DOC-FUNC] buildTrend
- * O que faz: Monta/comp?e estruturas na funcao 'buildTrend', consolidando campos dispersos em um objeto util para o fluxo.
- * Entradas: Recebe parametros de origem (current, previous) com dados parciais e metadados para composicao final.
- * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
- * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
+ * O que faz: Monta a estrutura central na funcao 'buildTrend', combinando dados brutos em payload coerente.
+ * Entradas: Parametros esperados: current, previous; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
+ * Como executa: Valida pre-condicoes e regras de negocio.
+ * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
  */
 function buildTrend(current: number, previous: number) {
   const cur = Number.isFinite(current) ? current : 0;
@@ -336,10 +336,10 @@ function buildTrend(current: number, previous: number) {
 
 /**
  * [DOC-FUNC] ResumoTelemetriaDiaria
- * O que faz: Consulta informacoes na funcao 'ResumoTelemetriaDiaria' e organiza o retorno para consumo pelas camadas superiores.
- * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
- * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
- * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
+ * O que faz: Consulta e organiza informacoes na funcao 'ResumoTelemetriaDiaria', entregando retorno confiavel para camadas superiores.
+ * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
+ * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
+ * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
  */
 export function ResumoTelemetriaDiaria() {
   const initialRange = useMemo(defaultDateRange, []);
