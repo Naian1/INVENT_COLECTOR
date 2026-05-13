@@ -17,7 +17,10 @@ type SuprimentosListaProps = {
 
 /**
  * [DOC-FUNC] normalizarNivel
- * Objetivo: Executa a rotina de 'n or ma li za rn iv el'.
+ * O que faz: Padroniza dados de 'normalizar nivel' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return null;
@@ -28,7 +31,10 @@ function normalizarNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] resolverNivel
- * Objetivo: Executa a rotina de 'r es ol ve rn iv el'.
+ * O que faz: Monta estrutura de 'resolver nivel' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: item.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function resolverNivel(item: SuprimentoItem) {
   const nivel = normalizarNivel(item.nivel_percentual);
@@ -40,7 +46,10 @@ function resolverNivel(item: SuprimentoItem) {
 
 /**
  * [DOC-FUNC] formatNivel
- * Objetivo: Executa a rotina de 'f or ma tn iv el'.
+ * O que faz: Padroniza dados de 'format nivel' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -51,7 +60,10 @@ function formatNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] formatIndicador
- * Objetivo: Executa a rotina de 'f or ma ti nd ic ad or'.
+ * O que faz: Padroniza dados de 'format indicador' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatIndicador(value: number | null) {
   const nivel = formatNivel(value);
@@ -61,7 +73,10 @@ function formatIndicador(value: number | null) {
 
 /**
  * [DOC-FUNC] tomPorNivel
- * Objetivo: Executa a rotina de 't om po rn iv el'.
+ * O que faz: Executa a rotina principal de 'tom por nivel' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function tomPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -73,7 +88,10 @@ function tomPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] statusPorNivel
- * Objetivo: Executa a rotina de 's ta tu sp or ni ve l'.
+ * O que faz: Executa a rotina principal de 'status por nivel' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function statusPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -85,7 +103,10 @@ function statusPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] classePillPorStatus
- * Objetivo: Executa a rotina de 'c la ss ep il lp or st at us'.
+ * O que faz: Executa a rotina principal de 'classe pill por status' no contexto deste modulo.
+ * Entradas: Parametros esperados: status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function classePillPorStatus(status: string) {
   const s = String(status ?? "").toLowerCase();
@@ -96,7 +117,10 @@ function classePillPorStatus(status: string) {
 
 /**
  * [DOC-FUNC] SuprimentosLista
- * Objetivo: Executa a rotina de 's up ri me nt os li st a'.
+ * O que faz: Executa a rotina principal de 'suprimentos lista' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaProps) {
   const filtro = String(filtroNome ?? "")

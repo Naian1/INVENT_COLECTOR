@@ -16,7 +16,10 @@ from utils.telemetry_mapper import build_collector_payload, build_payload_from_c
 
 
 # [DOC-FUNC] _group_cache_by_ip
-# Objetivo: Executa a rotina de 'g ro up c ac he b y i p'.
+# O que faz: Executa a rotina principal de 'group cache by ip' no contexto deste modulo.
+# Entradas: Parametros esperados: cache_rows.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def _group_cache_by_ip(cache_rows):
     grouped = {}
     for row in cache_rows:
@@ -28,7 +31,10 @@ def _group_cache_by_ip(cache_rows):
 
 
 # [DOC-FUNC] run_test
-# Objetivo: Executa a rotina de 'r un t es t'.
+# O que faz: Executa a rotina principal de 'run test' no contexto deste modulo.
+# Entradas: Parametros esperados: ip, refresh_cache, dry_run, real_read.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     printers = load_printers()
     remote = fetch_printers_from_api(log_prefix="[test-printers-sync]")
@@ -124,7 +130,10 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
 
 
 # [DOC-FUNC] main
-# Objetivo: Executa a rotina de 'm ai n'.
+# O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def main():
     parser = argparse.ArgumentParser(
         description="Teste manual de envio da telemetria do PjIMPRESS para a API nova."

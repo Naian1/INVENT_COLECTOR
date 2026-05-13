@@ -15,7 +15,10 @@ export type ServiceResult<T> =
 
 /**
  * [DOC-FUNC] normalizeSupabaseError
- * Objetivo: Executa a rotina de 'n or ma li ze su pa ba se er ro r'.
+ * O que faz: Padroniza dados de 'normalize supabase error' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeSupabaseError(message: string) {
   if (message.includes("uq_printers_ip_address")) {
@@ -32,7 +35,10 @@ function normalizeSupabaseError(message: string) {
 
 /**
  * [DOC-FUNC] withDisplayName
- * Objetivo: Executa a rotina de 'w it hd is pl ay na me'.
+ * O que faz: Executa a rotina principal de 'with display name' no contexto deste modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function withDisplayName(input: {
   display_name?: string | null;
@@ -56,7 +62,10 @@ function withDisplayName(input: {
 
 /**
  * [DOC-FUNC] getAllPrinters
- * Objetivo: Executa a rotina de 'g et al lp ri nt er s'.
+ * O que faz: Consulta dados de 'get all printers' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
   const supabase = getSupabaseServerClient();
@@ -75,7 +84,10 @@ export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
 
 /**
  * [DOC-FUNC] getPrinterByUniqueField
- * Objetivo: Executa a rotina de 'g et pr in te rb yu ni qu ef ie ld'.
+ * O que faz: Consulta dados de 'get printer by unique field' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: field, value, label.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function getPrinterByUniqueField(
   field: "ip_address" | "serial_number" | "asset_tag",
@@ -109,7 +121,10 @@ async function getPrinterByUniqueField(
 
 /**
  * [DOC-FUNC] getPrinterById
- * Objetivo: Executa a rotina de 'g et pr in te rb yi d'.
+ * O que faz: Consulta dados de 'get printer by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getPrinterById(id: string): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
@@ -132,7 +147,10 @@ export async function getPrinterById(id: string): Promise<ServiceResult<Printer>
 
 /**
  * [DOC-FUNC] createPrinter
- * Objetivo: Executa a rotina de 'c re at ep ri nt er'.
+ * O que faz: Cria registro de 'create printer' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createPrinter(input: CreatePrinterInput): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
@@ -179,7 +197,10 @@ export async function createPrinter(input: CreatePrinterInput): Promise<ServiceR
 
 /**
  * [DOC-FUNC] updatePrinter
- * Objetivo: Executa a rotina de 'u pd at ep ri nt er'.
+ * O que faz: Atualiza 'update printer' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updatePrinter(
   id: string,
@@ -273,7 +294,10 @@ const COLLECTOR_UNKNOWN_VALUES = new Set([
 
 /**
  * [DOC-FUNC] normalizeCollectorText
- * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rt ex t'.
+ * O que faz: Padroniza dados de 'normalize collector text' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeCollectorText(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -285,7 +309,10 @@ function normalizeCollectorText(value: string | null | undefined): string | unde
 
 /**
  * [DOC-FUNC] normalizeCollectorModel
- * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rm od el'.
+ * O que faz: Padroniza dados de 'normalize collector model' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeCollectorModel(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -295,17 +322,16 @@ function normalizeCollectorModel(value: string | undefined): string | undefined 
 
 /**
  * [DOC-FUNC] normalizeCollectorIp
- * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to ri p'.
+ * O que faz: Padroniza dados de 'normalize collector ip' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeCollectorIp(value: string | undefined): string | undefined {
   if (!value) return undefined;
   return value.replace(/\/32$/, "");
 }
 
-/**
- * [DOC-FUNC] resolveCollectorDisplayName
- * Objetivo: Executa a rotina de 'r es ol ve co ll ec to rd is pl ay na me'.
- */
 function resolveCollectorDisplayName(input: {
   hostname?: string;
   asset_tag?: string;
@@ -328,7 +354,10 @@ function resolveCollectorDisplayName(input: {
 
 /**
  * [DOC-FUNC] upsertPrinterFromCollector
- * Objetivo: Executa a rotina de 'u ps er tp ri nt er fr om co ll ec to r'.
+ * O que faz: Atualiza 'upsert printer from collector' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function upsertPrinterFromCollector(
   input: CollectorPrinterUpsertInput

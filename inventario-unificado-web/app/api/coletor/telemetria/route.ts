@@ -12,7 +12,10 @@ import { ingerirTelemetriaColetorPt } from "@/services/coletorTelemetriaPtServic
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: Request) {
   const authResult = validateCollectorBearerToken(request.headers.get("authorization"));

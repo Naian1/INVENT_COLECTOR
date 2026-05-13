@@ -11,7 +11,10 @@ import { Equipamento, CreateEquipamentoInput, UpdateEquipamentoInput } from '@/t
 
 /**
  * [DOC-FUNC] getEquipamentos
- * Objetivo: Executa a rotina de 'g et eq ui pa me nt os'.
+ * O que faz: Consulta dados de 'get equipamentos' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getEquipamentos(): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -27,7 +30,10 @@ export async function getEquipamentos(): Promise<Equipamento[]> {
 
 /**
  * [DOC-FUNC] getEquipamentoById
- * Objetivo: Executa a rotina de 'g et eq ui pa me nt ob yi d'.
+ * O que faz: Consulta dados de 'get equipamento by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getEquipamentoById(id: number): Promise<Equipamento | null> {
   const supabase = getSupabaseServerClient();
@@ -43,7 +49,10 @@ export async function getEquipamentoById(id: number): Promise<Equipamento | null
 
 /**
  * [DOC-FUNC] getEquipamentosByTipo
- * Objetivo: Executa a rotina de 'g et eq ui pa me nt os by ti po'.
+ * O que faz: Consulta dados de 'get equipamentos by tipo' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: tipoId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -60,7 +69,10 @@ export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento
 
 /**
  * [DOC-FUNC] createEquipamento
- * Objetivo: Executa a rotina de 'c re at ee qu ip am en to'.
+ * O que faz: Cria registro de 'create equipamento' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createEquipamento(input: CreateEquipamentoInput): Promise<Equipamento> {
   const supabase = getSupabaseServerClient();
@@ -76,7 +88,10 @@ export async function createEquipamento(input: CreateEquipamentoInput): Promise<
 
 /**
  * [DOC-FUNC] updateEquipamento
- * Objetivo: Executa a rotina de 'u pd at ee qu ip am en to'.
+ * O que faz: Atualiza 'update equipamento' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updateEquipamento(
   id: number,
@@ -96,7 +111,10 @@ export async function updateEquipamento(
 
 /**
  * [DOC-FUNC] deleteEquipamento
- * Objetivo: Executa a rotina de 'd el et ee qu ip am en to'.
+ * O que faz: Remove ou inativa dados de 'delete equipamento' conforme politica do sistema.
+ * Entradas: Parametros esperados: id.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function deleteEquipamento(id: number): Promise<void> {
   // Soft delete - apenas marcar como inativo

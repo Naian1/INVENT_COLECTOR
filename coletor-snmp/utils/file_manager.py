@@ -15,15 +15,11 @@ CHAMADOS_FILE = os.path.join(DATA_DIR, "chamados.json")
 HISTORY_DIR = os.path.join(DATA_DIR, "history")
 
 
-# [DOC-FUNC] _env_flag
-# Objetivo: Executa a rotina de 'e nv f la g'.
 def _env_flag(name: str, default: bool = False) -> bool:
     raw = str(os.getenv(name, "1" if default else "0")).strip().lower()
     return raw in {"1", "true", "yes", "sim", "on"}
 
 
-# [DOC-FUNC] is_history_enabled
-# Objetivo: Executa a rotina de 'i s h is to ry e na bl ed'.
 def is_history_enabled() -> bool:
     # Historico local diario agora e opcional (desligado por padrao).
     return _env_flag("COLLECTOR_SAVE_HISTORY", default=False)
@@ -35,7 +31,10 @@ if is_history_enabled():
 
 
 # [DOC-FUNC] load_printers
-# Objetivo: Executa a rotina de 'l oa d p ri nt er s'.
+# O que faz: Consulta dados de 'load printers' na fonte principal (API, banco ou cache).
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
 def load_printers():
     if os.path.exists(PRINTERS_FILE):
         with open(PRINTERS_FILE, "r", encoding="utf-8") as f:
@@ -44,14 +43,20 @@ def load_printers():
 
 
 # [DOC-FUNC] save_printers
-# Objetivo: Executa a rotina de 's av e p ri nt er s'.
+# O que faz: Executa a rotina principal de 'save printers' no contexto deste modulo.
+# Entradas: Parametros esperados: printers.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def save_printers(printers):
     with open(PRINTERS_FILE, "w", encoding="utf-8") as f:
         json.dump(printers, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_settings
-# Objetivo: Executa a rotina de 'l oa d s et ti ng s'.
+# O que faz: Consulta dados de 'load settings' na fonte principal (API, banco ou cache).
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
@@ -60,14 +65,20 @@ def load_settings():
 
 
 # [DOC-FUNC] save_settings
-# Objetivo: Executa a rotina de 's av e s et ti ng s'.
+# O que faz: Executa a rotina principal de 'save settings' no contexto deste modulo.
+# Entradas: Parametros esperados: settings.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def save_settings(settings):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(settings, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_chamados
-# Objetivo: Executa a rotina de 'l oa d c ha ma do s'.
+# O que faz: Consulta dados de 'load chamados' na fonte principal (API, banco ou cache).
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
 def load_chamados():
     if os.path.exists(CHAMADOS_FILE):
         with open(CHAMADOS_FILE, "r", encoding="utf-8") as f:
@@ -76,21 +87,30 @@ def load_chamados():
 
 
 # [DOC-FUNC] init_chamados
-# Objetivo: Executa a rotina de 'i ni t c ha ma do s'.
+# O que faz: Executa a rotina principal de 'init chamados' no contexto deste modulo.
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def init_chamados():
     if not os.path.exists(CHAMADOS_FILE):
         save_chamados({})
 
 
 # [DOC-FUNC] save_chamados
-# Objetivo: Executa a rotina de 's av e c ha ma do s'.
+# O que faz: Executa a rotina principal de 'save chamados' no contexto deste modulo.
+# Entradas: Parametros esperados: chamados.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def save_chamados(chamados):
     with open(CHAMADOS_FILE, "w", encoding="utf-8") as f:
         json.dump(chamados, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] save_history
-# Objetivo: Executa a rotina de 's av e h is to ry'.
+# O que faz: Executa a rotina principal de 'save history' no contexto deste modulo.
+# Entradas: Parametros esperados: ip, data.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def save_history(ip, data):
     if not is_history_enabled():
         return

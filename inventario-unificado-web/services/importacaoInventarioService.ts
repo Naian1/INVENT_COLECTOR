@@ -93,7 +93,10 @@ const VALORES_VAZIOS = new Set(["", "null", "none", "n/a", "na", "-", "desconhec
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: unknown): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -105,7 +108,10 @@ function normalizarTexto(value: unknown): string | undefined {
 
 /**
  * [DOC-FUNC] normalizarChave
- * Objetivo: Executa a rotina de 'n or ma li za rc ha ve'.
+ * O que faz: Padroniza dados de 'normalizar chave' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarChave(value: string): string {
   return value
@@ -118,7 +124,10 @@ function normalizarChave(value: string): string {
 
 /**
  * [DOC-FUNC] slugify
- * Objetivo: Executa a rotina de 's lu gi fy'.
+ * O que faz: Executa a rotina principal de 'slugify' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function slugify(value: string): string {
   return normalizarChave(value).replace(/_+/g, "-");
@@ -126,7 +135,10 @@ function slugify(value: string): string {
 
 /**
  * [DOC-FUNC] normalizarIp
- * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ * O que faz: Padroniza dados de 'normalizar ip' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIp(value: string): string {
   return value.replace(/\/32$/, "").trim();
@@ -134,7 +146,10 @@ function normalizarIp(value: string): string {
 
 /**
  * [DOC-FUNC] ipValido
- * Objetivo: Executa a rotina de 'i pv al id o'.
+ * O que faz: Executa a rotina principal de 'ip valido' no contexto deste modulo.
+ * Entradas: Parametros esperados: ip.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function ipValido(ip: string): boolean {
   const ipv4Regex =
@@ -144,7 +159,10 @@ function ipValido(ip: string): boolean {
 
 /**
  * [DOC-FUNC] toBoolean
- * Objetivo: Executa a rotina de 't ob oo le an'.
+ * O que faz: Padroniza dados de 'to boolean' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toBoolean(value: unknown): boolean | undefined {
   if (typeof value === "boolean") return value;
@@ -158,7 +176,10 @@ function toBoolean(value: unknown): boolean | undefined {
 
 /**
  * [DOC-FUNC] resolverCampoDestino
- * Objetivo: Executa a rotina de 'r es ol ve rc am po de st in o'.
+ * O que faz: Monta estrutura de 'resolver campo destino' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: coluna, mapping.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function resolverCampoDestino(coluna: string, mapping: Record<string, string>): string {
   const mapped = mapping[coluna];
@@ -168,7 +189,10 @@ function resolverCampoDestino(coluna: string, mapping: Record<string, string>): 
 
 /**
  * [DOC-FUNC] validarReferenciasBase
- * Objetivo: Executa a rotina de 'v al id ar re fe re nc ia sb as e'.
+ * O que faz: Executa a rotina principal de 'validar referencias base' no contexto deste modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function validarReferenciasBase(input: PreviewInput): Promise<
   ResultadoServico<{ tipoEhImpressora: boolean }>
@@ -218,7 +242,10 @@ async function validarReferenciasBase(input: PreviewInput): Promise<
 
 /**
  * [DOC-FUNC] normalizarLinha
- * Objetivo: Executa a rotina de 'n or ma li za rl in ha'.
+ * O que faz: Padroniza dados de 'normalizar linha' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: row, mapping.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarLinha(
   row: Record<string, unknown>,
@@ -295,7 +322,10 @@ function normalizarLinha(
 
 /**
  * [DOC-FUNC] buscarIdsPorChave
- * Objetivo: Executa a rotina de 'b us ca ri ds po rc ha ve'.
+ * O que faz: Consulta dados de 'buscar ids por chave' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: campo, valor.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function buscarIdsPorChave(
   campo: ChaveMatching,
@@ -311,18 +341,10 @@ async function buscarIdsPorChave(
     return { success: false, status: 500, error: "Falha ao consultar matching de itens." };
   }
 
-  /**
-   * [DOC-FUNC] ids
-   * Objetivo: Executa a rotina de 'i ds'.
-   */
   const ids = (data ?? []).map((row) => String(row.id));
   return { success: true, data: ids };
 }
 
-/**
- * [DOC-FUNC] detectarMatching
- * Objetivo: Executa a rotina de 'd et ec ta rm at ch in g'.
- */
 async function detectarMatching(
   dados: Record<string, unknown>,
   estrategia: ChaveMatching[]
@@ -386,7 +408,10 @@ async function detectarMatching(
 
 /**
  * [DOC-FUNC] persistirPreviewImportacao
- * Objetivo: Executa a rotina de 'p er si st ir pr ev ie wi mp or ta ca o'.
+ * O que faz: Executa a rotina principal de 'persistir preview importacao' no contexto deste modulo.
+ * Entradas: Parametros esperados: input, linhas, resumo.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function persistirPreviewImportacao(
   input: PreviewInput,
@@ -459,7 +484,10 @@ async function persistirPreviewImportacao(
 
 /**
  * [DOC-FUNC] gerarPreviewImportacao
- * Objetivo: Executa a rotina de 'g er ar pr ev ie wi mp or ta ca o'.
+ * O que faz: Monta estrutura de 'gerar preview importacao' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: input, persistir.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 export async function gerarPreviewImportacao(
   input: PreviewInput,
@@ -585,7 +613,10 @@ type LinhaPersistida = {
 
 /**
  * [DOC-FUNC] pickUpdatePayload
- * Objetivo: Executa a rotina de 'p ic ku pd at ep ay lo ad'.
+ * O que faz: Executa a rotina principal de 'pick update payload' no contexto deste modulo.
+ * Entradas: Parametros esperados: dados.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unknown> {
   const allowed = [
@@ -612,7 +643,10 @@ function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unkno
 
 /**
  * [DOC-FUNC] normalizarErroBanco
- * Objetivo: Executa a rotina de 'n or ma li za re rr ob an co'.
+ * O que faz: Padroniza dados de 'normalizar erro banco' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: errorMessage.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarErroBanco(errorMessage: string) {
   if (errorMessage.includes("uq_itens_inventario_patrimonio_ci")) {
@@ -629,7 +663,10 @@ function normalizarErroBanco(errorMessage: string) {
 
 /**
  * [DOC-FUNC] linhaPareceImpressora
- * Objetivo: Executa a rotina de 'l in ha pa re ce im pr es so ra'.
+ * O que faz: Executa a rotina principal de 'linha parece impressora' no contexto deste modulo.
+ * Entradas: Parametros esperados: dados.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
   const descricao = String(dados.descricao ?? "").toLowerCase();
@@ -650,7 +687,10 @@ function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
 
 /**
  * [DOC-FUNC] encontrarImpressoraPorChaves
- * Objetivo: Executa a rotina de 'e nc on tr ar im pr es so ra po rc ha ve s'.
+ * O que faz: Executa a rotina principal de 'encontrar impressora por chaves' no contexto deste modulo.
+ * Entradas: Parametros esperados: dados.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function encontrarImpressoraPorChaves(
   dados: Record<string, unknown>
@@ -706,7 +746,10 @@ async function encontrarImpressoraPorChaves(
 
 /**
  * [DOC-FUNC] tentarVincularItemComImpressora
- * Objetivo: Executa a rotina de 't en ta rv in cu la ri te mc om im pr es so ra'.
+ * O que faz: Executa a rotina principal de 'tentar vincular item com impressora' no contexto deste modulo.
+ * Entradas: Parametros esperados: itemInventarioId, dados.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function tentarVincularItemComImpressora(
   itemInventarioId: string,
@@ -742,7 +785,10 @@ async function tentarVincularItemComImpressora(
 
 /**
  * [DOC-FUNC] executarLinhaCriar
- * Objetivo: Executa a rotina de 'e xe cu ta rl in ha cr ia r'.
+ * O que faz: Executa a rotina principal de 'executar linha criar' no contexto deste modulo.
+ * Entradas: Parametros esperados: linha, abaInventarioId, tipoItemId.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function executarLinhaCriar(
   linha: LinhaPersistida,
@@ -775,7 +821,10 @@ async function executarLinhaCriar(
 
 /**
  * [DOC-FUNC] executarLinhaAtualizar
- * Objetivo: Executa a rotina de 'e xe cu ta rl in ha at ua li za r'.
+ * O que faz: Executa a rotina principal de 'executar linha atualizar' no contexto deste modulo.
+ * Entradas: Parametros esperados: linha.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function executarLinhaAtualizar(
   linha: LinhaPersistida
@@ -810,7 +859,10 @@ async function executarLinhaAtualizar(
 
 /**
  * [DOC-FUNC] carregarPreviewPersistido
- * Objetivo: Executa a rotina de 'c ar re ga rp re vi ew pe rs is ti do'.
+ * O que faz: Consulta dados de 'carregar preview persistido' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: importacaoId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function carregarPreviewPersistido(importacaoId: string): Promise<
   ResultadoServico<{
@@ -855,7 +907,10 @@ async function carregarPreviewPersistido(importacaoId: string): Promise<
 
 /**
  * [DOC-FUNC] obterOuCriarAbaInventario
- * Objetivo: Executa a rotina de 'o bt er ou cr ia ra ba in ve nt ar io'.
+ * O que faz: Executa a rotina principal de 'obter ou criar aba inventario' no contexto deste modulo.
+ * Entradas: Parametros esperados: nomeAba.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -896,7 +951,10 @@ async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServ
 
 /**
  * [DOC-FUNC] obterOuCriarTipoPadrao
- * Objetivo: Executa a rotina de 'o bt er ou cr ia rt ip op ad ra o'.
+ * O que faz: Executa a rotina principal de 'obter ou criar tipo padrao' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -929,7 +987,10 @@ async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
 
 /**
  * [DOC-FUNC] atualizarLinhaProcessada
- * Objetivo: Executa a rotina de 'a tu al iz ar li nh ap ro ce ss ad a'.
+ * O que faz: Atualiza 'atualizar linha processada' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: importacaoId, indiceLinha, status, erro, itemId.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function atualizarLinhaProcessada(
   importacaoId: string,
@@ -953,7 +1014,10 @@ async function atualizarLinhaProcessada(
 
 /**
  * [DOC-FUNC] finalizarImportacao
- * Objetivo: Executa a rotina de 'f in al iz ar im po rt ac ao'.
+ * O que faz: Executa a rotina principal de 'finalizar importacao' no contexto deste modulo.
+ * Entradas: Parametros esperados: importacaoId, resumo.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function finalizarImportacao(
   importacaoId: string,
@@ -972,7 +1036,10 @@ async function finalizarImportacao(
 
 /**
  * [DOC-FUNC] executarImportacaoInventario
- * Objetivo: Executa a rotina de 'e xe cu ta ri mp or ta ca oi nv en ta ri o'.
+ * O que faz: Executa a rotina principal de 'executar importacao inventario' no contexto deste modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function executarImportacaoInventario(
   input: ExecutarInput

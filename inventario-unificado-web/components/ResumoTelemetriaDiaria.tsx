@@ -129,7 +129,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 /**
  * [DOC-FUNC] formatNumber
- * Objetivo: Executa a rotina de 'f or ma tn um be r'.
+ * O que faz: Padroniza dados de 'format number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatNumber(value: number | null | undefined) {
   const n = Number(value ?? 0);
@@ -139,7 +142,10 @@ function formatNumber(value: number | null | undefined) {
 
 /**
  * [DOC-FUNC] formatCurrency
- * Objetivo: Executa a rotina de 'f or ma tc ur re nc y'.
+ * O que faz: Padroniza dados de 'format currency' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) return currencyFormatter.format(0);
@@ -148,7 +154,10 @@ function formatCurrency(value: number) {
 
 /**
  * [DOC-FUNC] formatDateTime
- * Objetivo: Executa a rotina de 'f or ma td at et im e'.
+ * O que faz: Padroniza dados de 'format date time' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatDateTime(value: string | null | undefined) {
   if (!value) return "-";
@@ -162,7 +171,10 @@ function formatDateTime(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] formatDateBr
- * Objetivo: Executa a rotina de 'f or ma td at eb r'.
+ * O que faz: Padroniza dados de 'format date br' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: dateKey.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatDateBr(dateKey: string) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -172,7 +184,10 @@ function formatDateBr(dateKey: string) {
 
 /**
  * [DOC-FUNC] shiftDateKey
- * Objetivo: Executa a rotina de 's hi ft da te ke y'.
+ * O que faz: Executa a rotina principal de 'shift date key' no contexto deste modulo.
+ * Entradas: Parametros esperados: dateKey, days.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function shiftDateKey(dateKey: string, days: number) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -187,7 +202,10 @@ function shiftDateKey(dateKey: string, days: number) {
 
 /**
  * [DOC-FUNC] normalizeText
- * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ * O que faz: Padroniza dados de 'normalize text' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeText(value: string) {
   return value
@@ -199,7 +217,10 @@ function normalizeText(value: string) {
 
 /**
  * [DOC-FUNC] defaultDateRange
- * Objetivo: Executa a rotina de 'd ef au lt da te ra ng e'.
+ * O que faz: Executa a rotina principal de 'default date range' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function defaultDateRange() {
   const end = new Date();
@@ -207,7 +228,10 @@ function defaultDateRange() {
   start.setDate(start.getDate() - 6);
   /**
    * [DOC-FUNC] toIso
-   * Objetivo: Executa a rotina de 't oi so'.
+   * O que faz: Padroniza dados de 'to iso' para formato previsivel no restante do fluxo.
+   * Entradas: Parametros esperados: date.
+   * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+   * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
    */
   const toIso = (date: Date) => {
     const year = date.getFullYear();
@@ -220,7 +244,10 @@ function defaultDateRange() {
 
 /**
  * [DOC-FUNC] buildChart
- * Objetivo: Executa a rotina de 'b ui ld ch ar t'.
+ * O que faz: Monta estrutura de 'build chart' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: pointsRaw.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   const points = pointsRaw.map((item) => ({
@@ -258,7 +285,10 @@ function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
 
 /**
  * [DOC-FUNC] toneFromStatus
- * Objetivo: Executa a rotina de 't on ef ro ms ta tu s'.
+ * O que faz: Executa a rotina principal de 'tone from status' no contexto deste modulo.
+ * Entradas: Parametros esperados: status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function toneFromStatus(status: string) {
   const s = normalizeText(status);
@@ -270,7 +300,10 @@ function toneFromStatus(status: string) {
 
 /**
  * [DOC-FUNC] isColorModel
- * Objetivo: Executa a rotina de 'i sc ol or mo de l'.
+ * O que faz: Executa a rotina principal de 'is color model' no contexto deste modulo.
+ * Entradas: Parametros esperados: modeloRaw.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isColorModel(modeloRaw: string) {
   const modelo = String(modeloRaw || "")
@@ -282,7 +315,10 @@ function isColorModel(modeloRaw: string) {
 
 /**
  * [DOC-FUNC] buildTrend
- * Objetivo: Executa a rotina de 'b ui ld tr en d'.
+ * O que faz: Monta estrutura de 'build trend' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: current, previous.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function buildTrend(current: number, previous: number) {
   const cur = Number.isFinite(current) ? current : 0;
@@ -300,7 +336,10 @@ function buildTrend(current: number, previous: number) {
 
 /**
  * [DOC-FUNC] ResumoTelemetriaDiaria
- * Objetivo: Executa a rotina de 'r es um ot el em et ri ad ia ri a'.
+ * O que faz: Executa a rotina principal de 'resumo telemetria diaria' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function ResumoTelemetriaDiaria() {
   const initialRange = useMemo(defaultDateRange, []);

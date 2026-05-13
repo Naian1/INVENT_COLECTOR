@@ -79,7 +79,10 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] formatarData
- * Objetivo: Executa a rotina de 'f or ma ta rd at a'.
+ * O que faz: Executa a rotina principal de 'formatar data' no contexto deste modulo.
+ * Entradas: Parametros esperados: dataIso.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarData(dataIso: string | null): string {
   if (!dataIso) return '-';
@@ -196,7 +199,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   * O que faz: Executa a rotina principal de 'on submit' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -205,7 +211,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] irParaPagina
-   * Objetivo: Executa a rotina de 'i rp ar ap ag in a'.
+   * O que faz: Executa a rotina principal de 'ir para pagina' no contexto deste modulo.
+   * Entradas: Parametros esperados: novaPagina.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const irParaPagina = (novaPagina: number) => {
     if (!dados?.paginacao) return;

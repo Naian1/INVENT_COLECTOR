@@ -16,7 +16,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request, context.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
@@ -40,7 +43,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
 /**
  * [DOC-FUNC] PATCH
- * Objetivo: Executa a rotina de 'p at ch'.
+ * O que faz: Executa a rotina principal de 'patch' no contexto deste modulo.
+ * Entradas: Parametros esperados: request, context.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request, { requireAdmin: true });

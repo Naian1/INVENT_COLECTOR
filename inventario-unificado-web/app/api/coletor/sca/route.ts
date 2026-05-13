@@ -8,7 +8,10 @@ import { listarResumoSca } from "@/services/coletorScaResumoService";
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest) {
   const auth = await authenticateApiRequest(request, { requireAdmin: true });

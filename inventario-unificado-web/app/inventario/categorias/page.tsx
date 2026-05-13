@@ -87,7 +87,10 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
 
 /**
  * [DOC-FUNC] formatSetorLabel
- * Objetivo: Executa a rotina de 'f or ma ts et or la be l'.
+ * O que faz: Padroniza dados de 'format setor label' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: setor.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>): string {
   const piso = (setor.nm_piso || '').trim();
@@ -99,7 +102,10 @@ function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_locali
 
 /**
  * [DOC-FUNC] formatPisoLabel
- * Objetivo: Executa a rotina de 'f or ma tp is ol ab el'.
+ * O que faz: Padroniza dados de 'format piso label' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: piso.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
   const nome = (piso.nm_piso || '').trim();
@@ -200,7 +206,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] carregarTudo
-   * Objetivo: Executa a rotina de 'c ar re ga rt ud o'.
+   * O que faz: Consulta dados de 'carregar tudo' na fonte principal (API, banco ou cache).
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   async function carregarTudo() {
     setLoading(true);
@@ -232,7 +241,10 @@ export default function GerenciarCategoriasPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * Objetivo: Executa a rotina de 'l oa da ut h'.
+     * O que faz: Consulta dados de 'load auth' na fonte principal (API, banco ou cache).
+     * Entradas: Sem parametros obrigatorios.
+     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
      */
     const loadAuth = async () => {
       try {
@@ -345,7 +357,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEmpresa
-   * Objetivo: Executa a rotina de 'c ri ar em pr es a'.
+   * O que faz: Cria registro de 'criar empresa' aplicando regras de consistencia antes de persistir.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   async function criarEmpresa() {
     if (!novaEmpresa.cd_cgc || !novaEmpresa.nm_empresa) {
@@ -375,7 +390,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarTipo
-   * Objetivo: Executa a rotina de 'c ri ar ti po'.
+   * O que faz: Cria registro de 'criar tipo' aplicando regras de consistencia antes de persistir.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   async function criarTipo() {
     if (!novoTipo.nm_tipo_equipamento) {
@@ -402,7 +420,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarPiso
-   * Objetivo: Executa a rotina de 'c ri ar pi so'.
+   * O que faz: Cria registro de 'criar piso' aplicando regras de consistencia antes de persistir.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   async function criarPiso() {
     if (!novoPiso.nm_piso.trim()) {
@@ -429,7 +450,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarSetor
-   * Objetivo: Executa a rotina de 'c ri ar se to r'.
+   * O que faz: Cria registro de 'criar setor' aplicando regras de consistencia antes de persistir.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   async function criarSetor() {
     if (!novoSetor.cd_piso || !novoSetor.nm_setor) {
@@ -458,7 +482,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEquipamento
-   * Objetivo: Executa a rotina de 'c ri ar eq ui pa me nt o'.
+   * O que faz: Cria registro de 'criar equipamento' aplicando regras de consistencia antes de persistir.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   async function criarEquipamento() {
     if (
@@ -503,7 +530,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEmpresa
-   * Objetivo: Executa a rotina de 'a tu al iz ar em pr es a'.
+   * O que faz: Atualiza 'atualizar empresa' preservando integridade dos dados e regras de negocio.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+   * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
    */
   async function atualizarEmpresa() {
     if (!empresaSelecionada) {
@@ -535,7 +565,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarTipo
-   * Objetivo: Executa a rotina de 'a tu al iz ar ti po'.
+   * O que faz: Atualiza 'atualizar tipo' preservando integridade dos dados e regras de negocio.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+   * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
    */
   async function atualizarTipo() {
     if (!tipoSelecionado) {
@@ -565,7 +598,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarPiso
-   * Objetivo: Executa a rotina de 'a tu al iz ar pi so'.
+   * O que faz: Atualiza 'atualizar piso' preservando integridade dos dados e regras de negocio.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+   * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
    */
   async function atualizarPiso() {
     if (!pisoSelecionado) {
@@ -595,7 +631,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarSetor
-   * Objetivo: Executa a rotina de 'a tu al iz ar se to r'.
+   * O que faz: Atualiza 'atualizar setor' preservando integridade dos dados e regras de negocio.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+   * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
    */
   async function atualizarSetor() {
     if (!setorSelecionado) {
@@ -632,7 +671,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEquipamento
-   * Objetivo: Executa a rotina de 'a tu al iz ar eq ui pa me nt o'.
+   * O que faz: Atualiza 'atualizar equipamento' preservando integridade dos dados e regras de negocio.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+   * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
    */
   async function atualizarEquipamento() {
     if (!equipamentoSelecionado) {

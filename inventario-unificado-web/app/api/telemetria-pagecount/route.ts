@@ -18,7 +18,10 @@ const TelemetriaPagecountCreateSchema = z.object({
 
 /**
  * [DOC-FUNC] hasOnConflictConstraintError
- * Objetivo: Executa a rotina de 'h as on co nf li ct co ns tr ai nt er ro r'.
+ * O que faz: Executa a rotina principal de 'has on conflict constraint error' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function hasOnConflictConstraintError(message: string) {
   return (
@@ -30,7 +33,10 @@ function hasOnConflictConstraintError(message: string) {
 // GET /api/telemetria-pagecount - estado atual de pagecount por inventario
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -63,7 +69,10 @@ export async function GET(request: NextRequest) {
 // POST /api/telemetria-pagecount - upsert por inventario (1 linha por impressora)
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: NextRequest) {
   try {

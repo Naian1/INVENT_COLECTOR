@@ -36,7 +36,10 @@ type ImpressoraComSuprimentos = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -48,7 +51,10 @@ function normalizarTexto(value: string | null | undefined): string | undefined {
 
 /**
  * [DOC-FUNC] calcularNivelPercentual
- * Objetivo: Executa a rotina de 'c al cu la rn iv el pe rc en tu al'.
+ * O que faz: Executa a rotina principal de 'calcular nivel percentual' no contexto deste modulo.
+ * Entradas: Parametros esperados: quantidade.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function calcularNivelPercentual(quantidade: number | null): number | null {
   if (quantidade === null || quantidade === undefined) return null;
@@ -59,7 +65,10 @@ function calcularNivelPercentual(quantidade: number | null): number | null {
 
 /**
  * [DOC-FUNC] transformarSuprimentoResumo
- * Objetivo: Executa a rotina de 't ra ns fo rm ar su pr im en to re su mo'.
+ * O que faz: Executa a rotina principal de 'transformar suprimento resumo' no contexto deste modulo.
+ * Entradas: Parametros esperados: sup.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
   // cd_tipo_suprimento vem como descricao (ex: "Toner Negro")
@@ -76,7 +85,10 @@ function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
 
 /**
  * [DOC-FUNC] transformarImpressoraComSuprimentos
- * Objetivo: Executa a rotina de 't ra ns fo rm ar im pr es so ra co ms up ri me nt os'.
+ * O que faz: Executa a rotina principal de 'transformar impressora com suprimentos' no contexto deste modulo.
+ * Entradas: Parametros esperados: dados.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): ImpressoraVisaoGeral {
   const inv = dados.inventario;
@@ -117,7 +129,10 @@ function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): I
  */
 /**
  * [DOC-FUNC] listarImpressoras
- * Objetivo: Executa a rotina de 'l is ta ri mp re ss or as'.
+ * O que faz: Consulta dados de 'listar impressoras' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVisaoGeral[]>> {
   try {
@@ -212,7 +227,10 @@ export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVi
  */
 /**
  * [DOC-FUNC] buscarImpressoraPorId
- * Objetivo: Executa a rotina de 'b us ca ri mp re ss or ap or id'.
+ * O que faz: Consulta dados de 'buscar impressora por id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function buscarImpressoraPorId(id: string): Promise<ResultadoServico<ImpressoraVisaoGeral>> {
   try {
@@ -269,7 +287,10 @@ export async function buscarImpressoraPorId(id: string): Promise<ResultadoServic
  */
 /**
  * [DOC-FUNC] criarImpressora
- * Objetivo: Executa a rotina de 'c ri ar im pr es so ra'.
+ * O que faz: Cria registro de 'criar impressora' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function criarImpressora(input: CriarImpressoraInput): Promise<ResultadoServico<any>> {
   // Placeholder para compatibilidade com API
@@ -286,7 +307,10 @@ export async function criarImpressora(input: CriarImpressoraInput): Promise<Resu
  */
 /**
  * [DOC-FUNC] atualizarImpressora
- * Objetivo: Executa a rotina de 'a tu al iz ar im pr es so ra'.
+ * O que faz: Atualiza 'atualizar impressora' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function atualizarImpressora(id: string, input: any): Promise<ResultadoServico<any>> {
   return {

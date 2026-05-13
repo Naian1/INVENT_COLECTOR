@@ -29,7 +29,10 @@ type MatrixRow = {
 
 /**
  * [DOC-FUNC] getAdminClient
- * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ * O que faz: Consulta dados de 'get admin client' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -46,7 +49,10 @@ function getAdminClient() {
 
 /**
  * [DOC-FUNC] normalizeStatus
- * Objetivo: Executa a rotina de 'n or ma li ze st at us'.
+ * O que faz: Padroniza dados de 'normalize status' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeStatus(value: unknown): "ATIVO" | "MANUTENCAO" | "BACKUP" | "DEVOLUCAO" | null {
   const raw = String(value ?? "").trim().toUpperCase();
@@ -58,7 +64,10 @@ function normalizeStatus(value: unknown): "ATIVO" | "MANUTENCAO" | "BACKUP" | "D
 
 /**
  * [DOC-FUNC] sanitizeRow
- * Objetivo: Executa a rotina de 's an it iz er ow'.
+ * O que faz: Executa a rotina principal de 'sanitize row' no contexto deste modulo.
+ * Entradas: Parametros esperados: row, nrCarga.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function sanitizeRow(row: MatrixRow, nrCarga: number) {
   return {
@@ -85,7 +94,10 @@ function sanitizeRow(row: MatrixRow, nrCarga: number) {
 
 /**
  * [DOC-FUNC] badRequest
- * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ * O que faz: Executa a rotina principal de 'bad request' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);

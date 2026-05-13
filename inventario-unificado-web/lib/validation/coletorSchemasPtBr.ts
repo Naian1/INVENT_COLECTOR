@@ -115,7 +115,10 @@ export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema
 
 /**
  * [DOC-FUNC] toLote
- * Objetivo: Executa a rotina de 't ol ot e'.
+ * O que faz: Padroniza dados de 'to lote' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: payload.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
@@ -154,7 +157,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
 
 /**
  * [DOC-FUNC] normalizarPayloadColetorPtParaLote
- * Objetivo: Executa a rotina de 'n or ma li za rp ay lo ad co le to rp tp ar al ot e'.
+ * O que faz: Padroniza dados de 'normalizar payload coletor pt para lote' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: payload.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt

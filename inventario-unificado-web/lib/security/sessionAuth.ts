@@ -17,7 +17,10 @@ type SessionPayload = {
 
 /**
  * [DOC-FUNC] safeCompare
- * Objetivo: Executa a rotina de 's af ec om pa re'.
+ * O que faz: Executa a rotina principal de 'safe compare' no contexto deste modulo.
+ * Entradas: Parametros esperados: valueA, valueB.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -29,7 +32,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] getSessionSecret
- * Objetivo: Executa a rotina de 'g et se ss io ns ec re t'.
+ * O que faz: Consulta dados de 'get session secret' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getSessionSecret() {
   const secret =
@@ -48,7 +54,10 @@ function getSessionSecret() {
 
 /**
  * [DOC-FUNC] getSessionCookieName
- * Objetivo: Executa a rotina de 'g et se ss io nc oo ki en am e'.
+ * O que faz: Consulta dados de 'get session cookie name' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export function getSessionCookieName() {
   return SESSION_COOKIE_NAME;
@@ -56,16 +65,15 @@ export function getSessionCookieName() {
 
 /**
  * [DOC-FUNC] getSessionTtlSeconds
- * Objetivo: Executa a rotina de 'g et se ss io nt tl se co nd s'.
+ * O que faz: Consulta dados de 'get session ttl seconds' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export function getSessionTtlSeconds() {
   return SESSION_TTL_SECONDS;
 }
 
-/**
- * [DOC-FUNC] buildSessionToken
- * Objetivo: Executa a rotina de 'b ui ld se ss io nt ok en'.
- */
 export function buildSessionToken(input: {
   cdUsuario: number;
   nmUsuario: string;
@@ -90,7 +98,10 @@ export function buildSessionToken(input: {
 
 /**
  * [DOC-FUNC] readSessionToken
- * Objetivo: Executa a rotina de 'r ea ds es si on to ke n'.
+ * O que faz: Executa a rotina principal de 'read session token' no contexto deste modulo.
+ * Entradas: Parametros esperados: token.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function readSessionToken(token: string | undefined | null) {
   if (!token) return null;
@@ -128,7 +139,10 @@ export function readSessionToken(token: string | undefined | null) {
 
 /**
  * [DOC-FUNC] sha256Hex
- * Objetivo: Executa a rotina de 's ha256 he x'.
+ * O que faz: Executa a rotina principal de 'sha256 hex' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function sha256Hex(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -136,7 +150,10 @@ function sha256Hex(value: string) {
 
 /**
  * [DOC-FUNC] verifyPassword
- * Objetivo: Executa a rotina de 'v er if yp as sw or d'.
+ * O que faz: Executa a rotina principal de 'verify password' no contexto deste modulo.
+ * Entradas: Parametros esperados: inputPassword, storedHash.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function verifyPassword(inputPassword: string, storedHash: string | null | undefined) {
   const normalizedHash = String(storedHash ?? "").trim();

@@ -29,7 +29,10 @@ type DevolucaoItem = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: unknown): string {
   return String(value ?? '')
@@ -40,7 +43,10 @@ function normalizarTexto(value: unknown): string {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
@@ -54,7 +60,10 @@ function formatarDataHora(value: string | null): string {
 
 /**
  * [DOC-FUNC] escapeCsvCell
- * Objetivo: Executa a rotina de 'e sc ap ec sv ce ll'.
+ * O que faz: Executa a rotina principal de 'escape csv cell' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function escapeCsvCell(value: unknown): string {
   const raw = String(value ?? '');
@@ -168,7 +177,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarPlanilha
-   * Objetivo: Executa a rotina de 'e xp or ta rp la ni lh a'.
+   * O que faz: Executa a rotina principal de 'exportar planilha' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const exportarPlanilha = async () => {
     if (!filtrados.length) {
@@ -206,7 +218,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarCsv
-   * Objetivo: Executa a rotina de 'e xp or ta rc sv'.
+   * O que faz: Executa a rotina principal de 'exportar csv' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const exportarCsv = () => {
     if (!filtrados.length) {
@@ -267,7 +282,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarPdf
-   * Objetivo: Executa a rotina de 'e xp or ta rp df'.
+   * O que faz: Executa a rotina principal de 'exportar pdf' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const exportarPdf = async () => {
     if (!gruposEmpresa.length) {

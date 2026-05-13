@@ -45,8 +45,6 @@ CACHE_FILE = os.path.join(BASE_DIR, "dados_cache.json")
 SUPPLY_SPECIAL_VALUES = {-1, -2, -3}
 
 
-# [DOC-FUNC] _utc_iso_now
-# Objetivo: Executa a rotina de 'u tc i so n ow'.
 def _utc_iso_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 def _ip_passes_filter(ip: str, rule: str) -> bool:
@@ -63,8 +61,6 @@ def _ip_passes_filter(ip: str, rule: str) -> bool:
         except ValueError:
             return False
     return candidate_ip.startswith(candidate_rule)
-# [DOC-FUNC] _filter_printers_by_ip
-# Objetivo: Executa a rotina de 'f il te r p ri nt er s b y i p'.
 def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> Dict[str, Any]:
     if not ip_filters:
         return printers
@@ -81,8 +77,6 @@ def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> D
     return filtered
 
 
-# [DOC-FUNC] _safe_int
-# Objetivo: Executa a rotina de 's af e i nt'.
 def _safe_int(value: Any) -> Optional[int]:
     if value is None:
         return None
@@ -95,16 +89,12 @@ def _safe_int(value: Any) -> Optional[int]:
         return None
 
 
-# [DOC-FUNC] _normalize_text
-# Objetivo: Executa a rotina de 'n or ma li ze t ex t'.
 def _normalize_text(value: Any) -> str:
     if value is None:
         return ""
     return str(value).strip().lower()
 
 
-# [DOC-FUNC] _detect_printer_family
-# Objetivo: Executa a rotina de 'd et ec t p ri nt er f am il y'.
 def _detect_printer_family(info: Dict[str, Any]) -> str:
     model = _normalize_text(info.get("modelo") or info.get("model"))
     manufacturer = _normalize_text(info.get("fabricante") or info.get("manufacturer"))
@@ -121,8 +111,6 @@ def _detect_printer_family(info: Dict[str, Any]) -> str:
     return "default"
 
 
-# [DOC-FUNC] _oid_suffix
-# Objetivo: Executa a rotina de 'o id s uf fi x'.
 def _oid_suffix(oid_base: str, full_oid: str) -> str:
     prefix = f"{oid_base}."
     if full_oid.startswith(prefix):
@@ -131,7 +119,10 @@ def _oid_suffix(oid_base: str, full_oid: str) -> str:
 
 
 # [DOC-FUNC] _index_sort_key
-# Objetivo: Executa a rotina de 'i nd ex s or t k ey'.
+# O que faz: Executa a rotina principal de 'index sort key' no contexto deste modulo.
+# Entradas: Parametros esperados: index.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def _index_sort_key(index: str):
     parts = []
     for chunk in index.split("."):
@@ -142,8 +133,6 @@ def _index_sort_key(index: str):
     return parts
 
 
-# [DOC-FUNC] _build_oid_map
-# Objetivo: Executa a rotina de 'b ui ld o id m ap'.
 def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Dict[str, Any]]:
     mapping: Dict[str, Dict[str, Any]] = {}
     for entry in entries:
@@ -158,8 +147,6 @@ def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Di
     return mapping
 
 
-# [DOC-FUNC] traduz_suprimento
-# Objetivo: Executa a rotina de 't ra du z s up ri me nt o'.
 def traduz_suprimento(nome: str) -> str:
     traducao = {
         "Black Toner": "Toner Preto",
@@ -185,8 +172,6 @@ def traduz_suprimento(nome: str) -> str:
     return nome_str or "Desconhecido"
 
 
-# [DOC-FUNC] _interpret_supply_level
-# Objetivo: Executa a rotina de 'i nt er pr et s up pl y l ev el'.
 def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) -> Dict[str, Any]:
     if raw_current is None:
         return {
@@ -239,8 +224,6 @@ def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) 
     }
 
 
-# [DOC-FUNC] _resolve_page_counter
-# Objetivo: Executa a rotina de 'r es ol ve p ag e c ou nt er'.
 def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> Dict[str, Any]:
     family = _detect_printer_family(info)
 
@@ -356,8 +339,6 @@ def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> 
     return result
 
 
-# [DOC-FUNC] _collect_supply_rows
-# Objetivo: Executa a rotina de 'c ol le ct s up pl y r ow s'.
 def _collect_supply_rows(
     ip: str,
     local: str,
@@ -505,8 +486,6 @@ def _collect_supply_rows(
     }
 
 
-# [DOC-FUNC] collect_printer_snapshot
-# Objetivo: Executa a rotina de 'c ol le ct p ri nt er s na ps ho t'.
 def collect_printer_snapshot(
     ip: str,
     info: Dict[str, Any],
@@ -591,8 +570,6 @@ def collect_printer_snapshot(
     }
 
 
-# [DOC-FUNC] _push_to_new_api
-# Objetivo: Executa a rotina de 'p us h t o n ew a pi'.
 def _push_to_new_api(
     collector_id: str,
     ip: str,
@@ -616,8 +593,6 @@ def _push_to_new_api(
     send_telemetry_payload(payload, log_prefix=f"[collector:{ip}]")
 
 
-# [DOC-FUNC] _coletar_e_enviar_impressora
-# Objetivo: Executa a rotina de 'c ol et ar e e nv ia r i mp re ss or a'.
 def _coletar_e_enviar_impressora(
     ip: str,
     info: Dict[str, Any],
@@ -658,7 +633,10 @@ def _coletar_e_enviar_impressora(
 
 
 # [DOC-FUNC] atualizar_cache
-# Objetivo: Executa a rotina de 'a tu al iz ar c ac he'.
+# O que faz: Atualiza 'atualizar cache' preservando integridade dos dados e regras de negocio.
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+# Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
 def atualizar_cache():
     """Atualiza o cache local e envia 1 payload por impressora para a API nova."""
     logging.info("Iniciando atualizacao do cache.")

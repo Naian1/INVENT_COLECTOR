@@ -46,7 +46,10 @@ export type PrinterStatusSupplies = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * Objetivo: Executa a rotina de 't of in it en um be r'.
+ * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -55,7 +58,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] isEmptyValue
- * Objetivo: Executa a rotina de 'i se mp ty va lu e'.
+ * O que faz: Executa a rotina principal de 'is empty value' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
@@ -63,7 +69,10 @@ function isEmptyValue(value: unknown) {
 
 /**
  * [DOC-FUNC] isAlertOpen
- * Objetivo: Executa a rotina de 'i sa le rt op en'.
+ * O que faz: Executa a rotina principal de 'is alert open' no contexto deste modulo.
+ * Entradas: Parametros esperados: alert.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isAlertOpen(alert: Record<string, unknown>) {
   if (typeof alert.is_open === "boolean") return alert.is_open;
@@ -83,7 +92,10 @@ function isAlertOpen(alert: Record<string, unknown>) {
 
 /**
  * [DOC-FUNC] getPrinterStatusSupplies
- * Objetivo: Executa a rotina de 'g et pr in te rs ta tu ss up pl ie s'.
+ * O que faz: Consulta dados de 'get printer status supplies' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: printerId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getPrinterStatusSupplies(
   printerId: string

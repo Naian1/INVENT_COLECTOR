@@ -101,7 +101,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] carregar
-   * Objetivo: Executa a rotina de 'c ar re ga r'.
+   * O que faz: Consulta dados de 'carregar' na fonte principal (API, banco ou cache).
+   * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const carregar = async (filtros?: { competencia?: string; patrimonio?: string }) => {
     setCarregando(true);
@@ -144,7 +147,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   * O que faz: Executa a rotina principal de 'on submit' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

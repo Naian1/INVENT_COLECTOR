@@ -29,7 +29,10 @@ type LinhaImportacao = {
 
 /**
  * [DOC-FUNC] normalizarHeader
- * Objetivo: Executa a rotina de 'n or ma li za rh ea de r'.
+ * O que faz: Padroniza dados de 'normalizar header' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: header.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarHeader(header: unknown) {
   return String(header ?? '')
@@ -96,7 +99,10 @@ const CAMPOS_CHAVE_MATRIX: Array<{ campo: string; aliases: string[] }> = [
 
 /**
  * [DOC-FUNC] analisarCabecalhosMatrix
- * Objetivo: Executa a rotina de 'a na li sa rc ab ec al ho sm at ri x'.
+ * O que faz: Executa a rotina principal de 'analisar cabecalhos matrix' no contexto deste modulo.
+ * Entradas: Parametros esperados: headersOriginais.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function analisarCabecalhosMatrix(headersOriginais: string[]) {
   const headersNormalizados = headersOriginais
@@ -122,7 +128,10 @@ function analisarCabecalhosMatrix(headersOriginais: string[]) {
 
 /**
  * [DOC-FUNC] mapearLinha
- * Objetivo: Executa a rotina de 'm ap ea rl in ha'.
+ * O que faz: Executa a rotina principal de 'mapear linha' no contexto deste modulo.
+ * Entradas: Parametros esperados: raw.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -130,7 +139,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
   /**
    * [DOC-FUNC] pick
-   * Objetivo: Executa a rotina de 'p ic k'.
+   * O que faz: Executa a rotina principal de 'pick' no contexto deste modulo.
+   * Entradas: Parametros esperados: keys.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -167,7 +179,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
 /**
  * [DOC-FUNC] competenciaAtual
- * Objetivo: Executa a rotina de 'c om pe te nc ia at ua l'.
+ * O que faz: Executa a rotina principal de 'competencia atual' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function competenciaAtual() {
   const now = new Date();
@@ -178,7 +193,10 @@ function competenciaAtual() {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ * O que faz: Executa a rotina principal de 'validar competencia' no contexto deste modulo.
+ * Entradas: Parametros esperados: valor.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function validarCompetencia(valor: string) {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(valor.trim());
@@ -186,7 +204,10 @@ function validarCompetencia(valor: string) {
 
 /**
  * [DOC-FUNC] normalizarStatus
- * Objetivo: Executa a rotina de 'n or ma li za rs ta tu s'.
+ * O que faz: Padroniza dados de 'normalizar status' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO' | null {
   const raw = String(value ?? '')
@@ -204,7 +225,10 @@ function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | '
 
 /**
  * [DOC-FUNC] normalizarTimestamp
- * Objetivo: Executa a rotina de 'n or ma li za rt im es ta mp'.
+ * O que faz: Padroniza dados de 'normalizar timestamp' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTimestamp(value: unknown): string | null {
   const texto = String(value ?? '').trim();
@@ -223,7 +247,10 @@ function normalizarTimestamp(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] mapearLinhaMatrixParaBanco
- * Objetivo: Executa a rotina de 'm ap ea rl in ha ma tr ix pa ra ba nc o'.
+ * O que faz: Executa a rotina principal de 'mapear linha matrix para banco' no contexto deste modulo.
+ * Entradas: Parametros esperados: raw.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -231,7 +258,10 @@ function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
 
   /**
    * [DOC-FUNC] pick
-   * Objetivo: Executa a rotina de 'p ic k'.
+   * O que faz: Executa a rotina principal de 'pick' no contexto deste modulo.
+   * Entradas: Parametros esperados: keys.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -311,7 +341,10 @@ export default function ImportacoesInventarioPage() {
   useEffect(() => {
     /**
      * [DOC-FUNC] carregarEmpresas
-     * Objetivo: Executa a rotina de 'c ar re ga re mp re sa s'.
+     * O que faz: Consulta dados de 'carregar empresas' na fonte principal (API, banco ou cache).
+     * Entradas: Sem parametros obrigatorios.
+     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
      */
     const carregarEmpresas = async () => {
       try {
@@ -351,7 +384,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] onArquivoSelecionado
-   * Objetivo: Executa a rotina de 'o na rq ui vo se le ci on ad o'.
+   * O que faz: Executa a rotina principal de 'on arquivo selecionado' no contexto deste modulo.
+   * Entradas: Parametros esperados: file.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   async function onArquivoSelecionado(file: File) {
     setErro(null);
@@ -378,10 +414,6 @@ export default function ImportacoesInventarioPage() {
       raw: false,
       header: 1,
     });
-    /**
-     * [DOC-FUNC] headersOriginais
-     * Objetivo: Executa a rotina de 'h ea de rs or ig in ai s'.
-     */
     const headersOriginais = (grid[0] || []).map((item) => String(item ?? '').trim()).filter(Boolean);
     const diagnosticoCabecalhos = analisarCabecalhosMatrix(headersOriginais);
 
@@ -400,7 +432,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] importarConsolidadoMensal
-   * Objetivo: Executa a rotina de 'i mp or ta rc on so li da do me ns al'.
+   * O que faz: Executa a rotina principal de 'importar consolidado mensal' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   async function importarConsolidadoMensal() {
     if (!linhasBrutas.length) {

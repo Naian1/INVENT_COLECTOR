@@ -15,7 +15,10 @@ const UNKNOWN_VALUES = new Set([
 
 /**
  * [DOC-FUNC] normalizeWhitespace
- * Objetivo: Executa a rotina de 'n or ma li ze wh it es pa ce'.
+ * O que faz: Padroniza dados de 'normalize whitespace' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
@@ -23,7 +26,10 @@ function normalizeWhitespace(value: string) {
 
 /**
  * [DOC-FUNC] normalizeIpForLabel
- * Objetivo: Executa a rotina de 'n or ma li ze ip fo rl ab el'.
+ * O que faz: Padroniza dados de 'normalize ip for label' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeIpForLabel(value: string | null) {
   if (!value) return null;
@@ -32,7 +38,10 @@ function normalizeIpForLabel(value: string | null) {
 
 /**
  * [DOC-FUNC] sanitizeOptionalText
- * Objetivo: Executa a rotina de 's an it iz eo pt io na lt ex t'.
+ * O que faz: Executa a rotina principal de 'sanitize optional text' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function sanitizeOptionalText(value: string | null | undefined): string | null {
   if (value === null || value === undefined) return null;
@@ -44,7 +53,10 @@ export function sanitizeOptionalText(value: string | null | undefined): string |
 
 /**
  * [DOC-FUNC] normalizeAssetTagForLabel
- * Objetivo: Executa a rotina de 'n or ma li ze as se tt ag fo rl ab el'.
+ * O que faz: Padroniza dados de 'normalize asset tag for label' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: assetTag.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeAssetTagForLabel(assetTag: string) {
   const cleaned = normalizeWhitespace(assetTag);
@@ -52,10 +64,6 @@ function normalizeAssetTagForLabel(assetTag: string) {
   return `PAT ${cleaned}`;
 }
 
-/**
- * [DOC-FUNC] buildPrinterDisplayName
- * Objetivo: Executa a rotina de 'b ui ld pr in te rd is pl ay na me'.
- */
 export function buildPrinterDisplayName(input: {
   hostname?: string | null;
   asset_tag?: string | null;

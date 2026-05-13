@@ -13,7 +13,10 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   /**
    * [DOC-FUNC] headers
-   * Objetivo: Executa a rotina de 'h ea de rs'.
+   * O que faz: Executa a rotina principal de 'headers' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   async headers() {
     return [

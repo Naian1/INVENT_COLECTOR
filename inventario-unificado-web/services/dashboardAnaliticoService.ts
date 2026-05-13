@@ -41,7 +41,10 @@ const HISTORICO_PAGINAS_DIAS_MAX = 92;
 
 /**
  * [DOC-FUNC] clamp
- * Objetivo: Executa a rotina de 'c la mp'.
+ * O que faz: Executa a rotina principal de 'clamp' no contexto deste modulo.
+ * Entradas: Parametros esperados: value, min, max.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -49,7 +52,10 @@ function clamp(value: number, min: number, max: number) {
 
 /**
  * [DOC-FUNC] normalizarFiltro
- * Objetivo: Executa a rotina de 'n or ma li za rf il tr o'.
+ * O que faz: Padroniza dados de 'normalizar filtro' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarFiltro(value: string) {
   return value.trim().toLowerCase();
@@ -57,7 +63,10 @@ function normalizarFiltro(value: string) {
 
 /**
  * [DOC-FUNC] nomeSetor
- * Objetivo: Executa a rotina de 'n om es et or'.
+ * O que faz: Executa a rotina principal de 'nome setor' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function nomeSetor(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -66,7 +75,10 @@ function nomeSetor(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] nomeLocalizacao
- * Objetivo: Executa a rotina de 'n om el oc al iz ac ao'.
+ * O que faz: Executa a rotina principal de 'nome localizacao' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function nomeLocalizacao(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -75,7 +87,10 @@ function nomeLocalizacao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] inicioPeriodoIso
- * Objetivo: Executa a rotina de 'i ni ci op er io do is o'.
+ * O que faz: Executa a rotina principal de 'inicio periodo iso' no contexto deste modulo.
+ * Entradas: Parametros esperados: dias.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function inicioPeriodoIso(dias: number) {
   const now = new Date();
@@ -87,7 +102,10 @@ function inicioPeriodoIso(dias: number) {
 
 /**
  * [DOC-FUNC] chaveBucket
- * Objetivo: Executa a rotina de 'c ha ve bu ck et'.
+ * O que faz: Executa a rotina principal de 'chave bucket' no contexto deste modulo.
+ * Entradas: Parametros esperados: dataIso, agrupamento.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
   const dt = new Date(dataIso);
@@ -100,7 +118,10 @@ function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
 
 /**
  * [DOC-FUNC] buscarLeiturasHistoricas
- * Objetivo: Executa a rotina de 'b us ca rl ei tu ra sh is to ri ca s'.
+ * O que faz: Consulta dados de 'buscar leituras historicas' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: impressoraIds, deIso, ateIso.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function buscarLeiturasHistoricas(
   impressoraIds: string[],
@@ -146,7 +167,10 @@ async function buscarLeiturasHistoricas(
 
 /**
  * [DOC-FUNC] buscarFaixaHistoricaGlobal
- * Objetivo: Executa a rotina de 'b us ca rf ai xa hi st or ic ag lo ba l'.
+ * O que faz: Consulta dados de 'buscar faixa historica global' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
   const supabase = getSupabaseServerClient();
@@ -173,7 +197,10 @@ async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
 
 /**
  * [DOC-FUNC] buscarDashboardAnalitico
- * Objetivo: Executa a rotina de 'b us ca rd as hb oa rd an al it ic o'.
+ * O que faz: Consulta dados de 'buscar dashboard analitico' na fonte principal (api, banco ou cache).
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function buscarDashboardAnalitico(options?: {
   dias?: number;
@@ -198,10 +225,6 @@ export async function buscarDashboardAnalitico(options?: {
     };
   }
 
-  /**
-   * [DOC-FUNC] operacionais
-   * Objetivo: Executa a rotina de 'o pe ra ci on ai s'.
-   */
   const operacionais = (visao.data as ImpressoraVisao[]).filter((item) => item.operacional);
   const totalPaginasAcumuladasGeral = operacionais.reduce((acc, item) => {
     const paginas = Number(item.contador_paginas_atual);

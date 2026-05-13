@@ -19,7 +19,10 @@ type AuthOptions = {
 
 /**
  * [DOC-FUNC] getBearerToken
- * Objetivo: Executa a rotina de 'g et be ar er to ke n'.
+ * O que faz: Consulta dados de 'get bearer token' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getBearerToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization") || "";
@@ -34,7 +37,10 @@ type PerfilNomeLookupRow = {
 
 /**
  * [DOC-FUNC] getPerfilNome
- * Objetivo: Executa a rotina de 'g et pe rf il no me'.
+ * O que faz: Consulta dados de 'get perfil nome' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) return String(value[0]?.nm_perfil || "");
@@ -43,7 +49,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
 
 /**
  * [DOC-FUNC] resolveIsAdmin
- * Objetivo: Executa a rotina de 'r es ol ve is ad mi n'.
+ * O que faz: Monta estrutura de 'resolve is admin' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: cdUsuario, cdPerfilPrincipal.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Promise<boolean> {
   const supabase = getSupabaseServerClient();
@@ -79,7 +88,10 @@ async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Pro
 
 /**
  * [DOC-FUNC] authenticateApiRequest
- * Objetivo: Executa a rotina de 'a ut he nt ic at ea pi re qu es t'.
+ * O que faz: Executa a rotina principal de 'authenticate api request' no contexto deste modulo.
+ * Entradas: Parametros esperados: request, options.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function authenticateApiRequest(
   request: NextRequest,

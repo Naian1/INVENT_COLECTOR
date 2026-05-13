@@ -10,7 +10,10 @@ export const corsHeaders = {
 
 /**
  * [DOC-FUNC] jsonResponse
- * Objetivo: Executa a rotina de 'j so nr es po ns e'.
+ * O que faz: Executa a rotina principal de 'json response' no contexto deste modulo.
+ * Entradas: Parametros esperados: body, status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

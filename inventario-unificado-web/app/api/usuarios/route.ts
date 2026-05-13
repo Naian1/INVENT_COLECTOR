@@ -38,7 +38,10 @@ type UsuarioPerfil = {
 
 /**
  * [DOC-FUNC] badRequest
- * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ * O que faz: Executa a rotina principal de 'bad request' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function badRequest(message: string) {
   return NextResponse.json({ sucesso: false, erro: message }, { status: 400 });
@@ -46,7 +49,10 @@ function badRequest(message: string) {
 
 /**
  * [DOC-FUNC] getBearerToken
- * Objetivo: Executa a rotina de 'g et be ar er to ke n'.
+ * O que faz: Consulta dados de 'get bearer token' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getBearerToken(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
@@ -56,7 +62,10 @@ function getBearerToken(request: NextRequest) {
 
 /**
  * [DOC-FUNC] parsePerfilIds
- * Objetivo: Executa a rotina de 'p ar se pe rf il id s'.
+ * O que faz: Padroniza dados de 'parse perfil ids' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parsePerfilIds(value: unknown): number[] {
   if (!Array.isArray(value)) return [];
@@ -71,7 +80,10 @@ type PerfilNomeLookupRow = {
 
 /**
  * [DOC-FUNC] getPerfilNome
- * Objetivo: Executa a rotina de 'g et pe rf il no me'.
+ * O que faz: Consulta dados de 'get perfil nome' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) {
@@ -82,7 +94,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
 
 /**
  * [DOC-FUNC] getAuthActor
- * Objetivo: Executa a rotina de 'g et au th ac to r'.
+ * O que faz: Consulta dados de 'get auth actor' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function getAuthActor(request: NextRequest) {
   const token = getBearerToken(request);
@@ -191,7 +206,10 @@ async function getAuthActor(request: NextRequest) {
 
 /**
  * [DOC-FUNC] syncUsuarioPerfis
- * Objetivo: Executa a rotina de 's yn cu su ar io pe rf is'.
+ * O que faz: Executa a rotina principal de 'sync usuario perfis' no contexto deste modulo.
+ * Entradas: Parametros esperados: usuarioId, perfilPrincipal, perfisExtras.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function syncUsuarioPerfis(
   usuarioId: number,
@@ -229,7 +247,10 @@ async function syncUsuarioPerfis(
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -294,7 +315,10 @@ export async function GET(request: NextRequest) {
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -388,7 +412,10 @@ export async function POST(request: NextRequest) {
 
 /**
  * [DOC-FUNC] PUT
- * Objetivo: Executa a rotina de 'p ut'.
+ * O que faz: Executa a rotina principal de 'put' no contexto deste modulo.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function PUT(request: NextRequest) {
   const actor = await getAuthActor(request);
@@ -533,7 +560,10 @@ export async function PUT(request: NextRequest) {
 
 /**
  * [DOC-FUNC] PATCH
- * Objetivo: Executa a rotina de 'p at ch'.
+ * O que faz: Executa a rotina principal de 'patch' no contexto deste modulo.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function PATCH(request: NextRequest) {
   const actor = await getAuthActor(request);

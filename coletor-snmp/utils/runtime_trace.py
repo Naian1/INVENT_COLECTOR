@@ -11,12 +11,15 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 TRACE_FILE = os.path.join(LOG_DIR, "collector_backend_trace.jsonl")
 
 
-# [DOC-FUNC] _utc_now_iso
-# Objetivo: Executa a rotina de 'u tc n ow i so'.
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+# [DOC-FUNC] _sanitize
+# O que faz: Executa a rotina principal de 'sanitize' no contexto deste m?dulo.
+# Entradas: Par?metros esperados: value, max_len.
+# Como executa: Valida precondi??es, processa regras de neg?cio e trata exce??es do fluxo.
+# Retorno/Efeitos: Retorna resultado ?til para a camada chamadora (dados, status ou erro).
 def _sanitize(value: Any, max_len: int = 2400):
     if value is None:
         return None
@@ -39,7 +42,10 @@ def _sanitize(value: Any, max_len: int = 2400):
 
 
 # [DOC-FUNC] append_backend_trace
-# Objetivo: Executa a rotina de 'a pp en d b ac ke nd t ra ce'.
+# O que faz: Executa a rotina principal de 'append backend trace' no contexto deste modulo.
+# Entradas: Parametros esperados: event.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

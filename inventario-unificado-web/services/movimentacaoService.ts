@@ -7,7 +7,10 @@ import { Movimentacao, CreateMovimentacaoInput } from '@/types/movimentacao';
 
 /**
  * [DOC-FUNC] getMovimentacoes
- * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe s'.
+ * O que faz: Consulta dados de 'get movimentacoes' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -22,7 +25,10 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
 
 /**
  * [DOC-FUNC] getMovimentacaoById
- * Objetivo: Executa a rotina de 'g et mo vi me nt ac ao by id'.
+ * O que faz: Consulta dados de 'get movimentacao by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getMovimentacaoById(id: number): Promise<Movimentacao | null> {
   const supabase = getSupabaseServerClient();
@@ -38,7 +44,10 @@ export async function getMovimentacaoById(id: number): Promise<Movimentacao | nu
 
 /**
  * [DOC-FUNC] getMovimentacoesByInventario
- * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb yi nv en ta ri o'.
+ * O que faz: Consulta dados de 'get movimentacoes by inventario' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: inventarioId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getMovimentacoesByInventario(inventarioId: number): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -54,7 +63,10 @@ export async function getMovimentacoesByInventario(inventarioId: number): Promis
 
 /**
  * [DOC-FUNC] getMovimentacoesByPatrimonio
- * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb yp at ri mo ni o'.
+ * O que faz: Consulta dados de 'get movimentacoes by patrimonio' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: patrimonio.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -70,7 +82,10 @@ export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<
 
 /**
  * [DOC-FUNC] getMovimentacoesBySetor
- * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb ys et or'.
+ * O que faz: Consulta dados de 'get movimentacoes by setor' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: setorId, limit.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getMovimentacoesBySetor(
   setorId: number,
@@ -90,7 +105,10 @@ export async function getMovimentacoesBySetor(
 
 /**
  * [DOC-FUNC] createMovimentacao
- * Objetivo: Executa a rotina de 'c re at em ov im en ta ca o'.
+ * O que faz: Cria registro de 'create movimentacao' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createMovimentacao(
   input: CreateMovimentacaoInput,
@@ -108,7 +126,10 @@ export async function createMovimentacao(
 
 /**
  * [DOC-FUNC] getHistoricoEquipamento
- * Objetivo: Executa a rotina de 'g et hi st or ic oe qu ip am en to'.
+ * O que faz: Consulta dados de 'get historico equipamento' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: patrimonio.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getHistoricoEquipamento(patrimonio: string): Promise<{
   inventario: any;

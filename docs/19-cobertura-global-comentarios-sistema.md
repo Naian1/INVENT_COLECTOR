@@ -16,7 +16,7 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 
 - Arquivos de codigo anotados: 131
 - Linhas de codigo no escopo: 43726
-- Comentarios de funcao (`DOC-FUNC`) inseridos: 856
+- Comentarios de funcao (`DOC-FUNC`) ativos: 779
 
 ## Como estudar
 
@@ -24,6 +24,13 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 2. Abrir o arquivo alvo e ler o cabecalho `DOC-CODEMAP` para entender contexto.
 3. Ler funcao por funcao usando os blocos `DOC-FUNC` como guia do objetivo de cada rotina.
 4. Cruza com `docs/18-mapa-codigo-linhas-tcc.md` quando precisar entender fluxo ponta-a-ponta.
+
+## Estrutura do comentario `DOC-FUNC`
+
+- `O que faz`: objetivo funcional direto da rotina.
+- `Entradas`: parametros esperados pela assinatura.
+- `Como executa`: resumo do processamento principal e validacoes.
+- `Retorno/Efeitos`: o que devolve e efeitos relevantes no fluxo.
 
 ## Observacao importante
 

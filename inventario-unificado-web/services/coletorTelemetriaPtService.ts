@@ -9,7 +9,10 @@ import type { ResultadoIngestaoColetor } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] deveAtualizarUltimaColeta
- * Objetivo: Executa a rotina de 'd ev ea tu al iz ar ul ti ma co le ta'.
+ * O que faz: Executa a rotina principal de 'deve atualizar ultima coleta' no contexto deste modulo.
+ * Entradas: Parametros esperados: ultimaColetaAtual, candidatoIso.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function deveAtualizarUltimaColeta(
   ultimaColetaAtual: string | null,
@@ -25,7 +28,10 @@ function deveAtualizarUltimaColeta(
 
 /**
  * [DOC-FUNC] normalizarIpSemMascara
- * Objetivo: Executa a rotina de 'n or ma li za ri ps em ma sc ar a'.
+ * O que faz: Padroniza dados de 'normalizar ip sem mascara' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: ip.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIpSemMascara(ip: string | null | undefined) {
   if (!ip) return null;
@@ -36,7 +42,10 @@ function normalizarIpSemMascara(ip: string | null | undefined) {
 
 /**
  * [DOC-FUNC] resolverStatusSuprimento
- * Objetivo: Executa a rotina de 'r es ol ve rs ta tu ss up ri me nt o'.
+ * O que faz: Monta estrutura de 'resolver status suprimento' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: statusExplcito, nivelPercentual.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function resolverStatusSuprimento(
   statusExplcito: string | undefined,
@@ -52,7 +61,10 @@ function resolverStatusSuprimento(
 
 /**
  * [DOC-FUNC] gravarEvento
- * Objetivo: Executa a rotina de 'g ra va re ve nt o'.
+ * O que faz: Executa a rotina principal de 'gravar evento' no contexto deste modulo.
+ * Entradas: Parametros esperados: coletorId, evento, coletadoEmPadrao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function gravarEvento(
   coletorId: string,
@@ -93,7 +105,10 @@ async function gravarEvento(
 
 /**
  * [DOC-FUNC] ingerirTelemetriaColetorPt
- * Objetivo: Executa a rotina de 'i ng er ir te le me tr ia co le to rp t'.
+ * O que faz: Executa a rotina principal de 'ingerir telemetria coletor pt' no contexto deste modulo.
+ * Entradas: Parametros esperados: payload.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function ingerirTelemetriaColetorPt(
   payload: LoteTelemetriaColetorPt

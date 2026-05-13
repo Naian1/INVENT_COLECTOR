@@ -24,7 +24,10 @@ const MAX_IMPORT_ROWS = 5000;
 
 /**
  * [DOC-FUNC] txt
- * Objetivo: Executa a rotina de 't xt'.
+ * O que faz: Executa a rotina principal de 'txt' no contexto deste modulo.
+ * Entradas: Parametros esperados: v.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function txt(v: unknown): string | null {
   if (v === null || v === undefined) return null;
@@ -34,7 +37,10 @@ function txt(v: unknown): string | null {
 
 /**
  * [DOC-FUNC] autoCgc
- * Objetivo: Executa a rotina de 'a ut oc gc'.
+ * O que faz: Executa a rotina principal de 'auto cgc' no contexto deste modulo.
+ * Entradas: Parametros esperados: nomeEmpresa.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function autoCgc(nomeEmpresa: string) {
   return `AUTO-${nomeEmpresa.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18) || 'EMPRESA'}`;
@@ -42,7 +48,10 @@ function autoCgc(nomeEmpresa: string) {
 
 /**
  * [DOC-FUNC] upsertEmpresa
- * Objetivo: Executa a rotina de 'u ps er te mp re sa'.
+ * O que faz: Atualiza 'upsert empresa' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: supabase, row.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient>, row: LinhaImportacao) {
   const nm_empresa = txt(row.nm_empresa) ?? 'SEM EMPRESA';
@@ -68,7 +77,10 @@ async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient
 
 /**
  * [DOC-FUNC] upsertTipo
- * Objetivo: Executa a rotina de 'u ps er tt ip o'.
+ * O que faz: Atualiza 'upsert tipo' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: supabase, nomeTipo.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, nomeTipo: string) {
   const { data: existente } = await supabase
@@ -91,7 +103,10 @@ async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, 
 
 /**
  * [DOC-FUNC] upsertSetor
- * Objetivo: Executa a rotina de 'u ps er ts et or'.
+ * O que faz: Atualiza 'upsert setor' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: supabase, nomeSetor.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>, nomeSetor: string, dsSetor?: string | null) {
   const { data: existente } = await supabase
@@ -114,7 +129,10 @@ async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>,
 
 /**
  * [DOC-FUNC] upsertEquipamento
- * Objetivo: Executa a rotina de 'u ps er te qu ip am en to'.
+ * O que faz: Atualiza 'upsert equipamento' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: supabase, params.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertEquipamento(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -159,7 +177,10 @@ async function upsertEquipamento(
 
 /**
  * [DOC-FUNC] upsertInventario
- * Objetivo: Executa a rotina de 'u ps er ti nv en ta ri o'.
+ * O que faz: Atualiza 'upsert inventario' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: supabase, params.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertInventario(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -216,7 +237,10 @@ async function upsertInventario(
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: NextRequest) {
   try {

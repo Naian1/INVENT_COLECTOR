@@ -6,7 +6,10 @@ import { NextResponse } from "next/server";
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST() {
   return NextResponse.json(

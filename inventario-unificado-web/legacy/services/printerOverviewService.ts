@@ -54,7 +54,10 @@ type SupplyRow = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * Objetivo: Executa a rotina de 't of in it en um be r'.
+ * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -63,7 +66,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] getPrintersOverview
- * Objetivo: Executa a rotina de 'g et pr in te rs ov er vi ew'.
+ * O que faz: Consulta dados de 'get printers overview' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getPrintersOverview(): Promise<ServiceResult<PrinterOverviewItem[]>> {
   const supabase = getSupabaseServerClient();

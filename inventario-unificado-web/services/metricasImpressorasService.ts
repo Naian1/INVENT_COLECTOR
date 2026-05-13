@@ -8,7 +8,10 @@ import type { MetricasImpressora } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] buscarMetricasImpressoraPorPeriodo
- * Objetivo: Executa a rotina de 'b us ca rm et ri ca si mp re ss or ap or pe ri od o'.
+ * O que faz: Consulta dados de 'buscar metricas impressora por periodo' na fonte principal (API, banco ou cache).
+ * Entradas: Recebe filtros/chaves de busca quando informados e valida o formato basico.
+ * Processamento: Executa a consulta, trata cenarios de erro e normaliza o resultado.
+ * Retorno/Efeitos: Retorna os dados consolidados; em falha, propaga excecao/erro controlado.
  */
 export async function buscarMetricasImpressoraPorPeriodo(
   impressoraId: string,

@@ -13,7 +13,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] getDefaultMonthRange
- * Objetivo: Executa a rotina de 'g et de fa ul tm on th ra ng e'.
+ * O que faz: Consulta dados de 'get default month range' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getDefaultMonthRange() {
   const now = new Date();
@@ -26,7 +29,10 @@ function getDefaultMonthRange() {
 
 /**
  * [DOC-FUNC] isValidDateString
- * Objetivo: Executa a rotina de 'i sv al id da te st ri ng'.
+ * O que faz: Executa a rotina principal de 'is valid date string' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isValidDateString(value: string) {
   return !Number.isNaN(Date.parse(value));
@@ -34,7 +40,10 @@ function isValidDateString(value: string) {
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request, context.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);

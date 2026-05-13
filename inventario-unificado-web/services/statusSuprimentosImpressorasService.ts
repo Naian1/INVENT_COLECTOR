@@ -16,7 +16,10 @@ import type {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * Objetivo: Executa a rotina de 't of in it en um be r'.
+ * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -25,7 +28,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] isEmptyValue
- * Objetivo: Executa a rotina de 'i se mp ty va lu e'.
+ * O que faz: Executa a rotina principal de 'is empty value' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
@@ -33,7 +39,10 @@ function isEmptyValue(value: unknown) {
 
 /**
  * [DOC-FUNC] isAlertaAberto
- * Objetivo: Executa a rotina de 'i sa le rt aa be rt o'.
+ * O que faz: Executa a rotina principal de 'is alerta aberto' no contexto deste modulo.
+ * Entradas: Parametros esperados: alerta.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isAlertaAberto(alerta: Record<string, unknown>) {
   const status =
@@ -48,7 +57,10 @@ function isAlertaAberto(alerta: Record<string, unknown>) {
 
 /**
  * [DOC-FUNC] buscarStatusSuprimentosImpressora
- * Objetivo: Executa a rotina de 'b us ca rs ta tu ss up ri me nt os im pr es so ra'.
+ * O que faz: Consulta dados de 'buscar status suprimentos impressora' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: impressoraId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function buscarStatusSuprimentosImpressora(
   impressoraId: string

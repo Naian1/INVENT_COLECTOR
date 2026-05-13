@@ -50,7 +50,10 @@ type UsuarioSessao = {
 
 /**
  * [DOC-FUNC] BasicPageShell
- * Objetivo: Executa a rotina de 'b as ic pa ge sh el l'.
+ * O que faz: Executa a rotina principal de 'basic page shell' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function BasicPageShell({ title, subtitle, children, actions }: BasicPageShellProps) {
   const pathname = usePathname();
@@ -63,7 +66,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] getAccessToken
-   * Objetivo: Executa a rotina de 'g et ac ce ss to ke n'.
+   * O que faz: Consulta dados de 'get access token' na fonte principal (API, banco ou cache).
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const getAccessToken = async () => {
     const { data } = await supabase.auth.getSession();
@@ -88,7 +94,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
     /**
      * [DOC-FUNC] loadSession
-     * Objetivo: Executa a rotina de 'l oa ds es si on'.
+     * O que faz: Consulta dados de 'load session' na fonte principal (API, banco ou cache).
+     * Entradas: Sem parametros obrigatorios.
+     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
      */
     const loadSession = async () => {
       try {
@@ -138,7 +147,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
     /**
      * [DOC-FUNC] handleClick
-     * Objetivo: Executa a rotina de 'h an dl ec li ck'.
+     * O que faz: Executa a rotina principal de 'handle click' no contexto deste modulo.
+     * Entradas: Parametros esperados: event.
+     * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+     * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
      */
     const handleClick = (event: MouseEvent) => {
       if (!profileMenuRef.current) return;
@@ -152,7 +164,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] alternarTema
-   * Objetivo: Executa a rotina de 'a lt er na rt em a'.
+   * O que faz: Executa a rotina principal de 'alternar tema' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const alternarTema = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
@@ -164,7 +179,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] logout
-   * Objetivo: Executa a rotina de 'l og ou t'.
+   * O que faz: Executa a rotina principal de 'logout' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const logout = async () => {
     try {
@@ -177,7 +195,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] getUserInitials
-   * Objetivo: Executa a rotina de 'g et us er in it ia ls'.
+   * O que faz: Consulta dados de 'get user initials' na fonte principal (API, banco ou cache).
+   * Entradas: Parametros esperados: name.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const getUserInitials = (name: string | null | undefined) => {
     const safeName = String(name || "").trim();
@@ -189,7 +210,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
 
   /**
    * [DOC-FUNC] handleSwitchPerfil
-   * Objetivo: Executa a rotina de 'h an dl es wi tc hp er fi l'.
+   * O que faz: Executa a rotina principal de 'handle switch perfil' no contexto deste modulo.
+   * Entradas: Parametros esperados: cdPerfil.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSwitchPerfil = async (cdPerfil: number) => {
     if (!usuarioSessao || cdPerfil === usuarioSessao.cd_perfil) {

@@ -9,7 +9,10 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * [DOC-FUNC] loadEnvLocal
- * Objetivo: Executa a rotina de 'l oa de nv lo ca l'.
+ * O que faz: Consulta dados de 'load env local' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
@@ -29,7 +32,10 @@ function loadEnvLocal() {
 
 /**
  * [DOC-FUNC] envValue
- * Objetivo: Executa a rotina de 'e nv va lu e'.
+ * O que faz: Executa a rotina principal de 'env value' no contexto deste modulo.
+ * Entradas: Parametros esperados: name, fallback.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function envValue(name, fallback = "") {
   return process.env[name] || localEnv[name] || fallback;
@@ -37,7 +43,10 @@ function envValue(name, fallback = "") {
 
 /**
  * [DOC-FUNC] slugify
- * Objetivo: Executa a rotina de 's lu gi fy'.
+ * O que faz: Executa a rotina principal de 'slugify' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function slugify(value) {
   return String(value || "")
@@ -51,7 +60,10 @@ function slugify(value) {
 
 /**
  * [DOC-FUNC] chaveCampo
- * Objetivo: Executa a rotina de 'c ha ve ca mp o'.
+ * O que faz: Executa a rotina principal de 'chave campo' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function chaveCampo(value) {
   const core = String(value || "")
@@ -67,7 +79,10 @@ function chaveCampo(value) {
 
 /**
  * [DOC-FUNC] normHeader
- * Objetivo: Executa a rotina de 'n or mh ea de r'.
+ * O que faz: Executa a rotina principal de 'norm header' no contexto deste modulo.
+ * Entradas: Parametros esperados: v.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function normHeader(v) {
   return String(v || "")
@@ -80,7 +95,10 @@ function normHeader(v) {
 
 /**
  * [DOC-FUNC] pickHeaderIndex
- * Objetivo: Executa a rotina de 'p ic kh ea de ri nd ex'.
+ * O que faz: Executa a rotina principal de 'pick header index' no contexto deste modulo.
+ * Entradas: Parametros esperados: headers, aliases.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
@@ -94,7 +112,10 @@ function pickHeaderIndex(headers, aliases) {
 
 /**
  * [DOC-FUNC] toText
- * Objetivo: Executa a rotina de 't ot ex t'.
+ * O que faz: Padroniza dados de 'to text' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: v.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toText(v) {
   const s = String(v ?? "").trim();
@@ -103,7 +124,10 @@ function toText(v) {
 
 /**
  * [DOC-FUNC] inferFabricante
- * Objetivo: Executa a rotina de 'i nf er fa br ic an te'.
+ * O que faz: Executa a rotina principal de 'infer fabricante' no contexto deste modulo.
+ * Entradas: Parametros esperados: modelo.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function inferFabricante(modelo) {
   const m = String(modelo || "").toLowerCase();
@@ -115,7 +139,10 @@ function inferFabricante(modelo) {
 
 /**
  * [DOC-FUNC] ensureAba
- * Objetivo: Executa a rotina de 'e ns ur ea ba'.
+ * O que faz: Executa a rotina principal de 'ensure aba' no contexto deste modulo.
+ * Entradas: Parametros esperados: nome.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function ensureAba(nome) {
   const { data: existing, error } = await supabase
@@ -138,7 +165,10 @@ async function ensureAba(nome) {
 
 /**
  * [DOC-FUNC] ensureCategoria
- * Objetivo: Executa a rotina de 'e ns ur ec at eg or ia'.
+ * O que faz: Executa a rotina principal de 'ensure categoria' no contexto deste modulo.
+ * Entradas: Parametros esperados: abaId, nome.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function ensureCategoria(abaId, nome) {
   const { data: existing, error } = await supabase
@@ -170,7 +200,10 @@ async function ensureCategoria(abaId, nome) {
 
 /**
  * [DOC-FUNC] ensureCampos
- * Objetivo: Executa a rotina de 'e ns ur ec am po s'.
+ * O que faz: Executa a rotina principal de 'ensure campos' no contexto deste modulo.
+ * Entradas: Parametros esperados: categoriaId.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function ensureCampos(categoriaId) {
   const camposEsperados = [
@@ -222,7 +255,10 @@ async function ensureCampos(categoriaId) {
 
 /**
  * [DOC-FUNC] loadExistingLinhas
- * Objetivo: Executa a rotina de 'l oa de xi st in gl in ha s'.
+ * O que faz: Consulta dados de 'load existing linhas' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: categoriaId, campoPatId, campoIpId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
   const { data: linhas, error: lErr } = await supabase
@@ -233,10 +269,6 @@ async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
     .limit(5000);
   if (lErr) throw new Error(`Erro carregando linhas existentes: ${lErr.message}`);
 
-  /**
-   * [DOC-FUNC] linhaIds
-   * Objetivo: Executa a rotina de 'l in ha id s'.
-   */
   const linhaIds = (linhas || []).map((l) => l.id);
   if (!linhaIds.length) return { porPat: new Map(), porIp: new Map() };
 
@@ -264,7 +296,10 @@ async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
 
 /**
  * [DOC-FUNC] upsertOperacional
- * Objetivo: Executa a rotina de 'u ps er to pe ra ci on al'.
+ * O que faz: Atualiza 'upsert operacional' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: row.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function upsertOperacional(row) {
   const payload = {
@@ -302,7 +337,10 @@ async function upsertOperacional(row) {
 
 /**
  * [DOC-FUNC] detectarHeader
- * Objetivo: Executa a rotina de 'd et ec ta rh ea de r'.
+ * O que faz: Executa a rotina principal de 'detectar header' no contexto deste modulo.
+ * Entradas: Parametros esperados: rows.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 20); i++) {
@@ -329,7 +367,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSessi
 
 /**
  * [DOC-FUNC] main
- * Objetivo: Executa a rotina de 'm ai n'.
+ * O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function main() {
   const fileArg = process.argv[2];

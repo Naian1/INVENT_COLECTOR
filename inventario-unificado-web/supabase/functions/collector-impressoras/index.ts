@@ -13,7 +13,10 @@ const corsHeaders = {
 
 /**
  * [DOC-FUNC] jsonResponse
- * Objetivo: Executa a rotina de 'j so nr es po ns e'.
+ * O que faz: Executa a rotina principal de 'json response' no contexto deste modulo.
+ * Entradas: Parametros esperados: body, status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -27,7 +30,10 @@ function jsonResponse(body: unknown, status = 200) {
 
 /**
  * [DOC-FUNC] getAdminClient
- * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ * O que faz: Consulta dados de 'get admin client' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -44,7 +50,10 @@ function getAdminClient() {
 
 /**
  * [DOC-FUNC] cleanText
- * Objetivo: Executa a rotina de 'c le an te xt'.
+ * O que faz: Executa a rotina principal de 'clean text' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function cleanText(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -54,7 +63,10 @@ function cleanText(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizeIp
- * Objetivo: Executa a rotina de 'n or ma li ze ip'.
+ * O que faz: Padroniza dados de 'normalize ip' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: ip.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeIp(ip: unknown): string | null {
   if (typeof ip !== "string") return null;
@@ -65,7 +77,10 @@ function normalizeIp(ip: unknown): string | null {
 
 /**
  * [DOC-FUNC] tokenFromAuthHeader
- * Objetivo: Executa a rotina de 't ok en fr om au th he ad er'.
+ * O que faz: Executa a rotina principal de 'token from auth header' no contexto deste modulo.
+ * Entradas: Parametros esperados: header.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function tokenFromAuthHeader(header: string | null): string | null {
   if (!header || !header.startsWith("Bearer ")) return null;
@@ -74,7 +89,10 @@ function tokenFromAuthHeader(header: string | null): string | null {
 
 /**
  * [DOC-FUNC] validateCollectorAuth
- * Objetivo: Executa a rotina de 'v al id at ec ol le ct or au th'.
+ * O que faz: Executa a rotina principal de 'validate collector auth' no contexto deste modulo.
+ * Entradas: Parametros esperados: req.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function validateCollectorAuth(req: Request): string | null {
   const expectedToken = cleanText(Deno.env.get("COLLECTOR_API_TOKEN"));
@@ -89,7 +107,10 @@ function validateCollectorAuth(req: Request): string | null {
 
 /**
  * [DOC-FUNC] isMissingTableErrorMessage
- * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or me ss ag e'.
+ * O que faz: Executa a rotina principal de 'is missing table error message' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isMissingTableErrorMessage(message: string): boolean {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
@@ -97,7 +118,10 @@ function isMissingTableErrorMessage(message: string): boolean {
 
 /**
  * [DOC-FUNC] tableExists
- * Objetivo: Executa a rotina de 't ab le ex is ts'.
+ * O que faz: Executa a rotina principal de 'table exists' no contexto deste modulo.
+ * Entradas: Parametros esperados: supabase, table.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
@@ -111,7 +135,10 @@ async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: s
 
 /**
  * [DOC-FUNC] listarViaTabelaImpressoras
- * Objetivo: Executa a rotina de 'l is ta rv ia ta be la im pr es so ra s'.
+ * O que faz: Consulta dados de 'listar via tabela impressoras' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: supabase.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function listarViaTabelaImpressoras(supabase: ReturnType<typeof getAdminClient>) {
   const { data, error } = await supabase
@@ -145,7 +172,10 @@ async function listarViaTabelaImpressoras(supabase: ReturnType<typeof getAdminCl
 
 /**
  * [DOC-FUNC] listarViaInventario
- * Objetivo: Executa a rotina de 'l is ta rv ia in ve nt ar io'.
+ * O que faz: Consulta dados de 'listar via inventario' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: supabase.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function listarViaInventario(supabase: ReturnType<typeof getAdminClient>) {
   const { data, error } = await supabase

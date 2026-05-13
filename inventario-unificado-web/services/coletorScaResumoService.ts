@@ -29,7 +29,10 @@ type TelemetriaRow = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: unknown) {
   if (value === null || value === undefined) return null;
@@ -39,7 +42,10 @@ function normalizarTexto(value: unknown) {
 
 /**
  * [DOC-FUNC] normalizarIp
- * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ * O que faz: Padroniza dados de 'normalizar ip' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIp(value: string | null | undefined) {
   if (!value) return null;
@@ -48,7 +54,10 @@ function normalizarIp(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] extrairTipoEquipamento
- * Objetivo: Executa a rotina de 'e xt ra ir ti po eq ui pa me nt o'.
+ * O que faz: Executa a rotina principal de 'extrair tipo equipamento' no contexto deste modulo.
+ * Entradas: Parametros esperados: payload.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
   if (!payload) return "impressora";
@@ -72,7 +81,10 @@ function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
 
 /**
  * [DOC-FUNC] montarChave
- * Objetivo: Executa a rotina de 'm on ta rc ha ve'.
+ * O que faz: Monta estrutura de 'montar chave' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: row.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function montarChave(row: TelemetriaRow) {
   const patrimonio = normalizarTexto(row.patrimonio);
@@ -82,7 +94,10 @@ function montarChave(row: TelemetriaRow) {
 
 /**
  * [DOC-FUNC] listarResumoSca
- * Objetivo: Executa a rotina de 'l is ta rr es um os ca'.
+ * O que faz: Consulta dados de 'listar resumo sca' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: limit.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function listarResumoSca(limit = 1800): Promise<ResultadoServico<ScaResumoItem[]>> {
   const supabase = getSupabaseServerClient();

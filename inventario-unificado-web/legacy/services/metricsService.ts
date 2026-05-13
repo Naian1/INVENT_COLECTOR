@@ -17,7 +17,10 @@ export type PrinterMetrics = {
 
 /**
  * [DOC-FUNC] getPrinterMetricsByRange
- * Objetivo: Executa a rotina de 'g et pr in te rm et ri cs by ra ng e'.
+ * O que faz: Consulta dados de 'get printer metrics by range' na fonte principal (API, banco ou cache).
+ * Entradas: Recebe filtros/chaves de busca quando informados e valida o formato basico.
+ * Processamento: Executa a consulta, trata cenarios de erro e normaliza o resultado.
+ * Retorno/Efeitos: Retorna os dados consolidados; em falha, propaga excecao/erro controlado.
  */
 export async function getPrinterMetricsByRange(
   printerId: string,

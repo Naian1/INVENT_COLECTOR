@@ -42,7 +42,10 @@ type ValorLinhaRow = {
 
 /**
  * [DOC-FUNC] erroColunaAusente
- * Objetivo: Executa a rotina de 'e rr oc ol un aa us en te'.
+ * O que faz: Executa a rotina principal de 'erro coluna ausente' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function erroColunaAusente(errorMessage?: string | null) {
   if (!errorMessage) return false;
@@ -52,7 +55,10 @@ function erroColunaAusente(errorMessage?: string | null) {
 
 /**
  * [DOC-FUNC] syncHabilitado
- * Objetivo: Executa a rotina de 's yn ch ab il it ad o'.
+ * O que faz: Sincroniza/enfila dados de 'sync habilitado' entre camadas internas e servicos externos.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 function syncHabilitado() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true";
@@ -60,7 +66,10 @@ function syncHabilitado() {
 
 /**
  * [DOC-FUNC] modoEstrito
- * Objetivo: Executa a rotina de 'm od oe st ri to'.
+ * O que faz: Executa a rotina principal de 'modo estrito' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function modoEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
@@ -68,7 +77,10 @@ function modoEstrito() {
 
 /**
  * [DOC-FUNC] sheetTitle
- * Objetivo: Executa a rotina de 's he et ti tl e'.
+ * O que faz: Executa a rotina principal de 'sheet title' no contexto deste modulo.
+ * Entradas: Parametros esperados: nomeCategoria.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function sheetTitle(nomeCategoria: string) {
   const clean = nomeCategoria.replace(/[:\\/?*\[\]]/g, " ").trim();
@@ -77,7 +89,10 @@ function sheetTitle(nomeCategoria: string) {
 
 /**
  * [DOC-FUNC] toCell
- * Objetivo: Executa a rotina de 't oc el l'.
+ * O que faz: Padroniza dados de 'to cell' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: valor.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toCell(valor: ValorLinhaRow) {
   if (valor.valor_texto !== null) return String(valor.valor_texto);
@@ -91,7 +106,10 @@ function toCell(valor: ValorLinhaRow) {
 
 /**
  * [DOC-FUNC] colunaAte
- * Objetivo: Executa a rotina de 'c ol un aa te'.
+ * O que faz: Executa a rotina principal de 'coluna ate' no contexto deste modulo.
+ * Entradas: Parametros esperados: indice.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function colunaAte(indice: number) {
   let n = indice + 1;
@@ -106,7 +124,10 @@ function colunaAte(indice: number) {
 
 /**
  * [DOC-FUNC] getSheetsClient
- * Objetivo: Executa a rotina de 'g et sh ee ts cl ie nt'.
+ * O que faz: Consulta dados de 'get sheets client' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getSheetsClient() {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
@@ -132,7 +153,10 @@ function getSheetsClient() {
 
 /**
  * [DOC-FUNC] buscarCategoriaCampos
- * Objetivo: Executa a rotina de 'b us ca rc at eg or ia ca mp os'.
+ * O que faz: Consulta dados de 'buscar categoria campos' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: categoriaId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServico<{ categoria: CategoriaRow; campos: CampoRow[] }>> {
   const supabase = getSupabaseServerClient();
@@ -185,7 +209,10 @@ async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServ
 
 /**
  * [DOC-FUNC] resolverAbaPlanilha
- * Objetivo: Executa a rotina de 'r es ol ve ra ba pl an il ha'.
+ * O que faz: Monta estrutura de 'resolver aba planilha' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: categoria, titleDesejado.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: string) {
   const client = getSheetsClient();
@@ -254,7 +281,10 @@ async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: strin
 
 /**
  * [DOC-FUNC] sincronizarCabecalhoCategoriaNaPlanilha
- * Objetivo: Executa a rotina de 's in cr on iz ar ca be ca lh oc at eg or ia na pl an il ha'.
+ * O que faz: Sincroniza/enfila dados de 'sincronizar cabecalho categoria na planilha' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: categoriaId.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string; sheet: string }>> {
   if (!syncHabilitado()) {
@@ -293,7 +323,10 @@ export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: strin
 
 /**
  * [DOC-FUNC] sincronizarLinhaNaPlanilha
- * Objetivo: Executa a rotina de 's in cr on iz ar li nh an ap la ni lh a'.
+ * O que faz: Sincroniza/enfila dados de 'sincronizar linha na planilha' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: linhaId.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string; sheet: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId, sheet: "sync-desabilitado" } };
@@ -371,7 +404,10 @@ export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<Resul
 
 /**
  * [DOC-FUNC] removerLinhaDaPlanilha
- * Objetivo: Executa a rotina de 'r em ov er li nh ad ap la ni lh a'.
+ * O que faz: Executa a rotina principal de 'remover linha da planilha' no contexto deste modulo.
+ * Entradas: Parametros esperados: linhaId.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function removerLinhaDaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId } };
@@ -408,7 +444,10 @@ export async function removerLinhaDaPlanilha(linhaId: string): Promise<Resultado
 
 /**
  * [DOC-FUNC] sincronizarCategoriaCompletaNaPlanilha
- * Objetivo: Executa a rotina de 's in cr on iz ar ca te go ri ac om pl et an ap la ni lh a'.
+ * O que faz: Sincroniza/enfila dados de 'sincronizar categoria completa na planilha' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: categoriaId.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function sincronizarCategoriaCompletaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string }>> {
   const cabecalho = await sincronizarCabecalhoCategoriaNaPlanilha(categoriaId);

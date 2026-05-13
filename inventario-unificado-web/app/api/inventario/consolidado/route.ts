@@ -10,7 +10,10 @@ type ConsolidadoRow = Record<string, unknown>;
 
 /**
  * [DOC-FUNC] normalizarHeader
- * Objetivo: Executa a rotina de 'n or ma li za rh ea de r'.
+ * O que faz: Padroniza dados de 'normalizar header' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: header.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarHeader(header: string) {
   return header
@@ -23,7 +26,10 @@ function normalizarHeader(header: string) {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -33,7 +39,10 @@ function normalizarTexto(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizarStatus
- * Objetivo: Executa a rotina de 'n or ma li za rs ta tu s'.
+ * O que faz: Padroniza dados de 'normalizar status' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarStatus(value: string | null): string | null {
   if (!value) return null;
@@ -52,7 +61,10 @@ function normalizarStatus(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] mapearLinha
- * Objetivo: Executa a rotina de 'm ap ea rl in ha'.
+ * O que faz: Executa a rotina principal de 'mapear linha' no contexto deste modulo.
+ * Entradas: Parametros esperados: row.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function mapearLinha(row: ConsolidadoRow) {
   const normalizado = new Map<string, unknown>();
@@ -62,7 +74,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
   /**
    * [DOC-FUNC] pick
-   * Objetivo: Executa a rotina de 'p ic k'.
+   * O que faz: Executa a rotina principal de 'pick' no contexto deste modulo.
+   * Entradas: Parametros esperados: aliases.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const pick = (...aliases: string[]) => {
     for (const alias of aliases) {
@@ -74,7 +89,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
   /**
    * [DOC-FUNC] normalizarTimestamp
-   * Objetivo: Executa a rotina de 'n or ma li za rt im es ta mp'.
+   * O que faz: Padroniza dados de 'normalizar timestamp' para formato previsivel no restante do fluxo.
+   * Entradas: Parametros esperados: value.
+   * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+   * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
    */
   const normalizarTimestamp = (value: string | null) => {
     if (!value) return null;
@@ -149,7 +167,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ * O que faz: Executa a rotina principal de 'validar competencia' no contexto deste modulo.
+ * Entradas: Parametros esperados: competencia.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
@@ -157,7 +178,10 @@ function validarCompetencia(competencia: string): boolean {
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -185,7 +209,10 @@ export async function GET(request: NextRequest) {
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: NextRequest) {
   try {

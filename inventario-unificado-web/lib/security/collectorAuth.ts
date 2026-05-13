@@ -6,7 +6,10 @@ import { timingSafeEqual } from "crypto";
 
 /**
  * [DOC-FUNC] safeCompare
- * Objetivo: Executa a rotina de 's af ec om pa re'.
+ * O que faz: Executa a rotina principal de 'safe compare' no contexto deste modulo.
+ * Entradas: Parametros esperados: valueA, valueB.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -18,7 +21,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] validateCollectorBearerToken
- * Objetivo: Executa a rotina de 'v al id at ec ol le ct or be ar er to ke n'.
+ * O que faz: Executa a rotina principal de 'validate collector bearer token' no contexto deste modulo.
+ * Entradas: Parametros esperados: authorizationHeader.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function validateCollectorBearerToken(authorizationHeader: string | null) {
   const expectedToken = process.env.COLLECTOR_API_TOKEN?.trim();

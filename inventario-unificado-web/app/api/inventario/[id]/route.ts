@@ -16,7 +16,10 @@ import { CreateInventarioSchema } from '@/types/inventario';
 
 /**
  * [DOC-FUNC] parseIdOrThrow
- * Objetivo: Executa a rotina de 'p ar se id or th ro w'.
+ * O que faz: Padroniza dados de 'parse id or throw' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: raw.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseIdOrThrow(raw: string) {
   if (!/^\d+$/.test(raw)) {
@@ -42,7 +45,10 @@ const UpdateInventarioSchema = CreateInventarioSchema.partial();
 // GET /api/inventario/[id] - get specific inventario item
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request, params.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -69,7 +75,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // PUT /api/inventario/[id] - update inventario item
 /**
  * [DOC-FUNC] PUT
- * Objetivo: Executa a rotina de 'p ut'.
+ * O que faz: Executa a rotina principal de 'put' no contexto deste modulo.
+ * Entradas: Parametros esperados: request, params.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -105,7 +114,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 // DELETE /api/inventario/[id] - delete inventario item
 /**
  * [DOC-FUNC] DELETE
- * Objetivo: Executa a rotina de 'd el et e'.
+ * O que faz: Remove ou inativa dados de 'delete' conforme politica do sistema.
+ * Entradas: Parametros esperados: request, params.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';

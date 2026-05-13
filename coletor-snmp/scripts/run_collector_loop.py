@@ -23,7 +23,10 @@ STOP = False
 
 
 # [DOC-FUNC] _handle_stop
-# Objetivo: Executa a rotina de 'h an dl e s to p'.
+# O que faz: Executa a rotina principal de 'handle stop' no contexto deste modulo.
+# Entradas: Parametros esperados: signum, _frame.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def _handle_stop(signum, _frame):
     global STOP
     STOP = True
@@ -31,7 +34,10 @@ def _handle_stop(signum, _frame):
 
 
 # [DOC-FUNC] _resolve_interval
-# Objetivo: Executa a rotina de 'r es ol ve i nt er va l'.
+# O que faz: Monta estrutura de 'resolve interval' a partir de dados intermediarios do modulo.
+# Entradas: Parametros esperados: cli_interval.
+# Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+# Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
 def _resolve_interval(cli_interval):
     if cli_interval and cli_interval > 0:
         return cli_interval
@@ -58,7 +64,10 @@ def _resolve_interval(cli_interval):
 
 
 # [DOC-FUNC] run_loop
-# Objetivo: Executa a rotina de 'r un l oo p'.
+# O que faz: Executa a rotina principal de 'run loop' no contexto deste modulo.
+# Entradas: Parametros esperados: interval_seconds, run_once.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def run_loop(interval_seconds, run_once=False):
     cycle = 0
     while not STOP:
@@ -86,7 +95,10 @@ def run_loop(interval_seconds, run_once=False):
 
 
 # [DOC-FUNC] main
-# Objetivo: Executa a rotina de 'm ai n'.
+# O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
+# Entradas: Sem parametros obrigatorios.
+# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
 def main():
     parser = argparse.ArgumentParser(
         description="Executa somente o coletor (SNMP -> API) sem subir o frontend legado Flask."

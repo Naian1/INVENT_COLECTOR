@@ -90,7 +90,10 @@ type ResultadoExecucao = {
 
 /**
  * [DOC-FUNC] atualizarStatusLinhaImportacao
- * Objetivo: Executa a rotina de 'a tu al iz ar st at us li nh ai mp or ta ca o'.
+ * O que faz: Atualiza 'atualizar status linha importacao' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: importacaoId, indiceLinha, payload.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 async function atualizarStatusLinhaImportacao(
   importacaoId: string | null,
@@ -149,7 +152,10 @@ const campoSemanticoPorChave: Array<{ hint: string; semantico: TipoSemantico; ti
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -163,7 +169,10 @@ function normalizarTexto(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizarChave
- * Objetivo: Executa a rotina de 'n or ma li za rc ha ve'.
+ * O que faz: Padroniza dados de 'normalizar chave' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarChave(value: string) {
   return value
@@ -177,7 +186,10 @@ function normalizarChave(value: string) {
 
 /**
  * [DOC-FUNC] chaveTecnica
- * Objetivo: Executa a rotina de 'c ha ve te cn ic a'.
+ * O que faz: Executa a rotina principal de 'chave tecnica' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function chaveTecnica(value: string) {
   const base = normalizarChave(value).replace(/[^a-z0-9_]/g, "");
@@ -196,7 +208,10 @@ const gruposAliasChaveCampo = [
 
 /**
  * [DOC-FUNC] chavesEquivalentes
- * Objetivo: Executa a rotina de 'c ha ve se qu iv al en te s'.
+ * O que faz: Executa a rotina principal de 'chaves equivalentes' no contexto deste modulo.
+ * Entradas: Parametros esperados: chave.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function chavesEquivalentes(chave: string) {
   const alvo = chaveTecnica(chave);
@@ -214,7 +229,10 @@ function chavesEquivalentes(chave: string) {
 
 /**
  * [DOC-FUNC] syncPlanilhaEstrito
- * Objetivo: Executa a rotina de 's yn cp la ni lh ae st ri to'.
+ * O que faz: Sincroniza/enfila dados de 'sync planilha estrito' entre camadas internas e servicos externos.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 function syncPlanilhaEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true" && process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
@@ -222,7 +240,10 @@ function syncPlanilhaEstrito() {
 
 /**
  * [DOC-FUNC] inferirCampo
- * Objetivo: Executa a rotina de 'i nf er ir ca mp o'.
+ * O que faz: Executa a rotina principal de 'inferir campo' no contexto deste modulo.
+ * Entradas: Parametros esperados: header.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function inferirCampo(header: string, destino?: string): CampoDefinicao {
   const chave = chaveTecnica(destino && destino !== "dados_extras" ? destino : header);
@@ -241,7 +262,10 @@ function inferirCampo(header: string, destino?: string): CampoDefinicao {
 
 /**
  * [DOC-FUNC] montarCampos
- * Objetivo: Executa a rotina de 'm on ta rc am po s'.
+ * O que faz: Monta estrutura de 'montar campos' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function montarCampos(input: PreviewInput): CampoDefinicao[] {
   if (input.campos_definicao && input.campos_definicao.length > 0) {
@@ -284,7 +308,10 @@ function montarCampos(input: PreviewInput): CampoDefinicao[] {
 
 /**
  * [DOC-FUNC] normalizarValorPorTipo
- * Objetivo: Executa a rotina de 'n or ma li za rv al or po rt ip o'.
+ * O que faz: Padroniza dados de 'normalizar valor por tipo' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: tipo, raw.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown; erro?: string } {
   const text = normalizarTexto(raw);
@@ -318,7 +345,10 @@ function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown
 
 /**
  * [DOC-FUNC] linhaNormalizada
- * Objetivo: Executa a rotina de 'l in ha no rm al iz ad a'.
+ * O que faz: Executa a rotina principal de 'linha normalizada' no contexto deste modulo.
+ * Entradas: Parametros esperados: row, campos, headers, mapeamento.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function linhaNormalizada(
   row: Record<string, unknown>,
@@ -359,7 +389,10 @@ function linhaNormalizada(
 
 /**
  * [DOC-FUNC] persistirPreview
- * Objetivo: Executa a rotina de 'p er si st ir pr ev ie w'.
+ * O que faz: Executa a rotina principal de 'persistir preview' no contexto deste modulo.
+ * Entradas: Parametros esperados: input, linhas, campos.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], campos: CampoDefinicao[]) {
   const supabase = getSupabaseServerClient();
@@ -439,7 +472,10 @@ async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], cam
 
 /**
  * [DOC-FUNC] gerarPreviewImportacaoDinamica
- * Objetivo: Executa a rotina de 'g er ar pr ev ie wi mp or ta ca od in am ic a'.
+ * O que faz: Monta estrutura de 'gerar preview importacao dinamica' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promise<ResultadoServico<PreviewResultado>> {
   const headers = input.headers ?? Object.keys(input.rows[0] ?? {});
@@ -484,7 +520,10 @@ export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promi
 
 /**
  * [DOC-FUNC] resolverAba
- * Objetivo: Executa a rotina de 'r es ol ve ra ba'.
+ * O que faz: Monta estrutura de 'resolver aba' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: abaId, nomeAba.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 async function resolverAba(abaId: string | null, nomeAba: string | null): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -506,7 +545,10 @@ async function resolverAba(abaId: string | null, nomeAba: string | null): Promis
 
 /**
  * [DOC-FUNC] resolverCategoria
- * Objetivo: Executa a rotina de 'r es ol ve rc at eg or ia'.
+ * O que faz: Monta estrutura de 'resolver categoria' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: abaInventarioId, payload.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 async function resolverCategoria(
   abaInventarioId: string,
@@ -643,7 +685,10 @@ async function resolverCategoria(
 
 /**
  * [DOC-FUNC] executarImportacaoDinamica
- * Objetivo: Executa a rotina de 'e xe cu ta ri mp or ta ca od in am ic a'.
+ * O que faz: Executa a rotina principal de 'executar importacao dinamica' no contexto deste modulo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function executarImportacaoDinamica(
   input:

@@ -82,7 +82,10 @@ const STATUS_STALE_OFFLINE_MINUTES = 180;
 
 /**
  * [DOC-FUNC] normalizarIp
- * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ * O que faz: Padroniza dados de 'normalizar ip' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIp(value: string) {
   return value.replace(/\/32$/, "");
@@ -90,7 +93,10 @@ function normalizarIp(value: string) {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * Objetivo: Executa a rotina de 't of in it en um be r'.
+ * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -99,7 +105,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] limparTexto
- * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ * O que faz: Remove ou inativa dados de 'limpar texto' conforme politica do sistema.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 function limparTexto(value: string | null | undefined) {
   if (value === null || value === undefined) return null;
@@ -109,7 +118,10 @@ function limparTexto(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] extrairValorTexto
- * Objetivo: Executa a rotina de 'e xt ra ir va lo rt ex to'.
+ * O que faz: Executa a rotina principal de 'extrair valor texto' no contexto deste modulo.
+ * Entradas: Parametros esperados: row.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function extrairValorTexto(row: LinhaValorRow) {
   if (row.valor_texto !== null && row.valor_texto !== undefined) return limparTexto(row.valor_texto);
@@ -123,7 +135,10 @@ function extrairValorTexto(row: LinhaValorRow) {
 
 /**
  * [DOC-FUNC] pickSemantico
- * Objetivo: Executa a rotina de 'p ic ks em an ti co'.
+ * O que faz: Executa a rotina principal de 'pick semantico' no contexto deste modulo.
+ * Entradas: Parametros esperados: bag, semanticos.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function pickSemantico(
   bag: Map<string, string>,
@@ -138,7 +153,10 @@ function pickSemantico(
 
 /**
  * [DOC-FUNC] normalizarTextoComparacao
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to co mp ar ac ao'.
+ * O que faz: Padroniza dados de 'normalizar texto comparacao' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTextoComparacao(value: string | null | undefined) {
   const txt = limparTexto(value);
@@ -147,7 +165,10 @@ function normalizarTextoComparacao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] clamp
- * Objetivo: Executa a rotina de 'c la mp'.
+ * O que faz: Executa a rotina principal de 'clamp' no contexto deste modulo.
+ * Entradas: Parametros esperados: value, min, max.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -155,7 +176,10 @@ function clamp(value: number, min: number, max: number) {
 
 /**
  * [DOC-FUNC] normalizarStatusOperacional
- * Objetivo: Executa a rotina de 'n or ma li za rs ta tu so pe ra ci on al'.
+ * O que faz: Padroniza dados de 'normalizar status operacional' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarStatusOperacional(value: unknown): string {
   const status = String(value ?? "").trim().toLowerCase();
@@ -169,7 +193,10 @@ function normalizarStatusOperacional(value: unknown): string {
 
 /**
  * [DOC-FUNC] parseDateMs
- * Objetivo: Executa a rotina de 'p ar se da te ms'.
+ * O que faz: Padroniza dados de 'parse date ms' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseDateMs(value: string | null | undefined): number | null {
   if (!value) return null;
@@ -179,7 +206,10 @@ function parseDateMs(value: string | null | undefined): number | null {
 
 /**
  * [DOC-FUNC] minutesSince
- * Objetivo: Executa a rotina de 'm in ut es si nc e'.
+ * O que faz: Executa a rotina principal de 'minutes since' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function minutesSince(value: string | null | undefined): number | null {
   const ts = parseDateMs(value);
@@ -191,7 +221,10 @@ function minutesSince(value: string | null | undefined): number | null {
 
 /**
  * [DOC-FUNC] isOfflineLikeStatus
- * Objetivo: Executa a rotina de 'i so ff li ne li ke st at us'.
+ * O que faz: Executa a rotina principal de 'is offline like status' no contexto deste modulo.
+ * Entradas: Parametros esperados: status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isOfflineLikeStatus(status: string): boolean {
   return ["offline", "error"].includes(status);
@@ -199,16 +232,15 @@ function isOfflineLikeStatus(status: string): boolean {
 
 /**
  * [DOC-FUNC] isOnlineLikeStatus
- * Objetivo: Executa a rotina de 'i so nl in el ik es ta tu s'.
+ * O que faz: Executa a rotina principal de 'is online like status' no contexto deste modulo.
+ * Entradas: Parametros esperados: status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isOnlineLikeStatus(status: string): boolean {
   return ["online", "warning"].includes(status);
 }
 
-/**
- * [DOC-FUNC] resolverStatusOperacionalConfiavel
- * Objetivo: Executa a rotina de 'r es ol ve rs ta tu so pe ra ci on al co nf ia ve l'.
- */
 function resolverStatusOperacionalConfiavel(
   rows: Array<{ status: string; coletado_em: string | null }>,
   fallbackStatus?: string | null,
@@ -290,7 +322,10 @@ function resolverStatusOperacionalConfiavel(
 
 /**
  * [DOC-FUNC] carregarPendentesInventario
- * Objetivo: Executa a rotina de 'c ar re ga rp en de nt es in ve nt ar io'.
+ * O que faz: Consulta dados de 'carregar pendentes inventario' na fonte principal (api, banco ou cache).
+ * Entradas: Parametros esperados: operacionais.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function carregarPendentesInventario(
   operacionais: ImpressoraVisaoGeral[]
@@ -468,7 +503,10 @@ async function carregarPendentesInventario(
 
 /**
  * [DOC-FUNC] listarVisaoGeralImpressoras
- * Objetivo: Executa a rotina de 'l is ta rv is ao ge ra li mp re ss or as'.
+ * O que faz: Consulta dados de 'listar visao geral impressoras' na fonte principal (api, banco ou cache).
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function listarVisaoGeralImpressoras(options?: {
   incluir_nao_operacionais?: boolean;
@@ -545,7 +583,10 @@ export async function listarVisaoGeralImpressoras(options?: {
   const statusHistoryByImpressora = new Map<string, Array<{ status: string; coletado_em: string | null }>>();
   /**
    * [DOC-FUNC] registrarStatus
-   * Objetivo: Executa a rotina de 'r eg is tr ar st at us'.
+   * O que faz: Cria registro de 'registrar status' aplicando regras de consistencia antes de persistir.
+   * Entradas: Parametros esperados: rows.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   const registrarStatus = (rows: StatusRow[]) => {
     for (const row of rows) {
@@ -589,7 +630,10 @@ export async function listarVisaoGeralImpressoras(options?: {
 
   /**
    * [DOC-FUNC] registrarSuprimentos
-   * Objetivo: Executa a rotina de 'r eg is tr ar su pr im en to s'.
+   * O que faz: Cria registro de 'registrar suprimentos' aplicando regras de consistencia antes de persistir.
+   * Entradas: Parametros esperados: rows.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   const registrarSuprimentos = (rows: SuprimentoRow[]) => {
     for (const row of rows) {

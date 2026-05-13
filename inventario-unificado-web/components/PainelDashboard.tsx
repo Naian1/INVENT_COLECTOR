@@ -128,7 +128,10 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] formatNumber
- * Objetivo: Executa a rotina de 'f or ma tn um be r'.
+ * O que faz: Padroniza dados de 'format number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
@@ -136,7 +139,10 @@ function formatNumber(value: number) {
 
 /**
  * [DOC-FUNC] formatCurrency
- * Objetivo: Executa a rotina de 'f or ma tc ur re nc y'.
+ * O que faz: Padroniza dados de 'format currency' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -148,7 +154,10 @@ function formatCurrency(value: number) {
 
 /**
  * [DOC-FUNC] formatNivel
- * Objetivo: Executa a rotina de 'f or ma tn iv el'.
+ * O que faz: Padroniza dados de 'format nivel' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -157,7 +166,10 @@ function formatNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] formatDateTime
- * Objetivo: Executa a rotina de 'f or ma td at et im e'.
+ * O que faz: Padroniza dados de 'format date time' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatDateTime(value: string | null) {
   if (!value) return "-";
@@ -168,7 +180,10 @@ function formatDateTime(value: string | null) {
 
 /**
  * [DOC-FUNC] normalizarModeloKey
- * Objetivo: Executa a rotina de 'n or ma li za rm od el ok ey'.
+ * O que faz: Padroniza dados de 'normalizar modelo key' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarModeloKey(value: string) {
   return value.trim().replace(/\s+/g, " ").toUpperCase();
@@ -176,7 +191,10 @@ function normalizarModeloKey(value: string) {
 
 /**
  * [DOC-FUNC] normalizarPatrimonioKey
- * Objetivo: Executa a rotina de 'n or ma li za rp at ri mo ni ok ey'.
+ * O que faz: Padroniza dados de 'normalizar patrimonio key' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarPatrimonioKey(value: string) {
   return value.trim().replace(/\s+/g, "").toUpperCase();
@@ -184,7 +202,10 @@ function normalizarPatrimonioKey(value: string) {
 
 /**
  * [DOC-FUNC] normalizarIpKey
- * Objetivo: Executa a rotina de 'n or ma li za ri pk ey'.
+ * O que faz: Padroniza dados de 'normalizar ip key' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIpKey(value: string) {
   return value.trim().replace(/\/32$/, "");
@@ -192,7 +213,10 @@ function normalizarIpKey(value: string) {
 
 /**
  * [DOC-FUNC] formatDateInput
- * Objetivo: Executa a rotina de 'f or ma td at ei np ut'.
+ * O que faz: Padroniza dados de 'format date input' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: date.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatDateInput(date: Date) {
   const year = date.getFullYear();
@@ -203,7 +227,10 @@ function formatDateInput(date: Date) {
 
 /**
  * [DOC-FUNC] parseDataReferencia
- * Objetivo: Executa a rotina de 'p ar se da ta re fe re nc ia'.
+ * O que faz: Padroniza dados de 'parse data referencia' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseDataReferencia(value: unknown): string | null {
   const raw = String(value ?? "").trim();
@@ -227,7 +254,10 @@ function parseDataReferencia(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] formatDataReferencia
- * Objetivo: Executa a rotina de 'f or ma td at ar ef er en ci a'.
+ * O que faz: Padroniza dados de 'format data referencia' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatDataReferencia(value: string | null) {
   if (!value) return "-";
@@ -240,7 +270,10 @@ function formatDataReferencia(value: string | null) {
 
 /**
  * [DOC-FUNC] parseTarifaNumber
- * Objetivo: Executa a rotina de 'p ar se ta ri fa nu mb er'.
+ * O que faz: Padroniza dados de 'parse tarifa number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseTarifaNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -269,7 +302,10 @@ function parseTarifaNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] parseContadorNumber
- * Objetivo: Executa a rotina de 'p ar se co nt ad or nu mb er'.
+ * O que faz: Padroniza dados de 'parse contador number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseContadorNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -329,7 +365,10 @@ function parseContadorNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] normalizarCabecalhoPlanilha
- * Objetivo: Executa a rotina de 'n or ma li za rc ab ec al ho pl an il ha'.
+ * O que faz: Padroniza dados de 'normalizar cabecalho planilha' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarCabecalhoPlanilha(value: unknown) {
   return String(value ?? "")
@@ -342,7 +381,10 @@ function normalizarCabecalhoPlanilha(value: unknown) {
 
 /**
  * [DOC-FUNC] toIsoRangeBoundary
- * Objetivo: Executa a rotina de 't oi so ra ng eb ou nd ar y'.
+ * O que faz: Padroniza dados de 'to iso range boundary' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: dateInput, endOfDay.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
   const suffix = endOfDay ? "T23:59:59.999" : "T00:00:00.000";
@@ -353,7 +395,10 @@ function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
 
 /**
  * [DOC-FUNC] montarGraficoLinhas
- * Objetivo: Executa a rotina de 'm on ta rg ra fi co li nh as'.
+ * O que faz: Monta estrutura de 'montar grafico linhas' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: points.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function montarGraficoLinhas(points: ChartPoint[]) {
   if (!points.length) {
@@ -398,7 +443,10 @@ function montarGraficoLinhas(points: ChartPoint[]) {
 
 /**
  * [DOC-FUNC] importarTarifasPorArquivo
- * Objetivo: Executa a rotina de 'i mp or ta rt ar if as po ra rq ui vo'.
+ * O que faz: Executa a rotina principal de 'importar tarifas por arquivo' no contexto deste modulo.
+ * Entradas: Parametros esperados: file.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function importarTarifasPorArquivo(file: File) {
   const XLSX = await import("xlsx");
@@ -446,7 +494,10 @@ async function importarTarifasPorArquivo(file: File) {
 
 /**
  * [DOC-FUNC] importarBaseBilhetagemPorArquivo
- * Objetivo: Executa a rotina de 'i mp or ta rb as eb il he ta ge mp or ar qu iv o'.
+ * O que faz: Executa a rotina principal de 'importar base bilhetagem por arquivo' no contexto deste modulo.
+ * Entradas: Parametros esperados: file.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemBaseStorage> {
   const XLSX = await import("xlsx");
@@ -482,7 +533,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
   /**
    * [DOC-FUNC] findColumn
-   * Objetivo: Executa a rotina de 'f in dc ol um n'.
+   * O que faz: Executa a rotina principal de 'find column' no contexto deste modulo.
+   * Entradas: Parametros esperados: headers, predicates.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const findColumn = (headers: string[], predicates: string[]) =>
     headers.findIndex((cell) => predicates.some((token) => cell.includes(token)));
@@ -595,7 +649,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
   /**
    * [DOC-FUNC] registrarTarifaModelo
-   * Objetivo: Executa a rotina de 'r eg is tr ar ta ri fa mo de lo'.
+   * O que faz: Cria registro de 'registrar tarifa modelo' aplicando regras de consistencia antes de persistir.
+   * Entradas: Parametros esperados: modeloKey, tarifa.
+   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
    */
   const registrarTarifaModelo = (modeloKey: string, tarifa: number, pesoPaginas?: number) => {
     if (!modeloKey || !Number.isFinite(tarifa) || tarifa < 0) return;
@@ -705,7 +762,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
 /**
  * [DOC-FUNC] PainelDashboard
- * Objetivo: Executa a rotina de 'p ai ne ld as hb oa rd'.
+ * O que faz: Executa a rotina principal de 'painel dashboard' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function PainelDashboard() {
   const [loading, setLoading] = useState(false);

@@ -13,7 +13,10 @@ interface SelectProps {
 
 /**
  * [DOC-FUNC] Select
- * Objetivo: Executa a rotina de 's el ec t'.
+ * O que faz: Executa a rotina principal de 'select' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function Select({ value, onValueChange, children }: SelectProps) {
   return (
@@ -30,7 +33,10 @@ const SelectContext = React.createContext<{
 
 /**
  * [DOC-FUNC] SelectTrigger
- * Objetivo: Executa a rotina de 's el ec tt ri gg er'.
+ * O que faz: Executa a rotina principal de 'select trigger' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function SelectTrigger({
   children,
@@ -57,7 +63,10 @@ export function SelectTrigger({
 
 /**
  * [DOC-FUNC] SelectValue
- * Objetivo: Executa a rotina de 's el ec tv al ue'.
+ * O que faz: Executa a rotina principal de 'select value' no contexto deste modulo.
+ * Entradas: Parametros esperados: placeholder.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   const context = React.useContext(SelectContext);
@@ -66,7 +75,10 @@ export function SelectValue({ placeholder }: { placeholder?: string }) {
 
 /**
  * [DOC-FUNC] SelectContent
- * Objetivo: Executa a rotina de 's el ec tc on te nt'.
+ * O que faz: Executa a rotina principal de 'select content' no contexto deste modulo.
+ * Entradas: Parametros esperados: children.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function SelectContent({ children }: { children: ReactNode }) {
   return (
@@ -78,7 +90,10 @@ export function SelectContent({ children }: { children: ReactNode }) {
 
 /**
  * [DOC-FUNC] SelectItem
- * Objetivo: Executa a rotina de 's el ec ti te m'.
+ * O que faz: Executa a rotina principal de 'select item' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function SelectItem({
   value,

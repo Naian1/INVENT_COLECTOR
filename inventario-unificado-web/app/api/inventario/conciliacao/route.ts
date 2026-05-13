@@ -34,7 +34,10 @@ type ConsolidadoItem = {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ * O que faz: Executa a rotina principal de 'validar competencia' no contexto deste modulo.
+ * Entradas: Parametros esperados: competencia.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
@@ -42,7 +45,10 @@ function validarCompetencia(competencia: string): boolean {
 
 /**
  * [DOC-FUNC] limparTexto
- * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ * O que faz: Remove ou inativa dados de 'limpar texto' conforme politica do sistema.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 function limparTexto(value: string | null): string | null {
   if (!value) return null;
@@ -52,7 +58,10 @@ function limparTexto(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] normalizarPatrimonio
- * Objetivo: Executa a rotina de 'n or ma li za rp at ri mo ni o'.
+ * O que faz: Padroniza dados de 'normalizar patrimonio' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarPatrimonio(value: string | null): string | null {
   const text = limparTexto(value);
@@ -63,7 +72,10 @@ function normalizarPatrimonio(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] contemFiltro
- * Objetivo: Executa a rotina de 'c on te mf il tr o'.
+ * O que faz: Executa a rotina principal de 'contem filtro' no contexto deste modulo.
+ * Entradas: Parametros esperados: value, filtroNormalizado.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function contemFiltro(value: string | null, filtroNormalizado: string | null): boolean {
   if (!filtroNormalizado) return true;
@@ -73,7 +85,10 @@ function contemFiltro(value: string | null, filtroNormalizado: string | null): b
 
 /**
  * [DOC-FUNC] GET
- * Objetivo: Executa a rotina de 'g et'.
+ * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function GET(request: NextRequest) {
   try {

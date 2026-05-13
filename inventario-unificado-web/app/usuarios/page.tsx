@@ -62,7 +62,10 @@ const INITIAL_FORM: UsuarioFormState = {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarDataHora(value: string | null | undefined): string {
   if (!value) return '-';
@@ -127,7 +130,10 @@ export default function UsuariosPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * Objetivo: Executa a rotina de 'l oa da ut h'.
+     * O que faz: Consulta dados de 'load auth' na fonte principal (API, banco ou cache).
+     * Entradas: Sem parametros obrigatorios.
+     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
      */
     const loadAuth = async () => {
       try {
@@ -167,7 +173,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] carregarUsuarios
-   * Objetivo: Executa a rotina de 'c ar re ga ru su ar io s'.
+   * O que faz: Consulta dados de 'carregar usuarios' na fonte principal (API, banco ou cache).
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const carregarUsuarios = async () => {
     setLoading(true);
@@ -250,7 +259,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] resetForm
-   * Objetivo: Executa a rotina de 'r es et fo rm'.
+   * O que faz: Executa a rotina principal de 'reset form' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const resetForm = () => {
     setFormData(INITIAL_FORM);
@@ -261,7 +273,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openCreateModal
-   * Objetivo: Executa a rotina de 'o pe nc re at em od al'.
+   * O que faz: Executa a rotina principal de 'open create modal' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openCreateModal = () => {
     resetForm();
@@ -270,7 +285,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * Objetivo: Executa a rotina de 'o pe ne di tm od al'.
+   * O que faz: Executa a rotina principal de 'open edit modal' no contexto deste modulo.
+   * Entradas: Parametros esperados: usuario.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openEditModal = (usuario: Usuario) => {
     const perfisSelecionados = usuarioPerfis[usuario.cd_usuario] || [];
@@ -289,7 +307,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * Objetivo: Executa a rotina de 'h an dl ec ha ng ef or m'.
+   * O que faz: Executa a rotina principal de 'handle change form' no contexto deste modulo.
+   * Entradas: Parametros esperados: campo, valor.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleChangeForm = (campo: keyof UsuarioFormState, valor: string) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
@@ -297,7 +318,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] togglePerfilSelecionado
-   * Objetivo: Executa a rotina de 't og gl ep er fi ls el ec io na do'.
+   * O que faz: Executa a rotina principal de 'toggle perfil selecionado' no contexto deste modulo.
+   * Entradas: Parametros esperados: perfilId.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const togglePerfilSelecionado = (perfilId: number) => {
     setFormData((prev) => {
@@ -313,7 +337,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleSubmit
-   * Objetivo: Executa a rotina de 'h an dl es ub mi t'.
+   * O que faz: Executa a rotina principal de 'handle submit' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -377,7 +404,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleToggleStatus
-   * Objetivo: Executa a rotina de 'h an dl et og gl es ta tu s'.
+   * O que faz: Executa a rotina principal de 'handle toggle status' no contexto deste modulo.
+   * Entradas: Parametros esperados: usuario.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleToggleStatus = async (usuario: Usuario) => {
     setErrorMessage(null);

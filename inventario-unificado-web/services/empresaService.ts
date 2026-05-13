@@ -7,7 +7,10 @@ import { Empresa, CreateEmpresaInput, UpdateEmpresaInput } from '@/types/empresa
 
 /**
  * [DOC-FUNC] getEmpresas
- * Objetivo: Executa a rotina de 'g et em pr es as'.
+ * O que faz: Consulta dados de 'get empresas' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getEmpresas(): Promise<Empresa[]> {
   const supabase = getSupabaseServerClient();
@@ -17,17 +20,16 @@ export async function getEmpresas(): Promise<Empresa[]> {
     .order('nm_empresa');
 
   if (error) throw new Error(`Erro ao listar empresas: ${error.message}`);
-  /**
-   * [DOC-FUNC] ativos
-   * Objetivo: Executa a rotina de 'a ti vo s'.
-   */
   const ativos = (data || []).filter((item) => String(item?.ie_situacao || 'A').trim().toUpperCase() !== 'I');
   return ativos as Empresa[];
 }
 
 /**
  * [DOC-FUNC] getEmpresaByCgc
- * Objetivo: Executa a rotina de 'g et em pr es ab yc gc'.
+ * O que faz: Consulta dados de 'get empresa by cgc' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: cdCgc.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
   const supabase = getSupabaseServerClient();
@@ -43,7 +45,10 @@ export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
 
 /**
  * [DOC-FUNC] createEmpresa
- * Objetivo: Executa a rotina de 'c re at ee mp re sa'.
+ * O que faz: Cria registro de 'create empresa' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
@@ -59,7 +64,10 @@ export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa>
 
 /**
  * [DOC-FUNC] updateEmpresa
- * Objetivo: Executa a rotina de 'u pd at ee mp re sa'.
+ * O que faz: Atualiza 'update empresa' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: cdCgc, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
@@ -76,7 +84,10 @@ export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): P
 
 /**
  * [DOC-FUNC] deleteEmpresa
- * Objetivo: Executa a rotina de 'd el et ee mp re sa'.
+ * O que faz: Remove ou inativa dados de 'delete empresa' conforme politica do sistema.
+ * Entradas: Parametros esperados: cdCgc.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function deleteEmpresa(cdCgc: string): Promise<void> {
   const supabase = getSupabaseServerClient();

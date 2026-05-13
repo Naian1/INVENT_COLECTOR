@@ -12,7 +12,10 @@ const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
 /**
  * [DOC-FUNC] hasPrefix
- * Objetivo: Executa a rotina de 'h as pr ef ix'.
+ * O que faz: Executa a rotina principal de 'has prefix' no contexto deste modulo.
+ * Entradas: Parametros esperados: bytes, prefix.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function hasPrefix(bytes: Uint8Array, prefix: number[]) {
   if (bytes.length < prefix.length) return false;
@@ -24,7 +27,10 @@ function hasPrefix(bytes: Uint8Array, prefix: number[]) {
 
 /**
  * [DOC-FUNC] matchesImageSignature
- * Objetivo: Executa a rotina de 'm at ch es im ag es ig na tu re'.
+ * O que faz: Executa a rotina principal de 'matches image signature' no contexto deste modulo.
+ * Entradas: Parametros esperados: bytes, mime.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function matchesImageSignature(bytes: Uint8Array, mime: string) {
   if (mime === 'image/jpeg') {
@@ -47,7 +53,10 @@ function matchesImageSignature(bytes: Uint8Array, mime: string) {
 
 /**
  * [DOC-FUNC] extensionFromMime
- * Objetivo: Executa a rotina de 'e xt en si on fr om mi me'.
+ * O que faz: Executa a rotina principal de 'extension from mime' no contexto deste modulo.
+ * Entradas: Parametros esperados: mime.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function extensionFromMime(mime: string): string {
   if (mime === 'image/png') return 'png';
@@ -57,7 +66,10 @@ function extensionFromMime(mime: string): string {
 
 /**
  * [DOC-FUNC] POST
- * Objetivo: Executa a rotina de 'p os t'.
+ * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
+ * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
  */
 export async function POST(request: NextRequest) {
   try {

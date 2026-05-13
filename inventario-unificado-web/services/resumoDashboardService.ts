@@ -8,7 +8,10 @@ import type { ResumoDashboard } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] getInicioDoMesUtc
- * Objetivo: Executa a rotina de 'g et in ic io do me su tc'.
+ * O que faz: Consulta dados de 'get inicio do mes utc' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: now.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getInicioDoMesUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -16,7 +19,10 @@ function getInicioDoMesUtc(now: Date) {
 
 /**
  * [DOC-FUNC] calcularPaginasMesAtual
- * Objetivo: Executa a rotina de 'c al cu la rp ag in as me sa tu al'.
+ * O que faz: Executa a rotina principal de 'calcular paginas mes atual' no contexto deste modulo.
+ * Entradas: Parametros esperados: agoraIso.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function calcularPaginasMesAtual(agoraIso: string) {
   const supabase = getSupabaseServerClient();
@@ -54,7 +60,10 @@ async function calcularPaginasMesAtual(agoraIso: string) {
 
 /**
  * [DOC-FUNC] calcularContadoresOperacionais
- * Objetivo: Executa a rotina de 'c al cu la rc on ta do re so pe ra ci on ai s'.
+ * O que faz: Executa a rotina principal de 'calcular contadores operacionais' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function calcularContadoresOperacionais() {
   const visaoGeral = await listarVisaoGeralImpressoras();
@@ -87,7 +96,10 @@ async function calcularContadoresOperacionais() {
 
 /**
  * [DOC-FUNC] buscarResumoDashboard
- * Objetivo: Executa a rotina de 'b us ca rr es um od as hb oa rd'.
+ * O que faz: Consulta dados de 'buscar resumo dashboard' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function buscarResumoDashboard(): Promise<ResumoDashboard> {
   const supabase = getSupabaseServerClient();

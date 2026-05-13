@@ -18,7 +18,10 @@ type ToastItem = {
 
 /**
  * [DOC-FUNC] normalizarMensagemToast
- * Objetivo: Executa a rotina de 'n or ma li za rm en sa ge mt oa st'.
+ * O que faz: Padroniza dados de 'normalizar mensagem toast' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarMensagemToast(input: string): string {
   const mensagem = String(input || "").trim();
@@ -28,7 +31,10 @@ function normalizarMensagemToast(input: string): string {
 
 /**
  * [DOC-FUNC] StatusFeedback
- * Objetivo: Executa a rotina de 's ta tu sf ee db ac k'.
+ * O que faz: Executa a rotina principal de 'status feedback' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function StatusFeedback({ loading, error, success }: StatusFeedbackProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -38,7 +44,10 @@ export function StatusFeedback({ loading, error, success }: StatusFeedbackProps)
 
   /**
    * [DOC-FUNC] removerToast
-   * Objetivo: Executa a rotina de 'r em ov er to as t'.
+   * O que faz: Executa a rotina principal de 'remover toast' no contexto deste modulo.
+   * Entradas: Parametros esperados: id.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const removerToast = (id: number) => {
     setToasts((current) => current.filter((item) => item.id !== id));

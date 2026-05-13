@@ -143,7 +143,10 @@ type CriacaoInventario = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: texto.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarTexto(texto: string): string {
   return texto
@@ -154,7 +157,10 @@ function normalizarTexto(texto: string): string {
 
 /**
  * [DOC-FUNC] normalizarIpSemMascara
- * Objetivo: Executa a rotina de 'n or ma li za ri ps em ma sc ar a'.
+ * O que faz: Padroniza dados de 'normalizar ip sem mascara' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: ip.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarIpSemMascara(ip: string | null | undefined): string | null {
   if (!ip) return null;
@@ -165,7 +171,10 @@ function normalizarIpSemMascara(ip: string | null | undefined): string | null {
 
 /**
  * [DOC-FUNC] normalizarMacSemMascara
- * Objetivo: Executa a rotina de 'n or ma li za rm ac se mm as ca ra'.
+ * O que faz: Padroniza dados de 'normalizar mac sem mascara' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: mac.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizarMacSemMascara(mac: string | null | undefined): string | null {
   if (!mac) return null;
@@ -180,7 +189,10 @@ function normalizarMacSemMascara(mac: string | null | undefined): string | null 
 
 /**
  * [DOC-FUNC] labelInventario
- * Objetivo: Executa a rotina de 'l ab el in ve nt ar io'.
+ * O que faz: Executa a rotina principal de 'label inventario' no contexto deste modulo.
+ * Entradas: Parametros esperados: item.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function labelInventario(item: InventarioComDetalhes): string {
   const patrimonio = item.nr_patrimonio || `ID ${item.nr_inventario}`;
@@ -190,7 +202,10 @@ function labelInventario(item: InventarioComDetalhes): string {
 
 /**
  * [DOC-FUNC] labelInventarioComHostname
- * Objetivo: Executa a rotina de 'l ab el in ve nt ar io co mh os tn am e'.
+ * O que faz: Executa a rotina principal de 'label inventario com hostname' no contexto deste modulo.
+ * Entradas: Parametros esperados: item.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function labelInventarioComHostname(item: InventarioComDetalhes): string {
   const base = labelInventario(item);
@@ -200,7 +215,10 @@ function labelInventarioComHostname(item: InventarioComDetalhes): string {
 
 /**
  * [DOC-FUNC] formatSetorLabel
- * Objetivo: Executa a rotina de 'f or ma ts et or la be l'.
+ * O que faz: Padroniza dados de 'format setor label' para formato previsivel no restante do fluxo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null): string {
   if (!setor) return '-';
@@ -212,7 +230,10 @@ function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_local
 
 /**
  * [DOC-FUNC] statusFromLegacy
- * Objetivo: Executa a rotina de 's ta tu sf ro ml eg ac y'.
+ * O que faz: Executa a rotina principal de 'status from legacy' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function statusFromLegacy(situacao?: string | null): TpStatus {
   if (situacao === 'M') return 'MANUTENCAO';
@@ -222,7 +243,10 @@ function statusFromLegacy(situacao?: string | null): TpStatus {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
@@ -236,7 +260,10 @@ function formatarDataHora(value: string | null): string {
 
 /**
  * [DOC-FUNC] getLabelTpStatus
- * Objetivo: Executa a rotina de 'g et la be lt ps ta tu s'.
+ * O que faz: Consulta dados de 'get label tp status' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: tpStatus.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getLabelTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'Manutencao';
@@ -247,7 +274,10 @@ function getLabelTpStatus(tpStatus: TpStatus): string {
 
 /**
  * [DOC-FUNC] getClassTpStatus
- * Objetivo: Executa a rotina de 'g et cl as st ps ta tu s'.
+ * O que faz: Consulta dados de 'get class tp status' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: tpStatus.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getClassTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'bg-amber-100 text-amber-800';
@@ -258,7 +288,10 @@ function getClassTpStatus(tpStatus: TpStatus): string {
 
 /**
  * [DOC-FUNC] FieldDbHint
- * Objetivo: Executa a rotina de 'f ie ld db hi nt'.
+ * O que faz: Executa a rotina principal de 'field db hint' no contexto deste modulo.
+ * Entradas: Parametros esperados: text.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function FieldDbHint({ text }: { text: string }) {
   return <span className="inv-db-hint">Banco: {text}</span>;
@@ -373,7 +406,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] loadData
-   * Objetivo: Executa a rotina de 'l oa dd at a'.
+   * O que faz: Consulta dados de 'load data' na fonte principal (API, banco ou cache).
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const loadData = async () => {
     setLoading(true);
@@ -466,7 +502,10 @@ export default function InventarioPage() {
 
     /**
      * [DOC-FUNC] carregarSessao
-     * Objetivo: Executa a rotina de 'c ar re ga rs es sa o'.
+     * O que faz: Consulta dados de 'carregar sessao' na fonte principal (API, banco ou cache).
+     * Entradas: Sem parametros obrigatorios.
+     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
      */
     const carregarSessao = async () => {
       try {
@@ -736,7 +775,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * Objetivo: Executa a rotina de 'h an dl ec ha ng ef or m'.
+   * O que faz: Executa a rotina principal de 'handle change form' no contexto deste modulo.
+   * Entradas: Parametros esperados: campo, valor.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleChangeForm = (campo: keyof FormInventarioState, valor: string) => {
     if (campo === 'nr_patrimonio') {
@@ -788,7 +830,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] autoPreencherPorPatrimonio
-   * Objetivo: Executa a rotina de 'a ut op re en ch er po rp at ri mo ni o'.
+   * O que faz: Executa a rotina principal de 'auto preencher por patrimonio' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const autoPreencherPorPatrimonio = async () => {
     const patrimonio = formData.nr_patrimonio.trim();
@@ -858,7 +903,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectTipoFormulario
-   * Objetivo: Executa a rotina de 'h an dl es el ec tt ip of or mu la ri o'.
+   * O que faz: Executa a rotina principal de 'handle select tipo formulario' no contexto deste modulo.
+   * Entradas: Parametros esperados: value.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSelectTipoFormulario = (value: string) => {
     const tipoId = value ? Number(value) : null;
@@ -881,7 +929,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectEquipamento
-   * Objetivo: Executa a rotina de 'h an dl es el ec te qu ip am en to'.
+   * O que faz: Executa a rotina principal de 'handle select equipamento' no contexto deste modulo.
+   * Entradas: Parametros esperados: value.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSelectEquipamento = (value: string) => {
     const equipamento = equipamentos.find((item) => item.cd_equipamento === Number(value));
@@ -896,7 +947,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSelectItemSuperior
-   * Objetivo: Executa a rotina de 'h an dl es el ec ti te ms up er io r'.
+   * O que faz: Executa a rotina principal de 'handle select item superior' no contexto deste modulo.
+   * Entradas: Parametros esperados: value.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSelectItemSuperior = (value: string) => {
     const itemSuperior = items.find((item) => item.nr_inventario === Number(value));
@@ -909,7 +963,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] stopScanner
-   * Objetivo: Executa a rotina de 's to ps ca nn er'.
+   * O que faz: Executa a rotina principal de 'stop scanner' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const stopScanner = () => {
     if (scannerTimerRef.current !== null) {
@@ -931,7 +988,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] applyScannedCode
-   * Objetivo: Executa a rotina de 'a pp ly sc an ne dc od e'.
+   * O que faz: Executa a rotina principal de 'apply scanned code' no contexto deste modulo.
+   * Entradas: Parametros esperados: codigo.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const applyScannedCode = (codigo: string) => {
     const codigoLimpo = codigo.trim();
@@ -949,7 +1009,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] iniciarScanner
-   * Objetivo: Executa a rotina de 'i ni ci ar sc an ne r'.
+   * O que faz: Executa a rotina principal de 'iniciar scanner' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const iniciarScanner = async () => {
     setScannerError(null);
@@ -1028,7 +1091,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetModalForm
-   * Objetivo: Executa a rotina de 'r es et mo da lf or m'.
+   * O que faz: Executa a rotina principal de 'reset modal form' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const resetModalForm = () => {
     setEditingItem(null);
@@ -1052,7 +1118,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] carregarUltimaMovimentacao
-   * Objetivo: Executa a rotina de 'c ar re ga ru lt im am ov im en ta ca o'.
+   * O que faz: Consulta dados de 'carregar ultima movimentacao' na fonte principal (API, banco ou cache).
+   * Entradas: Parametros esperados: nrInventario.
+   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
    */
   const carregarUltimaMovimentacao = async (nrInventario: number) => {
     setUltimaMovimentacaoLoading(true);
@@ -1086,7 +1155,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * Objetivo: Executa a rotina de 'o pe ne di tm od al'.
+   * O que faz: Executa a rotina principal de 'open edit modal' no contexto deste modulo.
+   * Entradas: Parametros esperados: item.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openEditModal = (item: InventarioComDetalhes) => {
     if (!canEditInventario) {
@@ -1122,7 +1194,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetResolucaoModal
-   * Objetivo: Executa a rotina de 'r es et re so lu ca om od al'.
+   * O que faz: Executa a rotina principal de 'reset resolucao modal' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const resetResolucaoModal = () => {
     setResolvendoItem(null);
@@ -1134,7 +1209,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openResolucaoModal
-   * Objetivo: Executa a rotina de 'o pe nr es ol uc ao mo da l'.
+   * O que faz: Executa a rotina principal de 'open resolucao modal' no contexto deste modulo.
+   * Entradas: Parametros esperados: item.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openResolucaoModal = (item: InventarioComDetalhes) => {
     setResolvendoItem(item);
@@ -1147,7 +1225,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetMovimentacaoModal
-   * Objetivo: Executa a rotina de 'r es et mo vi me nt ac ao mo da l'.
+   * O que faz: Executa a rotina principal de 'reset movimentacao modal' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const resetMovimentacaoModal = () => {
     setMovimentandoItem(null);
@@ -1161,7 +1242,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openMovimentacaoModal
-   * Objetivo: Executa a rotina de 'o pe nm ov im en ta ca om od al'.
+   * O que faz: Executa a rotina principal de 'open movimentacao modal' no contexto deste modulo.
+   * Entradas: Parametros esperados: item.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openMovimentacaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
@@ -1186,7 +1270,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] resetSubstituicaoModal
-   * Objetivo: Executa a rotina de 'r es et su bs ti tu ic ao mo da l'.
+   * O que faz: Executa a rotina principal de 'reset substituicao modal' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const resetSubstituicaoModal = () => {
     setSubstituindoItem(null);
@@ -1199,7 +1286,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] openSubstituicaoModal
-   * Objetivo: Executa a rotina de 'o pe ns ub st it ui ca om od al'.
+   * O que faz: Executa a rotina principal de 'open substituicao modal' no contexto deste modulo.
+   * Entradas: Parametros esperados: item.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const openSubstituicaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
@@ -1226,7 +1316,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeAcaoFilhoMovimentacao
-   * Objetivo: Executa a rotina de 'h an dl ec ha ng ea ca of il ho mo vi me nt ac ao'.
+   * O que faz: Executa a rotina principal de 'handle change acao filho movimentacao' no contexto deste modulo.
+   * Entradas: Parametros esperados: nrInventarioFilho, acao.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleChangeAcaoFilhoMovimentacao = (nrInventarioFilho: number, acao: AcaoFilhoMovimentacao) => {
     setMovimentacaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
@@ -1241,7 +1334,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleChangeAcaoFilhoSubstituicao
-   * Objetivo: Executa a rotina de 'h an dl ec ha ng ea ca of il ho su bs ti tu ic ao'.
+   * O que faz: Executa a rotina principal de 'handle change acao filho substituicao' no contexto deste modulo.
+   * Entradas: Parametros esperados: nrInventarioFilho, acao.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleChangeAcaoFilhoSubstituicao = (nrInventarioFilho: number, acao: AcaoFilhoSubstituicao) => {
     setSubstituicaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
@@ -1249,7 +1345,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitMovimentacao
-   * Objetivo: Executa a rotina de 'h an dl es ub mi tm ov im en ta ca o'.
+   * O que faz: Executa a rotina principal de 'handle submit movimentacao' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSubmitMovimentacao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1301,7 +1400,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitSubstituicao
-   * Objetivo: Executa a rotina de 'h an dl es ub mi ts ub st it ui ca o'.
+   * O que faz: Executa a rotina principal de 'handle submit substituicao' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSubmitSubstituicao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1363,7 +1465,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleSubmitResolucao
-   * Objetivo: Executa a rotina de 'h an dl es ub mi tr es ol uc ao'.
+   * O que faz: Executa a rotina principal de 'handle submit resolucao' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleSubmitResolucao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -1412,7 +1517,10 @@ export default function InventarioPage() {
 
   /**
    * [DOC-FUNC] handleCreateInventario
-   * Objetivo: Executa a rotina de 'h an dl ec re at ei nv en ta ri o'.
+   * O que faz: Executa a rotina principal de 'handle create inventario' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleCreateInventario = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

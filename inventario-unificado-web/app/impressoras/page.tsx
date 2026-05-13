@@ -138,7 +138,10 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] toFiniteNullable
- * Objetivo: Executa a rotina de 't of in it en ul la bl e'.
+ * O que faz: Padroniza dados de 'to finite nullable' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toFiniteNullable(value: unknown): number | null {
   if (value === null || value === undefined || value === "") return null;
@@ -146,10 +149,6 @@ function toFiniteNullable(value: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-/**
- * [DOC-FUNC] resolverNivelPercentualSuprimento
- * Objetivo: Executa a rotina de 'r es ol ve rn iv el pe rc en tu al su pr im en to'.
- */
 function resolverNivelPercentualSuprimento(item: {
   nivel_percentual: number | null;
   quantidade_atual: number | null;
@@ -165,7 +164,10 @@ function resolverNivelPercentualSuprimento(item: {
 
 /**
  * [DOC-FUNC] classificarSuprimentos
- * Objetivo: Executa a rotina de 'c la ss if ic ar su pr im en to s'.
+ * O que faz: Executa a rotina principal de 'classificar suprimentos' no contexto deste modulo.
+ * Entradas: Parametros esperados: menorNivel, resumo.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function classificarSuprimentos(
   menorNivel: number | null,
@@ -186,10 +188,6 @@ function classificarSuprimentos(
     return "ok";
   }
 
-  /**
-   * [DOC-FUNC] statusList
-   * Objetivo: Executa a rotina de 's ta tu sl is t'.
-   */
   const statusList = (resumo || []).map((item) => String(item.status_suprimento || "").toLowerCase());
   if (statusList.some((status) => ["critical", "empty", "offline"].includes(status))) return "critico";
   if (statusList.some((status) => ["low", "warning"].includes(status))) return "baixo";
@@ -199,7 +197,10 @@ function classificarSuprimentos(
 
 /**
  * [DOC-FUNC] formatarPercentualSuprimento
- * Objetivo: Executa a rotina de 'f or ma ta rp er ce nt ua ls up ri me nt o'.
+ * O que faz: Executa a rotina principal de 'formatar percentual suprimento' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarPercentualSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -208,7 +209,10 @@ function formatarPercentualSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] formatarIndicadorSuprimento
- * Objetivo: Executa a rotina de 'f or ma ta ri nd ic ad or su pr im en to'.
+ * O que faz: Executa a rotina principal de 'formatar indicador suprimento' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarIndicadorSuprimento(value: number | null) {
   if (value !== null && !Number.isNaN(value)) return formatarPercentualSuprimento(value);
@@ -217,7 +221,10 @@ function formatarIndicadorSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] classeNivelSuprimento
- * Objetivo: Executa a rotina de 'c la ss en iv el su pr im en to'.
+ * O que faz: Executa a rotina principal de 'classe nivel suprimento' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function classeNivelSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "warn";
@@ -228,7 +235,10 @@ function classeNivelSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] obterMenorSuprimentoInfo
- * Objetivo: Executa a rotina de 'o bt er me no rs up ri me nt oi nf o'.
+ * O que faz: Executa a rotina principal de 'obter menor suprimento info' no contexto deste modulo.
+ * Entradas: Parametros esperados: suprimentos.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function obterMenorSuprimentoInfo(
   suprimentos: ImpressoraVisao["resumo_suprimentos"]
@@ -276,7 +286,10 @@ function obterMenorSuprimentoInfo(
 
 /**
  * [DOC-FUNC] classePillStatus
- * Objetivo: Executa a rotina de 'c la ss ep il ls ta tu s'.
+ * O que faz: Executa a rotina principal de 'classe pill status' no contexto deste modulo.
+ * Entradas: Parametros esperados: status.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function classePillStatus(status: string) {
   const s = String(status || "unknown").toLowerCase();
@@ -287,7 +300,10 @@ function classePillStatus(status: string) {
 
 /**
  * [DOC-FUNC] parseColetaDate
- * Objetivo: Executa a rotina de 'p ar se co le ta da te'.
+ * O que faz: Padroniza dados de 'parse coleta date' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function parseColetaDate(value: string | null) {
   if (!value) return null;
@@ -303,7 +319,10 @@ function parseColetaDate(value: string | null) {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarDataHora(value: string | null) {
   const dt = parseColetaDate(value);
@@ -316,7 +335,10 @@ function formatarDataHora(value: string | null) {
 
 /**
  * [DOC-FUNC] minutosDesdeColeta
- * Objetivo: Executa a rotina de 'm in ut os de sd ec ol et a'.
+ * O que faz: Executa a rotina principal de 'minutos desde coleta' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function minutosDesdeColeta(value: string | null) {
   const dt = parseColetaDate(value);
@@ -326,7 +348,10 @@ function minutosDesdeColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] formatarTempoRelativoColeta
- * Objetivo: Executa a rotina de 'f or ma ta rt em po re la ti vo co le ta'.
+ * O que faz: Executa a rotina principal de 'formatar tempo relativo coleta' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function formatarTempoRelativoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
@@ -341,7 +366,10 @@ function formatarTempoRelativoColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] classeAtualizacaoColeta
- * Objetivo: Executa a rotina de 'c la ss ea tu al iz ac ao co le ta'.
+ * O que faz: Executa a rotina principal de 'classe atualizacao coleta' no contexto deste modulo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function classeAtualizacaoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
@@ -353,7 +381,10 @@ function classeAtualizacaoColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] obterValorOrdenacao
- * Objetivo: Executa a rotina de 'o bt er va lo ro rd en ac ao'.
+ * O que faz: Executa a rotina principal de 'obter valor ordenacao' no contexto deste modulo.
+ * Entradas: Parametros esperados: row, coluna.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function obterValorOrdenacao(row: ImpressoraVisao, coluna: ColunaOrdenacao): string | number {
   switch (coluna) {
@@ -414,7 +445,10 @@ export default function ImpressorasPage() {
 
   /**
    * [DOC-FUNC] valorParaTexto
-   * Objetivo: Executa a rotina de 'v al or pa ra te xt o'.
+   * O que faz: Executa a rotina principal de 'valor para texto' no contexto deste modulo.
+   * Entradas: Parametros esperados: valor.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   function valorParaTexto(valor: LinhaValorDef["valor"]) {
     if (!valor) return "";
@@ -467,10 +501,6 @@ export default function ImpressorasPage() {
         12000
       );
 
-      /**
-       * [DOC-FUNC] ativas
-       * Objetivo: Executa a rotina de 'a ti va s'.
-       */
       const ativas = (dados || []).filter((item) => item.ativo);
       setCategorias(ativas);
       setCategoriaSelecionadaId((atual) => {

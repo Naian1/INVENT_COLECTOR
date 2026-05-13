@@ -34,7 +34,10 @@ const textoOpcionalNulo = z
 
 /**
  * [DOC-FUNC] uuidObrigatorio
- * Objetivo: Executa a rotina de 'u ui do br ig at or io'.
+ * O que faz: Executa a rotina principal de 'uuid obrigatorio' no contexto deste modulo.
+ * Entradas: Parametros esperados: campo.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 const uuidObrigatorio = (campo: string) =>
   z.string().uuid(`${campo} deve ser UUID valido`);
@@ -101,7 +104,10 @@ const boolFromQuery = z
 
 /**
  * [DOC-FUNC] numeroPositivoComDefault
- * Objetivo: Executa a rotina de 'n um er op os it iv oc om de fa ul t'.
+ * O que faz: Executa a rotina principal de 'numero positivo com default' no contexto deste modulo.
+ * Entradas: Parametros esperados: defaultValue.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z

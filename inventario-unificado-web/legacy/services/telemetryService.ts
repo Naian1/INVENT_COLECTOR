@@ -21,7 +21,10 @@ type TelemetryIngestResult = {
 
 /**
  * [DOC-FUNC] shouldRefreshLastSeen
- * Objetivo: Executa a rotina de 's ho ul dr ef re sh la st se en'.
+ * O que faz: Executa a rotina principal de 'should refresh last seen' no contexto deste modulo.
+ * Entradas: Parametros esperados: currentLastSeenAt, candidateIso.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: string) {
   if (!currentLastSeenAt) return true;
@@ -34,7 +37,10 @@ function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: s
 
 /**
  * [DOC-FUNC] resolveSupplyStatus
- * Objetivo: Executa a rotina de 'r es ol ve su pp ly st at us'.
+ * O que faz: Monta estrutura de 'resolve supply status' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: explicitStatus, levelPercent.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 function resolveSupplyStatus(
   explicitStatus: string | undefined,
@@ -50,7 +56,10 @@ function resolveSupplyStatus(
 
 /**
  * [DOC-FUNC] writeTelemetryEvent
- * Objetivo: Executa a rotina de 'w ri te te le me tr ye ve nt'.
+ * O que faz: Executa a rotina principal de 'write telemetry event' no contexto deste modulo.
+ * Entradas: Parametros esperados: collectorId, event, defaultCollectedAt.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function writeTelemetryEvent(
   collectorId: string,
@@ -182,7 +191,10 @@ async function writeTelemetryEvent(
 
 /**
  * [DOC-FUNC] ingestCollectorTelemetry
- * Objetivo: Executa a rotina de 'i ng es tc ol le ct or te le me tr y'.
+ * O que faz: Executa a rotina principal de 'ingest collector telemetry' no contexto deste modulo.
+ * Entradas: Parametros esperados: payload.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function ingestCollectorTelemetry(
   payload: CollectorTelemetryBatchPayload

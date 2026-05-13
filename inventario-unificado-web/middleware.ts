@@ -17,7 +17,10 @@ const store =
 
 /**
  * [DOC-FUNC] getClientIp
- * Objetivo: Executa a rotina de 'g et cl ie nt ip'.
+ * O que faz: Consulta dados de 'get client ip' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for") || "";
@@ -28,7 +31,10 @@ function getClientIp(request: NextRequest) {
 
 /**
  * [DOC-FUNC] applyRateLimit
- * Objetivo: Executa a rotina de 'a pp ly ra te li mi t'.
+ * O que faz: Executa a rotina principal de 'apply rate limit' no contexto deste modulo.
+ * Entradas: Parametros esperados: key, limit, windowMs.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function applyRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
@@ -51,7 +57,10 @@ function applyRateLimit(key: string, limit: number, windowMs: number) {
 
 /**
  * [DOC-FUNC] withSecurityHeaders
- * Objetivo: Executa a rotina de 'w it hs ec ur it yh ea de rs'.
+ * O que faz: Executa a rotina principal de 'with security headers' no contexto deste modulo.
+ * Entradas: Parametros esperados: response.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -83,7 +92,10 @@ function withSecurityHeaders(response: NextResponse) {
 
 /**
  * [DOC-FUNC] middleware
- * Objetivo: Executa a rotina de 'm id dl ew ar e'.
+ * O que faz: Executa a rotina principal de 'middleware' no contexto deste modulo.
+ * Entradas: Parametros esperados: request.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

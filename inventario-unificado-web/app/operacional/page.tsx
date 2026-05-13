@@ -6,7 +6,10 @@ import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasSer
 
 /**
  * [DOC-FUNC] formatSupplyLevel
- * Objetivo: Executa a rotina de 'f or ma ts up pl yl ev el'.
+ * O que faz: Padroniza dados de 'format supply level' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: level.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function formatSupplyLevel(level: number | null) {
   if (level === null || Number.isNaN(level)) return "-";

@@ -11,7 +11,10 @@ import {
 
 /**
  * [DOC-FUNC] getTiposEquipamento
- * Objetivo: Executa a rotina de 'g et ti po se qu ip am en to'.
+ * O que faz: Consulta dados de 'get tipos equipamento' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -27,7 +30,10 @@ export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
 
 /**
  * [DOC-FUNC] getTipoEquipamentoById
- * Objetivo: Executa a rotina de 'g et ti po eq ui pa me nt ob yi d'.
+ * O que faz: Consulta dados de 'get tipo equipamento by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getTipoEquipamentoById(id: number): Promise<TipoEquipamento | null> {
   const supabase = getSupabaseServerClient();
@@ -43,7 +49,10 @@ export async function getTipoEquipamentoById(id: number): Promise<TipoEquipament
 
 /**
  * [DOC-FUNC] createTipoEquipamento
- * Objetivo: Executa a rotina de 'c re at et ip oe qu ip am en to'.
+ * O que faz: Cria registro de 'create tipo equipamento' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): Promise<TipoEquipamento> {
   const supabase = getSupabaseServerClient();
@@ -59,7 +68,10 @@ export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): 
 
 /**
  * [DOC-FUNC] updateTipoEquipamento
- * Objetivo: Executa a rotina de 'u pd at et ip oe qu ip am en to'.
+ * O que faz: Atualiza 'update tipo equipamento' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updateTipoEquipamento(
   id: number,
@@ -79,7 +91,10 @@ export async function updateTipoEquipamento(
 
 /**
  * [DOC-FUNC] deleteTipoEquipamento
- * Objetivo: Executa a rotina de 'd el et et ip oe qu ip am en to'.
+ * O que faz: Remove ou inativa dados de 'delete tipo equipamento' conforme politica do sistema.
+ * Entradas: Parametros esperados: id.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function deleteTipoEquipamento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();

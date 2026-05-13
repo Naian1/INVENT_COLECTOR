@@ -14,7 +14,10 @@ type TpStatus = 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO';
 
 /**
  * [DOC-FUNC] situacaoParaTpStatus
- * Objetivo: Executa a rotina de 's it ua ca op ar at ps ta tu s'.
+ * O que faz: Executa a rotina principal de 'situacao para tp status' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function situacaoParaTpStatus(ieSituacao?: string | null): TpStatus {
   if (ieSituacao === 'M') return 'MANUTENCAO';
@@ -24,7 +27,10 @@ function situacaoParaTpStatus(ieSituacao?: string | null): TpStatus {
 
 /**
  * [DOC-FUNC] tpStatusParaSituacao
- * Objetivo: Executa a rotina de 't ps ta tu sp ar as it ua ca o'.
+ * O que faz: Executa a rotina principal de 'tp status para situacao' no contexto deste modulo.
+ * Entradas: Parametros esperados: tpStatus.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function tpStatusParaSituacao(tpStatus: TpStatus): 'A' | 'M' | 'I' {
   if (tpStatus === 'MANUTENCAO') return 'M';
@@ -34,7 +40,10 @@ function tpStatusParaSituacao(tpStatus: TpStatus): 'A' | 'M' | 'I' {
 
 /**
  * [DOC-FUNC] getTpHierarquiaEquipamento
- * Objetivo: Executa a rotina de 'g et tp hi er ar qu ia eq ui pa me nt o'.
+ * O que faz: Consulta dados de 'get tp hierarquia equipamento' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: cdEquipamento.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHierarquia> {
   const supabase = getSupabaseServerClient();
@@ -53,7 +62,10 @@ async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHier
 
 /**
  * [DOC-FUNC] validarHierarquiaInventario
- * Objetivo: Executa a rotina de 'v al id ar hi er ar qu ia in ve nt ar io'.
+ * O que faz: Executa a rotina principal de 'validar hierarquia inventario' no contexto deste modulo.
+ * Entradas: Parametros esperados: params.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 async function validarHierarquiaInventario(params: {
   cd_equipamento: number;
@@ -102,7 +114,10 @@ async function validarHierarquiaInventario(params: {
 
 /**
  * [DOC-FUNC] getInventarios
- * Objetivo: Executa a rotina de 'g et in ve nt ar io s'.
+ * O que faz: Consulta dados de 'get inventarios' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getInventarios(): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -117,7 +132,10 @@ export async function getInventarios(): Promise<Inventario[]> {
 
 /**
  * [DOC-FUNC] getInventarioById
- * Objetivo: Executa a rotina de 'g et in ve nt ar io by id'.
+ * O que faz: Consulta dados de 'get inventario by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getInventarioById(id: number): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
@@ -133,7 +151,10 @@ export async function getInventarioById(id: number): Promise<Inventario | null> 
 
 /**
  * [DOC-FUNC] getInventarioByPatrimonio
- * Objetivo: Executa a rotina de 'g et in ve nt ar io by pa tr im on io'.
+ * O que faz: Consulta dados de 'get inventario by patrimonio' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: patrimonio.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
@@ -150,7 +171,10 @@ export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inv
 
 /**
  * [DOC-FUNC] getInventariosBySetor
- * Objetivo: Executa a rotina de 'g et in ve nt ar io sb ys et or'.
+ * O que faz: Consulta dados de 'get inventarios by setor' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: setorId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getInventariosBySetor(setorId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -166,7 +190,10 @@ export async function getInventariosBySetor(setorId: number): Promise<Inventario
 
 /**
  * [DOC-FUNC] getInventariosByEquipamento
- * Objetivo: Executa a rotina de 'g et in ve nt ar io sb ye qu ip am en to'.
+ * O que faz: Consulta dados de 'get inventarios by equipamento' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: equipamentoId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getInventariosByEquipamento(equipamentoId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
@@ -182,7 +209,10 @@ export async function getInventariosByEquipamento(equipamentoId: number): Promis
 
 /**
  * [DOC-FUNC] createInventario
- * Objetivo: Executa a rotina de 'c re at ei nv en ta ri o'.
+ * O que faz: Cria registro de 'create inventario' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createInventario(input: CreateInventarioInput): Promise<Inventario> {
   const supabase = getSupabaseServerClient();
@@ -213,7 +243,10 @@ export async function createInventario(input: CreateInventarioInput): Promise<In
 
 /**
  * [DOC-FUNC] updateInventario
- * Objetivo: Executa a rotina de 'u pd at ei nv en ta ri o'.
+ * O que faz: Atualiza 'update inventario' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updateInventario(
   id: number,
@@ -263,7 +296,10 @@ export async function updateInventario(
 
 /**
  * [DOC-FUNC] moveInventarioToSetor
- * Objetivo: Executa a rotina de 'm ov ei nv en ta ri ot os et or'.
+ * O que faz: Executa a rotina principal de 'move inventario to setor' no contexto deste modulo.
+ * Entradas: Parametros esperados: id, novoSetorId.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export async function moveInventarioToSetor(
   id: number,
@@ -294,7 +330,10 @@ export async function moveInventarioToSetor(
 
 /**
  * [DOC-FUNC] deleteInventario
- * Objetivo: Executa a rotina de 'd el et ei nv en ta ri o'.
+ * O que faz: Remove ou inativa dados de 'delete inventario' conforme politica do sistema.
+ * Entradas: Parametros esperados: id.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function deleteInventario(id: number): Promise<void> {
   // Soft delete

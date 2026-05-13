@@ -17,7 +17,10 @@ type DashboardSummary = {
 
 /**
  * [DOC-FUNC] getMonthStartIsoUtc
- * Objetivo: Executa a rotina de 'g et mo nt hs ta rt is ou tc'.
+ * O que faz: Consulta dados de 'get month start iso utc' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: now.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getMonthStartIsoUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -25,7 +28,10 @@ function getMonthStartIsoUtc(now: Date) {
 
 /**
  * [DOC-FUNC] getPagesPrintedCurrentMonth
- * Objetivo: Executa a rotina de 'g et pa ge sp ri nt ed cu rr en tm on th'.
+ * O que faz: Consulta dados de 'get pages printed current month' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: nowIso.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function getPagesPrintedCurrentMonth(nowIso: string) {
   const supabase = getSupabaseServerClient();
@@ -66,7 +72,10 @@ async function getPagesPrintedCurrentMonth(nowIso: string) {
 
 /**
  * [DOC-FUNC] getOperationalCountersFromOverview
- * Objetivo: Executa a rotina de 'g et op er at io na lc ou nt er sf ro mo ve rv ie w'.
+ * O que faz: Consulta dados de 'get operational counters from overview' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 async function getOperationalCountersFromOverview() {
   const overview = await getPrintersOverview();
@@ -102,7 +111,10 @@ async function getOperationalCountersFromOverview() {
 
 /**
  * [DOC-FUNC] getDashboardSummary
- * Objetivo: Executa a rotina de 'g et da sh bo ar ds um ma ry'.
+ * O que faz: Consulta dados de 'get dashboard summary' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const supabase = getSupabaseServerClient();

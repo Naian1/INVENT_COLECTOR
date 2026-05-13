@@ -20,7 +20,10 @@ const termosInvalidos = new Set([
 
 /**
  * [DOC-FUNC] textoObrigatorio
- * Objetivo: Executa a rotina de 't ex to ob ri ga to ri o'.
+ * O que faz: Executa a rotina principal de 'texto obrigatorio' no contexto deste modulo.
+ * Entradas: Parametros esperados: campo.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 const textoObrigatorio = (campo: string) =>
   z

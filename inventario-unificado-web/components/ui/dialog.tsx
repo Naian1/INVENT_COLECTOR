@@ -12,7 +12,10 @@ interface DialogProps {
 
 /**
  * [DOC-FUNC] Dialog
- * Objetivo: Executa a rotina de 'd ia lo g'.
+ * O que faz: Executa a rotina principal de 'dialog' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useEffect(() => {
@@ -20,7 +23,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
     /**
      * [DOC-FUNC] handleKeyDown
-     * Objetivo: Executa a rotina de 'h an dl ek ey do wn'.
+     * O que faz: Executa a rotina principal de 'handle key down' no contexto deste modulo.
+     * Entradas: Parametros esperados: event.
+     * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+     * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
      */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -82,7 +88,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 /**
  * [DOC-FUNC] DialogContent
- * Objetivo: Executa a rotina de 'd ia lo gc on te nt'.
+ * O que faz: Executa a rotina principal de 'dialog content' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function DialogContent({
   children,
@@ -96,7 +105,10 @@ export function DialogContent({
 
 /**
  * [DOC-FUNC] DialogHeader
- * Objetivo: Executa a rotina de 'd ia lo gh ea de r'.
+ * O que faz: Executa a rotina principal de 'dialog header' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function DialogHeader({
   children,
@@ -120,7 +132,10 @@ export function DialogHeader({
 
 /**
  * [DOC-FUNC] DialogTitle
- * Objetivo: Executa a rotina de 'd ia lo gt it le'.
+ * O que faz: Executa a rotina principal de 'dialog title' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function DialogTitle({
   children,
@@ -134,7 +149,10 @@ export function DialogTitle({
 
 /**
  * [DOC-FUNC] DialogDescription
- * Objetivo: Executa a rotina de 'd ia lo gd es cr ip ti on'.
+ * O que faz: Executa a rotina principal de 'dialog description' no contexto deste modulo.
+ * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
+ * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 export function DialogDescription({
   children,

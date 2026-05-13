@@ -40,7 +40,10 @@ export default function LoginPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   * O que faz: Executa a rotina principal de 'on submit' no contexto deste modulo.
+   * Entradas: Parametros esperados: event.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -82,7 +85,10 @@ export default function LoginPage() {
 
   /**
    * [DOC-FUNC] handleRecuperarSenha
-   * Objetivo: Executa a rotina de 'h an dl er ec up er ar se nh a'.
+   * O que faz: Executa a rotina principal de 'handle recuperar senha' no contexto deste modulo.
+   * Entradas: Sem parametros obrigatorios.
+   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
    */
   const handleRecuperarSenha = async () => {
     setErro(null);

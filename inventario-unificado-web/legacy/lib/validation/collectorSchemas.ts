@@ -148,7 +148,10 @@ export type CollectorTelemetryEvent = z.infer<typeof collectorTelemetryEventSche
 
 /**
  * [DOC-FUNC] normalizeSinglePayloadToBatch
- * Objetivo: Executa a rotina de 'n or ma li ze si ng le pa yl oa dt ob at ch'.
+ * O que faz: Normaliza e converte valores ligados a 'normalize single payload to batch' para um formato previsivel.
+ * Entradas: Recebe valor bruto (texto, numero, data ou estrutura parcial).
+ * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
+ * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */
 function normalizeSinglePayloadToBatch(
   payload: CollectorTelemetrySinglePayload
@@ -189,7 +192,10 @@ function normalizeSinglePayloadToBatch(
 
 /**
  * [DOC-FUNC] normalizeCollectorTelemetryPayload
- * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rt el em et ry pa yl oa d'.
+ * O que faz: Normaliza e converte valores ligados a 'normalize collector telemetry payload' para um formato previsivel.
+ * Entradas: Recebe valor bruto (texto, numero, data ou estrutura parcial).
+ * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
+ * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */
 export function normalizeCollectorTelemetryPayload(
   payload: CollectorTelemetryAcceptedPayload

@@ -8,7 +8,10 @@ let cachedClient: SupabaseClient | null = null;
 
 /**
  * [DOC-FUNC] getSupabaseEnv
- * Objetivo: Executa a rotina de 'g et su pa ba se en v'.
+ * O que faz: Consulta dados de 'get supabase env' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getSupabaseEnv() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -25,7 +28,10 @@ function getSupabaseEnv() {
 
 /**
  * [DOC-FUNC] getSupabaseServerClient
- * Objetivo: Executa a rotina de 'g et su pa ba se se rv er cl ie nt'.
+ * O que faz: Consulta dados de 'get supabase server client' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export function getSupabaseServerClient() {
   if (cachedClient) return cachedClient;

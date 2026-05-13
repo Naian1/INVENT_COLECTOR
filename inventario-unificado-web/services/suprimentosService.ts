@@ -7,7 +7,10 @@ import { Suprimentos, CreateSuprimentosInput, UpdateSuprimentosInput } from '@/t
 
 /**
  * [DOC-FUNC] getSuprimentos
- * Objetivo: Executa a rotina de 'g et su pr im en to s'.
+ * O que faz: Consulta dados de 'get suprimentos' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getSuprimentos(): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -22,7 +25,10 @@ export async function getSuprimentos(): Promise<Suprimentos[]> {
 
 /**
  * [DOC-FUNC] getSuprimentosById
- * Objetivo: Executa a rotina de 'g et su pr im en to sb yi d'.
+ * O que faz: Consulta dados de 'get suprimentos by id' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: id.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getSuprimentosById(id: number): Promise<Suprimentos | null> {
   const supabase = getSupabaseServerClient();
@@ -38,7 +44,10 @@ export async function getSuprimentosById(id: number): Promise<Suprimentos | null
 
 /**
  * [DOC-FUNC] getSuprimentosByInventario
- * Objetivo: Executa a rotina de 'g et su pr im en to sb yi nv en ta ri o'.
+ * O que faz: Consulta dados de 'get suprimentos by inventario' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: inventarioId.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getSuprimentosByInventario(inventarioId: number): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -54,7 +63,10 @@ export async function getSuprimentosByInventario(inventarioId: number): Promise<
 
 /**
  * [DOC-FUNC] getSuprimentosByPatrimonio
- * Objetivo: Executa a rotina de 'g et su pr im en to sb yp at ri mo ni o'.
+ * O que faz: Consulta dados de 'get suprimentos by patrimonio' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: patrimonio.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -70,7 +82,10 @@ export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Su
 
 /**
  * [DOC-FUNC] upsertSuprimento
- * Objetivo: Executa a rotina de 'u ps er ts up ri me nt o'.
+ * O que faz: Atualiza 'upsert suprimento' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function upsertSuprimento(
   input: CreateSuprimentosInput,
@@ -110,7 +125,10 @@ export async function upsertSuprimento(
 
 /**
  * [DOC-FUNC] createSuprimento
- * Objetivo: Executa a rotina de 'c re at es up ri me nt o'.
+ * O que faz: Cria registro de 'create suprimento' aplicando regras de consistencia antes de persistir.
+ * Entradas: Parametros esperados: input.
+ * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
+ * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
  */
 export async function createSuprimento(
   input: CreateSuprimentosInput,
@@ -128,7 +146,10 @@ export async function createSuprimento(
 
 /**
  * [DOC-FUNC] updateSuprimento
- * Objetivo: Executa a rotina de 'u pd at es up ri me nt o'.
+ * O que faz: Atualiza 'update suprimento' preservando integridade dos dados e regras de negocio.
+ * Entradas: Parametros esperados: id, input.
+ * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
+ * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
  */
 export async function updateSuprimento(
   id: number,
@@ -148,7 +169,10 @@ export async function updateSuprimento(
 
 /**
  * [DOC-FUNC] deleteSuprimento
- * Objetivo: Executa a rotina de 'd el et es up ri me nt o'.
+ * O que faz: Remove ou inativa dados de 'delete suprimento' conforme politica do sistema.
+ * Entradas: Parametros esperados: id.
+ * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
+ * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
  */
 export async function deleteSuprimento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();

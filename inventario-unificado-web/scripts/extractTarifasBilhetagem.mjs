@@ -9,7 +9,10 @@ import XLSX from "xlsx";
 
 /**
  * [DOC-FUNC] toNumber
- * Objetivo: Executa a rotina de 't on um be r'.
+ * O que faz: Padroniza dados de 'to number' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function toNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -22,7 +25,10 @@ function toNumber(value) {
 
 /**
  * [DOC-FUNC] normalizeText
- * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ * O que faz: Padroniza dados de 'normalize text' para formato previsivel no restante do fluxo.
+ * Entradas: Parametros esperados: value.
+ * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
+ * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
  */
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -30,7 +36,10 @@ function normalizeText(value) {
 
 /**
  * [DOC-FUNC] findTarifas
- * Objetivo: Executa a rotina de 'f in dt ar if as'.
+ * O que faz: Executa a rotina principal de 'find tarifas' no contexto deste modulo.
+ * Entradas: Parametros esperados: rows.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function findTarifas(rows) {
   for (const row of rows) {
@@ -48,7 +57,10 @@ function findTarifas(rows) {
 
 /**
  * [DOC-FUNC] inferCompetenciaFromName
- * Objetivo: Executa a rotina de 'i nf er co mp et en ci af ro mn am e'.
+ * O que faz: Executa a rotina principal de 'infer competencia from name' no contexto deste modulo.
+ * Entradas: Parametros esperados: fileName.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function inferCompetenciaFromName(fileName) {
   const m = fileName.match(/(\d{2})_(\d{4})/);
@@ -58,7 +70,10 @@ function inferCompetenciaFromName(fileName) {
 
 /**
  * [DOC-FUNC] main
- * Objetivo: Executa a rotina de 'm ai n'.
+ * O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function main() {
   const input = process.argv[2];

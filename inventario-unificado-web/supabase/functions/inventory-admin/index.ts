@@ -20,7 +20,10 @@ type Action =
 
 /**
  * [DOC-FUNC] getAdminClient
- * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ * O que faz: Consulta dados de 'get admin client' na fonte principal (API, banco ou cache).
+ * Entradas: Sem parametros obrigatorios.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -37,7 +40,10 @@ function getAdminClient() {
 
 /**
  * [DOC-FUNC] getUserClient
- * Objetivo: Executa a rotina de 'g et us er cl ie nt'.
+ * O que faz: Consulta dados de 'get user client' na fonte principal (API, banco ou cache).
+ * Entradas: Parametros esperados: authHeader.
+ * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
+ * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
  */
 function getUserClient(authHeader: string) {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -55,7 +61,10 @@ function getUserClient(authHeader: string) {
 
 /**
  * [DOC-FUNC] resolveAuthActor
- * Objetivo: Executa a rotina de 'r es ol ve au th ac to r'.
+ * O que faz: Monta estrutura de 'resolve auth actor' a partir de dados intermediarios do modulo.
+ * Entradas: Parametros esperados: req, supabaseAdmin.
+ * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
+ * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
  */
 async function resolveAuthActor(
   req: Request,
@@ -123,7 +132,10 @@ async function resolveAuthActor(
 
 /**
  * [DOC-FUNC] badRequest
- * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ * O que faz: Executa a rotina principal de 'bad request' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
@@ -131,16 +143,15 @@ function badRequest(message: string) {
 
 /**
  * [DOC-FUNC] isMissingPisoTable
- * Objetivo: Executa a rotina de 'i sm is si ng pi so ta bl e'.
+ * O que faz: Executa a rotina principal de 'is missing piso table' no contexto deste modulo.
+ * Entradas: Parametros esperados: message.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function isMissingPisoTable(message: string): boolean {
   return /relation\s+"?piso"?\s+does not exist/i.test(message);
 }
 
-/**
- * [DOC-FUNC] resolveCdPiso
- * Objetivo: Executa a rotina de 'r es ol ve cd pi so'.
- */
 async function resolveCdPiso(
   supabase: ReturnType<typeof getAdminClient>,
   payload: Record<string, unknown>,
@@ -195,7 +206,10 @@ async function resolveCdPiso(
 
 /**
  * [DOC-FUNC] enrichSetoresComPiso
- * Objetivo: Executa a rotina de 'e nr ic hs et or es co mp is o'.
+ * O que faz: Executa a rotina principal de 'enrich setores com piso' no contexto deste modulo.
+ * Entradas: Parametros esperados: setores.
+ * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
+ * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
  */
 function enrichSetoresComPiso(setores: any[]): any[] {
   return [...(setores || [])]
