@@ -9,10 +9,10 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * [DOC-FUNC] loadEnvLocal
- * O que faz: Consulta dados de 'load env local' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'loadEnvLocal' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
@@ -55,10 +55,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 /**
  * [DOC-FUNC] normHeader
- * O que faz: Executa a rotina principal de 'norm header' no contexto deste modulo.
- * Entradas: Parametros esperados: v.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'normHeader' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (v) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function normHeader(v) {
   return String(v || "")
@@ -71,10 +71,10 @@ function normHeader(v) {
 
 /**
  * [DOC-FUNC] pickHeaderIndex
- * O que faz: Executa a rotina principal de 'pick header index' no contexto deste modulo.
- * Entradas: Parametros esperados: headers, aliases.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'pickHeaderIndex' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (headers, aliases) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
@@ -88,10 +88,10 @@ function pickHeaderIndex(headers, aliases) {
 
 /**
  * [DOC-FUNC] toText
- * O que faz: Padroniza dados de 'to text' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: v.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Orquestra a etapa 'toText' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (v) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function toText(v) {
   const s = String(v ?? "").replace(/\s+/g, " ").trim();
@@ -103,10 +103,10 @@ function toText(v) {
 
 /**
  * [DOC-FUNC] normalizeIp
- * O que faz: Padroniza dados de 'normalize ip' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: ip.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizeIp', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (ip) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizeIp(ip) {
   const txt = toText(ip);
@@ -119,10 +119,10 @@ function normalizeIp(ip) {
 
 /**
  * [DOC-FUNC] normalizeMac
- * O que faz: Padroniza dados de 'normalize mac' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: mac.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizeMac', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (mac) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizeMac(mac) {
   const txt = toText(mac);
@@ -134,10 +134,10 @@ function normalizeMac(mac) {
 
 /**
  * [DOC-FUNC] inferMarca
- * O que faz: Executa a rotina principal de 'infer marca' no contexto deste modulo.
- * Entradas: Parametros esperados: modelo.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'inferMarca' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (modelo) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function inferMarca(modelo) {
   const m = String(modelo || "").toLowerCase();
@@ -149,10 +149,10 @@ function inferMarca(modelo) {
 
 /**
  * [DOC-FUNC] detectarHeader
- * O que faz: Executa a rotina principal de 'detectar header' no contexto deste modulo.
- * Entradas: Parametros esperados: rows.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'detectarHeader' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (rows) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 30); i++) {
@@ -168,10 +168,10 @@ function detectarHeader(rows) {
 
 /**
  * [DOC-FUNC] fetchBaseContext
- * O que faz: Consulta dados de 'fetch base context' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'fetchBaseContext' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function fetchBaseContext() {
   const [empresasRes, tiposRes, pisosRes, setoresRes, equipamentosRes] = await Promise.all([
@@ -217,10 +217,10 @@ async function fetchBaseContext() {
 
 /**
  * [DOC-FUNC] pisoKey
- * O que faz: Executa a rotina principal de 'piso key' no contexto deste modulo.
- * Entradas: Parametros esperados: nomePiso.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Normaliza valores na funcao 'pisoKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (nomePiso) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function pisoKey(nomePiso) {
   return String(nomePiso || "").trim().toLowerCase();
@@ -228,10 +228,10 @@ function pisoKey(nomePiso) {
 
 /**
  * [DOC-FUNC] setorKey
- * O que faz: Executa a rotina principal de 'setor key' no contexto deste modulo.
- * Entradas: Parametros esperados: cdPiso, nomeSetor.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Normaliza valores na funcao 'setorKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (cdPiso, nomeSetor) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function setorKey(cdPiso, nomeSetor) {
   return `${cdPiso}::${String(nomeSetor || "").trim().toLowerCase()}`;
@@ -239,10 +239,10 @@ function setorKey(cdPiso, nomeSetor) {
 
 /**
  * [DOC-FUNC] equipamentoKey
- * O que faz: Executa a rotina principal de 'equipamento key' no contexto deste modulo.
- * Entradas: Parametros esperados: modelo.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Normaliza valores na funcao 'equipamentoKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (modelo) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function equipamentoKey(modelo) {
   return String(modelo || "").trim().toLowerCase();
@@ -250,10 +250,10 @@ function equipamentoKey(modelo) {
 
 /**
  * [DOC-FUNC] ensurePiso
- * O que faz: Executa a rotina principal de 'ensure piso' no contexto deste modulo.
- * Entradas: Parametros esperados: nomePiso, cachePisos.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'ensurePiso' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (nomePiso, cachePisos) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function ensurePiso(nomePiso, cachePisos) {
   const cleanNome = toText(nomePiso) || "NAO INFORMADO";
@@ -272,10 +272,10 @@ async function ensurePiso(nomePiso, cachePisos) {
 
 /**
  * [DOC-FUNC] ensureSetor
- * O que faz: Executa a rotina principal de 'ensure setor' no contexto deste modulo.
- * Entradas: Parametros esperados: cdPiso, nomeSetor, cacheSetores.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'ensureSetor' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (cdPiso, nomeSetor, cacheSetores) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
   const cleanSetor = toText(nomeSetor) || "IMPRESSORAS";
@@ -299,10 +299,10 @@ async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
 
 /**
  * [DOC-FUNC] ensureEquipamento
- * O que faz: Executa a rotina principal de 'ensure equipamento' no contexto deste modulo.
- * Entradas: Parametros esperados: modelo, marca, context, cacheEquipamentos.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'ensureEquipamento' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (modelo, marca, context, cacheEquipamentos) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
   const cleanModelo = toText(modelo);
@@ -332,10 +332,10 @@ async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
 
 /**
  * [DOC-FUNC] carregarInventarioExistente
- * O que faz: Consulta dados de 'carregar inventario existente' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'carregarInventarioExistente' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function carregarInventarioExistente() {
   const { data, error } = await supabase
@@ -360,10 +360,10 @@ async function carregarInventarioExistente() {
 
 /**
  * [DOC-FUNC] main
- * O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'main' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 async function main() {
   const fileArg = process.argv[2];

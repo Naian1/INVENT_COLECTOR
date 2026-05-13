@@ -14,8 +14,9 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 
 ## Escopo desta rodada
 
-- Arquivos de codigo anotados: 131
-- Linhas de codigo no escopo: 43726
+- Arquivos de codigo no escopo: 130
+- Arquivos com cabecalho `DOC-CODEMAP`: 129
+- Linhas de codigo no escopo: 42914
 - Comentarios de funcao (`DOC-FUNC`) ativos: 779
 
 ## Como estudar
@@ -31,6 +32,12 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 - `Entradas`: parametros esperados pela assinatura.
 - `Como executa`: resumo do processamento principal e validacoes.
 - `Retorno/Efeitos`: o que devolve e efeitos relevantes no fluxo.
+
+## Nivel de detalhe aplicado
+
+- Os comentarios foram enriquecidos para linguagem didatica, com foco em leitura por iniciantes.
+- O texto descreve explicitamente passos de validacao, transformacao, consulta/escrita e tratamento de erro quando presentes.
+- A navegacao por linha foi atualizada em `docs/18-mapa-codigo-linhas-tcc.md` para bater com a versao atual do codigo.
 
 ## Observacao importante
 

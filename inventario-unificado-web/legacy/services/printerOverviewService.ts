@@ -54,10 +54,10 @@ type SupplyRow = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Consulta informacoes na funcao 'toFiniteNumber' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (value) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -66,10 +66,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] getPrintersOverview
- * O que faz: Consulta dados de 'get printers overview' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getPrintersOverview' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getPrintersOverview(): Promise<ServiceResult<PrinterOverviewItem[]>> {
   const supabase = getSupabaseServerClient();

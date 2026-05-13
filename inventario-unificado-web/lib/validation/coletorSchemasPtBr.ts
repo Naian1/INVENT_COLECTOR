@@ -115,10 +115,10 @@ export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema
 
 /**
  * [DOC-FUNC] toLote
- * O que faz: Padroniza dados de 'to lote' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: payload.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Orquestra a etapa 'toLote' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (payload) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
@@ -157,10 +157,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
 
 /**
  * [DOC-FUNC] normalizarPayloadColetorPtParaLote
- * O que faz: Padroniza dados de 'normalizar payload coletor pt para lote' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: payload.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarPayloadColetorPtParaLote', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt

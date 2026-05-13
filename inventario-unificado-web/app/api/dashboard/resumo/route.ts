@@ -8,10 +8,10 @@ import { buscarResumoDashboard } from "@/services/resumoDashboardService";
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest) {
   const auth = await authenticateApiRequest(request);

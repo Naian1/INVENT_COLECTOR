@@ -12,10 +12,10 @@ import { ingerirTelemetriaColetorPt } from "@/services/coletorTelemetriaPtServic
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
- * Entradas: Parametros esperados: request.
- * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
- * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
+ * O que faz: Implementa o endpoint HTTP POST 'POST', recebendo dados para criacao, ingestao ou processamento.
+ * Entradas: Consome body da requisicao, identidade/permissoes e argumentos auxiliares; assinatura local: request.
+ * Como executa: Valida o corpo recebido, aplica regras de negocio, chama servicos de escrita/processamento e concentra tratamento de excecoes.
+ * Retorno/Efeitos: Retorna JSON com resultado da operacao e status HTTP adequado; pode gerar persistencia, auditoria e eventos internos.
  */
 export async function POST(request: Request) {
   const authResult = validateCollectorBearerToken(request.headers.get("authorization"));

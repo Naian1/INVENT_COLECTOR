@@ -8,8 +8,10 @@ import type { MetricasImpressora } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] buscarMetricasImpressoraPorPeriodo
- * O que faz: Consulta dados de 'buscar metricas impressora por periodo' na fonte principal (API, banco ou cache).
- * Entradas: Recebe filtros/chaves de busca quando informados e valida o formato basico.
+ * O que faz: Consulta informacoes na funcao 'buscarMetricasImpressoraPorPeriodo' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (impressoraId, de, ate) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  * Processamento: Executa a consulta, trata cenarios de erro e normaliza o resultado.
  * Retorno/Efeitos: Retorna os dados consolidados; em falha, propaga excecao/erro controlado.
  */

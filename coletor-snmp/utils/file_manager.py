@@ -31,10 +31,10 @@ if is_history_enabled():
 
 
 # [DOC-FUNC] load_printers
-# O que faz: Consulta dados de 'load printers' na fonte principal (API, banco ou cache).
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao 'load_printers' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def load_printers():
     if os.path.exists(PRINTERS_FILE):
         with open(PRINTERS_FILE, "r", encoding="utf-8") as f:
@@ -43,20 +43,20 @@ def load_printers():
 
 
 # [DOC-FUNC] save_printers
-# O que faz: Executa a rotina principal de 'save printers' no contexto deste modulo.
-# Entradas: Parametros esperados: printers.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Grava novos dados na funcao 'save_printers', aplicando validacoes para preservar integridade do dominio.
+# Entradas: Recebe payload/chaves (printers) e verifica campos obrigatorios antes da persistencia.
+# Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+# Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
 def save_printers(printers):
     with open(PRINTERS_FILE, "w", encoding="utf-8") as f:
         json.dump(printers, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_settings
-# O que faz: Consulta dados de 'load settings' na fonte principal (API, banco ou cache).
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao 'load_settings' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
@@ -65,20 +65,20 @@ def load_settings():
 
 
 # [DOC-FUNC] save_settings
-# O que faz: Executa a rotina principal de 'save settings' no contexto deste modulo.
-# Entradas: Parametros esperados: settings.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Grava novos dados na funcao 'save_settings', aplicando validacoes para preservar integridade do dominio.
+# Entradas: Recebe payload/chaves (settings) e verifica campos obrigatorios antes da persistencia.
+# Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+# Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
 def save_settings(settings):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(settings, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_chamados
-# O que faz: Consulta dados de 'load chamados' na fonte principal (API, banco ou cache).
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao 'load_chamados' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def load_chamados():
     if os.path.exists(CHAMADOS_FILE):
         with open(CHAMADOS_FILE, "r", encoding="utf-8") as f:
@@ -87,30 +87,30 @@ def load_chamados():
 
 
 # [DOC-FUNC] init_chamados
-# O que faz: Executa a rotina principal de 'init chamados' no contexto deste modulo.
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa 'init_chamados' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def init_chamados():
     if not os.path.exists(CHAMADOS_FILE):
         save_chamados({})
 
 
 # [DOC-FUNC] save_chamados
-# O que faz: Executa a rotina principal de 'save chamados' no contexto deste modulo.
-# Entradas: Parametros esperados: chamados.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Grava novos dados na funcao 'save_chamados', aplicando validacoes para preservar integridade do dominio.
+# Entradas: Recebe payload/chaves (chamados) e verifica campos obrigatorios antes da persistencia.
+# Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+# Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
 def save_chamados(chamados):
     with open(CHAMADOS_FILE, "w", encoding="utf-8") as f:
         json.dump(chamados, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] save_history
-# O que faz: Executa a rotina principal de 'save history' no contexto deste modulo.
-# Entradas: Parametros esperados: ip, data.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Grava novos dados na funcao 'save_history', aplicando validacoes para preservar integridade do dominio.
+# Entradas: Recebe payload/chaves (ip, data) e verifica campos obrigatorios antes da persistencia.
+# Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+# Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
 def save_history(ip, data):
     if not is_history_enabled():
         return

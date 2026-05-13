@@ -13,10 +13,10 @@ interface SelectProps {
 
 /**
  * [DOC-FUNC] Select
- * O que faz: Executa a rotina principal de 'select' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'Select' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados ({ value, onValueChange, children }) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function Select({ value, onValueChange, children }: SelectProps) {
   return (
@@ -33,10 +33,10 @@ const SelectContext = React.createContext<{
 
 /**
  * [DOC-FUNC] SelectTrigger
- * O que faz: Executa a rotina principal de 'select trigger' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'SelectTrigger' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function SelectTrigger({
   children,
@@ -63,10 +63,10 @@ export function SelectTrigger({
 
 /**
  * [DOC-FUNC] SelectValue
- * O que faz: Executa a rotina principal de 'select value' no contexto deste modulo.
- * Entradas: Parametros esperados: placeholder.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'SelectValue' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados ({ placeholder }) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   const context = React.useContext(SelectContext);
@@ -75,10 +75,10 @@ export function SelectValue({ placeholder }: { placeholder?: string }) {
 
 /**
  * [DOC-FUNC] SelectContent
- * O que faz: Executa a rotina principal de 'select content' no contexto deste modulo.
- * Entradas: Parametros esperados: children.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'SelectContent' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados ({ children }) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function SelectContent({ children }: { children: ReactNode }) {
   return (
@@ -90,10 +90,10 @@ export function SelectContent({ children }: { children: ReactNode }) {
 
 /**
  * [DOC-FUNC] SelectItem
- * O que faz: Executa a rotina principal de 'select item' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'SelectItem' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function SelectItem({
   value,

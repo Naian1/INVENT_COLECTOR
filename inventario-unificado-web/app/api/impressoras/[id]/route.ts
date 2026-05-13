@@ -16,10 +16,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request, context.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request, context.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
@@ -43,10 +43,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
 
 /**
  * [DOC-FUNC] PATCH
- * O que faz: Executa a rotina principal de 'patch' no contexto deste modulo.
- * Entradas: Parametros esperados: request, context.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Implementa o endpoint HTTP PATCH 'PATCH', alterando parcialmente um recurso conforme a regra da rota.
+ * Entradas: Recebe id/chave do recurso, campos mutaveis e contexto de seguranca; assinatura local: request, context.
+ * Como executa: Confere pre-condicoes e autorizacao, executa a mutacao no servico/repositorio e traduz falhas em resposta HTTP clara.
+ * Retorno/Efeitos: Responde com status e corpo consistentes com a mudanca aplicada (atualizacao, remocao ou inativacao).
  */
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request, { requireAdmin: true });

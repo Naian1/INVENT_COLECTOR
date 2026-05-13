@@ -8,10 +8,10 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * [DOC-FUNC] validarCompetencia
- * O que faz: Executa a rotina principal de 'validar competencia' no contexto deste modulo.
- * Entradas: Parametros esperados: competencia.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'validarCompetencia' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (competencia) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
@@ -19,10 +19,10 @@ function validarCompetencia(competencia: string): boolean {
 
 /**
  * [DOC-FUNC] limparTexto
- * O que faz: Remove ou inativa dados de 'limpar texto' conforme politica do sistema.
- * Entradas: Parametros esperados: value.
- * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
- * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
+ * O que faz: Normaliza valores na funcao 'limparTexto', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function limparTexto(value: string | null): string | null {
   if (!value) return null;
@@ -32,10 +32,10 @@ function limparTexto(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest) {
   try {

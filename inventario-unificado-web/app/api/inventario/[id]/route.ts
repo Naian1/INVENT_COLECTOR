@@ -16,10 +16,10 @@ import { CreateInventarioSchema } from '@/types/inventario';
 
 /**
  * [DOC-FUNC] parseIdOrThrow
- * O que faz: Padroniza dados de 'parse id or throw' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: raw.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'parseIdOrThrow', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function parseIdOrThrow(raw: string) {
   if (!/^\d+$/.test(raw)) {
@@ -45,10 +45,10 @@ const UpdateInventarioSchema = CreateInventarioSchema.partial();
 // GET /api/inventario/[id] - get specific inventario item
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request, params.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request, { params }.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -75,10 +75,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // PUT /api/inventario/[id] - update inventario item
 /**
  * [DOC-FUNC] PUT
- * O que faz: Executa a rotina principal de 'put' no contexto deste modulo.
- * Entradas: Parametros esperados: request, params.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Implementa o endpoint HTTP PUT 'PUT', alterando o estado de um recurso conforme a regra da rota.
+ * Entradas: Recebe id/chave do recurso, payload de alteracao e contexto de seguranca; assinatura local: request, { params }.
+ * Como executa: Confere pre-condicoes e autorizacao, executa a mutacao no servico/repositorio e traduz falhas em resposta HTTP clara.
+ * Retorno/Efeitos: Responde com status e corpo consistentes com a mudanca aplicada (atualizacao, remocao ou inativacao).
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -114,10 +114,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 // DELETE /api/inventario/[id] - delete inventario item
 /**
  * [DOC-FUNC] DELETE
- * O que faz: Remove ou inativa dados de 'delete' conforme politica do sistema.
- * Entradas: Parametros esperados: request, params.
- * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
- * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
+ * O que faz: Implementa o endpoint HTTP DELETE 'DELETE', removendo ou inativando um recurso conforme a regra da rota.
+ * Entradas: Recebe id/chave do recurso e contexto de seguranca; assinatura local: request, { params }.
+ * Como executa: Confere pre-condicoes e autorizacao, executa a exclusao logica/fisica no servico e padroniza erros de falha.
+ * Retorno/Efeitos: Responde com status e corpo coerentes com a remocao aplicada e com os bloqueios de integridade.
  */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';

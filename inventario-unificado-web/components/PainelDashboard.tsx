@@ -128,10 +128,10 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] formatNumber
- * O que faz: Padroniza dados de 'format number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatNumber', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
@@ -139,10 +139,10 @@ function formatNumber(value: number) {
 
 /**
  * [DOC-FUNC] formatCurrency
- * O que faz: Padroniza dados de 'format currency' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatCurrency', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
@@ -154,10 +154,10 @@ function formatCurrency(value: number) {
 
 /**
  * [DOC-FUNC] formatNivel
- * O que faz: Padroniza dados de 'format nivel' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatNivel', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -166,10 +166,10 @@ function formatNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] formatDateTime
- * O que faz: Padroniza dados de 'format date time' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatDateTime', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatDateTime(value: string | null) {
   if (!value) return "-";
@@ -180,10 +180,10 @@ function formatDateTime(value: string | null) {
 
 /**
  * [DOC-FUNC] normalizarModeloKey
- * O que faz: Padroniza dados de 'normalizar modelo key' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarModeloKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarModeloKey(value: string) {
   return value.trim().replace(/\s+/g, " ").toUpperCase();
@@ -191,10 +191,10 @@ function normalizarModeloKey(value: string) {
 
 /**
  * [DOC-FUNC] normalizarPatrimonioKey
- * O que faz: Padroniza dados de 'normalizar patrimonio key' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarPatrimonioKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarPatrimonioKey(value: string) {
   return value.trim().replace(/\s+/g, "").toUpperCase();
@@ -202,10 +202,10 @@ function normalizarPatrimonioKey(value: string) {
 
 /**
  * [DOC-FUNC] normalizarIpKey
- * O que faz: Padroniza dados de 'normalizar ip key' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarIpKey', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarIpKey(value: string) {
   return value.trim().replace(/\/32$/, "");
@@ -213,10 +213,10 @@ function normalizarIpKey(value: string) {
 
 /**
  * [DOC-FUNC] formatDateInput
- * O que faz: Padroniza dados de 'format date input' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: date.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatDateInput', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (date) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatDateInput(date: Date) {
   const year = date.getFullYear();
@@ -227,10 +227,10 @@ function formatDateInput(date: Date) {
 
 /**
  * [DOC-FUNC] parseDataReferencia
- * O que faz: Padroniza dados de 'parse data referencia' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'parseDataReferencia', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function parseDataReferencia(value: unknown): string | null {
   const raw = String(value ?? "").trim();
@@ -254,10 +254,10 @@ function parseDataReferencia(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] formatDataReferencia
- * O que faz: Padroniza dados de 'format data referencia' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatDataReferencia', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatDataReferencia(value: string | null) {
   if (!value) return "-";
@@ -270,10 +270,10 @@ function formatDataReferencia(value: string | null) {
 
 /**
  * [DOC-FUNC] parseTarifaNumber
- * O que faz: Padroniza dados de 'parse tarifa number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'parseTarifaNumber', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function parseTarifaNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -302,10 +302,10 @@ function parseTarifaNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] parseContadorNumber
- * O que faz: Padroniza dados de 'parse contador number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'parseContadorNumber', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function parseContadorNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
@@ -365,10 +365,10 @@ function parseContadorNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] normalizarCabecalhoPlanilha
- * O que faz: Padroniza dados de 'normalizar cabecalho planilha' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarCabecalhoPlanilha', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarCabecalhoPlanilha(value: unknown) {
   return String(value ?? "")
@@ -381,10 +381,10 @@ function normalizarCabecalhoPlanilha(value: unknown) {
 
 /**
  * [DOC-FUNC] toIsoRangeBoundary
- * O que faz: Padroniza dados de 'to iso range boundary' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: dateInput, endOfDay.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Orquestra a etapa 'toIsoRangeBoundary' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (dateInput, endOfDay) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
   const suffix = endOfDay ? "T23:59:59.999" : "T00:00:00.000";
@@ -395,10 +395,10 @@ function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
 
 /**
  * [DOC-FUNC] montarGraficoLinhas
- * O que faz: Monta estrutura de 'montar grafico linhas' a partir de dados intermediarios do modulo.
- * Entradas: Parametros esperados: points.
- * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
- * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+ * O que faz: Monta/comp?e estruturas na funcao 'montarGraficoLinhas', consolidando campos dispersos em um objeto util para o fluxo.
+ * Entradas: Recebe parametros de origem (points) com dados parciais e metadados para composicao final.
+ * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+ * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
  */
 function montarGraficoLinhas(points: ChartPoint[]) {
   if (!points.length) {
@@ -443,10 +443,10 @@ function montarGraficoLinhas(points: ChartPoint[]) {
 
 /**
  * [DOC-FUNC] importarTarifasPorArquivo
- * O que faz: Executa a rotina principal de 'importar tarifas por arquivo' no contexto deste modulo.
- * Entradas: Parametros esperados: file.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'importarTarifasPorArquivo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (file) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 async function importarTarifasPorArquivo(file: File) {
   const XLSX = await import("xlsx");
@@ -494,10 +494,10 @@ async function importarTarifasPorArquivo(file: File) {
 
 /**
  * [DOC-FUNC] importarBaseBilhetagemPorArquivo
- * O que faz: Executa a rotina principal de 'importar base bilhetagem por arquivo' no contexto deste modulo.
- * Entradas: Parametros esperados: file.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'importarBaseBilhetagemPorArquivo' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (file) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemBaseStorage> {
   const XLSX = await import("xlsx");
@@ -533,10 +533,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
   /**
    * [DOC-FUNC] findColumn
-   * O que faz: Executa a rotina principal de 'find column' no contexto deste modulo.
-   * Entradas: Parametros esperados: headers, predicates.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Consulta informacoes na funcao 'findColumn' e organiza o retorno para consumo pelas camadas superiores.
+   * Entradas: Recebe filtros/chaves (headers, predicates) e usa o contexto atual para montar a consulta na origem de dados.
+   * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+   * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
    */
   const findColumn = (headers: string[], predicates: string[]) =>
     headers.findIndex((cell) => predicates.some((token) => cell.includes(token)));
@@ -649,10 +649,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
   /**
    * [DOC-FUNC] registrarTarifaModelo
-   * O que faz: Cria registro de 'registrar tarifa modelo' aplicando regras de consistencia antes de persistir.
-   * Entradas: Parametros esperados: modeloKey, tarifa.
-   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
-   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
+   * O que faz: Grava novos dados na funcao 'registrarTarifaModelo', aplicando validacoes para preservar integridade do dominio.
+   * Entradas: Recebe payload/chaves (modeloKey, tarifa, pesoPaginas?) e verifica campos obrigatorios antes da persistencia.
+   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
    */
   const registrarTarifaModelo = (modeloKey: string, tarifa: number, pesoPaginas?: number) => {
     if (!modeloKey || !Number.isFinite(tarifa) || tarifa < 0) return;
@@ -762,10 +762,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
 
 /**
  * [DOC-FUNC] PainelDashboard
- * O que faz: Executa a rotina principal de 'painel dashboard' no contexto deste modulo.
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'PainelDashboard' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function PainelDashboard() {
   const [loading, setLoading] = useState(false);

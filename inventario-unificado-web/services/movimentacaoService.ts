@@ -7,10 +7,10 @@ import { Movimentacao, CreateMovimentacaoInput } from '@/types/movimentacao';
 
 /**
  * [DOC-FUNC] getMovimentacoes
- * O que faz: Consulta dados de 'get movimentacoes' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMovimentacoes' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -25,10 +25,10 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
 
 /**
  * [DOC-FUNC] getMovimentacaoById
- * O que faz: Consulta dados de 'get movimentacao by id' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: id.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMovimentacaoById' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (id) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getMovimentacaoById(id: number): Promise<Movimentacao | null> {
   const supabase = getSupabaseServerClient();
@@ -44,10 +44,10 @@ export async function getMovimentacaoById(id: number): Promise<Movimentacao | nu
 
 /**
  * [DOC-FUNC] getMovimentacoesByInventario
- * O que faz: Consulta dados de 'get movimentacoes by inventario' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: inventarioId.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMovimentacoesByInventario' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (inventarioId) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getMovimentacoesByInventario(inventarioId: number): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -63,10 +63,10 @@ export async function getMovimentacoesByInventario(inventarioId: number): Promis
 
 /**
  * [DOC-FUNC] getMovimentacoesByPatrimonio
- * O que faz: Consulta dados de 'get movimentacoes by patrimonio' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: patrimonio.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMovimentacoesByPatrimonio' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (patrimonio) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -82,10 +82,10 @@ export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<
 
 /**
  * [DOC-FUNC] getMovimentacoesBySetor
- * O que faz: Consulta dados de 'get movimentacoes by setor' na fonte principal (api, banco ou cache).
- * Entradas: Parametros esperados: setorId, limit.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMovimentacoesBySetor' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (setorId, limit) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getMovimentacoesBySetor(
   setorId: number,
@@ -105,10 +105,10 @@ export async function getMovimentacoesBySetor(
 
 /**
  * [DOC-FUNC] createMovimentacao
- * O que faz: Cria registro de 'create movimentacao' aplicando regras de consistencia antes de persistir.
- * Entradas: Parametros esperados: input.
- * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
- * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
+ * O que faz: Grava novos dados na funcao 'createMovimentacao', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (input) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 export async function createMovimentacao(
   input: CreateMovimentacaoInput,
@@ -126,10 +126,10 @@ export async function createMovimentacao(
 
 /**
  * [DOC-FUNC] getHistoricoEquipamento
- * O que faz: Consulta dados de 'get historico equipamento' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: patrimonio.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getHistoricoEquipamento' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (patrimonio) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getHistoricoEquipamento(patrimonio: string): Promise<{
   inventario: any;

@@ -46,10 +46,10 @@ export type PrinterStatusSupplies = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Orquestra a etapa 'toFiniteNumber' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -58,10 +58,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] isEmptyValue
- * O que faz: Executa a rotina principal de 'is empty value' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Avalia uma condicao booleana na funcao 'isEmptyValue' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (value) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
@@ -69,10 +69,10 @@ function isEmptyValue(value: unknown) {
 
 /**
  * [DOC-FUNC] isAlertOpen
- * O que faz: Executa a rotina principal de 'is alert open' no contexto deste modulo.
- * Entradas: Parametros esperados: alert.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Avalia uma condicao booleana na funcao 'isAlertOpen' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (alert, unknown>) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 function isAlertOpen(alert: Record<string, unknown>) {
   if (typeof alert.is_open === "boolean") return alert.is_open;
@@ -92,10 +92,10 @@ function isAlertOpen(alert: Record<string, unknown>) {
 
 /**
  * [DOC-FUNC] getPrinterStatusSupplies
- * O que faz: Consulta dados de 'get printer status supplies' na fonte principal (api, banco ou cache).
- * Entradas: Parametros esperados: printerId.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getPrinterStatusSupplies' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (printerId) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getPrinterStatusSupplies(
   printerId: string

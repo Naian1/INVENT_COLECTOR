@@ -148,8 +148,10 @@ export type CollectorTelemetryEvent = z.infer<typeof collectorTelemetryEventSche
 
 /**
  * [DOC-FUNC] normalizeSinglePayloadToBatch
- * O que faz: Normaliza e converte valores ligados a 'normalize single payload to batch' para um formato previsivel.
- * Entradas: Recebe valor bruto (texto, numero, data ou estrutura parcial).
+ * O que faz: Normaliza valores na funcao 'normalizeSinglePayloadToBatch', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */
@@ -192,8 +194,10 @@ function normalizeSinglePayloadToBatch(
 
 /**
  * [DOC-FUNC] normalizeCollectorTelemetryPayload
- * O que faz: Normaliza e converte valores ligados a 'normalize collector telemetry payload' para um formato previsivel.
- * Entradas: Recebe valor bruto (texto, numero, data ou estrutura parcial).
+ * O que faz: Normaliza valores na funcao 'normalizeCollectorTelemetryPayload', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (payload) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */

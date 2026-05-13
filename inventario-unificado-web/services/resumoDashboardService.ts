@@ -8,10 +8,10 @@ import type { ResumoDashboard } from "@/types/impressora";
 
 /**
  * [DOC-FUNC] getInicioDoMesUtc
- * O que faz: Consulta dados de 'get inicio do mes utc' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: now.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getInicioDoMesUtc' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (now) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getInicioDoMesUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -19,10 +19,10 @@ function getInicioDoMesUtc(now: Date) {
 
 /**
  * [DOC-FUNC] calcularPaginasMesAtual
- * O que faz: Executa a rotina principal de 'calcular paginas mes atual' no contexto deste modulo.
- * Entradas: Parametros esperados: agoraIso.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'calcularPaginasMesAtual' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (agoraIso) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function calcularPaginasMesAtual(agoraIso: string) {
   const supabase = getSupabaseServerClient();
@@ -60,10 +60,10 @@ async function calcularPaginasMesAtual(agoraIso: string) {
 
 /**
  * [DOC-FUNC] calcularContadoresOperacionais
- * O que faz: Executa a rotina principal de 'calcular contadores operacionais' no contexto deste modulo.
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'calcularContadoresOperacionais' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 async function calcularContadoresOperacionais() {
   const visaoGeral = await listarVisaoGeralImpressoras();
@@ -96,10 +96,10 @@ async function calcularContadoresOperacionais() {
 
 /**
  * [DOC-FUNC] buscarResumoDashboard
- * O que faz: Consulta dados de 'buscar resumo dashboard' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'buscarResumoDashboard' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function buscarResumoDashboard(): Promise<ResumoDashboard> {
   const supabase = getSupabaseServerClient();

@@ -41,10 +41,10 @@ const HISTORICO_PAGINAS_DIAS_MAX = 92;
 
 /**
  * [DOC-FUNC] clamp
- * O que faz: Executa a rotina principal de 'clamp' no contexto deste modulo.
- * Entradas: Parametros esperados: value, min, max.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'clamp' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value, min, max) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -52,10 +52,10 @@ function clamp(value: number, min: number, max: number) {
 
 /**
  * [DOC-FUNC] normalizarFiltro
- * O que faz: Padroniza dados de 'normalizar filtro' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarFiltro', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarFiltro(value: string) {
   return value.trim().toLowerCase();
@@ -63,10 +63,10 @@ function normalizarFiltro(value: string) {
 
 /**
  * [DOC-FUNC] nomeSetor
- * O que faz: Executa a rotina principal de 'nome setor' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'nomeSetor' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function nomeSetor(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -75,10 +75,10 @@ function nomeSetor(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] nomeLocalizacao
- * O que faz: Executa a rotina principal de 'nome localizacao' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'nomeLocalizacao' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function nomeLocalizacao(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -87,10 +87,10 @@ function nomeLocalizacao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] inicioPeriodoIso
- * O que faz: Executa a rotina principal de 'inicio periodo iso' no contexto deste modulo.
- * Entradas: Parametros esperados: dias.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'inicioPeriodoIso' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (dias) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function inicioPeriodoIso(dias: number) {
   const now = new Date();
@@ -102,10 +102,10 @@ function inicioPeriodoIso(dias: number) {
 
 /**
  * [DOC-FUNC] chaveBucket
- * O que faz: Executa a rotina principal de 'chave bucket' no contexto deste modulo.
- * Entradas: Parametros esperados: dataIso, agrupamento.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'chaveBucket' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (dataIso, agrupamento) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
   const dt = new Date(dataIso);
@@ -118,10 +118,10 @@ function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
 
 /**
  * [DOC-FUNC] buscarLeiturasHistoricas
- * O que faz: Consulta dados de 'buscar leituras historicas' na fonte principal (api, banco ou cache).
- * Entradas: Parametros esperados: impressoraIds, deIso, ateIso.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'buscarLeiturasHistoricas' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (impressoraIds, deIso, ateIso) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function buscarLeiturasHistoricas(
   impressoraIds: string[],
@@ -167,10 +167,10 @@ async function buscarLeiturasHistoricas(
 
 /**
  * [DOC-FUNC] buscarFaixaHistoricaGlobal
- * O que faz: Consulta dados de 'buscar faixa historica global' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'buscarFaixaHistoricaGlobal' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
   const supabase = getSupabaseServerClient();
@@ -197,10 +197,10 @@ async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
 
 /**
  * [DOC-FUNC] buscarDashboardAnalitico
- * O que faz: Consulta dados de 'buscar dashboard analitico' na fonte principal (api, banco ou cache).
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'buscarDashboardAnalitico' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function buscarDashboardAnalitico(options?: {
   dias?: number;

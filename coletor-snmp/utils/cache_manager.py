@@ -119,10 +119,10 @@ def _oid_suffix(oid_base: str, full_oid: str) -> str:
 
 
 # [DOC-FUNC] _index_sort_key
-# O que faz: Executa a rotina principal de 'index sort key' no contexto deste modulo.
-# Entradas: Parametros esperados: index.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Normaliza valores na funcao '_index_sort_key', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (index) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _index_sort_key(index: str):
     parts = []
     for chunk in index.split("."):
@@ -633,10 +633,10 @@ def _coletar_e_enviar_impressora(
 
 
 # [DOC-FUNC] atualizar_cache
-# O que faz: Atualiza 'atualizar cache' preservando integridade dos dados e regras de negocio.
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
-# Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+# O que faz: Atualiza dados na funcao 'atualizar_cache', mantendo consistencia entre o estado atual e as novas informacoes.
+# Entradas: Recebe identificador e campos para alteracao (sem parametros obrigatorios), com validacao de formato e regra de negocio.
+# Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
+# Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
 def atualizar_cache():
     """Atualiza o cache local e envia 1 payload por impressora para a API nova."""
     logging.info("Iniciando atualizacao do cache.")

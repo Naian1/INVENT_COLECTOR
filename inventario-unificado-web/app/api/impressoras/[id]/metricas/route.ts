@@ -13,10 +13,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] getDefaultMonthRange
- * O que faz: Consulta dados de 'get default month range' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getDefaultMonthRange' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getDefaultMonthRange() {
   const now = new Date();
@@ -29,10 +29,10 @@ function getDefaultMonthRange() {
 
 /**
  * [DOC-FUNC] isValidDateString
- * O que faz: Executa a rotina principal de 'is valid date string' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Avalia uma condicao booleana na funcao 'isValidDateString' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (value) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 function isValidDateString(value: string) {
   return !Number.isNaN(Date.parse(value));
@@ -40,10 +40,10 @@ function isValidDateString(value: string) {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request, context.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request, context.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);

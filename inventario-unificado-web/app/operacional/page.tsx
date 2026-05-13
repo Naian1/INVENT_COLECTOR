@@ -6,10 +6,10 @@ import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasSer
 
 /**
  * [DOC-FUNC] formatSupplyLevel
- * O que faz: Padroniza dados de 'format supply level' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: level.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'formatSupplyLevel', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (level) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function formatSupplyLevel(level: number | null) {
   if (level === null || Number.isNaN(level)) return "-";

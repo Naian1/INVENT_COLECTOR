@@ -10,10 +10,10 @@ type ConsolidadoRow = Record<string, unknown>;
 
 /**
  * [DOC-FUNC] normalizarHeader
- * O que faz: Padroniza dados de 'normalizar header' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: header.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarHeader', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (header) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarHeader(header: string) {
   return header
@@ -26,10 +26,10 @@ function normalizarHeader(header: string) {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarTexto', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -39,10 +39,10 @@ function normalizarTexto(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizarStatus
- * O que faz: Padroniza dados de 'normalizar status' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarStatus', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarStatus(value: string | null): string | null {
   if (!value) return null;
@@ -61,10 +61,10 @@ function normalizarStatus(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] mapearLinha
- * O que faz: Executa a rotina principal de 'mapear linha' no contexto deste modulo.
- * Entradas: Parametros esperados: row.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Monta/comp?e estruturas na funcao 'mapearLinha', consolidando campos dispersos em um objeto util para o fluxo.
+ * Entradas: Recebe parametros de origem (row) com dados parciais e metadados para composicao final.
+ * Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+ * Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
  */
 function mapearLinha(row: ConsolidadoRow) {
   const normalizado = new Map<string, unknown>();
@@ -74,10 +74,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
   /**
    * [DOC-FUNC] pick
-   * O que faz: Executa a rotina principal de 'pick' no contexto deste modulo.
-   * Entradas: Parametros esperados: aliases.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'pick' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (aliases) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const pick = (...aliases: string[]) => {
     for (const alias of aliases) {
@@ -89,10 +89,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
   /**
    * [DOC-FUNC] normalizarTimestamp
-   * O que faz: Padroniza dados de 'normalizar timestamp' para formato previsivel no restante do fluxo.
-   * Entradas: Parametros esperados: value.
-   * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-   * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+   * O que faz: Normaliza valores na funcao 'normalizarTimestamp', reduzindo variacoes de formato antes do processamento principal.
+   * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+   * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+   * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
    */
   const normalizarTimestamp = (value: string | null) => {
     if (!value) return null;
@@ -167,10 +167,10 @@ function mapearLinha(row: ConsolidadoRow) {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * O que faz: Executa a rotina principal de 'validar competencia' no contexto deste modulo.
- * Entradas: Parametros esperados: competencia.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'validarCompetencia' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (competencia) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
@@ -178,10 +178,10 @@ function validarCompetencia(competencia: string): boolean {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Consulta dados de 'get' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Implementa o endpoint HTTP GET 'GET', usado para leitura de dados pela interface e por integracoes.
+ * Entradas: Le query params, cabecalhos/autenticacao e contexto da requisicao; assinatura local: request.
+ * Como executa: Valida filtros recebidos, consulta servicos/repositorios, trata erros de dominio e padroniza o payload de resposta.
+ * Retorno/Efeitos: Devolve JSON com status HTTP coerente (200/4xx/5xx), sem gravacao de estado no fluxo principal.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -209,10 +209,10 @@ export async function GET(request: NextRequest) {
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
- * Entradas: Parametros esperados: request.
- * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
- * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
+ * O que faz: Implementa o endpoint HTTP POST 'POST', recebendo dados para criacao, ingestao ou processamento.
+ * Entradas: Consome body da requisicao, identidade/permissoes e argumentos auxiliares; assinatura local: request.
+ * Como executa: Valida o corpo recebido, aplica regras de negocio, chama servicos de escrita/processamento e concentra tratamento de excecoes.
+ * Retorno/Efeitos: Retorna JSON com resultado da operacao e status HTTP adequado; pode gerar persistencia, auditoria e eventos internos.
  */
 export async function POST(request: NextRequest) {
   try {

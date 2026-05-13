@@ -101,10 +101,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] carregar
-   * O que faz: Consulta dados de 'carregar' na fonte principal (API, banco ou cache).
-   * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
-   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+   * O que faz: Orquestra a etapa 'carregar' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (filtros?) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const carregar = async (filtros?: { competencia?: string; patrimonio?: string }) => {
     setCarregando(true);
@@ -147,10 +147,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Executa a rotina principal de 'on submit' no contexto deste modulo.
-   * Entradas: Parametros esperados: event.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'onSubmit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

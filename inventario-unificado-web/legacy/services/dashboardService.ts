@@ -17,10 +17,10 @@ type DashboardSummary = {
 
 /**
  * [DOC-FUNC] getMonthStartIsoUtc
- * O que faz: Consulta dados de 'get month start iso utc' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: now.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getMonthStartIsoUtc' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (now) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getMonthStartIsoUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -28,10 +28,10 @@ function getMonthStartIsoUtc(now: Date) {
 
 /**
  * [DOC-FUNC] getPagesPrintedCurrentMonth
- * O que faz: Consulta dados de 'get pages printed current month' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: nowIso.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getPagesPrintedCurrentMonth' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (nowIso) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function getPagesPrintedCurrentMonth(nowIso: string) {
   const supabase = getSupabaseServerClient();
@@ -72,10 +72,10 @@ async function getPagesPrintedCurrentMonth(nowIso: string) {
 
 /**
  * [DOC-FUNC] getOperationalCountersFromOverview
- * O que faz: Consulta dados de 'get operational counters from overview' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getOperationalCountersFromOverview' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function getOperationalCountersFromOverview() {
   const overview = await getPrintersOverview();
@@ -111,10 +111,10 @@ async function getOperationalCountersFromOverview() {
 
 /**
  * [DOC-FUNC] getDashboardSummary
- * O que faz: Consulta dados de 'get dashboard summary' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getDashboardSummary' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const supabase = getSupabaseServerClient();

@@ -16,10 +16,10 @@ def _utc_now_iso() -> str:
 
 
 # [DOC-FUNC] _sanitize
-# O que faz: Executa a rotina principal de 'sanitize' no contexto deste m?dulo.
-# Entradas: Par?metros esperados: value, max_len.
-# Como executa: Valida precondi??es, processa regras de neg?cio e trata exce??es do fluxo.
-# Retorno/Efeitos: Retorna resultado ?til para a camada chamadora (dados, status ou erro).
+# O que faz: Normaliza valores na funcao '_sanitize', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value, max_len) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _sanitize(value: Any, max_len: int = 2400):
     if value is None:
         return None
@@ -42,10 +42,10 @@ def _sanitize(value: Any, max_len: int = 2400):
 
 
 # [DOC-FUNC] append_backend_trace
-# O que faz: Executa a rotina principal de 'append backend trace' no contexto deste modulo.
-# Entradas: Parametros esperados: event.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa 'append_backend_trace' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (event, payload) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

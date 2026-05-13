@@ -17,10 +17,10 @@ type SessionPayload = {
 
 /**
  * [DOC-FUNC] safeCompare
- * O que faz: Executa a rotina principal de 'safe compare' no contexto deste modulo.
- * Entradas: Parametros esperados: valueA, valueB.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'safeCompare' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (valueA, valueB) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -32,10 +32,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] getSessionSecret
- * O que faz: Consulta dados de 'get session secret' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getSessionSecret' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getSessionSecret() {
   const secret =
@@ -54,10 +54,10 @@ function getSessionSecret() {
 
 /**
  * [DOC-FUNC] getSessionCookieName
- * O que faz: Consulta dados de 'get session cookie name' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getSessionCookieName' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export function getSessionCookieName() {
   return SESSION_COOKIE_NAME;
@@ -65,10 +65,10 @@ export function getSessionCookieName() {
 
 /**
  * [DOC-FUNC] getSessionTtlSeconds
- * O que faz: Consulta dados de 'get session ttl seconds' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getSessionTtlSeconds' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export function getSessionTtlSeconds() {
   return SESSION_TTL_SECONDS;
@@ -98,10 +98,10 @@ export function buildSessionToken(input: {
 
 /**
  * [DOC-FUNC] readSessionToken
- * O que faz: Executa a rotina principal de 'read session token' no contexto deste modulo.
- * Entradas: Parametros esperados: token.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'readSessionToken' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (token) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export function readSessionToken(token: string | undefined | null) {
   if (!token) return null;
@@ -139,10 +139,10 @@ export function readSessionToken(token: string | undefined | null) {
 
 /**
  * [DOC-FUNC] sha256Hex
- * O que faz: Executa a rotina principal de 'sha256 hex' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Atualiza dados na funcao 'sha256Hex', mantendo consistencia entre o estado atual e as novas informacoes.
+ * Entradas: Recebe identificador e campos para alteracao (value), com validacao de formato e regra de negocio.
+ * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
+ * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
  */
 function sha256Hex(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -150,10 +150,10 @@ function sha256Hex(value: string) {
 
 /**
  * [DOC-FUNC] verifyPassword
- * O que faz: Executa a rotina principal de 'verify password' no contexto deste modulo.
- * Entradas: Parametros esperados: inputPassword, storedHash.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'verifyPassword' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (inputPassword, storedHash) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function verifyPassword(inputPassword: string, storedHash: string | null | undefined) {
   const normalizedHash = String(storedHash ?? "").trim();

@@ -24,10 +24,10 @@ const MAX_IMPORT_ROWS = 5000;
 
 /**
  * [DOC-FUNC] txt
- * O que faz: Executa a rotina principal de 'txt' no contexto deste modulo.
- * Entradas: Parametros esperados: v.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'txt' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (v) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function txt(v: unknown): string | null {
   if (v === null || v === undefined) return null;
@@ -37,10 +37,10 @@ function txt(v: unknown): string | null {
 
 /**
  * [DOC-FUNC] autoCgc
- * O que faz: Executa a rotina principal de 'auto cgc' no contexto deste modulo.
- * Entradas: Parametros esperados: nomeEmpresa.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'autoCgc' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (nomeEmpresa) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function autoCgc(nomeEmpresa: string) {
   return `AUTO-${nomeEmpresa.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18) || 'EMPRESA'}`;
@@ -48,10 +48,10 @@ function autoCgc(nomeEmpresa: string) {
 
 /**
  * [DOC-FUNC] upsertEmpresa
- * O que faz: Atualiza 'upsert empresa' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: supabase, row.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Grava novos dados na funcao 'upsertEmpresa', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (supabase, row) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient>, row: LinhaImportacao) {
   const nm_empresa = txt(row.nm_empresa) ?? 'SEM EMPRESA';
@@ -77,10 +77,10 @@ async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient
 
 /**
  * [DOC-FUNC] upsertTipo
- * O que faz: Atualiza 'upsert tipo' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: supabase, nomeTipo.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Grava novos dados na funcao 'upsertTipo', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (supabase, nomeTipo) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, nomeTipo: string) {
   const { data: existente } = await supabase
@@ -103,10 +103,10 @@ async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, 
 
 /**
  * [DOC-FUNC] upsertSetor
- * O que faz: Atualiza 'upsert setor' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: supabase, nomeSetor.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Grava novos dados na funcao 'upsertSetor', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (supabase, nomeSetor, dsSetor?) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>, nomeSetor: string, dsSetor?: string | null) {
   const { data: existente } = await supabase
@@ -129,10 +129,10 @@ async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>,
 
 /**
  * [DOC-FUNC] upsertEquipamento
- * O que faz: Atualiza 'upsert equipamento' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: supabase, params.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Grava novos dados na funcao 'upsertEquipamento', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (sem parametros obrigatorios) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 async function upsertEquipamento(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -177,10 +177,10 @@ async function upsertEquipamento(
 
 /**
  * [DOC-FUNC] upsertInventario
- * O que faz: Atualiza 'upsert inventario' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: supabase, params.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Grava novos dados na funcao 'upsertInventario', aplicando validacoes para preservar integridade do dominio.
+ * Entradas: Recebe payload/chaves (sem parametros obrigatorios) e verifica campos obrigatorios antes da persistencia.
+ * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+ * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
  */
 async function upsertInventario(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -237,10 +237,10 @@ async function upsertInventario(
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Sincroniza/enfila dados de 'post' entre camadas internas e servicos externos.
- * Entradas: Parametros esperados: request.
- * Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
- * Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
+ * O que faz: Implementa o endpoint HTTP POST 'POST', recebendo dados para criacao, ingestao ou processamento.
+ * Entradas: Consome body da requisicao, identidade/permissoes e argumentos auxiliares; assinatura local: request.
+ * Como executa: Valida o corpo recebido, aplica regras de negocio, chama servicos de escrita/processamento e concentra tratamento de excecoes.
+ * Retorno/Efeitos: Retorna JSON com resultado da operacao e status HTTP adequado; pode gerar persistencia, auditoria e eventos internos.
  */
 export async function POST(request: NextRequest) {
   try {

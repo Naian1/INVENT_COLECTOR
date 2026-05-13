@@ -12,10 +12,10 @@ interface DialogProps {
 
 /**
  * [DOC-FUNC] Dialog
- * O que faz: Executa a rotina principal de 'dialog' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'Dialog' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados ({ open, onOpenChange, children }) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useEffect(() => {
@@ -23,10 +23,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
     /**
      * [DOC-FUNC] handleKeyDown
-     * O que faz: Executa a rotina principal de 'handle key down' no contexto deste modulo.
-     * Entradas: Parametros esperados: event.
-     * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-     * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+     * O que faz: Normaliza valores na funcao 'handleKeyDown', reduzindo variacoes de formato antes do processamento principal.
+     * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (event) e trata nulos, strings vazias e tipos mistos.
+     * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+     * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
      */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -88,10 +88,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 /**
  * [DOC-FUNC] DialogContent
- * O que faz: Executa a rotina principal de 'dialog content' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'DialogContent' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function DialogContent({
   children,
@@ -105,10 +105,10 @@ export function DialogContent({
 
 /**
  * [DOC-FUNC] DialogHeader
- * O que faz: Executa a rotina principal de 'dialog header' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'DialogHeader' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function DialogHeader({
   children,
@@ -132,10 +132,10 @@ export function DialogHeader({
 
 /**
  * [DOC-FUNC] DialogTitle
- * O que faz: Executa a rotina principal de 'dialog title' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'DialogTitle' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function DialogTitle({
   children,
@@ -149,10 +149,10 @@ export function DialogTitle({
 
 /**
  * [DOC-FUNC] DialogDescription
- * O que faz: Executa a rotina principal de 'dialog description' no contexto deste modulo.
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'DialogDescription' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function DialogDescription({
   children,

@@ -29,10 +29,10 @@ type DevolucaoItem = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarTexto', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarTexto(value: unknown): string {
   return String(value ?? '')
@@ -43,10 +43,10 @@ function normalizarTexto(value: unknown): string {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'formatarDataHora' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
@@ -60,10 +60,10 @@ function formatarDataHora(value: string | null): string {
 
 /**
  * [DOC-FUNC] escapeCsvCell
- * O que faz: Executa a rotina principal de 'escape csv cell' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'escapeCsvCell' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function escapeCsvCell(value: unknown): string {
   const raw = String(value ?? '');
@@ -177,10 +177,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarPlanilha
-   * O que faz: Executa a rotina principal de 'exportar planilha' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'exportarPlanilha' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const exportarPlanilha = async () => {
     if (!filtrados.length) {
@@ -218,10 +218,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarCsv
-   * O que faz: Executa a rotina principal de 'exportar csv' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'exportarCsv' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const exportarCsv = () => {
     if (!filtrados.length) {
@@ -282,10 +282,10 @@ export default function InventarioDevolucaoPage() {
 
   /**
    * [DOC-FUNC] exportarPdf
-   * O que faz: Executa a rotina principal de 'exportar pdf' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'exportarPdf' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const exportarPdf = async () => {
     if (!gruposEmpresa.length) {

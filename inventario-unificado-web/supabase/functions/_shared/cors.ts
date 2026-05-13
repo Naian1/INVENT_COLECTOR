@@ -10,10 +10,10 @@ export const corsHeaders = {
 
 /**
  * [DOC-FUNC] jsonResponse
- * O que faz: Executa a rotina principal de 'json response' no contexto deste modulo.
- * Entradas: Parametros esperados: body, status.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'jsonResponse' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (body, status) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {

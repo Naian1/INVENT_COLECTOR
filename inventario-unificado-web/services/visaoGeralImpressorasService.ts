@@ -82,10 +82,10 @@ const STATUS_STALE_OFFLINE_MINUTES = 180;
 
 /**
  * [DOC-FUNC] normalizarIp
- * O que faz: Padroniza dados de 'normalizar ip' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarIp', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarIp(value: string) {
   return value.replace(/\/32$/, "");
@@ -93,10 +93,10 @@ function normalizarIp(value: string) {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Padroniza dados de 'to finite number' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Orquestra a etapa 'toFiniteNumber' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -105,10 +105,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] limparTexto
- * O que faz: Remove ou inativa dados de 'limpar texto' conforme politica do sistema.
- * Entradas: Parametros esperados: value.
- * Como executa: Recebe chave do alvo, valida dependencias e executa a operacao segura.
- * Retorno/Efeitos: Retorna confirmacao da acao e sinaliza erros de integridade/permissao.
+ * O que faz: Normaliza valores na funcao 'limparTexto', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function limparTexto(value: string | null | undefined) {
   if (value === null || value === undefined) return null;
@@ -118,10 +118,10 @@ function limparTexto(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] extrairValorTexto
- * O que faz: Executa a rotina principal de 'extrair valor texto' no contexto deste modulo.
- * Entradas: Parametros esperados: row.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'extrairValorTexto' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (row) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function extrairValorTexto(row: LinhaValorRow) {
   if (row.valor_texto !== null && row.valor_texto !== undefined) return limparTexto(row.valor_texto);
@@ -135,10 +135,10 @@ function extrairValorTexto(row: LinhaValorRow) {
 
 /**
  * [DOC-FUNC] pickSemantico
- * O que faz: Executa a rotina principal de 'pick semantico' no contexto deste modulo.
- * Entradas: Parametros esperados: bag, semanticos.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'pickSemantico' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (bag, string>, semanticos) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function pickSemantico(
   bag: Map<string, string>,
@@ -153,10 +153,10 @@ function pickSemantico(
 
 /**
  * [DOC-FUNC] normalizarTextoComparacao
- * O que faz: Padroniza dados de 'normalizar texto comparacao' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarTextoComparacao', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarTextoComparacao(value: string | null | undefined) {
   const txt = limparTexto(value);
@@ -165,10 +165,10 @@ function normalizarTextoComparacao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] clamp
- * O que faz: Executa a rotina principal de 'clamp' no contexto deste modulo.
- * Entradas: Parametros esperados: value, min, max.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'clamp' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value, min, max) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -176,10 +176,10 @@ function clamp(value: number, min: number, max: number) {
 
 /**
  * [DOC-FUNC] normalizarStatusOperacional
- * O que faz: Padroniza dados de 'normalizar status operacional' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarStatusOperacional', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarStatusOperacional(value: unknown): string {
   const status = String(value ?? "").trim().toLowerCase();
@@ -193,10 +193,10 @@ function normalizarStatusOperacional(value: unknown): string {
 
 /**
  * [DOC-FUNC] parseDateMs
- * O que faz: Padroniza dados de 'parse date ms' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'parseDateMs', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function parseDateMs(value: string | null | undefined): number | null {
   if (!value) return null;
@@ -206,10 +206,10 @@ function parseDateMs(value: string | null | undefined): number | null {
 
 /**
  * [DOC-FUNC] minutesSince
- * O que faz: Executa a rotina principal de 'minutes since' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'minutesSince' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function minutesSince(value: string | null | undefined): number | null {
   const ts = parseDateMs(value);
@@ -221,10 +221,10 @@ function minutesSince(value: string | null | undefined): number | null {
 
 /**
  * [DOC-FUNC] isOfflineLikeStatus
- * O que faz: Executa a rotina principal de 'is offline like status' no contexto deste modulo.
- * Entradas: Parametros esperados: status.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Avalia uma condicao booleana na funcao 'isOfflineLikeStatus' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (status) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 function isOfflineLikeStatus(status: string): boolean {
   return ["offline", "error"].includes(status);
@@ -232,10 +232,10 @@ function isOfflineLikeStatus(status: string): boolean {
 
 /**
  * [DOC-FUNC] isOnlineLikeStatus
- * O que faz: Executa a rotina principal de 'is online like status' no contexto deste modulo.
- * Entradas: Parametros esperados: status.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Avalia uma condicao booleana na funcao 'isOnlineLikeStatus' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (status) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 function isOnlineLikeStatus(status: string): boolean {
   return ["online", "warning"].includes(status);
@@ -322,10 +322,10 @@ function resolverStatusOperacionalConfiavel(
 
 /**
  * [DOC-FUNC] carregarPendentesInventario
- * O que faz: Consulta dados de 'carregar pendentes inventario' na fonte principal (api, banco ou cache).
- * Entradas: Parametros esperados: operacionais.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'carregarPendentesInventario' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (operacionais) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 async function carregarPendentesInventario(
   operacionais: ImpressoraVisaoGeral[]
@@ -503,10 +503,10 @@ async function carregarPendentesInventario(
 
 /**
  * [DOC-FUNC] listarVisaoGeralImpressoras
- * O que faz: Consulta dados de 'listar visao geral impressoras' na fonte principal (api, banco ou cache).
- * Entradas: Recebe parametros compostos/estruturados conforme assinatura da funcao.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integracao.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'listarVisaoGeralImpressoras' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function listarVisaoGeralImpressoras(options?: {
   incluir_nao_operacionais?: boolean;
@@ -583,10 +583,10 @@ export async function listarVisaoGeralImpressoras(options?: {
   const statusHistoryByImpressora = new Map<string, Array<{ status: string; coletado_em: string | null }>>();
   /**
    * [DOC-FUNC] registrarStatus
-   * O que faz: Cria registro de 'registrar status' aplicando regras de consistencia antes de persistir.
-   * Entradas: Parametros esperados: rows.
-   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
-   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
+   * O que faz: Grava novos dados na funcao 'registrarStatus', aplicando validacoes para preservar integridade do dominio.
+   * Entradas: Recebe payload/chaves (rows) e verifica campos obrigatorios antes da persistencia.
+   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
    */
   const registrarStatus = (rows: StatusRow[]) => {
     for (const row of rows) {
@@ -630,10 +630,10 @@ export async function listarVisaoGeralImpressoras(options?: {
 
   /**
    * [DOC-FUNC] registrarSuprimentos
-   * O que faz: Cria registro de 'registrar suprimentos' aplicando regras de consistencia antes de persistir.
-   * Entradas: Parametros esperados: rows.
-   * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
-   * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
+   * O que faz: Grava novos dados na funcao 'registrarSuprimentos', aplicando validacoes para preservar integridade do dominio.
+   * Entradas: Recebe payload/chaves (rows) e verifica campos obrigatorios antes da persistencia.
+   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
    */
   const registrarSuprimentos = (rows: SuprimentoRow[]) => {
     for (const row of rows) {

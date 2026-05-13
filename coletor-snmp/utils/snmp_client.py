@@ -46,10 +46,10 @@ def _stringify(value: Any) -> str:
 
 
 # [DOC-FUNC] _run_async
-# O que faz: Executa a rotina principal de 'run async' no contexto deste modulo.
-# Entradas: Parametros esperados: coro.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_run_async' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (coro) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _run_async(coro):
     try:
         return asyncio.run(coro)

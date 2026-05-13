@@ -17,10 +17,10 @@ const store =
 
 /**
  * [DOC-FUNC] getClientIp
- * O que faz: Consulta dados de 'get client ip' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getClientIp' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (request) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for") || "";
@@ -31,10 +31,10 @@ function getClientIp(request: NextRequest) {
 
 /**
  * [DOC-FUNC] applyRateLimit
- * O que faz: Executa a rotina principal de 'apply rate limit' no contexto deste modulo.
- * Entradas: Parametros esperados: key, limit, windowMs.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'applyRateLimit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (key, limit, windowMs) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function applyRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
@@ -57,10 +57,10 @@ function applyRateLimit(key: string, limit: number, windowMs: number) {
 
 /**
  * [DOC-FUNC] withSecurityHeaders
- * O que faz: Executa a rotina principal de 'with security headers' no contexto deste modulo.
- * Entradas: Parametros esperados: response.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'withSecurityHeaders' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (response) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -92,10 +92,10 @@ function withSecurityHeaders(response: NextResponse) {
 
 /**
  * [DOC-FUNC] middleware
- * O que faz: Executa a rotina principal de 'middleware' no contexto deste modulo.
- * Entradas: Parametros esperados: request.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'middleware' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (request) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

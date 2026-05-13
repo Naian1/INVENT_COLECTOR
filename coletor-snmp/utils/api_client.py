@@ -19,10 +19,10 @@ _ENV_CACHE = None
 
 
 # [DOC-FUNC] _load_env_file
-# O que faz: Consulta dados de 'load env file' na fonte principal (API, banco ou cache).
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao '_load_env_file' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def _load_env_file():
     global _ENV_CACHE
     if _ENV_CACHE is not None:
@@ -46,20 +46,20 @@ def _load_env_file():
 
 
 # [DOC-FUNC] _get_env
-# O que faz: Consulta dados de 'get env' na fonte principal (API, banco ou cache).
-# Entradas: Parametros esperados: name, default_value.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao '_get_env' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (name, default_value) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def _get_env(name, default_value=None):
     file_env = _load_env_file()
     return os.getenv(name) or file_env.get(name, default_value)
 
 
 # [DOC-FUNC] _parse_list_env
-# O que faz: Padroniza dados de 'parse list env' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: raw_value.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_parse_list_env', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw_value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _parse_list_env(raw_value):
     raw = str(raw_value or "").strip()
     if not raw:
@@ -68,10 +68,10 @@ def _parse_list_env(raw_value):
 
 
 # [DOC-FUNC] _parse_int_env
-# O que faz: Padroniza dados de 'parse int env' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: raw_value, default_value, min_value, max_value.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_parse_int_env', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw_value, default_value, min_value, max_value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
     try:
         parsed = int(str(raw_value).strip())
@@ -81,10 +81,10 @@ def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
 
 
 # [DOC-FUNC] _parse_float_env
-# O que faz: Padroniza dados de 'parse float env' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: raw_value, default_value, min_value, max_value.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_parse_float_env', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw_value, default_value, min_value, max_value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.0):
     try:
         parsed = float(str(raw_value).strip())
@@ -94,10 +94,10 @@ def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.
 
 
 # [DOC-FUNC] _parse_bool_env
-# O que faz: Padroniza dados de 'parse bool env' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: raw_value, default_value.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_parse_bool_env', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw_value, default_value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _parse_bool_env(raw_value, default_value=False):
     if raw_value is None:
         return default_value
@@ -110,10 +110,10 @@ def _parse_bool_env(raw_value, default_value=False):
 
 
 # [DOC-FUNC] _compact_error_message
-# O que faz: Executa a rotina principal de 'compact error message' no contexto deste modulo.
-# Entradas: Parametros esperados: exc.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_compact_error_message' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (exc) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _compact_error_message(exc):
     reason = getattr(exc, "reason", None)
     base = reason if reason is not None else exc
@@ -124,10 +124,10 @@ def _compact_error_message(exc):
 
 
 # [DOC-FUNC] _shorten_text
-# O que faz: Executa a rotina principal de 'shorten text' no contexto deste modulo.
-# Entradas: Parametros esperados: text, max_len.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_shorten_text' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (text, max_len) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _shorten_text(text, max_len=180):
     clean = str(text or "").replace("\r", " ").replace("\n", " ").strip()
     if len(clean) <= max_len:
@@ -136,10 +136,10 @@ def _shorten_text(text, max_len=180):
 
 
 # [DOC-FUNC] _extract_http_error_hint
-# O que faz: Executa a rotina principal de 'extract http error hint' no contexto deste modulo.
-# Entradas: Parametros esperados: raw_body.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_extract_http_error_hint' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (raw_body) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _extract_http_error_hint(raw_body):
     try:
         parsed = json.loads(raw_body)
@@ -176,10 +176,10 @@ def _extract_http_error_hint(raw_body):
 
 
 # [DOC-FUNC] _clean_text_value
-# O que faz: Executa a rotina principal de 'clean text value' no contexto deste modulo.
-# Entradas: Parametros esperados: value.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Normaliza valores na funcao '_clean_text_value', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _clean_text_value(value):
     if value is None:
         return None
@@ -188,10 +188,10 @@ def _clean_text_value(value):
 
 
 # [DOC-FUNC] get_collector_config
-# O que faz: Consulta dados de 'get collector config' na fonte principal (API, banco ou cache).
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao 'get_collector_config' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def get_collector_config():
     base_url = (_get_env("COLLECTOR_API_BASE_URL", "") or "").strip().rstrip("/")
     if base_url:
@@ -309,10 +309,10 @@ def get_collector_config():
 
 
 # [DOC-FUNC] _normalize_remote_printers
-# O que faz: Padroniza dados de 'normalize remote printers' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: records, default_community.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_normalize_remote_printers', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (records, default_community) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _normalize_remote_printers(records, default_community):
     printers = {}
     for item in records:
@@ -408,10 +408,10 @@ def _normalize_remote_printers_from_inventario(
 
 
 # [DOC-FUNC] _fetch_printers_via_api
-# O que faz: Consulta dados de 'fetch printers via api' na fonte principal (API, banco ou cache).
-# Entradas: Parametros esperados: config, log_prefix.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao '_fetch_printers_via_api' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (config, log_prefix) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def _fetch_printers_via_api(config, log_prefix):
     if not config["token"]:
         msg = "COLLECTOR_API_TOKEN nao configurado. Sync de impressoras desativado."
@@ -526,10 +526,10 @@ def _fetch_printers_via_api(config, log_prefix):
 
 
 # [DOC-FUNC] _fetch_printers_via_supabase
-# O que faz: Consulta dados de 'fetch printers via supabase' na fonte principal (API, banco ou cache).
-# Entradas: Parametros esperados: config, log_prefix.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao '_fetch_printers_via_supabase' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (config, log_prefix) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def _fetch_printers_via_supabase(config, log_prefix):
     supabase_url = str(config.get("supabase_url") or "").strip().rstrip("/")
     supabase_key = str(config.get("supabase_key") or "").strip()
@@ -705,10 +705,10 @@ def _fetch_printers_via_supabase(config, log_prefix):
 
 
 # [DOC-FUNC] fetch_printers_from_api
-# O que faz: Consulta dados de 'fetch printers from api' na fonte principal (API, banco ou cache).
-# Entradas: Parametros esperados: log_prefix.
-# Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-# Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+# O que faz: Consulta informacoes na funcao 'fetch_printers_from_api' e organiza o retorno para consumo pelas camadas superiores.
+# Entradas: Recebe filtros/chaves (log_prefix) e usa o contexto atual para montar a consulta na origem de dados.
+# Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+# Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
 def fetch_printers_from_api(log_prefix="[collector-api]"):
     config = get_collector_config()
     source = str(config.get("printers_source") or "api").strip().lower()
@@ -746,10 +746,10 @@ def fetch_printers_from_api(log_prefix="[collector-api]"):
 
 
 # [DOC-FUNC] _queue_pending_payload
-# O que faz: Executa a rotina principal de 'queue pending payload' no contexto deste modulo.
-# Entradas: Parametros esperados: payload, reason.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Monta/comp?e estruturas na funcao '_queue_pending_payload', consolidando campos dispersos em um objeto util para o fluxo.
+# Entradas: Recebe parametros de origem (payload, reason) com dados parciais e metadados para composicao final.
+# Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+# Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
 def _queue_pending_payload(payload, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -765,10 +765,10 @@ def _queue_pending_payload(payload, reason):
 
 
 # [DOC-FUNC] _archive_invalid_pending_record
-# O que faz: Executa a rotina principal de 'archive invalid pending record' no contexto deste modulo.
-# Entradas: Parametros esperados: record, reason.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_archive_invalid_pending_record' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (record, reason) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _archive_invalid_pending_record(record, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -784,10 +784,10 @@ def _archive_invalid_pending_record(record, reason):
 
 
 # [DOC-FUNC] _extract_ingestao_id
-# O que faz: Executa a rotina principal de 'extract ingestao id' no contexto deste modulo.
-# Entradas: Parametros esperados: payload.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_extract_ingestao_id' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (payload) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _extract_ingestao_id(payload):
     ingestao_id = None
     if isinstance(payload, dict):
@@ -802,10 +802,10 @@ def _extract_ingestao_id(payload):
 
 
 # [DOC-FUNC] send_telemetry_payload
-# O que faz: Sincroniza/enfila dados de 'send telemetry payload' entre camadas internas e servicos externos.
-# Entradas: Parametros esperados: payload, log_prefix, queue_on_failure.
-# Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
-# Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
+# O que faz: Monta/comp?e estruturas na funcao 'send_telemetry_payload', consolidando campos dispersos em um objeto util para o fluxo.
+# Entradas: Recebe parametros de origem (payload, log_prefix, queue_on_failure) com dados parciais e metadados para composicao final.
+# Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+# Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
 def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failure=True):
     config = get_collector_config()
 
@@ -981,10 +981,10 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
 
 
 # [DOC-FUNC] replay_pending_payloads
-# O que faz: Sincroniza/enfila dados de 'replay pending payloads' entre camadas internas e servicos externos.
-# Entradas: Parametros esperados: max_items, log_prefix.
-# Como executa: Executa transmissao com controle de timeout, retentativa e observabilidade.
-# Retorno/Efeitos: Retorna status operacional com metadados de sucesso ou motivo de falha.
+# O que faz: Sincroniza dados na funcao 'replay_pending_payloads', conectando este modulo a outra camada, servico ou fonte externa.
+# Entradas: Usa identificadores, payload e contexto operacional (max_items, log_prefix) para localizar e transferir os dados corretos.
+# Como executa: Valida pre-condicoes, executa leitura/escrita nas pontas envolvidas e trata falhas com mensagens rastreaveis.
+# Retorno/Efeitos: Retorna status da sincronizacao e metadados de sucesso/erro para monitoramento e retentativa.
 def replay_pending_payloads(max_items=None, log_prefix="[collector-replay]"):
     if not os.path.exists(PENDING_QUEUE_FILE):
         return {"success": True, "processed": 0, "sent": 0, "remaining": 0}

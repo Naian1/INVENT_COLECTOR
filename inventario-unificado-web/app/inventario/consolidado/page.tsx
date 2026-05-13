@@ -79,10 +79,10 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] formatarData
- * O que faz: Executa a rotina principal de 'formatar data' no contexto deste modulo.
- * Entradas: Parametros esperados: dataIso.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'formatarData' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (dataIso) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function formatarData(dataIso: string | null): string {
   if (!dataIso) return '-';
@@ -199,10 +199,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Executa a rotina principal de 'on submit' no contexto deste modulo.
-   * Entradas: Parametros esperados: event.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'onSubmit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (event) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -211,10 +211,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] irParaPagina
-   * O que faz: Executa a rotina principal de 'ir para pagina' no contexto deste modulo.
-   * Entradas: Parametros esperados: novaPagina.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'irParaPagina' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (novaPagina) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const irParaPagina = (novaPagina: number) => {
     if (!dados?.paginacao) return;

@@ -19,10 +19,10 @@ type AuthOptions = {
 
 /**
  * [DOC-FUNC] getBearerToken
- * O que faz: Consulta dados de 'get bearer token' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: request.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getBearerToken' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (request) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getBearerToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization") || "";
@@ -37,10 +37,10 @@ type PerfilNomeLookupRow = {
 
 /**
  * [DOC-FUNC] getPerfilNome
- * O que faz: Consulta dados de 'get perfil nome' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: value.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'getPerfilNome' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (value) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) return String(value[0]?.nm_perfil || "");
@@ -49,10 +49,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
 
 /**
  * [DOC-FUNC] resolveIsAdmin
- * O que faz: Monta estrutura de 'resolve is admin' a partir de dados intermediarios do modulo.
- * Entradas: Parametros esperados: cdUsuario, cdPerfilPrincipal.
- * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
- * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+ * O que faz: Avalia uma condicao booleana na funcao 'resolveIsAdmin' para decidir o caminho de execucao do modulo.
+ * Entradas: Analisa parametros/contexto (cdUsuario, cdPerfilPrincipal) e possiveis variaveis de ambiente/estado atual.
+ * Como executa: Aplica comparacoes diretas e regras simples de validacao para classificar o estado como verdadeiro ou falso.
+ * Retorno/Efeitos: Retorna um indicador de controle que habilita, bloqueia ou redireciona as proximas etapas do fluxo.
  */
 async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Promise<boolean> {
   const supabase = getSupabaseServerClient();
@@ -88,10 +88,10 @@ async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Pro
 
 /**
  * [DOC-FUNC] authenticateApiRequest
- * O que faz: Executa a rotina principal de 'authenticate api request' no contexto deste modulo.
- * Entradas: Parametros esperados: request, options.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'authenticateApiRequest' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export async function authenticateApiRequest(
   request: NextRequest,

@@ -36,10 +36,10 @@ type ImpressoraComSuprimentos = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Padroniza dados de 'normalizar texto' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizarTexto', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizarTexto(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -51,10 +51,10 @@ function normalizarTexto(value: string | null | undefined): string | undefined {
 
 /**
  * [DOC-FUNC] calcularNivelPercentual
- * O que faz: Executa a rotina principal de 'calcular nivel percentual' no contexto deste modulo.
- * Entradas: Parametros esperados: quantidade.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'calcularNivelPercentual' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (quantidade) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function calcularNivelPercentual(quantidade: number | null): number | null {
   if (quantidade === null || quantidade === undefined) return null;
@@ -65,10 +65,10 @@ function calcularNivelPercentual(quantidade: number | null): number | null {
 
 /**
  * [DOC-FUNC] transformarSuprimentoResumo
- * O que faz: Executa a rotina principal de 'transformar suprimento resumo' no contexto deste modulo.
- * Entradas: Parametros esperados: sup.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Consulta informacoes na funcao 'transformarSuprimentoResumo' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sup) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
   // cd_tipo_suprimento vem como descricao (ex: "Toner Negro")
@@ -85,10 +85,10 @@ function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
 
 /**
  * [DOC-FUNC] transformarImpressoraComSuprimentos
- * O que faz: Executa a rotina principal de 'transformar impressora com suprimentos' no contexto deste modulo.
- * Entradas: Parametros esperados: dados.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'transformarImpressoraComSuprimentos' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (dados) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): ImpressoraVisaoGeral {
   const inv = dados.inventario;
@@ -129,10 +129,10 @@ function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): I
  */
 /**
  * [DOC-FUNC] listarImpressoras
- * O que faz: Consulta dados de 'listar impressoras' na fonte principal (API, banco ou cache).
- * Entradas: Sem parametros obrigatorios.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'listarImpressoras' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVisaoGeral[]>> {
   try {
@@ -227,10 +227,10 @@ export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVi
  */
 /**
  * [DOC-FUNC] buscarImpressoraPorId
- * O que faz: Consulta dados de 'buscar impressora por id' na fonte principal (API, banco ou cache).
- * Entradas: Parametros esperados: id.
- * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
- * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+ * O que faz: Consulta informacoes na funcao 'buscarImpressoraPorId' e organiza o retorno para consumo pelas camadas superiores.
+ * Entradas: Recebe filtros/chaves (id) e usa o contexto atual para montar a consulta na origem de dados.
+ * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+ * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
  */
 export async function buscarImpressoraPorId(id: string): Promise<ResultadoServico<ImpressoraVisaoGeral>> {
   try {
@@ -287,10 +287,10 @@ export async function buscarImpressoraPorId(id: string): Promise<ResultadoServic
  */
 /**
  * [DOC-FUNC] criarImpressora
- * O que faz: Cria registro de 'criar impressora' aplicando regras de consistencia antes de persistir.
- * Entradas: Parametros esperados: input.
- * Como executa: Valida payload, monta comando de escrita e trata falhas de persistencia.
- * Retorno/Efeitos: Retorna entidade criada (ou identificador) para continuidade do fluxo.
+ * O que faz: Orquestra a etapa 'criarImpressora' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (input) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export async function criarImpressora(input: CriarImpressoraInput): Promise<ResultadoServico<any>> {
   // Placeholder para compatibilidade com API
@@ -307,10 +307,10 @@ export async function criarImpressora(input: CriarImpressoraInput): Promise<Resu
  */
 /**
  * [DOC-FUNC] atualizarImpressora
- * O que faz: Atualiza 'atualizar impressora' preservando integridade dos dados e regras de negocio.
- * Entradas: Parametros esperados: id, input.
- * Como executa: Localiza alvo por chave, aplica alteracoes e valida conflitos.
- * Retorno/Efeitos: Retorna estado final atualizado ou erro com contexto da falha.
+ * O que faz: Atualiza dados na funcao 'atualizarImpressora', mantendo consistencia entre o estado atual e as novas informacoes.
+ * Entradas: Recebe identificador e campos para alteracao (id, input), com validacao de formato e regra de negocio.
+ * Como executa: Localiza o alvo, aplica apenas mudancas permitidas e executa update com tratamento de conflito/falha.
+ * Retorno/Efeitos: Devolve o estado final atualizado ou erro contextualizado para facilitar diagnostico.
  */
 export async function atualizarImpressora(id: string, input: any): Promise<ResultadoServico<any>> {
   return {

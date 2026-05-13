@@ -21,10 +21,10 @@ type TelemetryIngestResult = {
 
 /**
  * [DOC-FUNC] shouldRefreshLastSeen
- * O que faz: Executa a rotina principal de 'should refresh last seen' no contexto deste modulo.
- * Entradas: Parametros esperados: currentLastSeenAt, candidateIso.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'shouldRefreshLastSeen' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (currentLastSeenAt, candidateIso) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: string) {
   if (!currentLastSeenAt) return true;
@@ -37,10 +37,10 @@ function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: s
 
 /**
  * [DOC-FUNC] resolveSupplyStatus
- * O que faz: Monta estrutura de 'resolve supply status' a partir de dados intermediarios do modulo.
- * Entradas: Parametros esperados: explicitStatus, levelPercent.
- * Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
- * Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+ * O que faz: Orquestra a etapa 'resolveSupplyStatus' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (explicitStatus, levelPercent) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function resolveSupplyStatus(
   explicitStatus: string | undefined,
@@ -56,10 +56,10 @@ function resolveSupplyStatus(
 
 /**
  * [DOC-FUNC] writeTelemetryEvent
- * O que faz: Executa a rotina principal de 'write telemetry event' no contexto deste modulo.
- * Entradas: Parametros esperados: collectorId, event, defaultCollectedAt.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'writeTelemetryEvent' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (collectorId, event, defaultCollectedAt) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 async function writeTelemetryEvent(
   collectorId: string,
@@ -191,10 +191,10 @@ async function writeTelemetryEvent(
 
 /**
  * [DOC-FUNC] ingestCollectorTelemetry
- * O que faz: Executa a rotina principal de 'ingest collector telemetry' no contexto deste modulo.
- * Entradas: Parametros esperados: payload.
- * Como executa: Valida precondicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'ingestCollectorTelemetry' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (payload) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export async function ingestCollectorTelemetry(
   payload: CollectorTelemetryBatchPayload

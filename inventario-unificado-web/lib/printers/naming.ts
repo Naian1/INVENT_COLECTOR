@@ -15,10 +15,10 @@ const UNKNOWN_VALUES = new Set([
 
 /**
  * [DOC-FUNC] normalizeWhitespace
- * O que faz: Padroniza dados de 'normalize whitespace' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizeWhitespace', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
@@ -26,10 +26,10 @@ function normalizeWhitespace(value: string) {
 
 /**
  * [DOC-FUNC] normalizeIpForLabel
- * O que faz: Padroniza dados de 'normalize ip for label' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: value.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizeIpForLabel', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizeIpForLabel(value: string | null) {
   if (!value) return null;
@@ -38,10 +38,10 @@ function normalizeIpForLabel(value: string | null) {
 
 /**
  * [DOC-FUNC] sanitizeOptionalText
- * O que faz: Executa a rotina principal de 'sanitize optional text' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Normaliza valores na funcao 'sanitizeOptionalText', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 export function sanitizeOptionalText(value: string | null | undefined): string | null {
   if (value === null || value === undefined) return null;
@@ -53,10 +53,10 @@ export function sanitizeOptionalText(value: string | null | undefined): string |
 
 /**
  * [DOC-FUNC] normalizeAssetTagForLabel
- * O que faz: Padroniza dados de 'normalize asset tag for label' para formato previsivel no restante do fluxo.
- * Entradas: Parametros esperados: assetTag.
- * Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
- * Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+ * O que faz: Normaliza valores na funcao 'normalizeAssetTagForLabel', reduzindo variacoes de formato antes do processamento principal.
+ * Entradas: Recebe dados possivelmente incompletos ou heterogeneos (assetTag) e trata nulos, strings vazias e tipos mistos.
+ * Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+ * Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
  */
 function normalizeAssetTagForLabel(assetTag: string) {
   const cleaned = normalizeWhitespace(assetTag);

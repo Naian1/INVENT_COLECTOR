@@ -23,10 +23,10 @@ STOP = False
 
 
 # [DOC-FUNC] _handle_stop
-# O que faz: Executa a rotina principal de 'handle stop' no contexto deste modulo.
-# Entradas: Parametros esperados: signum, _frame.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_handle_stop' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (signum, _frame) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _handle_stop(signum, _frame):
     global STOP
     STOP = True
@@ -34,10 +34,10 @@ def _handle_stop(signum, _frame):
 
 
 # [DOC-FUNC] _resolve_interval
-# O que faz: Monta estrutura de 'resolve interval' a partir de dados intermediarios do modulo.
-# Entradas: Parametros esperados: cli_interval.
-# Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
-# Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+# O que faz: Orquestra a etapa '_resolve_interval' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (cli_interval) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _resolve_interval(cli_interval):
     if cli_interval and cli_interval > 0:
         return cli_interval
@@ -64,10 +64,10 @@ def _resolve_interval(cli_interval):
 
 
 # [DOC-FUNC] run_loop
-# O que faz: Executa a rotina principal de 'run loop' no contexto deste modulo.
-# Entradas: Parametros esperados: interval_seconds, run_once.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa 'run_loop' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (interval_seconds, run_once) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def run_loop(interval_seconds, run_once=False):
     cycle = 0
     while not STOP:
@@ -95,10 +95,10 @@ def run_loop(interval_seconds, run_once=False):
 
 
 # [DOC-FUNC] main
-# O que faz: Executa a rotina principal de 'main' no contexto deste modulo.
-# Entradas: Sem parametros obrigatorios.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa 'main' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia sequencia de validacao e processamento interno, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def main():
     parser = argparse.ArgumentParser(
         description="Executa somente o coletor (SNMP -> API) sem subir o frontend legado Flask."

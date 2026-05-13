@@ -37,10 +37,10 @@ const textoOpcional = z.string().trim().optional().nullable();
 
 /**
  * [DOC-FUNC] numeroPositivoComDefault
- * O que faz: Executa a rotina principal de 'numero positivo com default' no contexto deste modulo.
- * Entradas: Parametros esperados: defaultValue.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'numeroPositivoComDefault' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (defaultValue) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z

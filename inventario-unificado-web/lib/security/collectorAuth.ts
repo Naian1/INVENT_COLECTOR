@@ -6,10 +6,10 @@ import { timingSafeEqual } from "crypto";
 
 /**
  * [DOC-FUNC] safeCompare
- * O que faz: Executa a rotina principal de 'safe compare' no contexto deste modulo.
- * Entradas: Parametros esperados: valueA, valueB.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'safeCompare' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (valueA, valueB) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -21,10 +21,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] validateCollectorBearerToken
- * O que faz: Executa a rotina principal de 'validate collector bearer token' no contexto deste modulo.
- * Entradas: Parametros esperados: authorizationHeader.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'validateCollectorBearerToken' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (authorizationHeader) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 export function validateCollectorBearerToken(authorizationHeader: string | null) {
   const expectedToken = process.env.COLLECTOR_API_TOKEN?.trim();

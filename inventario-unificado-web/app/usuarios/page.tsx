@@ -62,10 +62,10 @@ const INITIAL_FORM: UsuarioFormState = {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Executa a rotina principal de 'formatar data hora' no contexto deste modulo.
- * Entradas: Parametros esperados: value.
- * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+ * O que faz: Orquestra a etapa 'formatarDataHora' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+ * Entradas: Trabalha com os parametros declarados (value) e com contexto local carregado durante a execucao.
+ * Como executa: Encadeia avaliacoes condicionais, tratamento explicito de excecoes, acesso a dados/servicos externos, garantindo continuidade do processamento mesmo com entradas variaveis.
+ * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
  */
 function formatarDataHora(value: string | null | undefined): string {
   if (!value) return '-';
@@ -130,10 +130,10 @@ export default function UsuariosPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * O que faz: Consulta dados de 'load auth' na fonte principal (API, banco ou cache).
-     * Entradas: Sem parametros obrigatorios.
-     * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-     * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+     * O que faz: Consulta informacoes na funcao 'loadAuth' e organiza o retorno para consumo pelas camadas superiores.
+     * Entradas: Recebe filtros/chaves (sem parametros obrigatorios) e usa o contexto atual para montar a consulta na origem de dados.
+     * Como executa: Executa query/chamada de leitura, trata erro de acesso e normaliza o resultado antes de devolver.
+     * Retorno/Efeitos: Retorna dados tipados e prontos para uso, com tratamento consistente para ausencia de registros.
      */
     const loadAuth = async () => {
       try {
@@ -173,10 +173,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] carregarUsuarios
-   * O que faz: Consulta dados de 'carregar usuarios' na fonte principal (API, banco ou cache).
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida filtros de entrada, executa consulta e trata erros de acesso/integra??o.
-   * Retorno/Efeitos: Entrega dados normalizados para consumo da camada chamadora.
+   * O que faz: Orquestra a etapa 'carregarUsuarios' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const carregarUsuarios = async () => {
     setLoading(true);
@@ -259,10 +259,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] resetForm
-   * O que faz: Executa a rotina principal de 'reset form' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'resetForm' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const resetForm = () => {
     setFormData(INITIAL_FORM);
@@ -273,10 +273,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openCreateModal
-   * O que faz: Executa a rotina principal de 'open create modal' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Grava novos dados na funcao 'openCreateModal', aplicando validacoes para preservar integridade do dominio.
+   * Entradas: Recebe payload/chaves (sem parametros obrigatorios) e verifica campos obrigatorios antes da persistencia.
+   * Como executa: Sanitiza os valores, aplica regras de negocio e executa insert/upsert com tratamento de erro transacional.
+   * Retorno/Efeitos: Retorna o registro criado (ou resumo da gravacao) e sinaliza claramente conflitos/permissoes.
    */
   const openCreateModal = () => {
     resetForm();
@@ -285,10 +285,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * O que faz: Executa a rotina principal de 'open edit modal' no contexto deste modulo.
-   * Entradas: Parametros esperados: usuario.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Remove ou inativa registros na funcao 'openEditModal', conforme a politica de ciclo de vida do modulo.
+   * Entradas: Recebe chaves/filtros do alvo (usuario) e valida dependencias antes da exclusao.
+   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
+   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
    */
   const openEditModal = (usuario: Usuario) => {
     const perfisSelecionados = usuarioPerfis[usuario.cd_usuario] || [];
@@ -307,10 +307,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * O que faz: Executa a rotina principal de 'handle change form' no contexto deste modulo.
-   * Entradas: Parametros esperados: campo, valor.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Remove ou inativa registros na funcao 'handleChangeForm', conforme a politica de ciclo de vida do modulo.
+   * Entradas: Recebe chaves/filtros do alvo (campo, valor) e valida dependencias antes da exclusao.
+   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
+   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
    */
   const handleChangeForm = (campo: keyof UsuarioFormState, valor: string) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
@@ -318,10 +318,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] togglePerfilSelecionado
-   * O que faz: Executa a rotina principal de 'toggle perfil selecionado' no contexto deste modulo.
-   * Entradas: Parametros esperados: perfilId.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Remove ou inativa registros na funcao 'togglePerfilSelecionado', conforme a politica de ciclo de vida do modulo.
+   * Entradas: Recebe chaves/filtros do alvo (perfilId) e valida dependencias antes da exclusao.
+   * Como executa: Confere pre-condicoes de seguranca/integridade e executa delete fisico ou logico de forma controlada.
+   * Retorno/Efeitos: Confirma a remocao/inativacao e reporta bloqueios quando houver vinculos ou restricoes.
    */
   const togglePerfilSelecionado = (perfilId: number) => {
     setFormData((prev) => {
@@ -337,10 +337,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleSubmit
-   * O que faz: Executa a rotina principal de 'handle submit' no contexto deste modulo.
-   * Entradas: Sem parametros obrigatorios.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'handleSubmit' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (sem parametros obrigatorios) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -404,10 +404,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleToggleStatus
-   * O que faz: Executa a rotina principal de 'handle toggle status' no contexto deste modulo.
-   * Entradas: Parametros esperados: usuario.
-   * Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+   * O que faz: Orquestra a etapa 'handleToggleStatus' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+   * Entradas: Trabalha com os parametros declarados (usuario) e com contexto local carregado durante a execucao.
+   * Como executa: Encadeia tratamento explicito de excecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+   * Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
    */
   const handleToggleStatus = async (usuario: Usuario) => {
     setErrorMessage(null);

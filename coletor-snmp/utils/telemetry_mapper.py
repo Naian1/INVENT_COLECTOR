@@ -9,10 +9,10 @@ _UNKNOWN_VALUES = {"", "desconhecido", "unknown", "n/a", "na", "none", "null", "
 
 
 # [DOC-FUNC] _to_utc_iso
-# O que faz: Padroniza dados de 'to utc iso' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: dt.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_to_utc_iso', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (dt) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _to_utc_iso(dt=None):
     base = dt or datetime.now(timezone.utc)
     if base.tzinfo is None:
@@ -21,10 +21,10 @@ def _to_utc_iso(dt=None):
 
 
 # [DOC-FUNC] _normalize_text
-# O que faz: Padroniza dados de 'normalize text' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: text.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_normalize_text', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (text) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _normalize_text(text):
     if text is None:
         return ""
@@ -34,10 +34,10 @@ def _normalize_text(text):
 
 
 # [DOC-FUNC] _clean_value
-# O que faz: Executa a rotina principal de 'clean value' no contexto deste modulo.
-# Entradas: Parametros esperados: value.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Normaliza valores na funcao '_clean_value', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (value) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _clean_value(value):
     if value is None:
         return None
@@ -50,10 +50,10 @@ def _clean_value(value):
 
 
 # [DOC-FUNC] _pick_first
-# O que faz: Executa a rotina principal de 'pick first' no contexto deste modulo.
-# Entradas: Parametros esperados: info, keys.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa '_pick_first' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (info, keys) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, iteracao/transformacao de colecoes, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def _pick_first(info, keys):
     if not isinstance(info, dict):
         return None
@@ -67,10 +67,10 @@ def _pick_first(info, keys):
 
 
 # [DOC-FUNC] make_supply_key
-# O que faz: Monta estrutura de 'make supply key' a partir de dados intermediarios do modulo.
-# Entradas: Parametros esperados: supply_name.
-# Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
-# Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+# O que faz: Normaliza valores na funcao 'make_supply_key', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (supply_name) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def make_supply_key(supply_name):
     clean = _normalize_text(supply_name).lower().strip()
     clean = re.sub(r"[^a-z0-9]+", "_", clean).strip("_")
@@ -78,10 +78,10 @@ def make_supply_key(supply_name):
 
 
 # [DOC-FUNC] infer_manufacturer
-# O que faz: Executa a rotina principal de 'infer manufacturer' no contexto deste modulo.
-# Entradas: Parametros esperados: model.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Orquestra a etapa 'infer_manufacturer' deste modulo, conectando regras de negocio e dados intermediarios do fluxo.
+# Entradas: Trabalha com os parametros declarados (model) e com contexto local carregado durante a execucao.
+# Como executa: Encadeia avaliacoes condicionais, garantindo continuidade do processamento mesmo com entradas variaveis.
+# Retorno/Efeitos: Entrega resultado pronto para a camada chamadora e fornece sinalizacao clara quando ocorre falha operacional.
 def infer_manufacturer(model):
     model_lower = (model or "").lower()
     if "lexmark" in model_lower or model_lower.startswith(("m", "xm", "cx")):
@@ -98,10 +98,10 @@ def infer_manufacturer(model):
 
 
 # [DOC-FUNC] _normalize_model
-# O que faz: Padroniza dados de 'normalize model' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: raw_model.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_normalize_model', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (raw_model) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _normalize_model(raw_model):
     clean_model = _clean_value(raw_model)
     if not clean_model:
@@ -143,10 +143,10 @@ def infer_supply_status(
 
 
 # [DOC-FUNC] generate_ingestao_id
-# O que faz: Executa a rotina principal de 'generate ingestao id' no contexto deste modulo.
-# Entradas: Parametros esperados: ip.
-# Como executa: Valida pre-condicoes, processa regras de negocio e trata excecoes do fluxo.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora (dados, status ou erro).
+# O que faz: Monta/comp?e estruturas na funcao 'generate_ingestao_id', consolidando campos dispersos em um objeto util para o fluxo.
+# Entradas: Recebe parametros de origem (ip) com dados parciais e metadados para composicao final.
+# Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+# Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
 def generate_ingestao_id(ip):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
     safe_ip = (ip or "unknown").replace(".", "-")
@@ -154,10 +154,10 @@ def generate_ingestao_id(ip):
 
 
 # [DOC-FUNC] _normalizar_suprimentos_para_pt
-# O que faz: Padroniza dados de 'normalizar suprimentos para pt' para formato previsivel no restante do fluxo.
-# Entradas: Parametros esperados: suprimentos, status_evento.
-# Como executa: Converte tipos, remove ruido e aplica fallback para valores invalidos.
-# Retorno/Efeitos: Retorna valor saneado pronto para comparacao, armazenamento ou exibicao.
+# O que faz: Normaliza valores na funcao '_normalizar_suprimentos_para_pt', reduzindo variacoes de formato antes do processamento principal.
+# Entradas: Recebe dados possivelmente incompletos ou heterogeneos (suprimentos, status_evento) e trata nulos, strings vazias e tipos mistos.
+# Como executa: Limpa ruido, converte tipos, aplica regras de padrao e define fallback para manter consistencia entre chamadas.
+# Retorno/Efeitos: Devolve dado padronizado para comparacao, persistencia e exibicao sem ambiguidade de formato.
 def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
     result = []
     for item in (suprimentos or []):
@@ -207,10 +207,10 @@ def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
 
 
 # [DOC-FUNC] _montar_impressora_pt
-# O que faz: Monta estrutura de 'montar impressora pt' a partir de dados intermediarios do modulo.
-# Entradas: Parametros esperados: ip, printer_info.
-# Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
-# Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+# O que faz: Monta/comp?e estruturas na funcao '_montar_impressora_pt', consolidando campos dispersos em um objeto util para o fluxo.
+# Entradas: Recebe parametros de origem (ip, printer_info) com dados parciais e metadados para composicao final.
+# Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+# Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
 def _montar_impressora_pt(ip, printer_info):
     info = printer_info or {}
 
@@ -295,10 +295,10 @@ def build_collector_payload(
 
 
 # [DOC-FUNC] build_payload_from_cache_entries
-# O que faz: Monta estrutura de 'build payload from cache entries' a partir de dados intermediarios do modulo.
-# Entradas: Parametros esperados: coletor_id, ip, printer_info, cache_entries.
-# Como executa: Combina campos, aplica prioridade de regras e prepara payload final.
-# Retorno/Efeitos: Retorna estrutura consolidada para a proxima etapa do processo.
+# O que faz: Monta/comp?e estruturas na funcao 'build_payload_from_cache_entries', consolidando campos dispersos em um objeto util para o fluxo.
+# Entradas: Recebe parametros de origem (coletor_id, ip, printer_info, cache_entries) com dados parciais e metadados para composicao final.
+# Como executa: Seleciona campos relevantes, aplica regras de prioridade/fallback e organiza o resultado no formato esperado.
+# Retorno/Efeitos: Entrega payload consolidado para a proxima camada (API, servico, persistencia ou interface).
 def build_payload_from_cache_entries(coletor_id, ip, printer_info, cache_entries):
     entries = cache_entries or []
     online_entries = [item for item in entries if item.get("status") != "offline"]
