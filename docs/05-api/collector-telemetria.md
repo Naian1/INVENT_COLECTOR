@@ -96,6 +96,24 @@ Observacao (2026-05-04):
 - Em ambiente atualizado, o contador de paginas e gravado em `telemetria_pagecount` por upsert (`nr_inventario`).
 - O historico diario (min/max/delta) e derivado por trigger em `telemetria_pagecount_diaria`.
 
+Observacao (2026-05-06):
+
+- Datas de leitura no banco usam `TIMESTAMPTZ` para evitar deslocamento de fuso no painel.
+- No coletor SNMP, quando mais de um OID de contador responde no mesmo ciclo, o seletor prioriza valor valido mais consistente e evita preferir leitura `0` quando existe leitura positiva no mesmo evento.
+
+## Mapa de codigo (linhas)
+
+- Montagem do payload padrao do coletor:
+  - `coletor-snmp/utils/telemetry_mapper.py:208`
+- Selecao de contador SNMP por OID/modelo:
+  - `coletor-snmp/utils/cache_manager.py:220`
+- Envio HTTP com retry e rastreio de tentativas:
+  - `coletor-snmp/utils/api_client.py:712`
+- Rastros jsonl locais para auditoria:
+  - `coletor-snmp/utils/runtime_trace.py:37`
+- Painel de execucao real no app desktop:
+  - `coletor-snmp/scripts/collector_control_app.py:609`
+
 ## Resposta parcial
 
 Quando parte do lote falha:

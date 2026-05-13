@@ -2,6 +2,7 @@ import asyncio
 import logging
 from typing import Any, Dict, List
 
+from .runtime_trace import append_backend_trace
 
 _USING_LEGACY_HLAPI = False
 
@@ -131,7 +132,18 @@ def snmp_get(
     retries: int = 1,
 ) -> Dict[str, Any]:
     try:
+        # Cada GET gera rastros locais para o painel "Backend ao vivo" do app de controle.
+        append_backend_trace(
+            "snmp_get_start",
+            ip=ip,
+            oid=oid,
+            community=community_str,
+            timeout=timeout,
+            retries=retries,
+            command_equivalent=f"snmpget -v2c -c {community_str} {ip} {oid}",
+        )
         if _USING_LEGACY_HLAPI:
+            # Caminho síncrono (pysnmp legado), mantido por compatibilidade de ambiente.
             error_indication, error_status, _, var_binds = next(
                 _legacy_get_cmd(
                     _LegacySnmpEngine(),
@@ -142,6 +154,12 @@ def snmp_get(
                 )
             )
             if error_indication or error_status or not var_binds:
+                append_backend_trace(
+                    "snmp_get_error",
+                    ip=ip,
+                    oid=oid,
+                    error=_stringify(error_indication or error_status),
+                )
                 return {
                     "ok": False,
                     "ip": ip,
@@ -150,6 +168,12 @@ def snmp_get(
                 }
 
             var_bind = var_binds[0]
+            append_backend_trace(
+                "snmp_get_ok",
+                ip=ip,
+                oid=_stringify(var_bind[0]),
+                value=_stringify(var_bind[1]),
+            )
             return {
                 "ok": True,
                 "ip": ip,
@@ -157,7 +181,8 @@ def snmp_get(
                 "value": _stringify(var_bind[1]),
             }
 
-        return _run_async(
+        # Caminho assíncrono (pysnmp novo): executa a coroutine e retorna no mesmo formato.
+        result = _run_async(
             _snmp_get_async(
                 ip=ip,
                 oid=oid,
@@ -166,8 +191,24 @@ def snmp_get(
                 retries=retries,
             )
         )
+        if result.get("ok"):
+            append_backend_trace(
+                "snmp_get_ok",
+                ip=ip,
+                oid=result.get("oid"),
+                value=result.get("value"),
+            )
+        else:
+            append_backend_trace(
+                "snmp_get_error",
+                ip=ip,
+                oid=oid,
+                error=result.get("error"),
+            )
+        return result
     except Exception as exc:
         logging.error(f"[snmp_get] Falha em {ip} oid={oid}: {exc}")
+        append_backend_trace("snmp_get_error", ip=ip, oid=oid, error=_stringify(exc))
         return {"ok": False, "ip": ip, "oid": oid, "error": _stringify(exc)}
 
 
@@ -180,7 +221,18 @@ def snmp_walk(
     limit: int = 500,
 ) -> List[Dict[str, Any]]:
     try:
+        # O trace também guarda o "comando equivalente" para facilitar debug manual com snmpwalk.
+        append_backend_trace(
+            "snmp_walk_start",
+            ip=ip,
+            oid_base=oid_base,
+            community=community_str,
+            timeout=timeout,
+            retries=retries,
+            command_equivalent=f"snmpwalk -v2c -c {community_str} {ip} {oid_base}",
+        )
         if _USING_LEGACY_HLAPI:
+            # Em legado percorremos manualmente e limitamos o volume para evitar loops longos.
             rows: List[Dict[str, Any]] = []
             for error_indication, error_status, _, var_binds in _legacy_next_cmd(
                 _LegacySnmpEngine(),
@@ -205,10 +257,22 @@ def snmp_walk(
                         }
                     )
                     if len(rows) >= limit:
+                        append_backend_trace(
+                            "snmp_walk_ok",
+                            ip=ip,
+                            oid_base=oid_base,
+                            rows=len(rows),
+                        )
                         return rows
+            append_backend_trace(
+                "snmp_walk_ok",
+                ip=ip,
+                oid_base=oid_base,
+                rows=len(rows),
+            )
             return rows
 
-        return _run_async(
+        rows = _run_async(
             _snmp_walk_async(
                 ip=ip,
                 oid_base=oid_base,
@@ -218,8 +282,16 @@ def snmp_walk(
                 limit=limit,
             )
         )
+        append_backend_trace(
+            "snmp_walk_ok",
+            ip=ip,
+            oid_base=oid_base,
+            rows=len(rows),
+        )
+        return rows
     except Exception as exc:
         logging.error(f"[snmp_walk] Falha em {ip} base={oid_base}: {exc}")
+        append_backend_trace("snmp_walk_error", ip=ip, oid_base=oid_base, error=_stringify(exc))
         return []
 
 

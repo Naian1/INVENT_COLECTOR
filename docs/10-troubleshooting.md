@@ -73,6 +73,37 @@ Acoes:
 3. Reimplantar `collector-telemetria`.
 4. Rodar 1 ciclo do coletor e conferir dados nas duas tabelas.
 
+## Horario da leitura aparece "de outro pais"
+
+Possiveis causas:
+
+- Coluna antiga em `TIMESTAMP` sem timezone.
+- Leitura antiga sem offset sendo interpretada como UTC no frontend.
+
+Acoes:
+
+1. Garantir schema atualizado com `TIMESTAMPTZ`:
+   - `telemetria_pagecount.dt_leitura`
+   - `telemetria_pagecount_diaria.dt_primeira_leitura`
+   - `telemetria_pagecount_diaria.dt_ultima_leitura`
+2. Confirmar que a `dt_referencia` diaria continua em `America/Sao_Paulo`.
+3. Reprocessar leitura recente apos deploy para validar exibicao no painel.
+
+## Pico falso de paginas (ex.: 74 mil em 1 dia)
+
+Possiveis causas:
+
+- Coleta SNMP retornou `0` em um OID de contador e valor real em outro OID no mesmo ciclo.
+- Consolidado diario considerou queda abrupta como valor minimo do dia.
+
+Acoes:
+
+1. Atualizar coletor com seletor de contador revisado (prioriza valor consistente > 0 quando houver multiplos OIDs validos).
+2. Confirmar trigger com blindagem de queda abrupta (`>= 500` paginas).
+3. Auditar no painel:
+   - `Inicio` (primeira leitura do dia)
+   - `Ultima` (ultima leitura do dia)
+
 ## Erro "Edge Function returned a non-2xx status code" no inventario
 
 Possiveis causas:
@@ -146,3 +177,8 @@ Acoes recomendadas:
 1. Executar backup rapido antes do truncate, se necessario.
 2. Reimportar competencias em ordem cronologica (ex.: 02/2026 antes de 03/2026).
 3. Validar total importado e cobertura de `nr_serie` apos a carga.
+
+## Referencia de estudo (linhas de codigo)
+
+- Quando precisar rastrear a origem tecnica de um problema, use:
+  - `docs/18-mapa-codigo-linhas-tcc.md`

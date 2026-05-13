@@ -5,6 +5,7 @@ import time
 from datetime import datetime, timezone
 from urllib import error, parse, request
 
+from .runtime_trace import append_backend_trace
 
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 ENV_FILE = os.path.join(BASE_DIR, ".env")
@@ -403,6 +404,14 @@ def _fetch_printers_via_api(config, log_prefix):
             last_status_code = http_err.code
             body_suffix = f": {error_body}" if error_body else ""
             last_error = f"HTTP {http_err.code}{body_suffix}"
+            append_backend_trace(
+                "supabase_get_printers_error",
+                url=url,
+                status=http_err.code,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             is_final = attempt >= retries or http_err.code < 500
             if is_final:
                 logging.error("%s Sync tentativa %s/%s falhou: %s", log_prefix, attempt, retries, last_error)
@@ -502,7 +511,16 @@ def _fetch_printers_via_supabase(config, log_prefix):
     last_error = "Erro desconhecido no sync de impressoras via Supabase."
     last_status_code = None
 
+    # Retry progressivo: falhas transitórias (rede/5xx) podem recuperar sem parar o coletor.
     for attempt in range(1, retries + 1):
+        append_backend_trace(
+            "supabase_get_printers_start",
+            url=url,
+            attempt=attempt,
+            retries=retries,
+            timeout=sync_timeout,
+            table=table_name,
+        )
         req = request.Request(url, headers=headers, method="GET")
         try:
             with request.urlopen(req, timeout=sync_timeout) as response:
@@ -530,6 +548,12 @@ def _fetch_printers_via_supabase(config, log_prefix):
                     "%s Lista de impressoras sincronizada via Supabase (%s registros).",
                     log_prefix,
                     len(printers),
+                )
+                append_backend_trace(
+                    "supabase_get_printers_ok",
+                    url=url,
+                    status=response.status,
+                    rows=len(printers),
                 )
                 return {
                     "success": True,
@@ -559,6 +583,13 @@ def _fetch_printers_via_supabase(config, log_prefix):
 
         except (error.URLError, TimeoutError) as conn_err:
             last_error = f"Erro de conexao/timeout: {_compact_error_message(conn_err)}"
+            append_backend_trace(
+                "supabase_get_printers_error",
+                url=url,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             if attempt >= retries:
                 logging.error("%s Sync tentativa %s/%s falhou: %s", log_prefix, attempt, retries, last_error)
             else:
@@ -572,6 +603,13 @@ def _fetch_printers_via_supabase(config, log_prefix):
 
         except Exception as exc:
             last_error = f"Falha inesperada no sync: {_compact_error_message(exc)}"
+            append_backend_trace(
+                "supabase_get_printers_error",
+                url=url,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             if attempt >= retries:
                 logging.error("%s Sync tentativa %s/%s falhou: %s", log_prefix, attempt, retries, last_error)
             else:
@@ -680,6 +718,7 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
         return {"success": False, "skipped": True, "error": msg}
 
     body = json.dumps(payload, ensure_ascii=False).encode("utf-8")
+    payload_preview = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
     headers = {
         "Content-Type": "application/json",
         "Authorization": f"Bearer {config['token']}",
@@ -694,7 +733,18 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
     last_error = "Falha desconhecida ao enviar telemetria."
     last_status_code = None
 
+    # Cada tentativa é rastreada em JSONL para permitir auditoria de payload e resposta.
     for attempt in range(1, retries + 1):
+        append_backend_trace(
+            "telemetry_post_start",
+            url=config["url"],
+            attempt=attempt,
+            retries=retries,
+            timeout=config["timeout_seconds"],
+            ingestao_id=ingestao_id,
+            payload=payload_preview,
+            command_equivalent=f"POST {config['url']} Authorization=Bearer *** JSON_BODY",
+        )
         req = request.Request(config["url"], data=body, headers=headers, method="POST")
         try:
             with request.urlopen(req, timeout=config["timeout_seconds"]) as response:
@@ -718,6 +768,13 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
                     response.status,
                     ingestao_id,
                 )
+                append_backend_trace(
+                    "telemetry_post_ok",
+                    url=config["url"],
+                    status=response.status,
+                    ingestao_id=ingestao_id,
+                    response=raw_body,
+                )
                 return {
                     "success": True,
                     "status_code": response.status,
@@ -730,7 +787,17 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
             last_status_code = http_err.code
             body_suffix = f": {error_body}" if error_body else ""
             last_error = f"HTTP {http_err.code}{body_suffix}"
+            append_backend_trace(
+                "telemetry_post_error",
+                url=config["url"],
+                status=http_err.code,
+                ingestao_id=ingestao_id,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             if http_err.code == 422:
+                # 422 normalmente aponta erro de validação do payload no endpoint destino.
                 hint = _extract_http_error_hint(raw_error_body)
                 if hint:
                     logging.error("%s Detalhe 422: %s", log_prefix, hint)
@@ -756,6 +823,14 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
 
         except (error.URLError, TimeoutError) as conn_err:
             last_error = f"Erro de conexao/timeout: {_compact_error_message(conn_err)}"
+            append_backend_trace(
+                "telemetry_post_error",
+                url=config["url"],
+                ingestao_id=ingestao_id,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             if attempt >= retries:
                 logging.error(
                     "%s Falha no envio (tentativa %s/%s): %s",
@@ -775,6 +850,14 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
 
         except Exception as exc:
             last_error = f"Falha inesperada no envio: {_compact_error_message(exc)}"
+            append_backend_trace(
+                "telemetry_post_error",
+                url=config["url"],
+                ingestao_id=ingestao_id,
+                error=last_error,
+                attempt=attempt,
+                retries=retries,
+            )
             if attempt >= retries:
                 logging.error(
                     "%s Falha no envio (tentativa %s/%s): %s",

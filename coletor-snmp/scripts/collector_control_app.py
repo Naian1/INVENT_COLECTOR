@@ -57,6 +57,8 @@ BASE_DIR = _resolve_base_dir()
 ENV_PATH = BASE_DIR / ".env"
 LOG_DIR = BASE_DIR / "logs"
 PID_PATH = LOG_DIR / "collector.pid"
+RUNTIME_LOG_PATH = LOG_DIR / "collector_loop_runtime.log"
+BACKEND_TRACE_PATH = LOG_DIR / "collector_backend_trace.jsonl"
 RUNTIME_STATE = LOG_DIR / "collector_app_state.json"
 APP_LOCK_PATH = LOG_DIR / "collector_control_app.lock"
 MUTEX_NAME = "Global\\INVENT_COLLECTOR_COLLECTOR_CONTROL_APP"
@@ -205,6 +207,53 @@ def clear_pid():
         pass
 
 
+def mask_secret(secret: str, keep: int = 4) -> str:
+    value = str(secret or "").strip()
+    if not value:
+        return "(vazio)"
+    if len(value) <= keep:
+        return "*" * len(value)
+    return "*" * (len(value) - keep) + value[-keep:]
+
+
+def tail_lines(path: Path, max_lines: int = 80):
+    try:
+        if not path.exists():
+            return []
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        return lines[-max(1, max_lines):]
+    except Exception:
+        return []
+
+
+def tail_jsonl(path: Path, max_lines: int = 120):
+    events = []
+    try:
+        if not path.exists():
+            return events
+        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        for line in lines[-max(1, max_lines):]:
+            clean = line.strip()
+            if not clean:
+                continue
+            try:
+                parsed = json.loads(clean)
+                if isinstance(parsed, dict):
+                    events.append(parsed)
+            except Exception:
+                continue
+    except Exception:
+        return []
+    return events
+
+
+def shorten_text(value, max_len: int = 140):
+    text = str(value or "").replace("\r", " ").replace("\n", " ").strip()
+    if len(text) <= max_len:
+        return text
+    return f"{text[:max_len - 3].rstrip()}..."
+
+
 def stop_pid(pid: int):
     if pid <= 0:
         return
@@ -235,6 +284,7 @@ class CollectorControlApp:
         self.tray_thread = None
         self.running = False
         self.starting = False
+        self.backend_panel_text = None
 
         self.vars = {}
         env_values = load_env(ENV_PATH)
@@ -307,18 +357,24 @@ class CollectorControlApp:
         ttk.Label(state, textvariable=self.status_var, foreground="#114488").pack(anchor="w")
         ttk.Label(state, textvariable=self.pid_var).pack(anchor="w")
 
-        help_box = tk.Text(outer, height=10, wrap="word")
-        help_box.pack(fill="both", expand=True)
-        help_box.insert(
-            "1.0",
-            "Dicas:\n"
-            "- Inicia em background (sem console) e salva PID em logs/collector.pid.\n"
-            "- Log principal: logs/collector_loop_runtime.log (com rotacao automatica).\n"
-            "- COLLECTOR_LOG_MAX_MB e COLLECTOR_LOG_BACKUPS controlam a rotacao do log.\n"
-            "- COLLECTOR_CACHE_MAX_ROWS limita tamanho do dados_cache.json.\n"
-            "- Minimizacao para bandeja requer pystray+pillow\n",
-        )
-        help_box.config(state="disabled")
+        ttk.Label(
+            outer,
+            text="Backend ao vivo (SNMP, payload e POST em execucao):",
+            font=("Segoe UI", 10, "bold"),
+        ).pack(anchor="w", pady=(2, 4))
+        panel_frame = ttk.Frame(outer)
+        panel_frame.pack(fill="both", expand=True)
+        self.backend_panel_text = tk.Text(panel_frame, height=11, wrap="none", font=("Consolas", 10))
+        scroll_y = ttk.Scrollbar(panel_frame, orient="vertical", command=self.backend_panel_text.yview)
+        scroll_x = ttk.Scrollbar(panel_frame, orient="horizontal", command=self.backend_panel_text.xview)
+        self.backend_panel_text.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
+        self.backend_panel_text.grid(row=0, column=0, sticky="nsew")
+        scroll_y.grid(row=0, column=1, sticky="ns")
+        scroll_x.grid(row=1, column=0, sticky="ew")
+        panel_frame.columnconfigure(0, weight=1)
+        panel_frame.rowconfigure(0, weight=1)
+        self.backend_panel_text.configure(state="disabled")
+        self.refresh_backend_panel()
 
     def _set_busy(self, busy: bool):
         state = "disabled" if busy else "normal"
@@ -457,6 +513,7 @@ class CollectorControlApp:
             self.running = False
             if pid:
                 clear_pid()
+        self.refresh_backend_panel()
 
     def open_logs(self):
         LOG_DIR.mkdir(parents=True, exist_ok=True)
@@ -464,6 +521,159 @@ class CollectorControlApp:
             os.startfile(str(LOG_DIR))
         else:
             messagebox.showinfo("Logs", str(LOG_DIR))
+
+    def _compact_ts(self, ts):
+        text = str(ts or "").strip()
+        if "T" in text and "." in text:
+            try:
+                hhmmss = text.split("T", 1)[1].split(".", 1)[0]
+                return hhmmss
+            except Exception:
+                return text
+        if "|" in text:
+            return text
+        return text[-8:] if len(text) >= 8 else text
+
+    def _format_payload_for_panel(self, raw_payload):
+        if not raw_payload:
+            return "(ainda nao houve POST de telemetria nesta sessao)"
+
+        try:
+            payload_obj = json.loads(str(raw_payload))
+        except Exception:
+            return shorten_text(raw_payload, max_len=1200)
+
+        coletor_id = payload_obj.get("coletor_id")
+        eventos = payload_obj.get("eventos") if isinstance(payload_obj, dict) else None
+        first_event = eventos[0] if isinstance(eventos, list) and eventos else {}
+        printer = first_event.get("impressora") if isinstance(first_event, dict) else {}
+        supplies = first_event.get("suprimentos") if isinstance(first_event, dict) else []
+
+        summary_lines = [
+            f"coletor_id: {coletor_id or '-'}",
+            f"ingestao_id: {first_event.get('ingestao_id') or '-'}",
+            f"ip: {printer.get('ip') or '-'} | status: {first_event.get('status') or '-'}",
+            f"setor: {printer.get('setor') or '-'}",
+            f"contador_total_paginas: {first_event.get('contador_total_paginas')}",
+            f"qtd_suprimentos: {len(supplies) if isinstance(supplies, list) else 0}",
+        ]
+
+        supply_lines = []
+        if isinstance(supplies, list):
+            for item in supplies[:8]:
+                if not isinstance(item, dict):
+                    continue
+                supply_lines.append(
+                    f"- {item.get('chave_suprimento')}: {item.get('nivel_percentual')}% ({item.get('status_suprimento')})"
+                )
+        if not supply_lines:
+            supply_lines.append("- (sem suprimentos)")
+
+        pretty_json = json.dumps(payload_obj, indent=2, ensure_ascii=False)
+        # Limite para manter o painel responsivo mesmo com payloads grandes.
+        pretty_json = shorten_text(pretty_json, max_len=4200)
+
+        return (
+            "Resumo:\n"
+            + "\n".join(summary_lines)
+            + "\nSuprimentos:\n"
+            + "\n".join(supply_lines)
+            + "\n\nJSON:\n"
+            + pretty_json
+        )
+
+    def _event_line(self, event):
+        ts = self._compact_ts(event.get("ts"))
+        ev = str(event.get("event") or "").strip().lower()
+        if ev == "snmp_walk_start":
+            return f"[{ts}] SNMP WALK  {shorten_text(event.get('command_equivalent'), 130)}"
+        if ev == "snmp_get_start":
+            return f"[{ts}] SNMP GET   {shorten_text(event.get('command_equivalent'), 130)}"
+        if ev == "telemetry_post_start":
+            return (
+                f"[{ts}] POST START {shorten_text(event.get('url'), 70)} "
+                f"id={event.get('ingestao_id')}"
+            )
+        if ev == "telemetry_post_ok":
+            return f"[{ts}] POST OK    status={event.get('status')} id={event.get('ingestao_id')}"
+        if ev == "telemetry_post_error":
+            return f"[{ts}] POST ERRO  {shorten_text(event.get('error'), 120)}"
+        if ev == "supabase_get_printers_start":
+            return f"[{ts}] GET SB START {shorten_text(event.get('url'), 120)}"
+        if ev == "supabase_get_printers_ok":
+            return f"[{ts}] GET SB OK    status={event.get('status')} registros={event.get('rows')}"
+        if ev == "supabase_get_printers_error":
+            return f"[{ts}] GET SB ERRO  {shorten_text(event.get('error'), 120)}"
+        return f"[{ts}] {ev} -> {event}"
+
+    def build_backend_panel_snapshot(self):
+        payload = {k: v.get().strip() for k, v in self.vars.items()}
+        trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=300)
+        last_payload = None
+        lines = []
+        for event in reversed(trace_events):
+            ev = str(event.get("event") or "").lower()
+            if ev == "telemetry_post_start" and not last_payload:
+                last_payload = str(event.get("payload") or "")
+            if ev in {
+                "snmp_walk_start",
+                "snmp_get_start",
+                "telemetry_post_start",
+                "telemetry_post_ok",
+                "telemetry_post_error",
+                "supabase_get_printers_start",
+                "supabase_get_printers_ok",
+                "supabase_get_printers_error",
+            }:
+                lines.append(self._event_line(event))
+            if len(lines) >= 20:
+                break
+        lines.reverse()
+        if not lines:
+            lines = ["(sem execucoes rastreadas ainda; inicie o coletor para preencher)"]
+
+        runtime_tail = tail_lines(RUNTIME_LOG_PATH, max_lines=12)
+        if not runtime_tail:
+            runtime_tail = ["(sem linhas de log ainda)"]
+
+        token_masked = mask_secret(payload.get("COLLECTOR_API_TOKEN", ""))
+        api_url = payload.get("COLLECTOR_API_URL", "")
+        supabase_url = payload.get("COLLECTOR_SUPABASE_URL", "")
+        pid = read_pid()
+        running = bool(pid and is_pid_running(pid))
+        status_line = f"rodando (PID {pid})" if running else "parado"
+
+        if not last_payload:
+            last_payload = "(ainda nao houve POST de telemetria nesta sessao)"
+        payload_pretty = self._format_payload_for_panel(last_payload)
+
+        # Snapshot textual unico: facilita copiar/colar em chamados e documentação de suporte.
+        return (
+            "==================== STATUS ====================\n"
+            f"Coletor: {status_line}\n"
+            f"API Telemetria: {api_url or '(nao configurada)'}\n"
+            f"Supabase URL: {supabase_url or '(nao configurada)'}\n"
+            f"Token (mascarado): {token_masked}\n"
+            "\n================ COMANDOS SNMP (equivalente) ================\n"
+            "snmpwalk -v2c -c <community> <ip> 1.3.6.1.2.1.43.11.1.1.6.1\n"
+            "snmpwalk -v2c -c <community> <ip> 1.3.6.1.2.1.43.11.1.1.8.1\n"
+            "snmpwalk -v2c -c <community> <ip> 1.3.6.1.2.1.43.11.1.1.9.1\n"
+            "snmpget  -v2c -c <community> <ip> 1.3.6.1.2.1.43.10.2.1.4.1.1\n"
+            "\n================ ULTIMO PAYLOAD ENVIADO ================\n"
+            f"{payload_pretty}\n"
+            "\n================ EXECUCOES BACKEND (real) ================\n"
+            + "\n".join(lines)
+            + "\n\n================ RUNTIME LOG (ultimas linhas) ================\n"
+            + "\n".join(runtime_tail)
+        )
+
+    def refresh_backend_panel(self):
+        if self.backend_panel_text is None or not self.backend_panel_text.winfo_exists():
+            return
+        self.backend_panel_text.configure(state="normal")
+        self.backend_panel_text.delete("1.0", "end")
+        self.backend_panel_text.insert("1.0", self.build_backend_panel_snapshot())
+        self.backend_panel_text.configure(state="disabled")
 
     def _build_tray_image(self):
         if Image is None:

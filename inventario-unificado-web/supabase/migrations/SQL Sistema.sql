@@ -1026,13 +1026,50 @@ CREATE TABLE public.telemetria_pagecount (
   nr_paginas_impressao BIGINT DEFAULT 0,
   nr_paginas_digitalizacao BIGINT DEFAULT 0,
   nr_paginas_fax BIGINT DEFAULT 0,
-  dt_leitura TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  dt_leitura TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
   ds_status_impressora VARCHAR, -- ex: 'OK', 'ERRO', 'OFFLINE'
   ds_observacao VARCHAR
 );
 
 CREATE INDEX idx_telemetria_pagecount_inventario ON public.telemetria_pagecount(nr_inventario);
 CREATE INDEX idx_telemetria_pagecount_data ON public.telemetria_pagecount(dt_leitura);
+
+CREATE OR REPLACE FUNCTION public.fn_guardar_pagecount_consistente()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+DECLARE
+  v_novo BIGINT;
+  v_antigo BIGINT;
+BEGIN
+  v_novo := GREATEST(COALESCE(NEW.nr_paginas_total, 0), 0);
+  NEW.nr_paginas_total := v_novo;
+
+  IF TG_OP = 'INSERT' THEN
+    RETURN NEW;
+  END IF;
+
+  v_antigo := GREATEST(COALESCE(OLD.nr_paginas_total, v_novo), 0);
+  IF (v_antigo - v_novo) >= 500 THEN
+    NEW.nr_paginas_total := v_antigo;
+    NEW.ds_observacao := COALESCE(NULLIF(BTRIM(NEW.ds_observacao), ''), NULLIF(BTRIM(OLD.ds_observacao), ''));
+    IF NEW.ds_observacao IS NULL THEN
+      NEW.ds_observacao := 'Ajuste automatico: queda abrupta de contador ignorada.';
+    ELSE
+      NEW.ds_observacao := NEW.ds_observacao || ' | Ajuste automatico: queda abrupta ignorada.';
+    END IF;
+  END IF;
+
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_guardar_pagecount_consistente ON public.telemetria_pagecount;
+
+CREATE TRIGGER trg_guardar_pagecount_consistente
+BEFORE INSERT OR UPDATE OF nr_paginas_total ON public.telemetria_pagecount
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_guardar_pagecount_consistente();
 
 -- Função para limpar histórico de telemetria com mais de 3 meses
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
@@ -2699,14 +2736,87 @@ CREATE TABLE IF NOT EXISTS public.telemetria_pagecount_diaria (
   nr_paginas_fim_dia BIGINT NOT NULL DEFAULT 0,
   nr_paginas_dia BIGINT NOT NULL DEFAULT 0,
   nr_ciclos_coleta INTEGER NOT NULL DEFAULT 0,
-  dt_primeira_leitura TIMESTAMP,
-  dt_ultima_leitura TIMESTAMP,
+  dt_primeira_leitura TIMESTAMPTZ,
+  dt_ultima_leitura TIMESTAMPTZ,
   ds_status_ultima VARCHAR,
-  dt_atualizacao TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  dt_atualizacao TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT uq_telemetria_pagecount_diaria UNIQUE (nr_inventario, dt_referencia),
   CONSTRAINT ck_telemetria_dia_min_max CHECK (nr_paginas_fim_dia >= nr_paginas_inicio_dia),
   CONSTRAINT ck_telemetria_dia_delta CHECK (nr_paginas_dia >= 0)
 );
+
+-- Em ambientes ja atualizados, o trigger antigo depende de dt_leitura.
+-- Derrubamos antes do ALTER TYPE para evitar erro:
+-- "cannot alter type of a column used in a trigger definition".
+DROP TRIGGER IF EXISTS trg_sync_telemetria_pagecount_diaria ON public.telemetria_pagecount;
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'telemetria_pagecount'
+      AND column_name = 'dt_leitura'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.telemetria_pagecount
+      ALTER COLUMN dt_leitura TYPE TIMESTAMPTZ
+      USING CASE
+        WHEN dt_leitura IS NULL THEN NULL
+        ELSE dt_leitura AT TIME ZONE 'UTC'
+      END;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'telemetria_pagecount_diaria'
+      AND column_name = 'dt_primeira_leitura'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.telemetria_pagecount_diaria
+      ALTER COLUMN dt_primeira_leitura TYPE TIMESTAMPTZ
+      USING CASE
+        WHEN dt_primeira_leitura IS NULL THEN NULL
+        ELSE dt_primeira_leitura AT TIME ZONE 'UTC'
+      END;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'telemetria_pagecount_diaria'
+      AND column_name = 'dt_ultima_leitura'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.telemetria_pagecount_diaria
+      ALTER COLUMN dt_ultima_leitura TYPE TIMESTAMPTZ
+      USING CASE
+        WHEN dt_ultima_leitura IS NULL THEN NULL
+        ELSE dt_ultima_leitura AT TIME ZONE 'UTC'
+      END;
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'telemetria_pagecount_diaria'
+      AND column_name = 'dt_atualizacao'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.telemetria_pagecount_diaria
+      ALTER COLUMN dt_atualizacao TYPE TIMESTAMPTZ
+      USING CASE
+        WHEN dt_atualizacao IS NULL THEN CURRENT_TIMESTAMP
+        ELSE dt_atualizacao AT TIME ZONE 'UTC'
+      END;
+  END IF;
+END;
+$$;
 
 CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_data
   ON public.telemetria_pagecount_diaria (dt_referencia DESC);
@@ -2727,11 +2837,22 @@ AS $$
 DECLARE
   v_data_ref DATE;
   v_total BIGINT;
-  v_dt_leitura TIMESTAMP;
+  v_total_anterior BIGINT;
+  v_dt_leitura TIMESTAMPTZ;
 BEGIN
   v_total := GREATEST(COALESCE(NEW.nr_paginas_total, 0), 0);
+  IF TG_OP = 'UPDATE' THEN
+    v_total_anterior := GREATEST(COALESCE(OLD.nr_paginas_total, v_total), 0);
+  ELSE
+    v_total_anterior := v_total;
+  END IF;
+  IF TG_OP = 'UPDATE' AND (v_total_anterior - v_total) >= 500 THEN
+    -- Blindagem anti-ruido: evita "queda para zero" espuria no consolidado diario.
+    v_total := v_total_anterior;
+  END IF;
+
   v_dt_leitura := COALESCE(NEW.dt_leitura, CURRENT_TIMESTAMP);
-  v_data_ref := ((v_dt_leitura AT TIME ZONE 'UTC') AT TIME ZONE 'America/Sao_Paulo')::date;
+  v_data_ref := (v_dt_leitura AT TIME ZONE 'America/Sao_Paulo')::date;
 
   INSERT INTO public.telemetria_pagecount_diaria (
     nr_inventario,
@@ -2759,10 +2880,10 @@ BEGIN
   )
   ON CONFLICT (nr_inventario, dt_referencia)
   DO UPDATE SET
-    nr_paginas_inicio_dia = LEAST(
-      public.telemetria_pagecount_diaria.nr_paginas_inicio_dia,
-      EXCLUDED.nr_paginas_inicio_dia
-    ),
+    nr_paginas_inicio_dia = CASE
+      WHEN public.telemetria_pagecount_diaria.nr_ciclos_coleta <= 0 THEN EXCLUDED.nr_paginas_inicio_dia
+      ELSE public.telemetria_pagecount_diaria.nr_paginas_inicio_dia
+    END,
     nr_paginas_fim_dia = GREATEST(
       public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
       EXCLUDED.nr_paginas_fim_dia
@@ -2770,9 +2891,9 @@ BEGIN
     nr_paginas_dia = GREATEST(
       public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
       EXCLUDED.nr_paginas_fim_dia
-    ) - LEAST(
-      public.telemetria_pagecount_diaria.nr_paginas_inicio_dia,
-      EXCLUDED.nr_paginas_inicio_dia
+    ) - CASE
+      WHEN public.telemetria_pagecount_diaria.nr_ciclos_coleta <= 0 THEN EXCLUDED.nr_paginas_inicio_dia
+      ELSE public.telemetria_pagecount_diaria.nr_paginas_inicio_dia
     ),
     nr_ciclos_coleta = public.telemetria_pagecount_diaria.nr_ciclos_coleta + 1,
     dt_primeira_leitura = CASE
@@ -2830,5 +2951,80 @@ $$;
 
 -- Inicia diario limpo
 TRUNCATE TABLE public.telemetria_pagecount_diaria RESTART IDENTITY;
+
+COMMIT;
+
+
+-- ========================================================
+-- SOURCE: 20260505_tarifas_bilhetagem.sql
+-- ========================================================
+
+BEGIN;
+
+CREATE TABLE IF NOT EXISTS public.tarifas_bilhetagem (
+  id BIGSERIAL PRIMARY KEY,
+  competencia_mes SMALLINT NOT NULL CHECK (competencia_mes BETWEEN 1 AND 12),
+  competencia_ano SMALLINT NOT NULL CHECK (competencia_ano BETWEEN 2000 AND 2100),
+  empresa_locadora VARCHAR NOT NULL,
+  tipo_impressao VARCHAR NOT NULL CHECK (tipo_impressao IN ('pb', 'colorida')),
+  valor_pagina NUMERIC(12,6) NOT NULL CHECK (valor_pagina >= 0),
+  fonte_arquivo VARCHAR,
+  ativo BOOLEAN NOT NULL DEFAULT TRUE,
+  created_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMPTZ NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+DO $$
+BEGIN
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'tarifas_bilhetagem'
+      AND column_name = 'created_at'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.tarifas_bilhetagem
+      ALTER COLUMN created_at TYPE TIMESTAMPTZ
+      USING created_at AT TIME ZONE 'UTC';
+  END IF;
+
+  IF EXISTS (
+    SELECT 1
+    FROM information_schema.columns
+    WHERE table_schema = 'public'
+      AND table_name = 'tarifas_bilhetagem'
+      AND column_name = 'updated_at'
+      AND data_type = 'timestamp without time zone'
+  ) THEN
+    ALTER TABLE public.tarifas_bilhetagem
+      ALTER COLUMN updated_at TYPE TIMESTAMPTZ
+      USING updated_at AT TIME ZONE 'UTC';
+  END IF;
+END;
+$$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS uq_tarifas_bilhetagem_competencia
+  ON public.tarifas_bilhetagem (competencia_mes, competencia_ano, empresa_locadora, tipo_impressao);
+
+CREATE INDEX IF NOT EXISTS idx_tarifas_bilhetagem_ativo
+  ON public.tarifas_bilhetagem (ativo, competencia_ano DESC, competencia_mes DESC);
+
+CREATE OR REPLACE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at()
+RETURNS trigger
+LANGUAGE plpgsql
+AS $$
+BEGIN
+  NEW.updated_at = CURRENT_TIMESTAMP;
+  RETURN NEW;
+END;
+$$;
+
+DROP TRIGGER IF EXISTS trg_tarifas_bilhetagem_touch_updated_at ON public.tarifas_bilhetagem;
+
+CREATE TRIGGER trg_tarifas_bilhetagem_touch_updated_at
+BEFORE UPDATE ON public.tarifas_bilhetagem
+FOR EACH ROW
+EXECUTE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at();
 
 COMMIT;

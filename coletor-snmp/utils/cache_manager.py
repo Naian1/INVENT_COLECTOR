@@ -259,6 +259,8 @@ def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> 
 
     selected_value = None
     selected_meta = None
+    selected_rank = None
+    confidence_rank = {"high": 3, "medium": 2, "low": 1, "none": 0}
 
     for candidate in candidates:
         response = snmp_get(candidate["oid"], ip, community_str)
@@ -277,11 +279,20 @@ def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> 
             }
         )
 
-        if parsed is not None and parsed >= 0 and selected_value is None:
-            selected_value = parsed
-            selected_meta = candidate
+        if parsed is not None and parsed >= 0:
+            # Priorizacao: valor positivo > zero > maior contador > maior confianca do OID.
+            rank = (
+                1 if parsed > 0 else 0,
+                parsed,
+                confidence_rank.get(candidate["confidence"], 0),
+            )
+            if selected_rank is None or rank > selected_rank:
+                selected_rank = rank
+                selected_value = parsed
+                selected_meta = candidate
 
     if family == "lexmark":
+        # OIDs extras de diagnostico ficam registrados para comparacao em suporte/TCC.
         for name, oid in [
             ("lexmark_selected_sides", OID_LEXMARK_SELECTED_SIDES),
             ("lexmark_media_count", OID_LEXMARK_MEDIA_COUNT),

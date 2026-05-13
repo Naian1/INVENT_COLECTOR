@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "backfill:printers": "node scripts/backfillLegacyPrinters.mjs",
     "importar:aba-impressoras": "node scripts/importAbaImpressoras.mjs",
-    "importar:inventario-impressoras-legado": "node scripts/importLegacyPrintersToInventario.mjs"
+    "importar:inventario-impressoras-legado": "node scripts/importLegacyPrintersToInventario.mjs",
+    "bilhetagem:extrair-tarifas": "node scripts/extractTarifasBilhetagem.mjs"
   },
   "dependencies": {
     "@flaticon/flaticon-uicons": "^3.3.1",

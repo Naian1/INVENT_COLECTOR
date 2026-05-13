@@ -82,6 +82,11 @@ Observacao (2026-05-04):
   - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql`
 - Nao usar arquivo avulso para esse bloco.
 
+Observacao (2026-05-06):
+
+- O bloco de `tarifas_bilhetagem` tambem foi consolidado no mesmo `SQL Sistema.sql`.
+- O arquivo `20260505_tarifas_bilhetagem.sql` foi removido.
+
 ## Validacao inicial
 
 1. Abrir tela web local e validar carregamento.
@@ -95,3 +100,7 @@ Observacao (2026-05-04):
 3. Verificar crescimento de linhas:
 - `telemetria_pagecount` ~= quantidade de impressoras monitoradas.
 - `telemetria_pagecount_diaria` ~= impressoras x dias com coleta.
+
+## Referencia de estudo (linhas de codigo)
+
+- Ver `docs/18-mapa-codigo-linhas-tcc.md` para localizar cada acao diretamente no codigo.
