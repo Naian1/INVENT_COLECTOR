@@ -85,6 +85,10 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
   throw new Error(`Falha ao executar inventory-admin: ${fnError}`);
 }
 
+/**
+ * [DOC-FUNC] formatSetorLabel
+ * Objetivo: Executa a rotina de 'f or ma ts et or la be l'.
+ */
 function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>): string {
   const piso = (setor.nm_piso || '').trim();
   const nomeSetor = (setor.nm_setor || '').trim();
@@ -93,6 +97,10 @@ function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_locali
   return [piso, nomeSetor, localizacao].filter(Boolean).join(' > ');
 }
 
+/**
+ * [DOC-FUNC] formatPisoLabel
+ * Objetivo: Executa a rotina de 'f or ma tp is ol ab el'.
+ */
 function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
   const nome = (piso.nm_piso || '').trim();
   const descricao = (piso.ds_piso || '').trim();
@@ -190,6 +198,10 @@ export default function GerenciarCategoriasPage() {
     tp_hierarquia: 'AMBOS' as 'RAIZ' | 'FILHO' | 'AMBOS',
   });
 
+  /**
+   * [DOC-FUNC] carregarTudo
+   * Objetivo: Executa a rotina de 'c ar re ga rt ud o'.
+   */
   async function carregarTudo() {
     setLoading(true);
     setErro(null);
@@ -218,6 +230,10 @@ export default function GerenciarCategoriasPage() {
   useEffect(() => {
     let active = true;
 
+    /**
+     * [DOC-FUNC] loadAuth
+     * Objetivo: Executa a rotina de 'l oa da ut h'.
+     */
     const loadAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
@@ -327,6 +343,10 @@ export default function GerenciarCategoriasPage() {
     });
   }, [equipamentoSelecionado, equipamentos]);
 
+  /**
+   * [DOC-FUNC] criarEmpresa
+   * Objetivo: Executa a rotina de 'c ri ar em pr es a'.
+   */
   async function criarEmpresa() {
     if (!novaEmpresa.cd_cgc || !novaEmpresa.nm_empresa) {
       setErro('Preencha CNPJ/CGC e nome da empresa.');
@@ -353,6 +373,10 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  /**
+   * [DOC-FUNC] criarTipo
+   * Objetivo: Executa a rotina de 'c ri ar ti po'.
+   */
   async function criarTipo() {
     if (!novoTipo.nm_tipo_equipamento) {
       setErro('Preencha o nome do tipo de equipamento.');
@@ -376,6 +400,10 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  /**
+   * [DOC-FUNC] criarPiso
+   * Objetivo: Executa a rotina de 'c ri ar pi so'.
+   */
   async function criarPiso() {
     if (!novoPiso.nm_piso.trim()) {
       setErro('Preencha o nome do piso.');
@@ -399,6 +427,10 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  /**
+   * [DOC-FUNC] criarSetor
+   * Objetivo: Executa a rotina de 'c ri ar se to r'.
+   */
   async function criarSetor() {
     if (!novoSetor.cd_piso || !novoSetor.nm_setor) {
       setErro('Preencha piso e nome do setor.');
@@ -424,6 +456,10 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  /**
+   * [DOC-FUNC] criarEquipamento
+   * Objetivo: Executa a rotina de 'c ri ar eq ui pa me nt o'.
+   */
   async function criarEquipamento() {
     if (
       !novoEquipamento.cd_cgc ||
@@ -465,6 +501,10 @@ export default function GerenciarCategoriasPage() {
     await carregarTudo();
   }
 
+  /**
+   * [DOC-FUNC] atualizarEmpresa
+   * Objetivo: Executa a rotina de 'a tu al iz ar em pr es a'.
+   */
   async function atualizarEmpresa() {
     if (!empresaSelecionada) {
       setErro('Selecione uma empresa para editar.');
@@ -493,6 +533,10 @@ export default function GerenciarCategoriasPage() {
     }
   }
 
+  /**
+   * [DOC-FUNC] atualizarTipo
+   * Objetivo: Executa a rotina de 'a tu al iz ar ti po'.
+   */
   async function atualizarTipo() {
     if (!tipoSelecionado) {
       setErro('Selecione um tipo para editar.');
@@ -519,6 +563,10 @@ export default function GerenciarCategoriasPage() {
     }
   }
 
+  /**
+   * [DOC-FUNC] atualizarPiso
+   * Objetivo: Executa a rotina de 'a tu al iz ar pi so'.
+   */
   async function atualizarPiso() {
     if (!pisoSelecionado) {
       setErro('Selecione um piso para editar.');
@@ -545,6 +593,10 @@ export default function GerenciarCategoriasPage() {
     }
   }
 
+  /**
+   * [DOC-FUNC] atualizarSetor
+   * Objetivo: Executa a rotina de 'a tu al iz ar se to r'.
+   */
   async function atualizarSetor() {
     if (!setorSelecionado) {
       setErro('Selecione um setor para editar.');
@@ -578,6 +630,10 @@ export default function GerenciarCategoriasPage() {
     }
   }
 
+  /**
+   * [DOC-FUNC] atualizarEquipamento
+   * Objetivo: Executa a rotina de 'a tu al iz ar eq ui pa me nt o'.
+   */
   async function atualizarEquipamento() {
     if (!equipamentoSelecionado) {
       setErro('Selecione um equipamento para editar.');

@@ -4,6 +4,10 @@
  */
 import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasService";
 
+/**
+ * [DOC-FUNC] formatSupplyLevel
+ * Objetivo: Executa a rotina de 'f or ma ts up pl yl ev el'.
+ */
 function formatSupplyLevel(level: number | null) {
   if (level === null || Number.isNaN(level)) return "-";
   return `${level}%`;

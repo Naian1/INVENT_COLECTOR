@@ -32,6 +32,10 @@ const textoOpcionalNulo = z
   .optional()
   .nullable();
 
+/**
+ * [DOC-FUNC] uuidObrigatorio
+ * Objetivo: Executa a rotina de 'u ui do br ig at or io'.
+ */
 const uuidObrigatorio = (campo: string) =>
   z.string().uuid(`${campo} deve ser UUID valido`);
 
@@ -95,6 +99,10 @@ const boolFromQuery = z
   .enum(["true", "false"])
   .transform((value) => value === "true");
 
+/**
+ * [DOC-FUNC] numeroPositivoComDefault
+ * Objetivo: Executa a rotina de 'n um er op os it iv oc om de fa ul t'.
+ */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z
     .string()

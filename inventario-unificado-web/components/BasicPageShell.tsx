@@ -48,6 +48,10 @@ type UsuarioSessao = {
   perfis?: PerfilInfo[];
 };
 
+/**
+ * [DOC-FUNC] BasicPageShell
+ * Objetivo: Executa a rotina de 'b as ic pa ge sh el l'.
+ */
 export function BasicPageShell({ title, subtitle, children, actions }: BasicPageShellProps) {
   const pathname = usePathname();
   const [theme, setTheme] = useState<Theme>("light");
@@ -57,6 +61,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
   const [profileSwitching, setProfileSwitching] = useState(false);
   const profileMenuRef = useRef<HTMLDivElement | null>(null);
 
+  /**
+   * [DOC-FUNC] getAccessToken
+   * Objetivo: Executa a rotina de 'g et ac ce ss to ke n'.
+   */
   const getAccessToken = async () => {
     const { data } = await supabase.auth.getSession();
     return data.session?.access_token || null;
@@ -78,6 +86,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
   useEffect(() => {
     let active = true;
 
+    /**
+     * [DOC-FUNC] loadSession
+     * Objetivo: Executa a rotina de 'l oa ds es si on'.
+     */
     const loadSession = async () => {
       try {
         const token = await getAccessToken();
@@ -124,6 +136,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
   useEffect(() => {
     if (!profileMenuOpen) return;
 
+    /**
+     * [DOC-FUNC] handleClick
+     * Objetivo: Executa a rotina de 'h an dl ec li ck'.
+     */
     const handleClick = (event: MouseEvent) => {
       if (!profileMenuRef.current) return;
       if (profileMenuRef.current.contains(event.target as Node)) return;
@@ -134,6 +150,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     return () => document.removeEventListener("pointerdown", handleClick);
   }, [profileMenuOpen]);
 
+  /**
+   * [DOC-FUNC] alternarTema
+   * Objetivo: Executa a rotina de 'a lt er na rt em a'.
+   */
   const alternarTema = () => {
     const nextTheme: Theme = theme === "dark" ? "light" : "dark";
     document.documentElement.setAttribute("data-theme", nextTheme);
@@ -142,6 +162,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     setTheme(nextTheme);
   };
 
+  /**
+   * [DOC-FUNC] logout
+   * Objetivo: Executa a rotina de 'l og ou t'.
+   */
   const logout = async () => {
     try {
       await supabase.auth.signOut();
@@ -151,6 +175,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     }
   };
 
+  /**
+   * [DOC-FUNC] getUserInitials
+   * Objetivo: Executa a rotina de 'g et us er in it ia ls'.
+   */
   const getUserInitials = (name: string | null | undefined) => {
     const safeName = String(name || "").trim();
     if (!safeName) return "?";
@@ -159,6 +187,10 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
     return `${parts[0][0] || ""}${parts[parts.length - 1][0] || ""}`.toUpperCase();
   };
 
+  /**
+   * [DOC-FUNC] handleSwitchPerfil
+   * Objetivo: Executa a rotina de 'h an dl es wi tc hp er fi l'.
+   */
   const handleSwitchPerfil = async (cdPerfil: number) => {
     if (!usuarioSessao || cdPerfil === usuarioSessao.cd_perfil) {
       setProfileMenuOpen(false);

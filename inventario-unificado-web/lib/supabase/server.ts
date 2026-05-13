@@ -6,6 +6,10 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 let cachedClient: SupabaseClient | null = null;
 
+/**
+ * [DOC-FUNC] getSupabaseEnv
+ * Objetivo: Executa a rotina de 'g et su pa ba se en v'.
+ */
 function getSupabaseEnv() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const key = process.env.SUPABASE_SERVICE_ROLE_KEY || process.env.SUPABASE_SECRET_KEY;
@@ -19,6 +23,10 @@ function getSupabaseEnv() {
   return { url, key };
 }
 
+/**
+ * [DOC-FUNC] getSupabaseServerClient
+ * Objetivo: Executa a rotina de 'g et su pa ba se se rv er cl ie nt'.
+ */
 export function getSupabaseServerClient() {
   if (cachedClient) return cachedClient;
 

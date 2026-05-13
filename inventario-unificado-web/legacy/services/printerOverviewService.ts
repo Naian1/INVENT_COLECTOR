@@ -52,11 +52,19 @@ type SupplyRow = {
   supply_status: string;
 };
 
+/**
+ * [DOC-FUNC] toFiniteNumber
+ * Objetivo: Executa a rotina de 't of in it en um be r'.
+ */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * [DOC-FUNC] getPrintersOverview
+ * Objetivo: Executa a rotina de 'g et pr in te rs ov er vi ew'.
+ */
 export async function getPrintersOverview(): Promise<ServiceResult<PrinterOverviewItem[]>> {
   const supabase = getSupabaseServerClient();
 

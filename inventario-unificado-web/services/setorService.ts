@@ -9,6 +9,10 @@ import { Setor, CreateSetorInput, UpdateSetorInput } from '@/types/setor';
  * Serviço de Setores (locais/departamentos)
  */
 
+/**
+ * [DOC-FUNC] getSetores
+ * Objetivo: Executa a rotina de 'g et se to re s'.
+ */
 export async function getSetores(): Promise<Setor[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -21,6 +25,10 @@ export async function getSetores(): Promise<Setor[]> {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getSetorById
+ * Objetivo: Executa a rotina de 'g et se to rb yi d'.
+ */
 export async function getSetorById(id: number): Promise<Setor | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -33,6 +41,10 @@ export async function getSetorById(id: number): Promise<Setor | null> {
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getSetorByName
+ * Objetivo: Executa a rotina de 'g et se to rb yn am e'.
+ */
 export async function getSetorByName(name: string): Promise<Setor | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -46,6 +58,10 @@ export async function getSetorByName(name: string): Promise<Setor | null> {
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] createSetor
+ * Objetivo: Executa a rotina de 'c re at es et or'.
+ */
 export async function createSetor(input: CreateSetorInput): Promise<Setor> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -58,6 +74,10 @@ export async function createSetor(input: CreateSetorInput): Promise<Setor> {
   return data;
 }
 
+/**
+ * [DOC-FUNC] updateSetor
+ * Objetivo: Executa a rotina de 'u pd at es et or'.
+ */
 export async function updateSetor(
   id: number,
   input: UpdateSetorInput,
@@ -74,6 +94,10 @@ export async function updateSetor(
   return data;
 }
 
+/**
+ * [DOC-FUNC] deleteSetor
+ * Objetivo: Executa a rotina de 'd el et es et or'.
+ */
 export async function deleteSetor(id: number): Promise<void> {
   // Soft delete
   const supabase = getSupabaseServerClient();

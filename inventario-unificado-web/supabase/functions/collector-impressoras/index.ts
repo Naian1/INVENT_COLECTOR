@@ -11,6 +11,10 @@ const corsHeaders = {
   "Access-Control-Allow-Methods": "GET, OPTIONS",
 };
 
+/**
+ * [DOC-FUNC] jsonResponse
+ * Objetivo: Executa a rotina de 'j so nr es po ns e'.
+ */
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -21,6 +25,10 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+/**
+ * [DOC-FUNC] getAdminClient
+ * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -34,12 +42,20 @@ function getAdminClient() {
   });
 }
 
+/**
+ * [DOC-FUNC] cleanText
+ * Objetivo: Executa a rotina de 'c le an te xt'.
+ */
 function cleanText(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
   return text ? text : null;
 }
 
+/**
+ * [DOC-FUNC] normalizeIp
+ * Objetivo: Executa a rotina de 'n or ma li ze ip'.
+ */
 function normalizeIp(ip: unknown): string | null {
   if (typeof ip !== "string") return null;
   const clean = ip.trim();
@@ -47,11 +63,19 @@ function normalizeIp(ip: unknown): string | null {
   return clean.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] tokenFromAuthHeader
+ * Objetivo: Executa a rotina de 't ok en fr om au th he ad er'.
+ */
 function tokenFromAuthHeader(header: string | null): string | null {
   if (!header || !header.startsWith("Bearer ")) return null;
   return header.slice("Bearer ".length).trim();
 }
 
+/**
+ * [DOC-FUNC] validateCollectorAuth
+ * Objetivo: Executa a rotina de 'v al id at ec ol le ct or au th'.
+ */
 function validateCollectorAuth(req: Request): string | null {
   const expectedToken = cleanText(Deno.env.get("COLLECTOR_API_TOKEN"));
   if (!expectedToken) return "COLLECTOR_API_TOKEN not configured in Edge Function";
@@ -63,10 +87,18 @@ function validateCollectorAuth(req: Request): string | null {
   return null;
 }
 
+/**
+ * [DOC-FUNC] isMissingTableErrorMessage
+ * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or me ss ag e'.
+ */
 function isMissingTableErrorMessage(message: string): boolean {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] tableExists
+ * Objetivo: Executa a rotina de 't ab le ex is ts'.
+ */
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
   if (!error) return true;
@@ -77,6 +109,10 @@ async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: s
   throw new Error(`Failed to check table '${table}': ${message}`);
 }
 
+/**
+ * [DOC-FUNC] listarViaTabelaImpressoras
+ * Objetivo: Executa a rotina de 'l is ta rv ia ta be la im pr es so ra s'.
+ */
 async function listarViaTabelaImpressoras(supabase: ReturnType<typeof getAdminClient>) {
   const { data, error } = await supabase
     .from("impressoras")
@@ -107,6 +143,10 @@ async function listarViaTabelaImpressoras(supabase: ReturnType<typeof getAdminCl
   return impressoras;
 }
 
+/**
+ * [DOC-FUNC] listarViaInventario
+ * Objetivo: Executa a rotina de 'l is ta rv ia in ve nt ar io'.
+ */
 async function listarViaInventario(supabase: ReturnType<typeof getAdminClient>) {
   const { data, error } = await supabase
     .from("inventario")

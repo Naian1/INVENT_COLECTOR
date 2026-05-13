@@ -9,6 +9,10 @@ import { Equipamento, CreateEquipamentoInput, UpdateEquipamentoInput } from '@/t
  * Serviço de Equipamentos (modelos/tipos de dispositivos)
  */
 
+/**
+ * [DOC-FUNC] getEquipamentos
+ * Objetivo: Executa a rotina de 'g et eq ui pa me nt os'.
+ */
 export async function getEquipamentos(): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -21,6 +25,10 @@ export async function getEquipamentos(): Promise<Equipamento[]> {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getEquipamentoById
+ * Objetivo: Executa a rotina de 'g et eq ui pa me nt ob yi d'.
+ */
 export async function getEquipamentoById(id: number): Promise<Equipamento | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -33,6 +41,10 @@ export async function getEquipamentoById(id: number): Promise<Equipamento | null
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getEquipamentosByTipo
+ * Objetivo: Executa a rotina de 'g et eq ui pa me nt os by ti po'.
+ */
 export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -46,6 +58,10 @@ export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] createEquipamento
+ * Objetivo: Executa a rotina de 'c re at ee qu ip am en to'.
+ */
 export async function createEquipamento(input: CreateEquipamentoInput): Promise<Equipamento> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -58,6 +74,10 @@ export async function createEquipamento(input: CreateEquipamentoInput): Promise<
   return data;
 }
 
+/**
+ * [DOC-FUNC] updateEquipamento
+ * Objetivo: Executa a rotina de 'u pd at ee qu ip am en to'.
+ */
 export async function updateEquipamento(
   id: number,
   input: UpdateEquipamentoInput,
@@ -74,6 +94,10 @@ export async function updateEquipamento(
   return data;
 }
 
+/**
+ * [DOC-FUNC] deleteEquipamento
+ * Objetivo: Executa a rotina de 'd el et ee qu ip am en to'.
+ */
 export async function deleteEquipamento(id: number): Promise<void> {
   // Soft delete - apenas marcar como inativo
   const supabase = getSupabaseServerClient();

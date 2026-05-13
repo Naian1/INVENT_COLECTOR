@@ -127,17 +127,29 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Sao_Paulo",
 });
 
+/**
+ * [DOC-FUNC] formatNumber
+ * Objetivo: Executa a rotina de 'f or ma tn um be r'.
+ */
 function formatNumber(value: number | null | undefined) {
   const n = Number(value ?? 0);
   if (!Number.isFinite(n)) return "0";
   return numberFormatter.format(Math.max(0, Math.round(n)));
 }
 
+/**
+ * [DOC-FUNC] formatCurrency
+ * Objetivo: Executa a rotina de 'f or ma tc ur re nc y'.
+ */
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) return currencyFormatter.format(0);
   return currencyFormatter.format(Math.max(0, value));
 }
 
+/**
+ * [DOC-FUNC] formatDateTime
+ * Objetivo: Executa a rotina de 'f or ma td at et im e'.
+ */
 function formatDateTime(value: string | null | undefined) {
   if (!value) return "-";
   const raw = String(value).trim();
@@ -148,12 +160,20 @@ function formatDateTime(value: string | null | undefined) {
   return dateTimeFormatter.format(dt);
 }
 
+/**
+ * [DOC-FUNC] formatDateBr
+ * Objetivo: Executa a rotina de 'f or ma td at eb r'.
+ */
 function formatDateBr(dateKey: string) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return dateKey;
   return `${m[3]}/${m[2]}/${m[1]}`;
 }
 
+/**
+ * [DOC-FUNC] shiftDateKey
+ * Objetivo: Executa a rotina de 's hi ft da te ke y'.
+ */
 function shiftDateKey(dateKey: string, days: number) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if (!m) return dateKey;
@@ -165,6 +185,10 @@ function shiftDateKey(dateKey: string, days: number) {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * [DOC-FUNC] normalizeText
+ * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ */
 function normalizeText(value: string) {
   return value
     .trim()
@@ -173,10 +197,18 @@ function normalizeText(value: string) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+/**
+ * [DOC-FUNC] defaultDateRange
+ * Objetivo: Executa a rotina de 'd ef au lt da te ra ng e'.
+ */
 function defaultDateRange() {
   const end = new Date();
   const start = new Date(end.getTime());
   start.setDate(start.getDate() - 6);
+  /**
+   * [DOC-FUNC] toIso
+   * Objetivo: Executa a rotina de 't oi so'.
+   */
   const toIso = (date: Date) => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -186,6 +218,10 @@ function defaultDateRange() {
   return { de: toIso(start), ate: toIso(end) };
 }
 
+/**
+ * [DOC-FUNC] buildChart
+ * Objetivo: Executa a rotina de 'b ui ld ch ar t'.
+ */
 function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   const points = pointsRaw.map((item) => ({
     label: formatDateBr(item.data_ref),
@@ -220,6 +256,10 @@ function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   return { points: withCoords, linePath, areaPath, grid };
 }
 
+/**
+ * [DOC-FUNC] toneFromStatus
+ * Objetivo: Executa a rotina de 't on ef ro ms ta tu s'.
+ */
 function toneFromStatus(status: string) {
   const s = normalizeText(status);
   if (s.includes("crit")) return "danger";
@@ -228,6 +268,10 @@ function toneFromStatus(status: string) {
   return "neutral";
 }
 
+/**
+ * [DOC-FUNC] isColorModel
+ * Objetivo: Executa a rotina de 'i sc ol or mo de l'.
+ */
 function isColorModel(modeloRaw: string) {
   const modelo = String(modeloRaw || "")
     .trim()
@@ -236,6 +280,10 @@ function isColorModel(modeloRaw: string) {
   return ["CX622", "CX635", "CX930"].includes(modelo);
 }
 
+/**
+ * [DOC-FUNC] buildTrend
+ * Objetivo: Executa a rotina de 'b ui ld tr en d'.
+ */
 function buildTrend(current: number, previous: number) {
   const cur = Number.isFinite(current) ? current : 0;
   const prev = Number.isFinite(previous) ? previous : 0;
@@ -250,6 +298,10 @@ function buildTrend(current: number, previous: number) {
   };
 }
 
+/**
+ * [DOC-FUNC] ResumoTelemetriaDiaria
+ * Objetivo: Executa a rotina de 'r es um ot el em et ri ad ia ri a'.
+ */
 export function ResumoTelemetriaDiaria() {
   const initialRange = useMemo(defaultDateRange, []);
   const [de, setDe] = useState(initialRange.de);

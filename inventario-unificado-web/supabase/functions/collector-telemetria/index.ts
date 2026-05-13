@@ -59,6 +59,10 @@ const corsHeaders = {
 };
 
 
+/**
+ * [DOC-FUNC] jsonResponse
+ * Objetivo: Executa a rotina de 'j so nr es po ns e'.
+ */
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,
@@ -69,6 +73,10 @@ function jsonResponse(body: unknown, status = 200) {
   });
 }
 
+/**
+ * [DOC-FUNC] getAdminClient
+ * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -82,6 +90,10 @@ function getAdminClient() {
   });
 }
 
+/**
+ * [DOC-FUNC] normalizeIp
+ * Objetivo: Executa a rotina de 'n or ma li ze ip'.
+ */
 function normalizeIp(ip: unknown): string | null {
   if (typeof ip !== "string") return null;
   const clean = ip.trim();
@@ -89,18 +101,30 @@ function normalizeIp(ip: unknown): string | null {
   return clean.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] cleanText
+ * Objetivo: Executa a rotina de 'c le an te xt'.
+ */
 function cleanText(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
   return text ? text : null;
 }
 
+/**
+ * [DOC-FUNC] cleanStatus
+ * Objetivo: Executa a rotina de 'c le an st at us'.
+ */
 function cleanStatus(value: unknown): string {
   const status = String(value ?? "").trim().toLowerCase();
   if (["online", "offline", "warning", "error", "unknown"].includes(status)) return status;
   return "unknown";
 }
 
+/**
+ * [DOC-FUNC] cleanSupplyStatus
+ * Objetivo: Executa a rotina de 'c le an su pp ly st at us'.
+ */
 function cleanSupplyStatus(value: unknown, level: number | null): string {
   const status = String(value ?? "").trim().toLowerCase();
   if (["ok", "low", "critical", "empty", "unknown", "offline"].includes(status)) return status;
@@ -111,18 +135,30 @@ function cleanSupplyStatus(value: unknown, level: number | null): string {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] toNumberOrNull
+ * Objetivo: Executa a rotina de 't on um be ro rn ul l'.
+ */
 function toNumberOrNull(value: unknown): number | null {
   if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * [DOC-FUNC] toIntegerOrNull
+ * Objetivo: Executa a rotina de 't oi nt eg er or nu ll'.
+ */
 function toIntegerOrNull(value: unknown): number | null {
   const n = toNumberOrNull(value);
   if (n === null) return null;
   return Math.trunc(n);
 }
 
+/**
+ * [DOC-FUNC] ensureIso
+ * Objetivo: Executa a rotina de 'e ns ur ei so'.
+ */
 function ensureIso(value: unknown, fallbackIso: string): string {
   const text = cleanText(value);
   if (!text) return fallbackIso;
@@ -131,11 +167,19 @@ function ensureIso(value: unknown, fallbackIso: string): string {
   return new Date(ts).toISOString();
 }
 
+/**
+ * [DOC-FUNC] tokenFromAuthHeader
+ * Objetivo: Executa a rotina de 't ok en fr om au th he ad er'.
+ */
 function tokenFromAuthHeader(header: string | null): string | null {
   if (!header || !header.startsWith("Bearer ")) return null;
   return header.slice("Bearer ".length).trim();
 }
 
+/**
+ * [DOC-FUNC] validateCollectorAuth
+ * Objetivo: Executa a rotina de 'v al id at ec ol le ct or au th'.
+ */
 function validateCollectorAuth(req: Request): string | null {
   const expectedToken = cleanText(Deno.env.get("COLLECTOR_API_TOKEN"));
   if (!expectedToken) return "COLLECTOR_API_TOKEN not configured in Edge Function";
@@ -147,6 +191,10 @@ function validateCollectorAuth(req: Request): string | null {
   return null;
 }
 
+/**
+ * [DOC-FUNC] normalizePayload
+ * Objetivo: Executa a rotina de 'n or ma li ze pa yl oa d'.
+ */
 function normalizePayload(body: unknown): { data?: LoteNormalizado; error?: string } {
   const nowIso = new Date().toISOString();
   if (!body || typeof body !== "object") {
@@ -266,6 +314,10 @@ function normalizePayload(body: unknown): { data?: LoteNormalizado; error?: stri
   };
 }
 
+/**
+ * [DOC-FUNC] tableExists
+ * Objetivo: Executa a rotina de 't ab le ex is ts'.
+ */
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
   if (!error) return true;
@@ -281,6 +333,10 @@ async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: s
   throw new Error(`Failed to check table '${table}': ${message}`);
 }
 
+/**
+ * [DOC-FUNC] carregarCapacidades
+ * Objetivo: Executa a rotina de 'c ar re ga rc ap ac id ad es'.
+ */
 async function carregarCapacidades(supabase: ReturnType<typeof getAdminClient>): Promise<Capacidades> {
   return {
     impressoras: await tableExists(supabase, "impressoras"),
@@ -293,6 +349,10 @@ async function carregarCapacidades(supabase: ReturnType<typeof getAdminClient>):
   };
 }
 
+/**
+ * [DOC-FUNC] encontrarImpressoraPorIdentificador
+ * Objetivo: Executa a rotina de 'e nc on tr ar im pr es so ra po ri de nt if ic ad or'.
+ */
 async function encontrarImpressoraPorIdentificador(
   supabase: ReturnType<typeof getAdminClient>,
   impressora: EventoNormalizado["impressora"],
@@ -327,6 +387,10 @@ async function encontrarImpressoraPorIdentificador(
   return null;
 }
 
+/**
+ * [DOC-FUNC] resolveImpressoraIdLegacy
+ * Objetivo: Executa a rotina de 'r es ol ve im pr es so ra id le ga cy'.
+ */
 async function resolveImpressoraIdLegacy(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -383,6 +447,10 @@ async function resolveImpressoraIdLegacy(
   throw new Error(`Could not resolve printer in table impressoras: ${String(error?.message ?? "unknown")}`);
 }
 
+/**
+ * [DOC-FUNC] resolveInventarioId
+ * Objetivo: Executa a rotina de 'r es ol ve in ve nt ar io id'.
+ */
 async function resolveInventarioId(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -422,6 +490,10 @@ async function resolveInventarioId(
   return null;
 }
 
+/**
+ * [DOC-FUNC] gravarTelemetriaLegacy
+ * Objetivo: Executa a rotina de 'g ra va rt el em et ri al eg ac y'.
+ */
 async function gravarTelemetriaLegacy(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -447,6 +519,10 @@ async function gravarTelemetriaLegacy(
   if (error) throw new Error(`telemetria_impressoras: ${error.message}`);
 }
 
+/**
+ * [DOC-FUNC] gravarLeituraLegacy
+ * Objetivo: Executa a rotina de 'g ra va rl ei tu ra le ga cy'.
+ */
 async function gravarLeituraLegacy(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -476,6 +552,10 @@ async function gravarLeituraLegacy(
   if (error) throw new Error(`leituras_paginas_impressoras: ${error.message}`);
 }
 
+/**
+ * [DOC-FUNC] gravarSuprimentosLegacy
+ * Objetivo: Executa a rotina de 'g ra va rs up ri me nt os le ga cy'.
+ */
 async function gravarSuprimentosLegacy(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -507,6 +587,10 @@ async function gravarSuprimentosLegacy(
   if (error) throw new Error(`suprimentos_impressoras: ${error.message}`);
 }
 
+/**
+ * [DOC-FUNC] gravarTelemetriaPagecount
+ * Objetivo: Executa a rotina de 'g ra va rt el em et ri ap ag ec ou nt'.
+ */
 async function gravarTelemetriaPagecount(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,
@@ -542,14 +626,26 @@ async function gravarTelemetriaPagecount(
   if (insertError) throw new Error(`telemetria_pagecount: ${insertError.message}`);
 }
 
+/**
+ * [DOC-FUNC] isMissingColumnError
+ * Objetivo: Executa a rotina de 'i sm is si ng co lu mn er ro r'.
+ */
 function isMissingColumnError(message: string): boolean {
   return /column .* does not exist/i.test(message) || /Could not find the .* column/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] isMissingTableErrorMessage
+ * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or me ss ag e'.
+ */
 function isMissingTableErrorMessage(message: string): boolean {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] gravarSuprimentosNovoOuLegado
+ * Objetivo: Executa a rotina de 'g ra va rs up ri me nt os no vo ou le ga do'.
+ */
 async function gravarSuprimentosNovoOuLegado(
   supabase: ReturnType<typeof getAdminClient>,
   evento: EventoNormalizado,

@@ -11,6 +11,10 @@ interface SelectProps {
   children: ReactNode;
 }
 
+/**
+ * [DOC-FUNC] Select
+ * Objetivo: Executa a rotina de 's el ec t'.
+ */
 export function Select({ value, onValueChange, children }: SelectProps) {
   return (
     <SelectContext.Provider value={{ value, onValueChange }}>
@@ -24,6 +28,10 @@ const SelectContext = React.createContext<{
   onValueChange: (value: string) => void;
 } | null>(null);
 
+/**
+ * [DOC-FUNC] SelectTrigger
+ * Objetivo: Executa a rotina de 's el ec tt ri gg er'.
+ */
 export function SelectTrigger({
   children,
   className,
@@ -47,11 +55,19 @@ export function SelectTrigger({
   );
 }
 
+/**
+ * [DOC-FUNC] SelectValue
+ * Objetivo: Executa a rotina de 's el ec tv al ue'.
+ */
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   const context = React.useContext(SelectContext);
   return <>{context?.value || placeholder}</>;
 }
 
+/**
+ * [DOC-FUNC] SelectContent
+ * Objetivo: Executa a rotina de 's el ec tc on te nt'.
+ */
 export function SelectContent({ children }: { children: ReactNode }) {
   return (
     <div className="absolute top-full left-0 right-0 mt-1 border border-gray-300 rounded-md bg-white shadow-lg z-50">
@@ -60,6 +76,10 @@ export function SelectContent({ children }: { children: ReactNode }) {
   );
 }
 
+/**
+ * [DOC-FUNC] SelectItem
+ * Objetivo: Executa a rotina de 's el ec ti te m'.
+ */
 export function SelectItem({
   value,
   children,

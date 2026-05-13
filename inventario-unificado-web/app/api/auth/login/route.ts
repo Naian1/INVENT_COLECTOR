@@ -4,6 +4,10 @@
  */
 import { NextResponse } from "next/server";
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST() {
   return NextResponse.json(
     { sucesso: false, erro: "Autenticacao migrada para Supabase Auth." },

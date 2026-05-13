@@ -17,6 +17,10 @@ type AuthOptions = {
   requireAdmin?: boolean;
 };
 
+/**
+ * [DOC-FUNC] getBearerToken
+ * Objetivo: Executa a rotina de 'g et be ar er to ke n'.
+ */
 function getBearerToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization") || "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) return null;
@@ -28,11 +32,19 @@ type PerfilNomeLookupRow = {
   perfil: { nm_perfil: string } | { nm_perfil: string }[] | null;
 };
 
+/**
+ * [DOC-FUNC] getPerfilNome
+ * Objetivo: Executa a rotina de 'g et pe rf il no me'.
+ */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) return String(value[0]?.nm_perfil || "");
   return String(value?.nm_perfil || "");
 }
 
+/**
+ * [DOC-FUNC] resolveIsAdmin
+ * Objetivo: Executa a rotina de 'r es ol ve is ad mi n'.
+ */
 async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Promise<boolean> {
   const supabase = getSupabaseServerClient();
 
@@ -65,6 +77,10 @@ async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Pro
   return String(principalResponse.data?.nm_perfil || "").trim().toUpperCase() === "ADMIN";
 }
 
+/**
+ * [DOC-FUNC] authenticateApiRequest
+ * Objetivo: Executa a rotina de 'a ut he nt ic at ea pi re qu es t'.
+ */
 export async function authenticateApiRequest(
   request: NextRequest,
   options: AuthOptions = {},

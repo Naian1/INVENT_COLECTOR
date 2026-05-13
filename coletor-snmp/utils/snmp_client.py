@@ -39,12 +39,16 @@ if not _USING_LEGACY_HLAPI:
     )
 
 
+# [DOC-FUNC] _stringify
+# Objetivo: Executa a rotina de 's tr in gi fy'.
 def _stringify(value: Any) -> str:
     if value is None:
         return ""
     return str(value)
 
 
+# [DOC-FUNC] _run_async
+# Objetivo: Executa a rotina de 'r un a sy nc'.
 def _run_async(coro):
     try:
         return asyncio.run(coro)
@@ -57,6 +61,8 @@ def _run_async(coro):
             loop.close()
 
 
+# [DOC-FUNC] _snmp_get_async
+# Objetivo: Executa a rotina de 's nm p g et a sy nc'.
 async def _snmp_get_async(
     ip: str,
     oid: str,
@@ -84,6 +90,8 @@ async def _snmp_get_async(
     }
 
 
+# [DOC-FUNC] _snmp_walk_async
+# Objetivo: Executa a rotina de 's nm p w al k a sy nc'.
 async def _snmp_walk_async(
     ip: str,
     oid_base: str,
@@ -126,6 +134,8 @@ async def _snmp_walk_async(
     return rows
 
 
+# [DOC-FUNC] snmp_get
+# Objetivo: Executa a rotina de 's nm p g et'.
 def snmp_get(
     oid: str,
     ip: str,
@@ -214,6 +224,8 @@ def snmp_get(
         return {"ok": False, "ip": ip, "oid": oid, "error": _stringify(exc)}
 
 
+# [DOC-FUNC] snmp_walk
+# Objetivo: Executa a rotina de 's nm p w al k'.
 def snmp_walk(
     ip: str,
     oid_base: str,
@@ -297,6 +309,8 @@ def snmp_walk(
         return []
 
 
+# [DOC-FUNC] snmp_get_value
+# Objetivo: Executa a rotina de 's nm p g et v al ue'.
 def snmp_get_value(
     oid: str,
     ip: str,

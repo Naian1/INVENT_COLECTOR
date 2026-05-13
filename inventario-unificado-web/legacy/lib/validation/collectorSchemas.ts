@@ -146,6 +146,10 @@ export type CollectorTelemetryAcceptedPayload = z.infer<
 >;
 export type CollectorTelemetryEvent = z.infer<typeof collectorTelemetryEventSchema>;
 
+/**
+ * [DOC-FUNC] normalizeSinglePayloadToBatch
+ * Objetivo: Executa a rotina de 'n or ma li ze si ng le pa yl oa dt ob at ch'.
+ */
 function normalizeSinglePayloadToBatch(
   payload: CollectorTelemetrySinglePayload
 ): CollectorTelemetryBatchPayload {
@@ -183,6 +187,10 @@ function normalizeSinglePayloadToBatch(
   };
 }
 
+/**
+ * [DOC-FUNC] normalizeCollectorTelemetryPayload
+ * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rt el em et ry pa yl oa d'.
+ */
 export function normalizeCollectorTelemetryPayload(
   payload: CollectorTelemetryAcceptedPayload
 ): CollectorTelemetryBatchPayload {

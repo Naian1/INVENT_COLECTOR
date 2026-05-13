@@ -27,6 +27,10 @@ type MatrixRow = {
   dados_json?: Record<string, unknown> | null;
 };
 
+/**
+ * [DOC-FUNC] getAdminClient
+ * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -40,6 +44,10 @@ function getAdminClient() {
   });
 }
 
+/**
+ * [DOC-FUNC] normalizeStatus
+ * Objetivo: Executa a rotina de 'n or ma li ze st at us'.
+ */
 function normalizeStatus(value: unknown): "ATIVO" | "MANUTENCAO" | "BACKUP" | "DEVOLUCAO" | null {
   const raw = String(value ?? "").trim().toUpperCase();
   if (["ATIVO", "MANUTENCAO", "BACKUP", "DEVOLUCAO"].includes(raw)) {
@@ -48,6 +56,10 @@ function normalizeStatus(value: unknown): "ATIVO" | "MANUTENCAO" | "BACKUP" | "D
   return null;
 }
 
+/**
+ * [DOC-FUNC] sanitizeRow
+ * Objetivo: Executa a rotina de 's an it iz er ow'.
+ */
 function sanitizeRow(row: MatrixRow, nrCarga: number) {
   return {
     nr_carga: nrCarga,
@@ -71,6 +83,10 @@ function sanitizeRow(row: MatrixRow, nrCarga: number) {
   };
 }
 
+/**
+ * [DOC-FUNC] badRequest
+ * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
 }

@@ -4,6 +4,10 @@
  */
 import { NextResponse } from "next/server";
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST() {
   const response = NextResponse.json({ sucesso: true });
 

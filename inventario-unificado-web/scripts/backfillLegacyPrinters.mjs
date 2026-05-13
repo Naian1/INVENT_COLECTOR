@@ -23,6 +23,10 @@ const UNKNOWN_VALUES = new Set([
 
 const META_KEYS = new Set(["id", "categoryid", "category_id", "status"]);
 
+/**
+ * [DOC-FUNC] normalizeKey
+ * Objetivo: Executa a rotina de 'n or ma li ze ke y'.
+ */
 function normalizeKey(value) {
   return String(value ?? "")
     .normalize("NFD")
@@ -32,6 +36,10 @@ function normalizeKey(value) {
     .replace(/^_+|_+$/g, "");
 }
 
+/**
+ * [DOC-FUNC] normalizeText
+ * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ */
 function normalizeText(value) {
   if (value === null || value === undefined) return null;
   const text = String(value).replace(/\s+/g, " ").trim();
@@ -40,6 +48,10 @@ function normalizeText(value) {
   return text;
 }
 
+/**
+ * [DOC-FUNC] normalizeIp
+ * Objetivo: Executa a rotina de 'n or ma li ze ip'.
+ */
 function normalizeIp(value) {
   const text = normalizeText(value);
   if (!text) return null;
@@ -48,6 +60,10 @@ function normalizeIp(value) {
   return ipv4.test(text) ? text : null;
 }
 
+/**
+ * [DOC-FUNC] normalizeMac
+ * Objetivo: Executa a rotina de 'n or ma li ze ma c'.
+ */
 function normalizeMac(value) {
   const text = normalizeText(value);
   if (!text) return null;
@@ -56,11 +72,19 @@ function normalizeMac(value) {
   return compact.match(/.{1,2}/g).join(":");
 }
 
+/**
+ * [DOC-FUNC] normalizeAssetTagForLabel
+ * Objetivo: Executa a rotina de 'n or ma li ze as se tt ag fo rl ab el'.
+ */
 function normalizeAssetTagForLabel(assetTag) {
   if (!assetTag) return null;
   return /^pat\b/i.test(assetTag) ? assetTag : `PAT ${assetTag}`;
 }
 
+/**
+ * [DOC-FUNC] buildDisplayName
+ * Objetivo: Executa a rotina de 'b ui ld di sp la yn am e'.
+ */
 function buildDisplayName({ hostname, asset_tag, sector, model, ip_address }) {
   const cleanHostname = normalizeText(hostname);
   const cleanAssetTag = normalizeText(asset_tag);
@@ -81,6 +105,10 @@ function buildDisplayName({ hostname, asset_tag, sector, model, ip_address }) {
   return null;
 }
 
+/**
+ * [DOC-FUNC] parseArgs
+ * Objetivo: Executa a rotina de 'p ar se ar gs'.
+ */
 function parseArgs(argv) {
   const args = {
     input: null,
@@ -115,6 +143,10 @@ function parseArgs(argv) {
   return args;
 }
 
+/**
+ * [DOC-FUNC] loadDotEnvLocal
+ * Objetivo: Executa a rotina de 'l oa dd ot en vl oc al'.
+ */
 function loadDotEnvLocal(cwd) {
   const envPath = path.join(cwd, ".env.local");
   if (!fs.existsSync(envPath)) return;
@@ -132,11 +164,19 @@ function loadDotEnvLocal(cwd) {
   }
 }
 
+/**
+ * [DOC-FUNC] readJson
+ * Objetivo: Executa a rotina de 'r ea dj so n'.
+ */
 function readJson(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
   return JSON.parse(content);
 }
 
+/**
+ * [DOC-FUNC] buildLegacyFieldNameMap
+ * Objetivo: Executa a rotina de 'b ui ld le ga cy fi el dn am em ap'.
+ */
 function buildLegacyFieldNameMap(legacy) {
   const byCategory = new Map();
   for (const field of legacy.fields ?? []) {
@@ -150,6 +190,10 @@ function buildLegacyFieldNameMap(legacy) {
   return byCategory;
 }
 
+/**
+ * [DOC-FUNC] isLikelyPrinterItem
+ * Objetivo: Executa a rotina de 'i sl ik el yp ri nt er it em'.
+ */
 function isLikelyPrinterItem(categoryName, itemEntries) {
   const cat = normalizeKey(categoryName ?? "");
   if (cat.includes("impress")) return true;
@@ -176,6 +220,10 @@ function isLikelyPrinterItem(categoryName, itemEntries) {
   return false;
 }
 
+/**
+ * [DOC-FUNC] itemEntriesWithFieldLabels
+ * Objetivo: Executa a rotina de 'i te me nt ri es wi th fi el dl ab el s'.
+ */
 function itemEntriesWithFieldLabels(item, fieldMapForCategory) {
   const entries = [];
   for (const [rawKey, rawValue] of Object.entries(item ?? {})) {
@@ -195,6 +243,10 @@ function itemEntriesWithFieldLabels(item, fieldMapForCategory) {
   return entries;
 }
 
+/**
+ * [DOC-FUNC] pickFromAliases
+ * Objetivo: Executa a rotina de 'p ic kf ro ma li as es'.
+ */
 function pickFromAliases(entries, aliases) {
   const normalizedAliases = aliases.map((alias) => normalizeKey(alias));
 
@@ -224,6 +276,10 @@ function pickFromAliases(entries, aliases) {
   return null;
 }
 
+/**
+ * [DOC-FUNC] extractLegacyPrinterRecords
+ * Objetivo: Executa a rotina de 'e xt ra ct le ga cy pr in te rr ec or ds'.
+ */
 function extractLegacyPrinterRecords(legacy) {
   const categoriesById = new Map((legacy.categories ?? []).map((c) => [String(c.id), c.name]));
   const fieldNameMap = buildLegacyFieldNameMap(legacy);
@@ -306,6 +362,10 @@ function extractLegacyPrinterRecords(legacy) {
   return extracted;
 }
 
+/**
+ * [DOC-FUNC] isMissingOrUnknown
+ * Objetivo: Executa a rotina de 'i sm is si ng or un kn ow n'.
+ */
 function isMissingOrUnknown(value) {
   if (value === null || value === undefined) return true;
   const text = String(value).trim();
@@ -313,11 +373,19 @@ function isMissingOrUnknown(value) {
   return UNKNOWN_VALUES.has(text.toLowerCase());
 }
 
+/**
+ * [DOC-FUNC] normalizeMatchKey
+ * Objetivo: Executa a rotina de 'n or ma li ze ma tc hk ey'.
+ */
 function normalizeMatchKey(value) {
   const text = normalizeText(value);
   return text ? text.toLowerCase() : null;
 }
 
+/**
+ * [DOC-FUNC] buildIndex
+ * Objetivo: Executa a rotina de 'b ui ld in de x'.
+ */
 function buildIndex(printers, key) {
   const index = new Map();
   for (const printer of printers) {
@@ -329,6 +397,10 @@ function buildIndex(printers, key) {
   return index;
 }
 
+/**
+ * [DOC-FUNC] pickMatch
+ * Objetivo: Executa a rotina de 'p ic km at ch'.
+ */
 function pickMatch(candidate, indexes) {
   const order = [
     { key: "ip_address", index: indexes.byIp },
@@ -368,6 +440,10 @@ function pickMatch(candidate, indexes) {
   return { matched: selected, strategy, ambiguous: false, reason: null };
 }
 
+/**
+ * [DOC-FUNC] buildUpdatePayload
+ * Objetivo: Executa a rotina de 'b ui ld up da te pa yl oa d'.
+ */
 function buildUpdatePayload(existing, candidate) {
   const payload = {};
   const fields = [
@@ -422,6 +498,10 @@ function buildUpdatePayload(existing, candidate) {
   return payload;
 }
 
+/**
+ * [DOC-FUNC] parsePrinterInventoryJson
+ * Objetivo: Executa a rotina de 'p ar se pr in te ri nv en to ry js on'.
+ */
 function parsePrinterInventoryJson(legacyRaw) {
   if (
     legacyRaw &&
@@ -447,6 +527,10 @@ function parsePrinterInventoryJson(legacyRaw) {
   );
 }
 
+/**
+ * [DOC-FUNC] printUsage
+ * Objetivo: Executa a rotina de 'p ri nt us ag e'.
+ */
 function printUsage() {
   console.log("Uso:");
   console.log(
@@ -456,6 +540,10 @@ function printUsage() {
   console.log("Padrao: dry-run (nao grava). Use --write para aplicar updates.");
 }
 
+/**
+ * [DOC-FUNC] main
+ * Objetivo: Executa a rotina de 'm ai n'.
+ */
 async function main() {
   const args = parseArgs(process.argv.slice(2));
   if (!args.input) {

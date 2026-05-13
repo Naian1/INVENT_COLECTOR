@@ -18,6 +18,10 @@ const termosInvalidos = new Set([
   "sem setor"
 ]);
 
+/**
+ * [DOC-FUNC] textoObrigatorio
+ * Objetivo: Executa a rotina de 't ex to ob ri ga to ri o'.
+ */
 const textoObrigatorio = (campo: string) =>
   z
     .string()

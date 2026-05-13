@@ -20,14 +20,26 @@ const TarifaBodySchema = z.object({
   }),
 });
 
+/**
+ * [DOC-FUNC] normalizeText
+ * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ */
 function normalizeText(value: unknown) {
   return String(value ?? "").trim();
 }
 
+/**
+ * [DOC-FUNC] isMissingTableError
+ * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or'.
+ */
 function isMissingTableError(message: string) {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;
@@ -60,6 +72,10 @@ export async function GET(request: NextRequest) {
   return NextResponse.json({ sucesso: true, dados: data || [] }, { headers: { "Cache-Control": "private, no-store" } });
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;

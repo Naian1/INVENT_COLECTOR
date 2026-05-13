@@ -18,6 +18,10 @@ type Action =
   | "create_equipamento"
   | "update_equipamento";
 
+/**
+ * [DOC-FUNC] getAdminClient
+ * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -31,6 +35,10 @@ function getAdminClient() {
   });
 }
 
+/**
+ * [DOC-FUNC] getUserClient
+ * Objetivo: Executa a rotina de 'g et us er cl ie nt'.
+ */
 function getUserClient(authHeader: string) {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
@@ -45,6 +53,10 @@ function getUserClient(authHeader: string) {
   });
 }
 
+/**
+ * [DOC-FUNC] resolveAuthActor
+ * Objetivo: Executa a rotina de 'r es ol ve au th ac to r'.
+ */
 async function resolveAuthActor(
   req: Request,
   supabaseAdmin: ReturnType<typeof getAdminClient>,
@@ -109,14 +121,26 @@ async function resolveAuthActor(
   };
 }
 
+/**
+ * [DOC-FUNC] badRequest
+ * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
 }
 
+/**
+ * [DOC-FUNC] isMissingPisoTable
+ * Objetivo: Executa a rotina de 'i sm is si ng pi so ta bl e'.
+ */
 function isMissingPisoTable(message: string): boolean {
   return /relation\s+"?piso"?\s+does not exist/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] resolveCdPiso
+ * Objetivo: Executa a rotina de 'r es ol ve cd pi so'.
+ */
 async function resolveCdPiso(
   supabase: ReturnType<typeof getAdminClient>,
   payload: Record<string, unknown>,
@@ -169,6 +193,10 @@ async function resolveCdPiso(
   return criado?.cd_piso ? Number(criado.cd_piso) : null;
 }
 
+/**
+ * [DOC-FUNC] enrichSetoresComPiso
+ * Objetivo: Executa a rotina de 'e nr ic hs et or es co mp is o'.
+ */
 function enrichSetoresComPiso(setores: any[]): any[] {
   return [...(setores || [])]
     .sort((a, b) => {

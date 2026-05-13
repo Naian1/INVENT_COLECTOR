@@ -34,6 +34,10 @@ type ImpressoraComSuprimentos = {
   suprimentos: Suprimentos[];
 };
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
   const normalizado = value.trim();
@@ -42,6 +46,10 @@ function normalizarTexto(value: string | null | undefined): string | undefined {
   return normalizado;
 }
 
+/**
+ * [DOC-FUNC] calcularNivelPercentual
+ * Objetivo: Executa a rotina de 'c al cu la rn iv el pe rc en tu al'.
+ */
 function calcularNivelPercentual(quantidade: number | null): number | null {
   if (quantidade === null || quantidade === undefined) return null;
   const num = Number(quantidade);
@@ -49,6 +57,10 @@ function calcularNivelPercentual(quantidade: number | null): number | null {
   return Math.max(0, Math.min(100, num));
 }
 
+/**
+ * [DOC-FUNC] transformarSuprimentoResumo
+ * Objetivo: Executa a rotina de 't ra ns fo rm ar su pr im en to re su mo'.
+ */
 function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
   // cd_tipo_suprimento vem como descricao (ex: "Toner Negro")
   const tipo = sup.cd_tipo_suprimento || "Desconhecido";
@@ -62,6 +74,10 @@ function transformarSuprimentoResumo(sup: Suprimentos): SuprimentoResumo {
   };
 }
 
+/**
+ * [DOC-FUNC] transformarImpressoraComSuprimentos
+ * Objetivo: Executa a rotina de 't ra ns fo rm ar im pr es so ra co ms up ri me nt os'.
+ */
 function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): ImpressoraVisaoGeral {
   const inv = dados.inventario;
   const eq = dados.equipamento;
@@ -98,6 +114,10 @@ function transformarImpressoraComSuprimentos(dados: ImpressoraComSuprimentos): I
 
 /**
  * Lista todas as impressoras (equipamentos tipo "Impressora") com seus suprimentos
+ */
+/**
+ * [DOC-FUNC] listarImpressoras
+ * Objetivo: Executa a rotina de 'l is ta ri mp re ss or as'.
  */
 export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVisaoGeral[]>> {
   try {
@@ -190,6 +210,10 @@ export async function listarImpressoras(): Promise<ResultadoServico<ImpressoraVi
 /**
  * Busca uma impressora específica por ID (nr_inventario)
  */
+/**
+ * [DOC-FUNC] buscarImpressoraPorId
+ * Objetivo: Executa a rotina de 'b us ca ri mp re ss or ap or id'.
+ */
 export async function buscarImpressoraPorId(id: string): Promise<ResultadoServico<ImpressoraVisaoGeral>> {
   try {
     const supabase = getSupabaseServerClient();
@@ -243,6 +267,10 @@ export async function buscarImpressoraPorId(id: string): Promise<ResultadoServic
 /**
  * Cria uma nova impressora (deprecated - usar equipamento + inventario)
  */
+/**
+ * [DOC-FUNC] criarImpressora
+ * Objetivo: Executa a rotina de 'c ri ar im pr es so ra'.
+ */
 export async function criarImpressora(input: CriarImpressoraInput): Promise<ResultadoServico<any>> {
   // Placeholder para compatibilidade com API
   // No novo sistema, impressoras são criadas através de equipamento + inventario
@@ -255,6 +283,10 @@ export async function criarImpressora(input: CriarImpressoraInput): Promise<Resu
 
 /**
  * Atualiza uma impressora (deprecated - usar equipamento + inventario)
+ */
+/**
+ * [DOC-FUNC] atualizarImpressora
+ * Objetivo: Executa a rotina de 'a tu al iz ar im pr es so ra'.
  */
 export async function atualizarImpressora(id: string, input: any): Promise<ResultadoServico<any>> {
   return {

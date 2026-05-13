@@ -40,25 +40,45 @@ type ValorLinhaRow = {
   valor_json: Record<string, unknown> | unknown[] | null;
 };
 
+/**
+ * [DOC-FUNC] erroColunaAusente
+ * Objetivo: Executa a rotina de 'e rr oc ol un aa us en te'.
+ */
 function erroColunaAusente(errorMessage?: string | null) {
   if (!errorMessage) return false;
   const msg = errorMessage.toLowerCase();
   return msg.includes("column") && msg.includes("planilha_aba_");
 }
 
+/**
+ * [DOC-FUNC] syncHabilitado
+ * Objetivo: Executa a rotina de 's yn ch ab il it ad o'.
+ */
 function syncHabilitado() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true";
 }
 
+/**
+ * [DOC-FUNC] modoEstrito
+ * Objetivo: Executa a rotina de 'm od oe st ri to'.
+ */
 function modoEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
 }
 
+/**
+ * [DOC-FUNC] sheetTitle
+ * Objetivo: Executa a rotina de 's he et ti tl e'.
+ */
 function sheetTitle(nomeCategoria: string) {
   const clean = nomeCategoria.replace(/[:\\/?*\[\]]/g, " ").trim();
   return (clean || "Categoria").slice(0, 100);
 }
 
+/**
+ * [DOC-FUNC] toCell
+ * Objetivo: Executa a rotina de 't oc el l'.
+ */
 function toCell(valor: ValorLinhaRow) {
   if (valor.valor_texto !== null) return String(valor.valor_texto);
   if (valor.valor_numero !== null) return String(valor.valor_numero);
@@ -69,6 +89,10 @@ function toCell(valor: ValorLinhaRow) {
   return "";
 }
 
+/**
+ * [DOC-FUNC] colunaAte
+ * Objetivo: Executa a rotina de 'c ol un aa te'.
+ */
 function colunaAte(indice: number) {
   let n = indice + 1;
   let out = "";
@@ -80,6 +104,10 @@ function colunaAte(indice: number) {
   return out;
 }
 
+/**
+ * [DOC-FUNC] getSheetsClient
+ * Objetivo: Executa a rotina de 'g et sh ee ts cl ie nt'.
+ */
 function getSheetsClient() {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
   const email = process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL;
@@ -102,6 +130,10 @@ function getSheetsClient() {
   return { ok: true as const, sheets, spreadsheetId };
 }
 
+/**
+ * [DOC-FUNC] buscarCategoriaCampos
+ * Objetivo: Executa a rotina de 'b us ca rc at eg or ia ca mp os'.
+ */
 async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServico<{ categoria: CategoriaRow; campos: CampoRow[] }>> {
   const supabase = getSupabaseServerClient();
   let categoria: CategoriaRow | null = null;
@@ -151,6 +183,10 @@ async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServ
   return { success: true, data: { categoria: categoria as CategoriaRow, campos: (campos ?? []) as CampoRow[] } };
 }
 
+/**
+ * [DOC-FUNC] resolverAbaPlanilha
+ * Objetivo: Executa a rotina de 'r es ol ve ra ba pl an il ha'.
+ */
 async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: string) {
   const client = getSheetsClient();
   if (!client.ok) return { success: false as const, error: client.error };
@@ -216,6 +252,10 @@ async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: strin
   };
 }
 
+/**
+ * [DOC-FUNC] sincronizarCabecalhoCategoriaNaPlanilha
+ * Objetivo: Executa a rotina de 's in cr on iz ar ca be ca lh oc at eg or ia na pl an il ha'.
+ */
 export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string; sheet: string }>> {
   if (!syncHabilitado()) {
     return { success: true, data: { categoria_id: categoriaId, sheet: "sync-desabilitado" } };
@@ -251,6 +291,10 @@ export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: strin
   return { success: true, data: { categoria_id: categoriaId, sheet: sheetRes.data.title } };
 }
 
+/**
+ * [DOC-FUNC] sincronizarLinhaNaPlanilha
+ * Objetivo: Executa a rotina de 's in cr on iz ar li nh an ap la ni lh a'.
+ */
 export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string; sheet: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId, sheet: "sync-desabilitado" } };
 
@@ -325,6 +369,10 @@ export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<Resul
   return { success: true, data: { linha_id: linhaId, sheet: sheetRes.data.title } };
 }
 
+/**
+ * [DOC-FUNC] removerLinhaDaPlanilha
+ * Objetivo: Executa a rotina de 'r em ov er li nh ad ap la ni lh a'.
+ */
 export async function removerLinhaDaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId } };
   const supabase = getSupabaseServerClient();
@@ -358,6 +406,10 @@ export async function removerLinhaDaPlanilha(linhaId: string): Promise<Resultado
   return { success: true, data: { linha_id: linhaId } };
 }
 
+/**
+ * [DOC-FUNC] sincronizarCategoriaCompletaNaPlanilha
+ * Objetivo: Executa a rotina de 's in cr on iz ar ca te go ri ac om pl et an ap la ni lh a'.
+ */
 export async function sincronizarCategoriaCompletaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string }>> {
   const cabecalho = await sincronizarCabecalhoCategoriaNaPlanilha(categoriaId);
   if (!cabecalho.success) return cabecalho as ResultadoServico<{ categoria_id: string }>;

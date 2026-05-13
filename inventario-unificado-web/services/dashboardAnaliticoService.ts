@@ -39,24 +39,44 @@ type FaixaHistorica = {
 
 const HISTORICO_PAGINAS_DIAS_MAX = 92;
 
+/**
+ * [DOC-FUNC] clamp
+ * Objetivo: Executa a rotina de 'c la mp'.
+ */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * [DOC-FUNC] normalizarFiltro
+ * Objetivo: Executa a rotina de 'n or ma li za rf il tr o'.
+ */
 function normalizarFiltro(value: string) {
   return value.trim().toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] nomeSetor
+ * Objetivo: Executa a rotina de 'n om es et or'.
+ */
 function nomeSetor(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
   return txt || "Sem setor";
 }
 
+/**
+ * [DOC-FUNC] nomeLocalizacao
+ * Objetivo: Executa a rotina de 'n om el oc al iz ac ao'.
+ */
 function nomeLocalizacao(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
   return txt || "Sem localizacao";
 }
 
+/**
+ * [DOC-FUNC] inicioPeriodoIso
+ * Objetivo: Executa a rotina de 'i ni ci op er io do is o'.
+ */
 function inicioPeriodoIso(dias: number) {
   const now = new Date();
   const start = new Date(now);
@@ -65,6 +85,10 @@ function inicioPeriodoIso(dias: number) {
   return start.toISOString();
 }
 
+/**
+ * [DOC-FUNC] chaveBucket
+ * Objetivo: Executa a rotina de 'c ha ve bu ck et'.
+ */
 function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
   const dt = new Date(dataIso);
   const ano = dt.getUTCFullYear();
@@ -74,6 +98,10 @@ function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
   return `${ano}-${mes}-${dia}`;
 }
 
+/**
+ * [DOC-FUNC] buscarLeiturasHistoricas
+ * Objetivo: Executa a rotina de 'b us ca rl ei tu ra sh is to ri ca s'.
+ */
 async function buscarLeiturasHistoricas(
   impressoraIds: string[],
   deIso: string,
@@ -116,6 +144,10 @@ async function buscarLeiturasHistoricas(
   return { rows, truncado };
 }
 
+/**
+ * [DOC-FUNC] buscarFaixaHistoricaGlobal
+ * Objetivo: Executa a rotina de 'b us ca rf ai xa hi st or ic ag lo ba l'.
+ */
 async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
   const supabase = getSupabaseServerClient();
   const [{ data: asc }, { data: desc }] = await Promise.all([
@@ -139,6 +171,10 @@ async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
   };
 }
 
+/**
+ * [DOC-FUNC] buscarDashboardAnalitico
+ * Objetivo: Executa a rotina de 'b us ca rd as hb oa rd an al it ic o'.
+ */
 export async function buscarDashboardAnalitico(options?: {
   dias?: number;
   agrupamento?: AgrupamentoPeriodo;
@@ -162,6 +198,10 @@ export async function buscarDashboardAnalitico(options?: {
     };
   }
 
+  /**
+   * [DOC-FUNC] operacionais
+   * Objetivo: Executa a rotina de 'o pe ra ci on ai s'.
+   */
   const operacionais = (visao.data as ImpressoraVisao[]).filter((item) => item.operacional);
   const totalPaginasAcumuladasGeral = operacionais.reduce((acc, item) => {
     const paginas = Number(item.contador_paginas_atual);

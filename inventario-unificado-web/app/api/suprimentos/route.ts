@@ -8,6 +8,10 @@ import { SuprimentosSchema } from '@/types/suprimentos';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 
 // GET /api/suprimentos - list all suprimentos
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -23,6 +27,10 @@ export async function GET(request: NextRequest) {
 
 // POST /api/suprimentos - upsert suprimento (update or insert)
 // This endpoint is used primarily by the SNMP collector
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);

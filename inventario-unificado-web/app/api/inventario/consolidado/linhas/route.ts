@@ -6,16 +6,28 @@ import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 
+/**
+ * [DOC-FUNC] validarCompetencia
+ * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
 }
 
+/**
+ * [DOC-FUNC] limparTexto
+ * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ */
 function limparTexto(value: string | null): string | null {
   if (!value) return null;
   const texto = value.trim();
   return texto ? texto : null;
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -43,6 +55,10 @@ export async function GET(request: NextRequest) {
       throw new Error(cargasError.message);
     }
 
+    /**
+     * [DOC-FUNC] listaCargas
+     * Objetivo: Executa a rotina de 'l is ta ca rg as'.
+     */
     const listaCargas = (cargas || []).map((carga) => ({
       nr_carga: Number(carga.nr_carga),
       nr_competencia: String(carga.nr_competencia),

@@ -11,6 +11,10 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+/**
+ * [DOC-FUNC] getDefaultMonthRange
+ * Objetivo: Executa a rotina de 'g et de fa ul tm on th ra ng e'.
+ */
 function getDefaultMonthRange() {
   const now = new Date();
   const monthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1));
@@ -20,10 +24,18 @@ function getDefaultMonthRange() {
   };
 }
 
+/**
+ * [DOC-FUNC] isValidDateString
+ * Objetivo: Executa a rotina de 'i sv al id da te st ri ng'.
+ */
 function isValidDateString(value: string) {
   return !Number.isNaN(Date.parse(value));
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;

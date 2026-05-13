@@ -91,6 +91,10 @@ const STATUS_ITEM_VALIDOS = new Set([
 
 const VALORES_VAZIOS = new Set(["", "null", "none", "n/a", "na", "-", "desconhecido", "unknown"]);
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown): string | undefined {
   if (value === null || value === undefined) return undefined;
   const normalized = String(value).trim();
@@ -99,6 +103,10 @@ function normalizarTexto(value: unknown): string | undefined {
   return normalized;
 }
 
+/**
+ * [DOC-FUNC] normalizarChave
+ * Objetivo: Executa a rotina de 'n or ma li za rc ha ve'.
+ */
 function normalizarChave(value: string): string {
   return value
     .normalize("NFKD")
@@ -108,20 +116,36 @@ function normalizarChave(value: string): string {
     .replace(/\s+/g, "_");
 }
 
+/**
+ * [DOC-FUNC] slugify
+ * Objetivo: Executa a rotina de 's lu gi fy'.
+ */
 function slugify(value: string): string {
   return normalizarChave(value).replace(/_+/g, "-");
 }
 
+/**
+ * [DOC-FUNC] normalizarIp
+ * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ */
 function normalizarIp(value: string): string {
   return value.replace(/\/32$/, "").trim();
 }
 
+/**
+ * [DOC-FUNC] ipValido
+ * Objetivo: Executa a rotina de 'i pv al id o'.
+ */
 function ipValido(ip: string): boolean {
   const ipv4Regex =
     /^(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)\.(25[0-5]|2[0-4]\d|1\d\d|[1-9]?\d)$/;
   return ipv4Regex.test(ip);
 }
 
+/**
+ * [DOC-FUNC] toBoolean
+ * Objetivo: Executa a rotina de 't ob oo le an'.
+ */
 function toBoolean(value: unknown): boolean | undefined {
   if (typeof value === "boolean") return value;
   const text = normalizarTexto(value);
@@ -132,12 +156,20 @@ function toBoolean(value: unknown): boolean | undefined {
   return undefined;
 }
 
+/**
+ * [DOC-FUNC] resolverCampoDestino
+ * Objetivo: Executa a rotina de 'r es ol ve rc am po de st in o'.
+ */
 function resolverCampoDestino(coluna: string, mapping: Record<string, string>): string {
   const mapped = mapping[coluna];
   if (mapped && mapped.trim()) return mapped.trim();
   return normalizarChave(coluna);
 }
 
+/**
+ * [DOC-FUNC] validarReferenciasBase
+ * Objetivo: Executa a rotina de 'v al id ar re fe re nc ia sb as e'.
+ */
 async function validarReferenciasBase(input: PreviewInput): Promise<
   ResultadoServico<{ tipoEhImpressora: boolean }>
 > {
@@ -184,6 +216,10 @@ async function validarReferenciasBase(input: PreviewInput): Promise<
   return { success: true, data: { tipoEhImpressora } };
 }
 
+/**
+ * [DOC-FUNC] normalizarLinha
+ * Objetivo: Executa a rotina de 'n or ma li za rl in ha'.
+ */
 function normalizarLinha(
   row: Record<string, unknown>,
   mapping: Record<string, string>
@@ -257,6 +293,10 @@ function normalizarLinha(
   return { dadosNormalizados: dados, erros };
 }
 
+/**
+ * [DOC-FUNC] buscarIdsPorChave
+ * Objetivo: Executa a rotina de 'b us ca ri ds po rc ha ve'.
+ */
 async function buscarIdsPorChave(
   campo: ChaveMatching,
   valor: string
@@ -271,10 +311,18 @@ async function buscarIdsPorChave(
     return { success: false, status: 500, error: "Falha ao consultar matching de itens." };
   }
 
+  /**
+   * [DOC-FUNC] ids
+   * Objetivo: Executa a rotina de 'i ds'.
+   */
   const ids = (data ?? []).map((row) => String(row.id));
   return { success: true, data: ids };
 }
 
+/**
+ * [DOC-FUNC] detectarMatching
+ * Objetivo: Executa a rotina de 'd et ec ta rm at ch in g'.
+ */
 async function detectarMatching(
   dados: Record<string, unknown>,
   estrategia: ChaveMatching[]
@@ -336,6 +384,10 @@ async function detectarMatching(
   };
 }
 
+/**
+ * [DOC-FUNC] persistirPreviewImportacao
+ * Objetivo: Executa a rotina de 'p er si st ir pr ev ie wi mp or ta ca o'.
+ */
 async function persistirPreviewImportacao(
   input: PreviewInput,
   linhas: LinhaPreview[],
@@ -405,6 +457,10 @@ async function persistirPreviewImportacao(
   return { success: true, data: { importacaoId } };
 }
 
+/**
+ * [DOC-FUNC] gerarPreviewImportacao
+ * Objetivo: Executa a rotina de 'g er ar pr ev ie wi mp or ta ca o'.
+ */
 export async function gerarPreviewImportacao(
   input: PreviewInput,
   persistir = true
@@ -527,6 +583,10 @@ type LinhaPersistida = {
   dados_normalizados: Record<string, unknown>;
 };
 
+/**
+ * [DOC-FUNC] pickUpdatePayload
+ * Objetivo: Executa a rotina de 'p ic ku pd at ep ay lo ad'.
+ */
 function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unknown> {
   const allowed = [
     "patrimonio",
@@ -550,6 +610,10 @@ function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unkno
   return payload;
 }
 
+/**
+ * [DOC-FUNC] normalizarErroBanco
+ * Objetivo: Executa a rotina de 'n or ma li za re rr ob an co'.
+ */
 function normalizarErroBanco(errorMessage: string) {
   if (errorMessage.includes("uq_itens_inventario_patrimonio_ci")) {
     return "Conflito de patrimonio na gravacao.";
@@ -563,6 +627,10 @@ function normalizarErroBanco(errorMessage: string) {
   return "Erro de banco ao gravar item de inventario.";
 }
 
+/**
+ * [DOC-FUNC] linhaPareceImpressora
+ * Objetivo: Executa a rotina de 'l in ha pa re ce im pr es so ra'.
+ */
 function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
   const descricao = String(dados.descricao ?? "").toLowerCase();
   const modelo = String(dados.modelo ?? "").toLowerCase();
@@ -580,6 +648,10 @@ function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
   );
 }
 
+/**
+ * [DOC-FUNC] encontrarImpressoraPorChaves
+ * Objetivo: Executa a rotina de 'e nc on tr ar im pr es so ra po rc ha ve s'.
+ */
 async function encontrarImpressoraPorChaves(
   dados: Record<string, unknown>
 ): Promise<ResultadoServico<string | null>> {
@@ -632,6 +704,10 @@ async function encontrarImpressoraPorChaves(
   return { success: true, data: null };
 }
 
+/**
+ * [DOC-FUNC] tentarVincularItemComImpressora
+ * Objetivo: Executa a rotina de 't en ta rv in cu la ri te mc om im pr es so ra'.
+ */
 async function tentarVincularItemComImpressora(
   itemInventarioId: string,
   dados: Record<string, unknown>
@@ -664,6 +740,10 @@ async function tentarVincularItemComImpressora(
   });
 }
 
+/**
+ * [DOC-FUNC] executarLinhaCriar
+ * Objetivo: Executa a rotina de 'e xe cu ta rl in ha cr ia r'.
+ */
 async function executarLinhaCriar(
   linha: LinhaPersistida,
   abaInventarioId: string,
@@ -693,6 +773,10 @@ async function executarLinhaCriar(
   return { success: true, data: { itemId: String(data.id) } };
 }
 
+/**
+ * [DOC-FUNC] executarLinhaAtualizar
+ * Objetivo: Executa a rotina de 'e xe cu ta rl in ha at ua li za r'.
+ */
 async function executarLinhaAtualizar(
   linha: LinhaPersistida
 ): Promise<ResultadoServico<{ itemId: string }>> {
@@ -724,6 +808,10 @@ async function executarLinhaAtualizar(
   return { success: true, data: { itemId: String(data.id) } };
 }
 
+/**
+ * [DOC-FUNC] carregarPreviewPersistido
+ * Objetivo: Executa a rotina de 'c ar re ga rp re vi ew pe rs is ti do'.
+ */
 async function carregarPreviewPersistido(importacaoId: string): Promise<
   ResultadoServico<{
     abaInventarioId: string | null;
@@ -765,6 +853,10 @@ async function carregarPreviewPersistido(importacaoId: string): Promise<
   };
 }
 
+/**
+ * [DOC-FUNC] obterOuCriarAbaInventario
+ * Objetivo: Executa a rotina de 'o bt er ou cr ia ra ba in ve nt ar io'.
+ */
 async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
   const nomeNormalizado = normalizarTexto(nomeAba);
@@ -802,6 +894,10 @@ async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServ
   return { success: true, data: String(criada.id) };
 }
 
+/**
+ * [DOC-FUNC] obterOuCriarTipoPadrao
+ * Objetivo: Executa a rotina de 'o bt er ou cr ia rt ip op ad ra o'.
+ */
 async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
   const { data: existente } = await supabase
@@ -831,6 +927,10 @@ async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
   return { success: true, data: String(criado.id) };
 }
 
+/**
+ * [DOC-FUNC] atualizarLinhaProcessada
+ * Objetivo: Executa a rotina de 'a tu al iz ar li nh ap ro ce ss ad a'.
+ */
 async function atualizarLinhaProcessada(
   importacaoId: string,
   indiceLinha: number,
@@ -851,6 +951,10 @@ async function atualizarLinhaProcessada(
     .eq("indice_linha", indiceLinha);
 }
 
+/**
+ * [DOC-FUNC] finalizarImportacao
+ * Objetivo: Executa a rotina de 'f in al iz ar im po rt ac ao'.
+ */
 async function finalizarImportacao(
   importacaoId: string,
   resumo: ResultadoExecucao
@@ -866,6 +970,10 @@ async function finalizarImportacao(
     .eq("id", importacaoId);
 }
 
+/**
+ * [DOC-FUNC] executarImportacaoInventario
+ * Objetivo: Executa a rotina de 'e xe cu ta ri mp or ta ca oi nv en ta ri o'.
+ */
 export async function executarImportacaoInventario(
   input: ExecutarInput
 ): Promise<ResultadoServico<ResultadoExecucao>> {

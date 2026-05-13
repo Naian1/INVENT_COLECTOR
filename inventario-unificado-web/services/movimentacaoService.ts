@@ -5,6 +5,10 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Movimentacao, CreateMovimentacaoInput } from '@/types/movimentacao';
 
+/**
+ * [DOC-FUNC] getMovimentacoes
+ * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe s'.
+ */
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -16,6 +20,10 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getMovimentacaoById
+ * Objetivo: Executa a rotina de 'g et mo vi me nt ac ao by id'.
+ */
 export async function getMovimentacaoById(id: number): Promise<Movimentacao | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -28,6 +36,10 @@ export async function getMovimentacaoById(id: number): Promise<Movimentacao | nu
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getMovimentacoesByInventario
+ * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb yi nv en ta ri o'.
+ */
 export async function getMovimentacoesByInventario(inventarioId: number): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -40,6 +52,10 @@ export async function getMovimentacoesByInventario(inventarioId: number): Promis
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getMovimentacoesByPatrimonio
+ * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb yp at ri mo ni o'.
+ */
 export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -52,6 +68,10 @@ export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getMovimentacoesBySetor
+ * Objetivo: Executa a rotina de 'g et mo vi me nt ac oe sb ys et or'.
+ */
 export async function getMovimentacoesBySetor(
   setorId: number,
   limit: number = 100,
@@ -68,6 +88,10 @@ export async function getMovimentacoesBySetor(
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] createMovimentacao
+ * Objetivo: Executa a rotina de 'c re at em ov im en ta ca o'.
+ */
 export async function createMovimentacao(
   input: CreateMovimentacaoInput,
 ): Promise<Movimentacao> {
@@ -82,6 +106,10 @@ export async function createMovimentacao(
   return data;
 }
 
+/**
+ * [DOC-FUNC] getHistoricoEquipamento
+ * Objetivo: Executa a rotina de 'g et hi st or ic oe qu ip am en to'.
+ */
 export async function getHistoricoEquipamento(patrimonio: string): Promise<{
   inventario: any;
   movimentacoes: Movimentacao[];

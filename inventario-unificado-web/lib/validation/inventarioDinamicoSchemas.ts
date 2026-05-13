@@ -35,6 +35,10 @@ export const tipoSemanticoCampoSchema = z.enum([
 
 const textoOpcional = z.string().trim().optional().nullable();
 
+/**
+ * [DOC-FUNC] numeroPositivoComDefault
+ * Objetivo: Executa a rotina de 'n um er op os it iv oc om de fa ul t'.
+ */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z
     .string()

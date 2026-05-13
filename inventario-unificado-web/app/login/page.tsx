@@ -38,6 +38,10 @@ export default function LoginPage() {
     }
   }, []);
 
+  /**
+   * [DOC-FUNC] onSubmit
+   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   */
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErro(null);
@@ -76,6 +80,10 @@ export default function LoginPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] handleRecuperarSenha
+   * Objetivo: Executa a rotina de 'h an dl er ec up er ar se nh a'.
+   */
   const handleRecuperarSenha = async () => {
     setErro(null);
     setInfo(null);

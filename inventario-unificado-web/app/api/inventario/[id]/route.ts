@@ -14,6 +14,10 @@ import {
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { CreateInventarioSchema } from '@/types/inventario';
 
+/**
+ * [DOC-FUNC] parseIdOrThrow
+ * Objetivo: Executa a rotina de 'p ar se id or th ro w'.
+ */
 function parseIdOrThrow(raw: string) {
   if (!/^\d+$/.test(raw)) {
     throw new Error('Identificador invalido.');
@@ -36,6 +40,10 @@ const MoveInventarioSchema = z.object({
 const UpdateInventarioSchema = CreateInventarioSchema.partial();
 
 // GET /api/inventario/[id] - get specific inventario item
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {
@@ -59,6 +67,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 // PUT /api/inventario/[id] - update inventario item
+/**
+ * [DOC-FUNC] PUT
+ * Objetivo: Executa a rotina de 'p ut'.
+ */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {
@@ -91,6 +103,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 }
 
 // DELETE /api/inventario/[id] - delete inventario item
+/**
+ * [DOC-FUNC] DELETE
+ * Objetivo: Executa a rotina de 'd el et e'.
+ */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
   try {

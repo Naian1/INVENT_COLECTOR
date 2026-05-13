@@ -15,6 +15,10 @@ type SuprimentosListaProps = {
   filtroNome?: string;
 };
 
+/**
+ * [DOC-FUNC] normalizarNivel
+ * Objetivo: Executa a rotina de 'n or ma li za rn iv el'.
+ */
 function normalizarNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return null;
   const n = Number(value);
@@ -22,6 +26,10 @@ function normalizarNivel(value: number | null) {
   return Math.max(0, Math.min(100, n));
 }
 
+/**
+ * [DOC-FUNC] resolverNivel
+ * Objetivo: Executa a rotina de 'r es ol ve rn iv el'.
+ */
 function resolverNivel(item: SuprimentoItem) {
   const nivel = normalizarNivel(item.nivel_percentual);
   if (nivel !== null) return nivel;
@@ -30,6 +38,10 @@ function resolverNivel(item: SuprimentoItem) {
   return quantidade;
 }
 
+/**
+ * [DOC-FUNC] formatNivel
+ * Objetivo: Executa a rotina de 'f or ma tn iv el'.
+ */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
   const n = normalizarNivel(value);
@@ -37,12 +49,20 @@ function formatNivel(value: number | null) {
   return `${Math.round(n)}%`;
 }
 
+/**
+ * [DOC-FUNC] formatIndicador
+ * Objetivo: Executa a rotina de 'f or ma ti nd ic ad or'.
+ */
 function formatIndicador(value: number | null) {
   const nivel = formatNivel(value);
   if (nivel !== "-") return nivel;
   return "-";
 }
 
+/**
+ * [DOC-FUNC] tomPorNivel
+ * Objetivo: Executa a rotina de 't om po rn iv el'.
+ */
 function tomPorNivel(value: number | null) {
   const n = normalizarNivel(value);
   if (n === null) return "unknown";
@@ -51,6 +71,10 @@ function tomPorNivel(value: number | null) {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] statusPorNivel
+ * Objetivo: Executa a rotina de 's ta tu sp or ni ve l'.
+ */
 function statusPorNivel(value: number | null) {
   const n = normalizarNivel(value);
   if (n === null) return "indefinido";
@@ -59,6 +83,10 @@ function statusPorNivel(value: number | null) {
   return "bom";
 }
 
+/**
+ * [DOC-FUNC] classePillPorStatus
+ * Objetivo: Executa a rotina de 'c la ss ep il lp or st at us'.
+ */
 function classePillPorStatus(status: string) {
   const s = String(status ?? "").toLowerCase();
   if (["critico", "critical", "empty", "offline"].includes(s)) return "danger";
@@ -66,6 +94,10 @@ function classePillPorStatus(status: string) {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] SuprimentosLista
+ * Objetivo: Executa a rotina de 's up ri me nt os li st a'.
+ */
 export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaProps) {
   const filtro = String(filtroNome ?? "")
     .trim()

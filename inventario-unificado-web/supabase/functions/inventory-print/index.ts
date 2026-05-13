@@ -73,6 +73,10 @@ const STATUS_OFFLINE_CONFIRM_MINUTES = 18;
 const STATUS_OFFLINE_HARD_MINUTES = 120;
 const STATUS_RECENT_ONLINE_GRACE_MINUTES = 75;
 
+/**
+ * [DOC-FUNC] getAdminClient
+ * Objetivo: Executa a rotina de 'g et ad mi nc li en t'.
+ */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
   const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
@@ -86,30 +90,54 @@ function getAdminClient() {
   });
 }
 
+/**
+ * [DOC-FUNC] badRequest
+ * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ */
 function badRequest(message: string) {
   return jsonResponse({ ok: false, error: message }, 400);
 }
 
+/**
+ * [DOC-FUNC] limparTexto
+ * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ */
 function limparTexto(value: unknown): string | null {
   const texto = String(value ?? "").trim();
   return texto || null;
 }
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown): string {
   return String(value ?? "").trim().toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] normalizarIp
+ * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ */
 function normalizarIp(value: string | null | undefined): string {
   const ip = String(value ?? "").trim();
   if (!ip) return "";
   return ip.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] toFiniteNumber
+ * Objetivo: Executa a rotina de 't of in it en um be r'.
+ */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * [DOC-FUNC] statusSuprimentoPorNivel
+ * Objetivo: Executa a rotina de 's ta tu ss up ri me nt op or ni ve l'.
+ */
 function statusSuprimentoPorNivel(nivelPercentual: number | null): string {
   if (nivelPercentual === null) return "unknown";
   if (nivelPercentual <= 5) return "critical";
@@ -117,6 +145,10 @@ function statusSuprimentoPorNivel(nivelPercentual: number | null): string {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] normalizarStatusSuprimento
+ * Objetivo: Executa a rotina de 'n or ma li za rs ta tu ss up ri me nt o'.
+ */
 function normalizarStatusSuprimento(statusRaw: unknown, nivelPercentual: number | null): string {
   if (nivelPercentual !== null) {
     return statusSuprimentoPorNivel(nivelPercentual);
@@ -129,16 +161,28 @@ function normalizarStatusSuprimento(statusRaw: unknown, nivelPercentual: number 
   return "unknown";
 }
 
+/**
+ * [DOC-FUNC] clamp
+ * Objetivo: Executa a rotina de 'c la mp'.
+ */
 function clamp(value: number, min: number, max: number): number {
   return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * [DOC-FUNC] parseDateMs
+ * Objetivo: Executa a rotina de 'p ar se da te ms'.
+ */
 function parseDateMs(value: string | null | undefined): number | null {
   if (!value) return null;
   const ts = new Date(value).getTime();
   return Number.isFinite(ts) ? ts : null;
 }
 
+/**
+ * [DOC-FUNC] minutesSince
+ * Objetivo: Executa a rotina de 'm in ut es si nc e'.
+ */
 function minutesSince(value: string | null | undefined): number | null {
   const ts = parseDateMs(value);
   if (ts === null) return null;
@@ -147,14 +191,26 @@ function minutesSince(value: string | null | undefined): number | null {
   return diffMs / 60000;
 }
 
+/**
+ * [DOC-FUNC] isOfflineLikeStatus
+ * Objetivo: Executa a rotina de 'i so ff li ne li ke st at us'.
+ */
 function isOfflineLikeStatus(status: string): boolean {
   return ["offline", "error"].includes(status);
 }
 
+/**
+ * [DOC-FUNC] isOnlineLikeStatus
+ * Objetivo: Executa a rotina de 'i so nl in el ik es ta tu s'.
+ */
 function isOnlineLikeStatus(status: string): boolean {
   return ["online", "warning"].includes(status);
 }
 
+/**
+ * [DOC-FUNC] normalizeStatusHistoryRows
+ * Objetivo: Executa a rotina de 'n or ma li ze st at us hi st or yr ow s'.
+ */
 function normalizeStatusHistoryRows(
   rows: Array<{ status: string; coletado_em: string | null }>
 ): Array<{ status: string; coletado_em: string | null }> {
@@ -166,6 +222,10 @@ function normalizeStatusHistoryRows(
     .filter((row) => Boolean(row.status));
 }
 
+/**
+ * [DOC-FUNC] resolverStatusOperacionalConfiavel
+ * Objetivo: Executa a rotina de 'r es ol ve rs ta tu so pe ra ci on al co nf ia ve l'.
+ */
 function resolverStatusOperacionalConfiavel(
   rows: Array<{ status: string; coletado_em: string | null }>,
   fallbackStatus?: string | null,
@@ -242,6 +302,10 @@ function resolverStatusOperacionalConfiavel(
   return fallback || latest.status || "unknown";
 }
 
+/**
+ * [DOC-FUNC] isMissingTableError
+ * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or'.
+ */
 function isMissingTableError(error: unknown): boolean {
   const message = String((error as any)?.message ?? "");
   return (
@@ -251,11 +315,19 @@ function isMissingTableError(error: unknown): boolean {
   );
 }
 
+/**
+ * [DOC-FUNC] isMissingColumnError
+ * Objetivo: Executa a rotina de 'i sm is si ng co lu mn er ro r'.
+ */
 function isMissingColumnError(error: unknown): boolean {
   const message = String((error as any)?.message ?? "");
   return /column .* does not exist/i.test(message) || /Could not find the .* column/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] tableExists
+ * Objetivo: Executa a rotina de 't ab le ex is ts'.
+ */
 async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
   const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
 
@@ -264,6 +336,10 @@ async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: s
   throw new Error(error.message || `Falha ao verificar tabela ${table}`);
 }
 
+/**
+ * [DOC-FUNC] loadCategoriasImpressora
+ * Objetivo: Executa a rotina de 'l oa dc at eg or ia si mp re ss or a'.
+ */
 async function loadCategoriasImpressora(supabase: ReturnType<typeof getAdminClient>) {
   const hasCategorias = await tableExists(supabase, "categorias_inventario");
   if (!hasCategorias) return [];
@@ -279,6 +355,10 @@ async function loadCategoriasImpressora(supabase: ReturnType<typeof getAdminClie
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] loadLinhaSemanticMap
+ * Objetivo: Executa a rotina de 'l oa dl in ha se ma nt ic ma p'.
+ */
 async function loadLinhaSemanticMap(
   supabase: ReturnType<typeof getAdminClient>,
   linhaId: string,
@@ -330,6 +410,10 @@ async function loadLinhaSemanticMap(
 
   if (camposError) throw new Error(camposError.message);
 
+  /**
+   * [DOC-FUNC] campoIds
+   * Objetivo: Executa a rotina de 'c am po id s'.
+   */
   const campoIds = (campos || []).map((item) => String(item.id));
   if (!campoIds.length) {
     return {
@@ -401,6 +485,10 @@ async function loadLinhaSemanticMap(
   };
 }
 
+/**
+ * [DOC-FUNC] semantico
+ * Objetivo: Executa a rotina de 's em an ti co'.
+ */
 function semantico(bag: Map<string, string>, names: string[]): string | null {
   for (const key of names) {
     const value = limparTexto(bag.get(key));
@@ -409,6 +497,10 @@ function semantico(bag: Map<string, string>, names: string[]): string | null {
   return null;
 }
 
+/**
+ * [DOC-FUNC] normalizarStatusOperacional
+ * Objetivo: Executa a rotina de 'n or ma li za rs ta tu so pe ra ci on al'.
+ */
 function normalizarStatusOperacional(value: unknown): string {
   const status = normalizarTexto(value);
   if (!status) return "unknown";
@@ -419,12 +511,20 @@ function normalizarStatusOperacional(value: unknown): string {
   return "unknown";
 }
 
+/**
+ * [DOC-FUNC] ehEquipamentoImpressora
+ * Objetivo: Executa a rotina de 'e he qu ip am en to im pr es so ra'.
+ */
 function ehEquipamentoImpressora(equipamento: Record<string, unknown> | null): boolean {
   const nome = normalizarTexto(equipamento?.nm_equipamento);
   if (!nome) return true;
   return nome.includes("impress");
 }
 
+/**
+ * [DOC-FUNC] loadOperacionaisViaInventario
+ * Objetivo: Executa a rotina de 'l oa do pe ra ci on ai sv ia in ve nt ar io'.
+ */
 async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdminClient>): Promise<ImpressoraVisao[]> {
   const hasInventario = await tableExists(supabase, "inventario");
   if (!hasInventario) return [];
@@ -692,6 +792,10 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
   });
 }
 
+/**
+ * [DOC-FUNC] loadVisaoGeral
+ * Objetivo: Executa a rotina de 'l oa dv is ao ge ra l'.
+ */
 async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, incluirNaoOperacionais: boolean) {
   let operacionais: ImpressoraVisao[] = [];
   const hasImpressoras = await tableExists(supabase, "impressoras");
@@ -937,6 +1041,10 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
 
   if (camposError) throw new Error(camposError.message);
 
+  /**
+   * [DOC-FUNC] campoIds
+   * Objetivo: Executa a rotina de 'c am po id s'.
+   */
   const campoIds = (camposData || []).map((campo) => String(campo.id));
   if (!campoIds.length) return operacionais;
 
@@ -1042,6 +1150,10 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
   return merged;
 }
 
+/**
+ * [DOC-FUNC] upsertImpressora
+ * Objetivo: Executa a rotina de 'u ps er ti mp re ss or a'.
+ */
 async function upsertImpressora(
   supabase: ReturnType<typeof getAdminClient>,
   payload: {
@@ -1136,6 +1248,10 @@ async function upsertImpressora(
   return { acao: "criado", data };
 }
 
+/**
+ * [DOC-FUNC] extractPrinterPayloadFromLine
+ * Objetivo: Executa a rotina de 'e xt ra ct pr in te rp ay lo ad fr om li ne'.
+ */
 async function extractPrinterPayloadFromLine(
   supabase: ReturnType<typeof getAdminClient>,
   linhaId: string,
@@ -1175,6 +1291,10 @@ async function extractPrinterPayloadFromLine(
   };
 }
 
+/**
+ * [DOC-FUNC] inicioPeriodoIso
+ * Objetivo: Executa a rotina de 'i ni ci op er io do is o'.
+ */
 function inicioPeriodoIso(dias: number) {
   const now = new Date();
   const start = new Date(now);
@@ -1183,6 +1303,10 @@ function inicioPeriodoIso(dias: number) {
   return start.toISOString();
 }
 
+/**
+ * [DOC-FUNC] chaveBucket
+ * Objetivo: Executa a rotina de 'c ha ve bu ck et'.
+ */
 function chaveBucket(dataIso: string, agrupamento: "dia" | "mes") {
   const dt = new Date(dataIso);
   const ano = dt.getUTCFullYear();
@@ -1192,6 +1316,10 @@ function chaveBucket(dataIso: string, agrupamento: "dia" | "mes") {
   return `${ano}-${mes}-${dia}`;
 }
 
+/**
+ * [DOC-FUNC] buscarLeiturasHistoricas
+ * Objetivo: Executa a rotina de 'b us ca rl ei tu ra sh is to ri ca s'.
+ */
 async function buscarLeiturasHistoricas(
   supabase: ReturnType<typeof getAdminClient>,
   impressoraIds: string[],
@@ -1240,6 +1368,10 @@ async function buscarLeiturasHistoricas(
   return { rows, truncado };
 }
 
+/**
+ * [DOC-FUNC] buscarFaixaHistoricaGlobal
+ * Objetivo: Executa a rotina de 'b us ca rf ai xa hi st or ic ag lo ba l'.
+ */
 async function buscarFaixaHistoricaGlobal(supabase: ReturnType<typeof getAdminClient>) {
   const hasLeituras = await tableExists(supabase, "leituras_paginas_impressoras");
   if (!hasLeituras) {

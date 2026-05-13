@@ -10,6 +10,10 @@ const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024;
 const ALLOWED_TYPES = new Set(['image/jpeg', 'image/png', 'image/webp']);
 const PNG_SIGNATURE = [0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a];
 
+/**
+ * [DOC-FUNC] hasPrefix
+ * Objetivo: Executa a rotina de 'h as pr ef ix'.
+ */
 function hasPrefix(bytes: Uint8Array, prefix: number[]) {
   if (bytes.length < prefix.length) return false;
   for (let index = 0; index < prefix.length; index += 1) {
@@ -18,6 +22,10 @@ function hasPrefix(bytes: Uint8Array, prefix: number[]) {
   return true;
 }
 
+/**
+ * [DOC-FUNC] matchesImageSignature
+ * Objetivo: Executa a rotina de 'm at ch es im ag es ig na tu re'.
+ */
 function matchesImageSignature(bytes: Uint8Array, mime: string) {
   if (mime === 'image/jpeg') {
     return hasPrefix(bytes, [0xff, 0xd8, 0xff]);
@@ -37,12 +45,20 @@ function matchesImageSignature(bytes: Uint8Array, mime: string) {
   return false;
 }
 
+/**
+ * [DOC-FUNC] extensionFromMime
+ * Objetivo: Executa a rotina de 'e xt en si on fr om mi me'.
+ */
 function extensionFromMime(mime: string): string {
   if (mime === 'image/png') return 'png';
   if (mime === 'image/webp') return 'webp';
   return 'jpg';
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);

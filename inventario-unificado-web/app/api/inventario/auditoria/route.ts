@@ -6,12 +6,20 @@ import { NextRequest, NextResponse } from "next/server";
 
 import { getSupabaseServerClient } from "@/lib/supabase/server";
 
+/**
+ * [DOC-FUNC] getBearerToken
+ * Objetivo: Executa a rotina de 'g et be ar er to ke n'.
+ */
 function getBearerToken(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) return null;
   return authHeader.slice(7).trim() || null;
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   const token = getBearerToken(request);
   if (!token) {

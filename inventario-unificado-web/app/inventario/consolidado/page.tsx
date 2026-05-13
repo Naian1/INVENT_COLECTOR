@@ -77,6 +77,10 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
   throw new Error(reason);
 }
 
+/**
+ * [DOC-FUNC] formatarData
+ * Objetivo: Executa a rotina de 'f or ma ta rd at a'.
+ */
 function formatarData(dataIso: string | null): string {
   if (!dataIso) return '-';
   const date = new Date(dataIso);
@@ -190,11 +194,19 @@ export default function InventarioConsolidadoPage() {
     return Array.from(mapa.values());
   }, [dados?.cargas, empresaCgc]);
 
+  /**
+   * [DOC-FUNC] onSubmit
+   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void carregar({ cd_cgc: empresaCgc, competencia, patrimonio, serie, tipo, modelo, pagina: 1, tamanhoPagina });
   };
 
+  /**
+   * [DOC-FUNC] irParaPagina
+   * Objetivo: Executa a rotina de 'i rp ar ap ag in a'.
+   */
   const irParaPagina = (novaPagina: number) => {
     if (!dados?.paginacao) return;
     if (novaPagina < 1 || novaPagina > dados.paginacao.totalPaginas) return;

@@ -136,12 +136,20 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
   }
 }
 
+/**
+ * [DOC-FUNC] toFiniteNullable
+ * Objetivo: Executa a rotina de 't of in it en ul la bl e'.
+ */
 function toFiniteNullable(value: unknown): number | null {
   if (value === null || value === undefined || value === "") return null;
   const n = Number(value);
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * [DOC-FUNC] resolverNivelPercentualSuprimento
+ * Objetivo: Executa a rotina de 'r es ol ve rn iv el pe rc en tu al su pr im en to'.
+ */
 function resolverNivelPercentualSuprimento(item: {
   nivel_percentual: number | null;
   quantidade_atual: number | null;
@@ -155,6 +163,10 @@ function resolverNivelPercentualSuprimento(item: {
   return null;
 }
 
+/**
+ * [DOC-FUNC] classificarSuprimentos
+ * Objetivo: Executa a rotina de 'c la ss if ic ar su pr im en to s'.
+ */
 function classificarSuprimentos(
   menorNivel: number | null,
   resumo: ImpressoraVisao["resumo_suprimentos"]
@@ -174,6 +186,10 @@ function classificarSuprimentos(
     return "ok";
   }
 
+  /**
+   * [DOC-FUNC] statusList
+   * Objetivo: Executa a rotina de 's ta tu sl is t'.
+   */
   const statusList = (resumo || []).map((item) => String(item.status_suprimento || "").toLowerCase());
   if (statusList.some((status) => ["critical", "empty", "offline"].includes(status))) return "critico";
   if (statusList.some((status) => ["low", "warning"].includes(status))) return "baixo";
@@ -181,16 +197,28 @@ function classificarSuprimentos(
   return "desconhecido";
 }
 
+/**
+ * [DOC-FUNC] formatarPercentualSuprimento
+ * Objetivo: Executa a rotina de 'f or ma ta rp er ce nt ua ls up ri me nt o'.
+ */
 function formatarPercentualSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
   return `${Math.round(value)}%`;
 }
 
+/**
+ * [DOC-FUNC] formatarIndicadorSuprimento
+ * Objetivo: Executa a rotina de 'f or ma ta ri nd ic ad or su pr im en to'.
+ */
 function formatarIndicadorSuprimento(value: number | null) {
   if (value !== null && !Number.isNaN(value)) return formatarPercentualSuprimento(value);
   return "-";
 }
 
+/**
+ * [DOC-FUNC] classeNivelSuprimento
+ * Objetivo: Executa a rotina de 'c la ss en iv el su pr im en to'.
+ */
 function classeNivelSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "warn";
   if (value <= 5) return "danger";
@@ -198,6 +226,10 @@ function classeNivelSuprimento(value: number | null) {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] obterMenorSuprimentoInfo
+ * Objetivo: Executa a rotina de 'o bt er me no rs up ri me nt oi nf o'.
+ */
 function obterMenorSuprimentoInfo(
   suprimentos: ImpressoraVisao["resumo_suprimentos"]
 ) {
@@ -242,6 +274,10 @@ function obterMenorSuprimentoInfo(
   return null;
 }
 
+/**
+ * [DOC-FUNC] classePillStatus
+ * Objetivo: Executa a rotina de 'c la ss ep il ls ta tu s'.
+ */
 function classePillStatus(status: string) {
   const s = String(status || "unknown").toLowerCase();
   if (s === "online") return "ok";
@@ -249,6 +285,10 @@ function classePillStatus(status: string) {
   return "warn";
 }
 
+/**
+ * [DOC-FUNC] parseColetaDate
+ * Objetivo: Executa a rotina de 'p ar se co le ta da te'.
+ */
 function parseColetaDate(value: string | null) {
   if (!value) return null;
   const raw = String(value).trim();
@@ -261,6 +301,10 @@ function parseColetaDate(value: string | null) {
   return dt;
 }
 
+/**
+ * [DOC-FUNC] formatarDataHora
+ * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ */
 function formatarDataHora(value: string | null) {
   const dt = parseColetaDate(value);
   if (!dt) return "-";
@@ -270,12 +314,20 @@ function formatarDataHora(value: string | null) {
   }).format(dt);
 }
 
+/**
+ * [DOC-FUNC] minutosDesdeColeta
+ * Objetivo: Executa a rotina de 'm in ut os de sd ec ol et a'.
+ */
 function minutosDesdeColeta(value: string | null) {
   const dt = parseColetaDate(value);
   if (!dt) return null;
   return Math.max(0, Math.floor((Date.now() - dt.getTime()) / 60000));
 }
 
+/**
+ * [DOC-FUNC] formatarTempoRelativoColeta
+ * Objetivo: Executa a rotina de 'f or ma ta rt em po re la ti vo co le ta'.
+ */
 function formatarTempoRelativoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
   if (minutos === null) return "sem coleta";
@@ -287,6 +339,10 @@ function formatarTempoRelativoColeta(value: string | null) {
   return `ha ${dias} d`;
 }
 
+/**
+ * [DOC-FUNC] classeAtualizacaoColeta
+ * Objetivo: Executa a rotina de 'c la ss ea tu al iz ac ao co le ta'.
+ */
 function classeAtualizacaoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
   if (minutos === null) return "danger";
@@ -295,6 +351,10 @@ function classeAtualizacaoColeta(value: string | null) {
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] obterValorOrdenacao
+ * Objetivo: Executa a rotina de 'o bt er va lo ro rd en ac ao'.
+ */
 function obterValorOrdenacao(row: ImpressoraVisao, coluna: ColunaOrdenacao): string | number {
   switch (coluna) {
     case "operacional":
@@ -352,6 +412,10 @@ export default function ImpressorasPage() {
     ativo: true
   });
 
+  /**
+   * [DOC-FUNC] valorParaTexto
+   * Objetivo: Executa a rotina de 'v al or pa ra te xt o'.
+   */
   function valorParaTexto(valor: LinhaValorDef["valor"]) {
     if (!valor) return "";
     if (valor.valor_texto != null) return String(valor.valor_texto);
@@ -403,6 +467,10 @@ export default function ImpressorasPage() {
         12000
       );
 
+      /**
+       * [DOC-FUNC] ativas
+       * Objetivo: Executa a rotina de 'a ti va s'.
+       */
       const ativas = (dados || []).filter((item) => item.ativo);
       setCategorias(ativas);
       setCategoriaSelecionadaId((atual) => {

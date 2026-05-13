@@ -13,6 +13,10 @@ export type ServiceResult<T> =
   | { success: true; data: T }
   | { success: false; error: string; status?: number };
 
+/**
+ * [DOC-FUNC] normalizeSupabaseError
+ * Objetivo: Executa a rotina de 'n or ma li ze su pa ba se er ro r'.
+ */
 function normalizeSupabaseError(message: string) {
   if (message.includes("uq_printers_ip_address")) {
     return { message: "Ja existe uma impressora com este IP.", status: 409 };
@@ -26,6 +30,10 @@ function normalizeSupabaseError(message: string) {
   return { message: "Erro ao acessar dados de impressoras.", status: 500 };
 }
 
+/**
+ * [DOC-FUNC] withDisplayName
+ * Objetivo: Executa a rotina de 'w it hd is pl ay na me'.
+ */
 function withDisplayName(input: {
   display_name?: string | null;
   hostname?: string | null;
@@ -46,6 +54,10 @@ function withDisplayName(input: {
   return explicitDisplayName ?? computedDisplayName ?? null;
 }
 
+/**
+ * [DOC-FUNC] getAllPrinters
+ * Objetivo: Executa a rotina de 'g et al lp ri nt er s'.
+ */
 export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
   const supabase = getSupabaseServerClient();
 
@@ -61,6 +73,10 @@ export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
   return { success: true, data: (data ?? []) as Printer[] };
 }
 
+/**
+ * [DOC-FUNC] getPrinterByUniqueField
+ * Objetivo: Executa a rotina de 'g et pr in te rb yu ni qu ef ie ld'.
+ */
 async function getPrinterByUniqueField(
   field: "ip_address" | "serial_number" | "asset_tag",
   value: string,
@@ -91,6 +107,10 @@ async function getPrinterByUniqueField(
   return { success: true, data: rows[0] };
 }
 
+/**
+ * [DOC-FUNC] getPrinterById
+ * Objetivo: Executa a rotina de 'g et pr in te rb yi d'.
+ */
 export async function getPrinterById(id: string): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
 
@@ -110,6 +130,10 @@ export async function getPrinterById(id: string): Promise<ServiceResult<Printer>
   return { success: true, data: data as Printer };
 }
 
+/**
+ * [DOC-FUNC] createPrinter
+ * Objetivo: Executa a rotina de 'c re at ep ri nt er'.
+ */
 export async function createPrinter(input: CreatePrinterInput): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
 
@@ -153,6 +177,10 @@ export async function createPrinter(input: CreatePrinterInput): Promise<ServiceR
   return { success: true, data: data as Printer };
 }
 
+/**
+ * [DOC-FUNC] updatePrinter
+ * Objetivo: Executa a rotina de 'u pd at ep ri nt er'.
+ */
 export async function updatePrinter(
   id: string,
   input: UpdatePrinterInput
@@ -243,6 +271,10 @@ const COLLECTOR_UNKNOWN_VALUES = new Set([
   "-"
 ]);
 
+/**
+ * [DOC-FUNC] normalizeCollectorText
+ * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rt ex t'.
+ */
 function normalizeCollectorText(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
   const normalized = value.trim();
@@ -251,17 +283,29 @@ function normalizeCollectorText(value: string | null | undefined): string | unde
   return normalized;
 }
 
+/**
+ * [DOC-FUNC] normalizeCollectorModel
+ * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to rm od el'.
+ */
 function normalizeCollectorModel(value: string | undefined): string | undefined {
   if (!value) return undefined;
   if (/^[a-z]{1,3}\d{3,5}$/i.test(value)) return value.toUpperCase();
   return value;
 }
 
+/**
+ * [DOC-FUNC] normalizeCollectorIp
+ * Objetivo: Executa a rotina de 'n or ma li ze co ll ec to ri p'.
+ */
 function normalizeCollectorIp(value: string | undefined): string | undefined {
   if (!value) return undefined;
   return value.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] resolveCollectorDisplayName
+ * Objetivo: Executa a rotina de 'r es ol ve co ll ec to rd is pl ay na me'.
+ */
 function resolveCollectorDisplayName(input: {
   hostname?: string;
   asset_tag?: string;
@@ -282,6 +326,10 @@ function resolveCollectorDisplayName(input: {
   return displayName ?? null;
 }
 
+/**
+ * [DOC-FUNC] upsertPrinterFromCollector
+ * Objetivo: Executa a rotina de 'u ps er tp ri nt er fr om co ll ec to r'.
+ */
 export async function upsertPrinterFromCollector(
   input: CollectorPrinterUpsertInput
 ): Promise<ServiceResult<Printer>> {

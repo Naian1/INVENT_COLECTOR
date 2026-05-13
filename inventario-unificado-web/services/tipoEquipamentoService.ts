@@ -9,6 +9,10 @@ import {
   UpdateTipoEquipamentoInput,
 } from '@/types/tipoEquipamento';
 
+/**
+ * [DOC-FUNC] getTiposEquipamento
+ * Objetivo: Executa a rotina de 'g et ti po se qu ip am en to'.
+ */
 export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -21,6 +25,10 @@ export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
   return (data || []) as TipoEquipamento[];
 }
 
+/**
+ * [DOC-FUNC] getTipoEquipamentoById
+ * Objetivo: Executa a rotina de 'g et ti po eq ui pa me nt ob yi d'.
+ */
 export async function getTipoEquipamentoById(id: number): Promise<TipoEquipamento | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -33,6 +41,10 @@ export async function getTipoEquipamentoById(id: number): Promise<TipoEquipament
   return (data as TipoEquipamento) || null;
 }
 
+/**
+ * [DOC-FUNC] createTipoEquipamento
+ * Objetivo: Executa a rotina de 'c re at et ip oe qu ip am en to'.
+ */
 export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): Promise<TipoEquipamento> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -45,6 +57,10 @@ export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): 
   return data as TipoEquipamento;
 }
 
+/**
+ * [DOC-FUNC] updateTipoEquipamento
+ * Objetivo: Executa a rotina de 'u pd at et ip oe qu ip am en to'.
+ */
 export async function updateTipoEquipamento(
   id: number,
   input: UpdateTipoEquipamentoInput,
@@ -61,6 +77,10 @@ export async function updateTipoEquipamento(
   return data as TipoEquipamento;
 }
 
+/**
+ * [DOC-FUNC] deleteTipoEquipamento
+ * Objetivo: Executa a rotina de 'd el et et ip oe qu ip am en to'.
+ */
 export async function deleteTipoEquipamento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();
   const { error } = await supabase

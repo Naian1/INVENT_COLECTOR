@@ -7,6 +7,10 @@ import path from "node:path";
 import process from "node:process";
 import XLSX from "xlsx";
 
+/**
+ * [DOC-FUNC] toNumber
+ * Objetivo: Executa a rotina de 't on um be r'.
+ */
 function toNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
   const raw = String(value ?? "").trim().replace(/\s/g, "");
@@ -16,10 +20,18 @@ function toNumber(value) {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * [DOC-FUNC] normalizeText
+ * Objetivo: Executa a rotina de 'n or ma li ze te xt'.
+ */
 function normalizeText(value) {
   return String(value ?? "").trim();
 }
 
+/**
+ * [DOC-FUNC] findTarifas
+ * Objetivo: Executa a rotina de 'f in dt ar if as'.
+ */
 function findTarifas(rows) {
   for (const row of rows) {
     const normalized = row.map((cell) => String(cell ?? "").trim().toLowerCase());
@@ -34,12 +46,20 @@ function findTarifas(rows) {
   return null;
 }
 
+/**
+ * [DOC-FUNC] inferCompetenciaFromName
+ * Objetivo: Executa a rotina de 'i nf er co mp et en ci af ro mn am e'.
+ */
 function inferCompetenciaFromName(fileName) {
   const m = fileName.match(/(\d{2})_(\d{4})/);
   if (!m) return null;
   return { competencia_mes: Number(m[1]), competencia_ano: Number(m[2]) };
 }
 
+/**
+ * [DOC-FUNC] main
+ * Objetivo: Executa a rotina de 'm ai n'.
+ */
 function main() {
   const input = process.argv[2];
   if (!input) {

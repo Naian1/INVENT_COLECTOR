@@ -15,10 +15,18 @@ type DashboardSummary = {
   pages_printed_current_month: number;
 };
 
+/**
+ * [DOC-FUNC] getMonthStartIsoUtc
+ * Objetivo: Executa a rotina de 'g et mo nt hs ta rt is ou tc'.
+ */
 function getMonthStartIsoUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 }
 
+/**
+ * [DOC-FUNC] getPagesPrintedCurrentMonth
+ * Objetivo: Executa a rotina de 'g et pa ge sp ri nt ed cu rr en tm on th'.
+ */
 async function getPagesPrintedCurrentMonth(nowIso: string) {
   const supabase = getSupabaseServerClient();
   const monthStartIso = getMonthStartIsoUtc(new Date(nowIso));
@@ -56,6 +64,10 @@ async function getPagesPrintedCurrentMonth(nowIso: string) {
   return totalPrinted;
 }
 
+/**
+ * [DOC-FUNC] getOperationalCountersFromOverview
+ * Objetivo: Executa a rotina de 'g et op er at io na lc ou nt er sf ro mo ve rv ie w'.
+ */
 async function getOperationalCountersFromOverview() {
   const overview = await getPrintersOverview();
   if (!overview.success) {
@@ -88,6 +100,10 @@ async function getOperationalCountersFromOverview() {
   return { online, offline, lowOrCritical };
 }
 
+/**
+ * [DOC-FUNC] getDashboardSummary
+ * Objetivo: Executa a rotina de 'g et da sh bo ar ds um ma ry'.
+ */
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const supabase = getSupabaseServerClient();
   const nowIso = new Date().toISOString();

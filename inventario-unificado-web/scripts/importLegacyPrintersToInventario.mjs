@@ -7,6 +7,10 @@ import path from "path";
 import XLSX from "xlsx";
 import { createClient } from "@supabase/supabase-js";
 
+/**
+ * [DOC-FUNC] loadEnvLocal
+ * Objetivo: Executa a rotina de 'l oa de nv lo ca l'.
+ */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
   const env = {};
@@ -46,6 +50,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
   auth: { persistSession: false, autoRefreshToken: false }
 });
 
+/**
+ * [DOC-FUNC] normHeader
+ * Objetivo: Executa a rotina de 'n or mh ea de r'.
+ */
 function normHeader(v) {
   return String(v || "")
     .normalize("NFKD")
@@ -55,6 +63,10 @@ function normHeader(v) {
     .trim();
 }
 
+/**
+ * [DOC-FUNC] pickHeaderIndex
+ * Objetivo: Executa a rotina de 'p ic kh ea de ri nd ex'.
+ */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
   for (const alias of aliases) {
@@ -65,6 +77,10 @@ function pickHeaderIndex(headers, aliases) {
   return -1;
 }
 
+/**
+ * [DOC-FUNC] toText
+ * Objetivo: Executa a rotina de 't ot ex t'.
+ */
 function toText(v) {
   const s = String(v ?? "").replace(/\s+/g, " ").trim();
   if (!s) return null;
@@ -73,6 +89,10 @@ function toText(v) {
   return s;
 }
 
+/**
+ * [DOC-FUNC] normalizeIp
+ * Objetivo: Executa a rotina de 'n or ma li ze ip'.
+ */
 function normalizeIp(ip) {
   const txt = toText(ip);
   if (!txt) return null;
@@ -82,6 +102,10 @@ function normalizeIp(ip) {
   return ipv4.test(clean) ? clean : null;
 }
 
+/**
+ * [DOC-FUNC] normalizeMac
+ * Objetivo: Executa a rotina de 'n or ma li ze ma c'.
+ */
 function normalizeMac(mac) {
   const txt = toText(mac);
   if (!txt) return null;
@@ -90,6 +114,10 @@ function normalizeMac(mac) {
   return compact;
 }
 
+/**
+ * [DOC-FUNC] inferMarca
+ * Objetivo: Executa a rotina de 'i nf er ma rc a'.
+ */
 function inferMarca(modelo) {
   const m = String(modelo || "").toLowerCase();
   if (m.includes("lexmark") || m.startsWith("m") || m.startsWith("xm") || m.startsWith("cx")) {
@@ -98,6 +126,10 @@ function inferMarca(modelo) {
   return "Desconhecido";
 }
 
+/**
+ * [DOC-FUNC] detectarHeader
+ * Objetivo: Executa a rotina de 'd et ec ta rh ea de r'.
+ */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 30); i++) {
     const row = rows[i] || [];
@@ -110,6 +142,10 @@ function detectarHeader(rows) {
   return -1;
 }
 
+/**
+ * [DOC-FUNC] fetchBaseContext
+ * Objetivo: Executa a rotina de 'f et ch ba se co nt ex t'.
+ */
 async function fetchBaseContext() {
   const [empresasRes, tiposRes, pisosRes, setoresRes, equipamentosRes] = await Promise.all([
     supabase.from("empresa").select("cd_cgc, ie_situacao"),
@@ -152,18 +188,34 @@ async function fetchBaseContext() {
   };
 }
 
+/**
+ * [DOC-FUNC] pisoKey
+ * Objetivo: Executa a rotina de 'p is ok ey'.
+ */
 function pisoKey(nomePiso) {
   return String(nomePiso || "").trim().toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] setorKey
+ * Objetivo: Executa a rotina de 's et or ke y'.
+ */
 function setorKey(cdPiso, nomeSetor) {
   return `${cdPiso}::${String(nomeSetor || "").trim().toLowerCase()}`;
 }
 
+/**
+ * [DOC-FUNC] equipamentoKey
+ * Objetivo: Executa a rotina de 'e qu ip am en to ke y'.
+ */
 function equipamentoKey(modelo) {
   return String(modelo || "").trim().toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] ensurePiso
+ * Objetivo: Executa a rotina de 'e ns ur ep is o'.
+ */
 async function ensurePiso(nomePiso, cachePisos) {
   const cleanNome = toText(nomePiso) || "NAO INFORMADO";
   const key = pisoKey(cleanNome);
@@ -179,6 +231,10 @@ async function ensurePiso(nomePiso, cachePisos) {
   return data;
 }
 
+/**
+ * [DOC-FUNC] ensureSetor
+ * Objetivo: Executa a rotina de 'e ns ur es et or'.
+ */
 async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
   const cleanSetor = toText(nomeSetor) || "IMPRESSORAS";
   const key = setorKey(cdPiso, cleanSetor);
@@ -199,6 +255,10 @@ async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
   return data;
 }
 
+/**
+ * [DOC-FUNC] ensureEquipamento
+ * Objetivo: Executa a rotina de 'e ns ur ee qu ip am en to'.
+ */
 async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
   const cleanModelo = toText(modelo);
   if (!cleanModelo) throw new Error("Modelo ausente para criar equipamento.");
@@ -225,6 +285,10 @@ async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
   return data;
 }
 
+/**
+ * [DOC-FUNC] carregarInventarioExistente
+ * Objetivo: Executa a rotina de 'c ar re ga ri nv en ta ri oe xi st en te'.
+ */
 async function carregarInventarioExistente() {
   const { data, error } = await supabase
     .from("inventario")
@@ -246,6 +310,10 @@ async function carregarInventarioExistente() {
   return { byPat, bySerie, byIp };
 }
 
+/**
+ * [DOC-FUNC] main
+ * Objetivo: Executa a rotina de 'm ai n'.
+ */
 async function main() {
   const fileArg = process.argv[2];
   const filePath = fileArg || "C:/Users/7003233/Desktop/Inventário SPDM - HGG.xlsx";

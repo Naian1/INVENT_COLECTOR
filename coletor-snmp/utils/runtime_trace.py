@@ -11,6 +11,8 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 TRACE_FILE = os.path.join(LOG_DIR, "collector_backend_trace.jsonl")
 
 
+# [DOC-FUNC] _utc_now_iso
+# Objetivo: Executa a rotina de 'u tc n ow i so'.
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -36,6 +38,8 @@ def _sanitize(value: Any, max_len: int = 2400):
     return f"{clean[:max_len].rstrip()}..."
 
 
+# [DOC-FUNC] append_backend_trace
+# Objetivo: Executa a rotina de 'a pp en d b ac ke nd t ra ce'.
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

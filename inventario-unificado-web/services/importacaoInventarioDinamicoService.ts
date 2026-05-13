@@ -88,6 +88,10 @@ type ResultadoExecucao = {
   categoria_id: string | null;
 };
 
+/**
+ * [DOC-FUNC] atualizarStatusLinhaImportacao
+ * Objetivo: Executa a rotina de 'a tu al iz ar st at us li nh ai mp or ta ca o'.
+ */
 async function atualizarStatusLinhaImportacao(
   importacaoId: string | null,
   indiceLinha: number,
@@ -143,6 +147,10 @@ const campoSemanticoPorChave: Array<{ hint: string; semantico: TipoSemantico; ti
   { hint: "numero_serie", semantico: "numero_serie", tipo: "texto" }
 ];
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
@@ -153,6 +161,10 @@ function normalizarTexto(value: unknown): string | null {
   return text;
 }
 
+/**
+ * [DOC-FUNC] normalizarChave
+ * Objetivo: Executa a rotina de 'n or ma li za rc ha ve'.
+ */
 function normalizarChave(value: string) {
   return value
     .normalize("NFKD")
@@ -163,6 +175,10 @@ function normalizarChave(value: string) {
     .replace(/_+/g, "_");
 }
 
+/**
+ * [DOC-FUNC] chaveTecnica
+ * Objetivo: Executa a rotina de 'c ha ve te cn ic a'.
+ */
 function chaveTecnica(value: string) {
   const base = normalizarChave(value).replace(/[^a-z0-9_]/g, "");
   const prefixed = base.startsWith("nm_") ? base : `nm_${base}`;
@@ -178,6 +194,10 @@ const gruposAliasChaveCampo = [
   ["nm_localizacao", "nm_local"]
 ] as const;
 
+/**
+ * [DOC-FUNC] chavesEquivalentes
+ * Objetivo: Executa a rotina de 'c ha ve se qu iv al en te s'.
+ */
 function chavesEquivalentes(chave: string) {
   const alvo = chaveTecnica(chave);
   const tentativas = new Set<string>([alvo]);
@@ -192,10 +212,18 @@ function chavesEquivalentes(chave: string) {
   return Array.from(tentativas);
 }
 
+/**
+ * [DOC-FUNC] syncPlanilhaEstrito
+ * Objetivo: Executa a rotina de 's yn cp la ni lh ae st ri to'.
+ */
 function syncPlanilhaEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true" && process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
 }
 
+/**
+ * [DOC-FUNC] inferirCampo
+ * Objetivo: Executa a rotina de 'i nf er ir ca mp o'.
+ */
 function inferirCampo(header: string, destino?: string): CampoDefinicao {
   const chave = chaveTecnica(destino && destino !== "dados_extras" ? destino : header);
   const found = campoSemanticoPorChave.find((entry) => chave.includes(entry.hint));
@@ -211,6 +239,10 @@ function inferirCampo(header: string, destino?: string): CampoDefinicao {
   };
 }
 
+/**
+ * [DOC-FUNC] montarCampos
+ * Objetivo: Executa a rotina de 'm on ta rc am po s'.
+ */
 function montarCampos(input: PreviewInput): CampoDefinicao[] {
   if (input.campos_definicao && input.campos_definicao.length > 0) {
     const dedupFromInput = new Map<string, CampoDefinicao>();
@@ -250,6 +282,10 @@ function montarCampos(input: PreviewInput): CampoDefinicao[] {
   return Array.from(dedup.values());
 }
 
+/**
+ * [DOC-FUNC] normalizarValorPorTipo
+ * Objetivo: Executa a rotina de 'n or ma li za rv al or po rt ip o'.
+ */
 function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown; erro?: string } {
   const text = normalizarTexto(raw);
   if (text === null) return { valor: null };
@@ -280,6 +316,10 @@ function normalizarValorPorTipo(tipo: TipoCampo, raw: unknown): { valor: unknown
   return { valor: text };
 }
 
+/**
+ * [DOC-FUNC] linhaNormalizada
+ * Objetivo: Executa a rotina de 'l in ha no rm al iz ad a'.
+ */
 function linhaNormalizada(
   row: Record<string, unknown>,
   campos: CampoDefinicao[],
@@ -317,6 +357,10 @@ function linhaNormalizada(
   return { dados, erros };
 }
 
+/**
+ * [DOC-FUNC] persistirPreview
+ * Objetivo: Executa a rotina de 'p er si st ir pr ev ie w'.
+ */
 async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], campos: CampoDefinicao[]) {
   const supabase = getSupabaseServerClient();
   const resumo = {
@@ -393,6 +437,10 @@ async function persistirPreview(input: PreviewInput, linhas: LinhaPreview[], cam
   return { success: true as const, data: String(imp.id) };
 }
 
+/**
+ * [DOC-FUNC] gerarPreviewImportacaoDinamica
+ * Objetivo: Executa a rotina de 'g er ar pr ev ie wi mp or ta ca od in am ic a'.
+ */
 export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promise<ResultadoServico<PreviewResultado>> {
   const headers = input.headers ?? Object.keys(input.rows[0] ?? {});
   const campos = montarCampos(input);
@@ -434,6 +482,10 @@ export async function gerarPreviewImportacaoDinamica(input: PreviewInput): Promi
   };
 }
 
+/**
+ * [DOC-FUNC] resolverAba
+ * Objetivo: Executa a rotina de 'r es ol ve ra ba'.
+ */
 async function resolverAba(abaId: string | null, nomeAba: string | null): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
   if (abaId) return { success: true, data: abaId };
@@ -452,6 +504,10 @@ async function resolverAba(abaId: string | null, nomeAba: string | null): Promis
   return { success: true, data: String(created.id) };
 }
 
+/**
+ * [DOC-FUNC] resolverCategoria
+ * Objetivo: Executa a rotina de 'r es ol ve rc at eg or ia'.
+ */
 async function resolverCategoria(
   abaInventarioId: string,
   payload: { categoria_id?: string | null; categoria_nova?: { nome: string; descricao?: string | null; ordem?: number } | null; campos_definicao: CampoDefinicao[] }
@@ -585,6 +641,10 @@ async function resolverCategoria(
   return { success: true, data: String(created.id) };
 }
 
+/**
+ * [DOC-FUNC] executarImportacaoDinamica
+ * Objetivo: Executa a rotina de 'e xe cu ta ri mp or ta ca od in am ic a'.
+ */
 export async function executarImportacaoDinamica(
   input:
     | { importacao_id: string; modo_importacao?: "itens" | "dinamico" }

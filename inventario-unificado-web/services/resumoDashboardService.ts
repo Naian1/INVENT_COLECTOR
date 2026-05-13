@@ -6,10 +6,18 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 import { listarVisaoGeralImpressoras } from "@/services/visaoGeralImpressorasService";
 import type { ResumoDashboard } from "@/types/impressora";
 
+/**
+ * [DOC-FUNC] getInicioDoMesUtc
+ * Objetivo: Executa a rotina de 'g et in ic io do me su tc'.
+ */
 function getInicioDoMesUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
 }
 
+/**
+ * [DOC-FUNC] calcularPaginasMesAtual
+ * Objetivo: Executa a rotina de 'c al cu la rp ag in as me sa tu al'.
+ */
 async function calcularPaginasMesAtual(agoraIso: string) {
   const supabase = getSupabaseServerClient();
   const inicioMesIso = getInicioDoMesUtc(new Date(agoraIso));
@@ -44,6 +52,10 @@ async function calcularPaginasMesAtual(agoraIso: string) {
   return totalImpresso;
 }
 
+/**
+ * [DOC-FUNC] calcularContadoresOperacionais
+ * Objetivo: Executa a rotina de 'c al cu la rc on ta do re so pe ra ci on ai s'.
+ */
 async function calcularContadoresOperacionais() {
   const visaoGeral = await listarVisaoGeralImpressoras();
   if (!visaoGeral.success) {
@@ -73,6 +85,10 @@ async function calcularContadoresOperacionais() {
   return { online, offline, baixoOuCritico };
 }
 
+/**
+ * [DOC-FUNC] buscarResumoDashboard
+ * Objetivo: Executa a rotina de 'b us ca rr es um od as hb oa rd'.
+ */
 export async function buscarResumoDashboard(): Promise<ResumoDashboard> {
   const supabase = getSupabaseServerClient();
   const agoraIso = new Date().toISOString();

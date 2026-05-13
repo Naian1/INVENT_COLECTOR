@@ -6,6 +6,10 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 import type { ResultadoServico } from "@/services/impressorasService";
 import type { MetricasImpressora } from "@/types/impressora";
 
+/**
+ * [DOC-FUNC] buscarMetricasImpressoraPorPeriodo
+ * Objetivo: Executa a rotina de 'b us ca rm et ri ca si mp re ss or ap or pe ri od o'.
+ */
 export async function buscarMetricasImpressoraPorPeriodo(
   impressoraId: string,
   de: string,

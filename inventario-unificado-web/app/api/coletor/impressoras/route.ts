@@ -6,6 +6,10 @@ import { NextResponse } from "next/server";
 import { validateCollectorBearerToken } from "@/lib/security/collectorAuth";
 import { listarImpressoras } from "@/services/impressorasService";
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: Request) {
   const authResult = validateCollectorBearerToken(request.headers.get("authorization"));
   if (!authResult.valid) {

@@ -8,6 +8,10 @@ import { MovimentacaoSchema } from '@/types/movimentacao';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 
 // GET /api/movimentacoes - list all movimentacoes
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -22,6 +26,10 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/movimentacoes - create new movimentacao
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);

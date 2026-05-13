@@ -8,6 +8,10 @@ export const corsHeaders = {
   "Access-Control-Allow-Methods": "POST, OPTIONS",
 };
 
+/**
+ * [DOC-FUNC] jsonResponse
+ * Objetivo: Executa a rotina de 'j so nr es po ns e'.
+ */
 export function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
     status,

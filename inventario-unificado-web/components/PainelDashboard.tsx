@@ -126,10 +126,18 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
   throw new Error(reason);
 }
 
+/**
+ * [DOC-FUNC] formatNumber
+ * Objetivo: Executa a rotina de 'f or ma tn um be r'.
+ */
 function formatNumber(value: number) {
   return new Intl.NumberFormat("pt-BR").format(value);
 }
 
+/**
+ * [DOC-FUNC] formatCurrency
+ * Objetivo: Executa a rotina de 'f or ma tc ur re nc y'.
+ */
 function formatCurrency(value: number) {
   return new Intl.NumberFormat("pt-BR", {
     style: "currency",
@@ -138,11 +146,19 @@ function formatCurrency(value: number) {
   }).format(value);
 }
 
+/**
+ * [DOC-FUNC] formatNivel
+ * Objetivo: Executa a rotina de 'f or ma tn iv el'.
+ */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
   return `${Math.round(value)}%`;
 }
 
+/**
+ * [DOC-FUNC] formatDateTime
+ * Objetivo: Executa a rotina de 'f or ma td at et im e'.
+ */
 function formatDateTime(value: string | null) {
   if (!value) return "-";
   const dt = new Date(value);
@@ -150,18 +166,34 @@ function formatDateTime(value: string | null) {
   return dt.toLocaleString("pt-BR");
 }
 
+/**
+ * [DOC-FUNC] normalizarModeloKey
+ * Objetivo: Executa a rotina de 'n or ma li za rm od el ok ey'.
+ */
 function normalizarModeloKey(value: string) {
   return value.trim().replace(/\s+/g, " ").toUpperCase();
 }
 
+/**
+ * [DOC-FUNC] normalizarPatrimonioKey
+ * Objetivo: Executa a rotina de 'n or ma li za rp at ri mo ni ok ey'.
+ */
 function normalizarPatrimonioKey(value: string) {
   return value.trim().replace(/\s+/g, "").toUpperCase();
 }
 
+/**
+ * [DOC-FUNC] normalizarIpKey
+ * Objetivo: Executa a rotina de 'n or ma li za ri pk ey'.
+ */
 function normalizarIpKey(value: string) {
   return value.trim().replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] formatDateInput
+ * Objetivo: Executa a rotina de 'f or ma td at ei np ut'.
+ */
 function formatDateInput(date: Date) {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -169,6 +201,10 @@ function formatDateInput(date: Date) {
   return `${year}-${month}-${day}`;
 }
 
+/**
+ * [DOC-FUNC] parseDataReferencia
+ * Objetivo: Executa a rotina de 'p ar se da ta re fe re nc ia'.
+ */
 function parseDataReferencia(value: unknown): string | null {
   const raw = String(value ?? "").trim();
   if (!raw) return null;
@@ -189,6 +225,10 @@ function parseDataReferencia(value: unknown): string | null {
   return raw;
 }
 
+/**
+ * [DOC-FUNC] formatDataReferencia
+ * Objetivo: Executa a rotina de 'f or ma td at ar ef er en ci a'.
+ */
 function formatDataReferencia(value: string | null) {
   if (!value) return "-";
   const iso = value.match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -198,6 +238,10 @@ function formatDataReferencia(value: string | null) {
   return value;
 }
 
+/**
+ * [DOC-FUNC] parseTarifaNumber
+ * Objetivo: Executa a rotina de 'p ar se ta ri fa nu mb er'.
+ */
 function parseTarifaNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value >= 0 ? value : null;
@@ -223,6 +267,10 @@ function parseTarifaNumber(value: unknown): number | null {
   return parsed;
 }
 
+/**
+ * [DOC-FUNC] parseContadorNumber
+ * Objetivo: Executa a rotina de 'p ar se co nt ad or nu mb er'.
+ */
 function parseContadorNumber(value: unknown): number | null {
   if (typeof value === "number" && Number.isFinite(value)) {
     return value >= 0 ? Math.round(value) : null;
@@ -279,6 +327,10 @@ function parseContadorNumber(value: unknown): number | null {
   return Math.round(parsed);
 }
 
+/**
+ * [DOC-FUNC] normalizarCabecalhoPlanilha
+ * Objetivo: Executa a rotina de 'n or ma li za rc ab ec al ho pl an il ha'.
+ */
 function normalizarCabecalhoPlanilha(value: unknown) {
   return String(value ?? "")
     .normalize("NFD")
@@ -288,6 +340,10 @@ function normalizarCabecalhoPlanilha(value: unknown) {
     .trim();
 }
 
+/**
+ * [DOC-FUNC] toIsoRangeBoundary
+ * Objetivo: Executa a rotina de 't oi so ra ng eb ou nd ar y'.
+ */
 function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
   const suffix = endOfDay ? "T23:59:59.999" : "T00:00:00.000";
   const dt = new Date(`${dateInput}${suffix}`);
@@ -295,6 +351,10 @@ function toIsoRangeBoundary(dateInput: string, endOfDay: boolean) {
   return dt.toISOString();
 }
 
+/**
+ * [DOC-FUNC] montarGraficoLinhas
+ * Objetivo: Executa a rotina de 'm on ta rg ra fi co li nh as'.
+ */
 function montarGraficoLinhas(points: ChartPoint[]) {
   if (!points.length) {
     return {
@@ -336,6 +396,10 @@ function montarGraficoLinhas(points: ChartPoint[]) {
   };
 }
 
+/**
+ * [DOC-FUNC] importarTarifasPorArquivo
+ * Objetivo: Executa a rotina de 'i mp or ta rt ar if as po ra rq ui vo'.
+ */
 async function importarTarifasPorArquivo(file: File) {
   const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();
@@ -380,6 +444,10 @@ async function importarTarifasPorArquivo(file: File) {
   return parsed;
 }
 
+/**
+ * [DOC-FUNC] importarBaseBilhetagemPorArquivo
+ * Objetivo: Executa a rotina de 'i mp or ta rb as eb il he ta ge mp or ar qu iv o'.
+ */
 async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemBaseStorage> {
   const XLSX = await import("xlsx");
   const buffer = await file.arrayBuffer();
@@ -412,6 +480,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
     };
   }
 
+  /**
+   * [DOC-FUNC] findColumn
+   * Objetivo: Executa a rotina de 'f in dc ol um n'.
+   */
   const findColumn = (headers: string[], predicates: string[]) =>
     headers.findIndex((cell) => predicates.some((token) => cell.includes(token)));
 
@@ -521,6 +593,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
   const byIp: Record<string, BilhetagemBaseItem> = {};
   const tarifaByModeloStats = new Map<string, { custoTotal: number; paginasTotal: number; somaTarifas: number; amostrasTarifa: number }>();
 
+  /**
+   * [DOC-FUNC] registrarTarifaModelo
+   * Objetivo: Executa a rotina de 'r eg is tr ar ta ri fa mo de lo'.
+   */
   const registrarTarifaModelo = (modeloKey: string, tarifa: number, pesoPaginas?: number) => {
     if (!modeloKey || !Number.isFinite(tarifa) || tarifa < 0) return;
     const safePeso = Number.isFinite(Number(pesoPaginas)) && Number(pesoPaginas) > 0 ? Number(pesoPaginas) : 0;
@@ -627,6 +703,10 @@ async function importarBaseBilhetagemPorArquivo(file: File): Promise<BilhetagemB
   };
 }
 
+/**
+ * [DOC-FUNC] PainelDashboard
+ * Objetivo: Executa a rotina de 'p ai ne ld as hb oa rd'.
+ */
 export function PainelDashboard() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);

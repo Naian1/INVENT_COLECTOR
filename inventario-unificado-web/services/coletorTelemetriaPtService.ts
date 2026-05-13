@@ -7,6 +7,10 @@ import type { LoteTelemetriaColetorPt } from "@/lib/validation/coletorSchemasPtB
 // import { upsertImpressoraPorColetor } from "@/services/impressorasService";
 import type { ResultadoIngestaoColetor } from "@/types/impressora";
 
+/**
+ * [DOC-FUNC] deveAtualizarUltimaColeta
+ * Objetivo: Executa a rotina de 'd ev ea tu al iz ar ul ti ma co le ta'.
+ */
 function deveAtualizarUltimaColeta(
   ultimaColetaAtual: string | null,
   candidatoIso: string
@@ -19,6 +23,10 @@ function deveAtualizarUltimaColeta(
   return candidatoTs > atualTs;
 }
 
+/**
+ * [DOC-FUNC] normalizarIpSemMascara
+ * Objetivo: Executa a rotina de 'n or ma li za ri ps em ma sc ar a'.
+ */
 function normalizarIpSemMascara(ip: string | null | undefined) {
   if (!ip) return null;
   const normalizado = ip.trim();
@@ -26,6 +34,10 @@ function normalizarIpSemMascara(ip: string | null | undefined) {
   return normalizado.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] resolverStatusSuprimento
+ * Objetivo: Executa a rotina de 'r es ol ve rs ta tu ss up ri me nt o'.
+ */
 function resolverStatusSuprimento(
   statusExplcito: string | undefined,
   nivelPercentual: number | null | undefined
@@ -38,6 +50,10 @@ function resolverStatusSuprimento(
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] gravarEvento
+ * Objetivo: Executa a rotina de 'g ra va re ve nt o'.
+ */
 async function gravarEvento(
   coletorId: string,
   evento: LoteTelemetriaColetorPt["eventos"][number],
@@ -75,6 +91,10 @@ async function gravarEvento(
   };
 }
 
+/**
+ * [DOC-FUNC] ingerirTelemetriaColetorPt
+ * Objetivo: Executa a rotina de 'i ng er ir te le me tr ia co le to rp t'.
+ */
 export async function ingerirTelemetriaColetorPt(
   payload: LoteTelemetriaColetorPt
 ): Promise<ResultadoIngestaoColetor> {

@@ -36,16 +36,28 @@ type UsuarioPerfil = {
   perfil?: Perfil | null;
 };
 
+/**
+ * [DOC-FUNC] badRequest
+ * Objetivo: Executa a rotina de 'b ad re qu es t'.
+ */
 function badRequest(message: string) {
   return NextResponse.json({ sucesso: false, erro: message }, { status: 400 });
 }
 
+/**
+ * [DOC-FUNC] getBearerToken
+ * Objetivo: Executa a rotina de 'g et be ar er to ke n'.
+ */
 function getBearerToken(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
   if (!authHeader.toLowerCase().startsWith("bearer ")) return null;
   return authHeader.slice(7).trim() || null;
 }
 
+/**
+ * [DOC-FUNC] parsePerfilIds
+ * Objetivo: Executa a rotina de 'p ar se pe rf il id s'.
+ */
 function parsePerfilIds(value: unknown): number[] {
   if (!Array.isArray(value)) return [];
   return value
@@ -57,6 +69,10 @@ type PerfilNomeLookupRow = {
   perfil: { nm_perfil: string } | { nm_perfil: string }[] | null;
 };
 
+/**
+ * [DOC-FUNC] getPerfilNome
+ * Objetivo: Executa a rotina de 'g et pe rf il no me'.
+ */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) {
     return String(value[0]?.nm_perfil || "");
@@ -64,6 +80,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   return String(value?.nm_perfil || "");
 }
 
+/**
+ * [DOC-FUNC] getAuthActor
+ * Objetivo: Executa a rotina de 'g et au th ac to r'.
+ */
 async function getAuthActor(request: NextRequest) {
   const token = getBearerToken(request);
   if (!token) {
@@ -169,6 +189,10 @@ async function getAuthActor(request: NextRequest) {
   };
 }
 
+/**
+ * [DOC-FUNC] syncUsuarioPerfis
+ * Objetivo: Executa a rotina de 's yn cu su ar io pe rf is'.
+ */
 async function syncUsuarioPerfis(
   usuarioId: number,
   perfilPrincipal: number,
@@ -203,6 +227,10 @@ async function syncUsuarioPerfis(
   }
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   const actor = await getAuthActor(request);
   if (actor.error) return actor.error;
@@ -264,6 +292,10 @@ export async function GET(request: NextRequest) {
   });
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   const actor = await getAuthActor(request);
   if (actor.error) return actor.error;
@@ -354,6 +386,10 @@ export async function POST(request: NextRequest) {
   return NextResponse.json({ sucesso: true });
 }
 
+/**
+ * [DOC-FUNC] PUT
+ * Objetivo: Executa a rotina de 'p ut'.
+ */
 export async function PUT(request: NextRequest) {
   const actor = await getAuthActor(request);
   if (actor.error) return actor.error;
@@ -495,6 +531,10 @@ export async function PUT(request: NextRequest) {
   return NextResponse.json({ sucesso: true });
 }
 
+/**
+ * [DOC-FUNC] PATCH
+ * Objetivo: Executa a rotina de 'p at ch'.
+ */
 export async function PATCH(request: NextRequest) {
   const actor = await getAuthActor(request);
   if (actor.error) return actor.error;

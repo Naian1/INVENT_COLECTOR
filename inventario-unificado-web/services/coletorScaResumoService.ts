@@ -27,17 +27,29 @@ type TelemetriaRow = {
   payload_bruto: Record<string, unknown> | null;
 };
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown) {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
   return text.length > 0 ? text : null;
 }
 
+/**
+ * [DOC-FUNC] normalizarIp
+ * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ */
 function normalizarIp(value: string | null | undefined) {
   if (!value) return null;
   return value.replace(/\/32$/, "").trim() || null;
 }
 
+/**
+ * [DOC-FUNC] extrairTipoEquipamento
+ * Objetivo: Executa a rotina de 'e xt ra ir ti po eq ui pa me nt o'.
+ */
 function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
   if (!payload) return "impressora";
 
@@ -58,12 +70,20 @@ function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
   return "impressora";
 }
 
+/**
+ * [DOC-FUNC] montarChave
+ * Objetivo: Executa a rotina de 'm on ta rc ha ve'.
+ */
 function montarChave(row: TelemetriaRow) {
   const patrimonio = normalizarTexto(row.patrimonio);
   const ip = normalizarIp(row.ip);
   return patrimonio ?? ip ?? row.id;
 }
 
+/**
+ * [DOC-FUNC] listarResumoSca
+ * Objetivo: Executa a rotina de 'l is ta rr es um os ca'.
+ */
 export async function listarResumoSca(limit = 1800): Promise<ResultadoServico<ScaResumoItem[]>> {
   const supabase = getSupabaseServerClient();
 

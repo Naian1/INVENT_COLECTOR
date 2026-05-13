@@ -27,6 +27,10 @@ type LinhaImportacao = {
   nr_serie?: string;
 };
 
+/**
+ * [DOC-FUNC] normalizarHeader
+ * Objetivo: Executa a rotina de 'n or ma li za rh ea de r'.
+ */
 function normalizarHeader(header: unknown) {
   return String(header ?? '')
     .normalize('NFD')
@@ -90,6 +94,10 @@ const CAMPOS_CHAVE_MATRIX: Array<{ campo: string; aliases: string[] }> = [
   { campo: 'descricao', aliases: ['descricao do produto', 'descricao', 'descricao_1'] },
 ];
 
+/**
+ * [DOC-FUNC] analisarCabecalhosMatrix
+ * Objetivo: Executa a rotina de 'a na li sa rc ab ec al ho sm at ri x'.
+ */
 function analisarCabecalhosMatrix(headersOriginais: string[]) {
   const headersNormalizados = headersOriginais
     .map((item) => item.trim())
@@ -112,10 +120,18 @@ function analisarCabecalhosMatrix(headersOriginais: string[]) {
   };
 }
 
+/**
+ * [DOC-FUNC] mapearLinha
+ * Objetivo: Executa a rotina de 'm ap ea rl in ha'.
+ */
 function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
   const map = new Map(entries);
 
+  /**
+   * [DOC-FUNC] pick
+   * Objetivo: Executa a rotina de 'p ic k'.
+   */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
       const value = map.get(key);
@@ -149,6 +165,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
   };
 }
 
+/**
+ * [DOC-FUNC] competenciaAtual
+ * Objetivo: Executa a rotina de 'c om pe te nc ia at ua l'.
+ */
 function competenciaAtual() {
   const now = new Date();
   const mes = String(now.getMonth() + 1).padStart(2, '0');
@@ -156,10 +176,18 @@ function competenciaAtual() {
   return `${mes}/${ano}`;
 }
 
+/**
+ * [DOC-FUNC] validarCompetencia
+ * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ */
 function validarCompetencia(valor: string) {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(valor.trim());
 }
 
+/**
+ * [DOC-FUNC] normalizarStatus
+ * Objetivo: Executa a rotina de 'n or ma li za rs ta tu s'.
+ */
 function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO' | null {
   const raw = String(value ?? '')
     .normalize('NFD')
@@ -174,6 +202,10 @@ function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | '
   return null;
 }
 
+/**
+ * [DOC-FUNC] normalizarTimestamp
+ * Objetivo: Executa a rotina de 'n or ma li za rt im es ta mp'.
+ */
 function normalizarTimestamp(value: unknown): string | null {
   const texto = String(value ?? '').trim();
   if (!texto) return null;
@@ -189,10 +221,18 @@ function normalizarTimestamp(value: unknown): string | null {
   return Number.isNaN(date.getTime()) ? null : date.toISOString();
 }
 
+/**
+ * [DOC-FUNC] mapearLinhaMatrixParaBanco
+ * Objetivo: Executa a rotina de 'm ap ea rl in ha ma tr ix pa ra ba nc o'.
+ */
 function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
   const map = new Map(entries);
 
+  /**
+   * [DOC-FUNC] pick
+   * Objetivo: Executa a rotina de 'p ic k'.
+   */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
       const value = map.get(key);
@@ -269,6 +309,10 @@ export default function ImportacoesInventarioPage() {
   const preview = useMemo(() => linhas.slice(0, 10), [linhas]);
 
   useEffect(() => {
+    /**
+     * [DOC-FUNC] carregarEmpresas
+     * Objetivo: Executa a rotina de 'c ar re ga re mp re sa s'.
+     */
     const carregarEmpresas = async () => {
       try {
         const { data: sessionData } = await supabase.auth.getSession();
@@ -305,6 +349,10 @@ export default function ImportacoesInventarioPage() {
     void carregarEmpresas();
   }, []);
 
+  /**
+   * [DOC-FUNC] onArquivoSelecionado
+   * Objetivo: Executa a rotina de 'o na rq ui vo se le ci on ad o'.
+   */
   async function onArquivoSelecionado(file: File) {
     setErro(null);
     setOk(null);
@@ -330,6 +378,10 @@ export default function ImportacoesInventarioPage() {
       raw: false,
       header: 1,
     });
+    /**
+     * [DOC-FUNC] headersOriginais
+     * Objetivo: Executa a rotina de 'h ea de rs or ig in ai s'.
+     */
     const headersOriginais = (grid[0] || []).map((item) => String(item ?? '').trim()).filter(Boolean);
     const diagnosticoCabecalhos = analisarCabecalhosMatrix(headersOriginais);
 
@@ -346,6 +398,10 @@ export default function ImportacoesInventarioPage() {
     setOk(`Arquivo lido com sucesso. ${mapped.length} linha(s) detectadas.`);
   }
 
+  /**
+   * [DOC-FUNC] importarConsolidadoMensal
+   * Objetivo: Executa a rotina de 'i mp or ta rc on so li da do me ns al'.
+   */
   async function importarConsolidadoMensal() {
     if (!linhasBrutas.length) {
       setErro('Nenhuma linha para importar na Matrix.');

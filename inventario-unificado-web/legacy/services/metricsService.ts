@@ -15,6 +15,10 @@ export type PrinterMetrics = {
   has_insufficient_data: boolean;
 };
 
+/**
+ * [DOC-FUNC] getPrinterMetricsByRange
+ * Objetivo: Executa a rotina de 'g et pr in te rm et ri cs by ra ng e'.
+ */
 export async function getPrinterMetricsByRange(
   printerId: string,
   from: string,

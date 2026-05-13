@@ -23,12 +23,16 @@ except Exception:
     ImageDraw = None
 
 
+# [DOC-FUNC] _runtime_dir
+# Objetivo: Executa a rotina de 'r un ti me d ir'.
 def _runtime_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent
 
 
+# [DOC-FUNC] _resolve_base_dir
+# Objetivo: Executa a rotina de 'r es ol ve b as e d ir'.
 def _resolve_base_dir() -> Path:
     runtime_dir = _runtime_dir()
     candidates = [runtime_dir, runtime_dir.parent, runtime_dir.parent.parent, Path.cwd()]
@@ -86,6 +90,8 @@ DEFAULTS = {
 }
 
 
+# [DOC-FUNC] load_env
+# Objetivo: Executa a rotina de 'l oa d e nv'.
 def load_env(path: Path):
     values = {}
     if not path.exists():
@@ -99,6 +105,8 @@ def load_env(path: Path):
     return values
 
 
+# [DOC-FUNC] save_env
+# Objetivo: Executa a rotina de 's av e e nv'.
 def save_env(path: Path, values):
     existing = load_env(path)
     existing.update(values)
@@ -106,6 +114,8 @@ def save_env(path: Path, values):
     path.write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
+# [DOC-FUNC] resolve_python_command
+# Objetivo: Executa a rotina de 'r es ol ve p yt ho n c om ma nd'.
 def resolve_python_command():
     candidates = [
         BASE_DIR / ".venv" / "Scripts" / "pythonw.exe",
@@ -126,6 +136,8 @@ def resolve_python_command():
     raise RuntimeError("Python nao encontrado para executar o coletor.")
 
 
+# [DOC-FUNC] acquire_single_instance_lock
+# Objetivo: Executa a rotina de 'a cq ui re s in gl e i ns ta nc e l oc k'.
 def acquire_single_instance_lock():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     lock_file = open(APP_LOCK_PATH, "a+")
@@ -142,6 +154,8 @@ def acquire_single_instance_lock():
         return None
 
 
+# [DOC-FUNC] acquire_single_instance_mutex
+# Objetivo: Executa a rotina de 'a cq ui re s in gl e i ns ta nc e m ut ex'.
 def acquire_single_instance_mutex():
     if os.name != "nt":
         return object()
@@ -154,6 +168,8 @@ def acquire_single_instance_mutex():
     return handle
 
 
+# [DOC-FUNC] release_single_instance_mutex
+# Objetivo: Executa a rotina de 'r el ea se s in gl e i ns ta nc e m ut ex'.
 def release_single_instance_mutex(handle):
     if os.name != "nt" or not handle:
         return
@@ -163,6 +179,8 @@ def release_single_instance_mutex(handle):
         pass
 
 
+# [DOC-FUNC] is_pid_running
+# Objetivo: Executa a rotina de 'i s p id r un ni ng'.
 def is_pid_running(pid: int) -> bool:
     if pid <= 0:
         return False
@@ -185,6 +203,8 @@ def is_pid_running(pid: int) -> bool:
         return False
 
 
+# [DOC-FUNC] read_pid
+# Objetivo: Executa a rotina de 'r ea d p id'.
 def read_pid():
     try:
         if not PID_PATH.exists():
@@ -197,11 +217,15 @@ def read_pid():
         return None
 
 
+# [DOC-FUNC] write_pid
+# Objetivo: Executa a rotina de 'w ri te p id'.
 def write_pid(pid: int):
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     PID_PATH.write_text(str(pid), encoding="utf-8")
 
 
+# [DOC-FUNC] clear_pid
+# Objetivo: Executa a rotina de 'c le ar p id'.
 def clear_pid():
     try:
         PID_PATH.unlink(missing_ok=True)
@@ -209,6 +233,8 @@ def clear_pid():
         pass
 
 
+# [DOC-FUNC] mask_secret
+# Objetivo: Executa a rotina de 'm as k s ec re t'.
 def mask_secret(secret: str, keep: int = 4) -> str:
     value = str(secret or "").strip()
     if not value:
@@ -218,6 +244,8 @@ def mask_secret(secret: str, keep: int = 4) -> str:
     return "*" * (len(value) - keep) + value[-keep:]
 
 
+# [DOC-FUNC] tail_lines
+# Objetivo: Executa a rotina de 't ai l l in es'.
 def tail_lines(path: Path, max_lines: int = 80):
     try:
         if not path.exists():
@@ -228,6 +256,8 @@ def tail_lines(path: Path, max_lines: int = 80):
         return []
 
 
+# [DOC-FUNC] tail_jsonl
+# Objetivo: Executa a rotina de 't ai l j so nl'.
 def tail_jsonl(path: Path, max_lines: int = 120):
     events = []
     try:
@@ -249,6 +279,8 @@ def tail_jsonl(path: Path, max_lines: int = 120):
     return events
 
 
+# [DOC-FUNC] shorten_text
+# Objetivo: Executa a rotina de 's ho rt en t ex t'.
 def shorten_text(value, max_len: int = 140):
     text = str(value or "").replace("\r", " ").replace("\n", " ").strip()
     if len(text) <= max_len:
@@ -256,6 +288,8 @@ def shorten_text(value, max_len: int = 140):
     return f"{text[:max_len - 3].rstrip()}..."
 
 
+# [DOC-FUNC] stop_pid
+# Objetivo: Executa a rotina de 's to p p id'.
 def stop_pid(pid: int):
     if pid <= 0:
         return
@@ -276,6 +310,8 @@ def stop_pid(pid: int):
 
 
 class CollectorControlApp:
+    # [DOC-FUNC] __init__
+    # Objetivo: Executa a rotina de 'i ni t'.
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Collector Control - Inventario")
@@ -300,6 +336,8 @@ class CollectorControlApp:
         self.refresh_status()
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
+    # [DOC-FUNC] _build_ui
+    # Objetivo: Executa a rotina de 'b ui ld u i'.
     def _build_ui(self):
         outer = ttk.Frame(self.root, padding=12)
         outer.pack(fill="both", expand=True)
@@ -378,6 +416,8 @@ class CollectorControlApp:
         self.backend_panel_text.configure(state="disabled")
         self.refresh_backend_panel()
 
+    # [DOC-FUNC] _set_busy
+    # Objetivo: Executa a rotina de 's et b us y'.
     def _set_busy(self, busy: bool):
         state = "disabled" if busy else "normal"
         for btn in [self.btn_save, self.btn_start, self.btn_stop, self.btn_refresh, self.btn_logs, self.btn_tray]:
@@ -386,6 +426,8 @@ class CollectorControlApp:
             except Exception:
                 pass
 
+    # [DOC-FUNC] save_config
+    # Objetivo: Executa a rotina de 's av e c on fi g'.
     def save_config(self, silent: bool = False):
         try:
             payload = {k: v.get().strip() for k, v in self.vars.items()}
@@ -398,6 +440,8 @@ class CollectorControlApp:
                 messagebox.showerror("Erro", f"Falha ao salvar .env: {exc}")
             return False
 
+    # [DOC-FUNC] start_collector
+    # Objetivo: Executa a rotina de 's ta rt c ol le ct or'.
     def start_collector(self):
         if self.starting:
             return
@@ -405,6 +449,8 @@ class CollectorControlApp:
         self._set_busy(True)
         self.status_var.set("Status: iniciando...")
 
+        # [DOC-FUNC] worker
+        # Objetivo: Executa a rotina de 'w or ke r'.
         def worker():
             err = None
             started_pid = None
@@ -462,6 +508,8 @@ class CollectorControlApp:
             except Exception as exc:
                 err = str(exc)
 
+            # [DOC-FUNC] done
+            # Objetivo: Executa a rotina de 'd on e'.
             def done():
                 self.starting = False
                 self._set_busy(False)
@@ -475,12 +523,16 @@ class CollectorControlApp:
 
         threading.Thread(target=worker, daemon=True).start()
 
+    # [DOC-FUNC] stop_collector
+    # Objetivo: Executa a rotina de 's to p c ol le ct or'.
     def stop_collector(self):
         if self.starting:
             return
         self._set_busy(True)
         self.status_var.set("Status: parando...")
 
+        # [DOC-FUNC] worker
+        # Objetivo: Executa a rotina de 'w or ke r'.
         def worker():
             err = None
             try:
@@ -492,6 +544,8 @@ class CollectorControlApp:
             except Exception as exc:
                 err = str(exc)
 
+            # [DOC-FUNC] done
+            # Objetivo: Executa a rotina de 'd on e'.
             def done():
                 self._set_busy(False)
                 self.refresh_status()
@@ -502,6 +556,8 @@ class CollectorControlApp:
 
         threading.Thread(target=worker, daemon=True).start()
 
+    # [DOC-FUNC] refresh_status
+    # Objetivo: Executa a rotina de 'r ef re sh s ta tu s'.
     def refresh_status(self):
         pid = read_pid()
         running = bool(pid and is_pid_running(pid))
@@ -517,6 +573,8 @@ class CollectorControlApp:
                 clear_pid()
         self.refresh_backend_panel()
 
+    # [DOC-FUNC] open_logs
+    # Objetivo: Executa a rotina de 'o pe n l og s'.
     def open_logs(self):
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         if os.name == "nt":
@@ -524,6 +582,8 @@ class CollectorControlApp:
         else:
             messagebox.showinfo("Logs", str(LOG_DIR))
 
+    # [DOC-FUNC] _compact_ts
+    # Objetivo: Executa a rotina de 'c om pa ct t s'.
     def _compact_ts(self, ts):
         text = str(ts or "").strip()
         if "T" in text and "." in text:
@@ -536,6 +596,8 @@ class CollectorControlApp:
             return text
         return text[-8:] if len(text) >= 8 else text
 
+    # [DOC-FUNC] _format_payload_for_panel
+    # Objetivo: Executa a rotina de 'f or ma t p ay lo ad f or p an el'.
     def _format_payload_for_panel(self, raw_payload):
         if not raw_payload:
             return "(ainda nao houve POST de telemetria nesta sessao)"
@@ -584,6 +646,8 @@ class CollectorControlApp:
             + pretty_json
         )
 
+    # [DOC-FUNC] _event_line
+    # Objetivo: Executa a rotina de 'e ve nt l in e'.
     def _event_line(self, event):
         ts = self._compact_ts(event.get("ts"))
         ev = str(event.get("event") or "").strip().lower()
@@ -608,6 +672,8 @@ class CollectorControlApp:
             return f"[{ts}] GET SB ERRO  {shorten_text(event.get('error'), 120)}"
         return f"[{ts}] {ev} -> {event}"
 
+    # [DOC-FUNC] build_backend_panel_snapshot
+    # Objetivo: Executa a rotina de 'b ui ld b ac ke nd p an el s na ps ho t'.
     def build_backend_panel_snapshot(self):
         payload = {k: v.get().strip() for k, v in self.vars.items()}
         trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=300)
@@ -669,6 +735,8 @@ class CollectorControlApp:
             + "\n".join(runtime_tail)
         )
 
+    # [DOC-FUNC] refresh_backend_panel
+    # Objetivo: Executa a rotina de 'r ef re sh b ac ke nd p an el'.
     def refresh_backend_panel(self):
         if self.backend_panel_text is None or not self.backend_panel_text.winfo_exists():
             return
@@ -677,6 +745,8 @@ class CollectorControlApp:
         self.backend_panel_text.insert("1.0", self.build_backend_panel_snapshot())
         self.backend_panel_text.configure(state="disabled")
 
+    # [DOC-FUNC] _build_tray_image
+    # Objetivo: Executa a rotina de 'b ui ld t ra y i ma ge'.
     def _build_tray_image(self):
         if Image is None:
             return None
@@ -686,6 +756,8 @@ class CollectorControlApp:
         draw.text((20, 18), "C", fill=(255, 255, 255))
         return img
 
+    # [DOC-FUNC] minimize_to_tray
+    # Objetivo: Executa a rotina de 'm in im iz e t o t ra y'.
     def minimize_to_tray(self):
         if self.tray_icon is not None:
             self.root.withdraw()
@@ -697,6 +769,8 @@ class CollectorControlApp:
 
         self.root.withdraw()
 
+        # [DOC-FUNC] on_show
+        # Objetivo: Executa a rotina de 'o n s ho w'.
         def on_show(icon, _item):
             try:
                 icon.stop()
@@ -705,12 +779,16 @@ class CollectorControlApp:
             self.tray_icon = None
             self.root.after(0, self.root.deiconify)
 
+        # [DOC-FUNC] on_start
+        # Objetivo: Executa a rotina de 'o n s ta rt'.
         def on_start(_icon, _item):
             self.root.after(0, self.start_collector)
 
         def on_stop(_icon, _item):
             self.root.after(0, self.stop_collector)
 
+        # [DOC-FUNC] on_quit
+        # Objetivo: Executa a rotina de 'o n q ui t'.
         def on_quit(icon, _item):
             try:
                 icon.stop()
@@ -729,12 +807,16 @@ class CollectorControlApp:
         icon = pystray.Icon("collector-control", self._build_tray_image(), "Collector Control", menu)
         self.tray_icon = icon
 
+        # [DOC-FUNC] run_icon
+        # Objetivo: Executa a rotina de 'r un i co n'.
         def run_icon():
             icon.run()
 
         self.tray_thread = threading.Thread(target=run_icon, daemon=True)
         self.tray_thread.start()
 
+    # [DOC-FUNC] on_close
+    # Objetivo: Executa a rotina de 'o n c lo se'.
     def on_close(self):
         try:
             state = {"last_closed_at": int(time.time()), "was_running": self.running}
@@ -751,6 +833,8 @@ class CollectorControlApp:
         self.root.destroy()
 
 
+# [DOC-FUNC] main
+# Objetivo: Executa a rotina de 'm ai n'.
 def main():
     mutex_handle = acquire_single_instance_mutex()
     if mutex_handle is None:
@@ -773,6 +857,8 @@ def main():
     root = tk.Tk()
     app = CollectorControlApp(root)
 
+    # [DOC-FUNC] periodic_refresh
+    # Objetivo: Executa a rotina de 'p er io di c r ef re sh'.
     def periodic_refresh():
         app.refresh_status()
         root.after(5000, periodic_refresh)

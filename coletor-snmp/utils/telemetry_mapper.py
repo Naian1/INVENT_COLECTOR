@@ -8,6 +8,8 @@ from uuid import uuid4
 _UNKNOWN_VALUES = {"", "desconhecido", "unknown", "n/a", "na", "none", "null", "-", "sem setor"}
 
 
+# [DOC-FUNC] _to_utc_iso
+# Objetivo: Executa a rotina de 't o u tc i so'.
 def _to_utc_iso(dt=None):
     base = dt or datetime.now(timezone.utc)
     if base.tzinfo is None:
@@ -15,6 +17,8 @@ def _to_utc_iso(dt=None):
     return base.astimezone(timezone.utc).isoformat().replace("+00:00", "Z")
 
 
+# [DOC-FUNC] _normalize_text
+# Objetivo: Executa a rotina de 'n or ma li ze t ex t'.
 def _normalize_text(text):
     if text is None:
         return ""
@@ -23,6 +27,8 @@ def _normalize_text(text):
     return ascii_only
 
 
+# [DOC-FUNC] _clean_value
+# Objetivo: Executa a rotina de 'c le an v al ue'.
 def _clean_value(value):
     if value is None:
         return None
@@ -34,6 +40,8 @@ def _clean_value(value):
     return text
 
 
+# [DOC-FUNC] _pick_first
+# Objetivo: Executa a rotina de 'p ic k f ir st'.
 def _pick_first(info, keys):
     if not isinstance(info, dict):
         return None
@@ -46,12 +54,16 @@ def _pick_first(info, keys):
     return None
 
 
+# [DOC-FUNC] make_supply_key
+# Objetivo: Executa a rotina de 'm ak e s up pl y k ey'.
 def make_supply_key(supply_name):
     clean = _normalize_text(supply_name).lower().strip()
     clean = re.sub(r"[^a-z0-9]+", "_", clean).strip("_")
     return clean or "suprimento"
 
 
+# [DOC-FUNC] infer_manufacturer
+# Objetivo: Executa a rotina de 'i nf er m an uf ac tu re r'.
 def infer_manufacturer(model):
     model_lower = (model or "").lower()
     if "lexmark" in model_lower or model_lower.startswith(("m", "xm", "cx")):
@@ -67,6 +79,8 @@ def infer_manufacturer(model):
     return None
 
 
+# [DOC-FUNC] _normalize_model
+# Objetivo: Executa a rotina de 'n or ma li ze m od el'.
 def _normalize_model(raw_model):
     clean_model = _clean_value(raw_model)
     if not clean_model:
@@ -77,6 +91,8 @@ def _normalize_model(raw_model):
     return clean_model
 
 
+# [DOC-FUNC] infer_supply_status
+# Objetivo: Executa a rotina de 'i nf er s up pl y s ta tu s'.
 def infer_supply_status(
     level_percent,
     printer_status,
@@ -107,12 +123,16 @@ def infer_supply_status(
     return "ok"
 
 
+# [DOC-FUNC] generate_ingestao_id
+# Objetivo: Executa a rotina de 'g en er at e i ng es ta o i d'.
 def generate_ingestao_id(ip):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
     safe_ip = (ip or "unknown").replace(".", "-")
     return f"evt-{safe_ip}-{timestamp}-{uuid4().hex[:8]}"
 
 
+# [DOC-FUNC] _normalizar_suprimentos_para_pt
+# Objetivo: Executa a rotina de 'n or ma li za r s up ri me nt os p ar a p t'.
 def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
     result = []
     for item in (suprimentos or []):
@@ -161,6 +181,8 @@ def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
     return result
 
 
+# [DOC-FUNC] _montar_impressora_pt
+# Objetivo: Executa a rotina de 'm on ta r i mp re ss or a p t'.
 def _montar_impressora_pt(ip, printer_info):
     info = printer_info or {}
 
@@ -207,6 +229,8 @@ def _montar_impressora_pt(ip, printer_info):
     return impressora
 
 
+# [DOC-FUNC] build_collector_payload
+# Objetivo: Executa a rotina de 'b ui ld c ol le ct or p ay lo ad'.
 def build_collector_payload(
     coletor_id,
     ip,
@@ -244,6 +268,8 @@ def build_collector_payload(
     }
 
 
+# [DOC-FUNC] build_payload_from_cache_entries
+# Objetivo: Executa a rotina de 'b ui ld p ay lo ad f ro m c ac he e nt ri es'.
 def build_payload_from_cache_entries(coletor_id, ip, printer_info, cache_entries):
     entries = cache_entries or []
     online_entries = [item for item in entries if item.get("status") != "offline"]

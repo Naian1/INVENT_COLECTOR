@@ -44,15 +44,27 @@ export type PrinterStatusSupplies = {
   open_alerts: Record<string, unknown>[];
 };
 
+/**
+ * [DOC-FUNC] toFiniteNumber
+ * Objetivo: Executa a rotina de 't of in it en um be r'.
+ */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * [DOC-FUNC] isEmptyValue
+ * Objetivo: Executa a rotina de 'i se mp ty va lu e'.
+ */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
 }
 
+/**
+ * [DOC-FUNC] isAlertOpen
+ * Objetivo: Executa a rotina de 'i sa le rt op en'.
+ */
 function isAlertOpen(alert: Record<string, unknown>) {
   if (typeof alert.is_open === "boolean") return alert.is_open;
 
@@ -69,6 +81,10 @@ function isAlertOpen(alert: Record<string, unknown>) {
   return true;
 }
 
+/**
+ * [DOC-FUNC] getPrinterStatusSupplies
+ * Objetivo: Executa a rotina de 'g et pr in te rs ta tu ss up pl ie s'.
+ */
 export async function getPrinterStatusSupplies(
   printerId: string
 ): Promise<ServiceResult<PrinterStatusSupplies>> {

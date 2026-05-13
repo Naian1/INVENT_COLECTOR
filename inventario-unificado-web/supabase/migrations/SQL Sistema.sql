@@ -64,6 +64,8 @@ create type public.conceito_semantico_campo_t as enum (
 -- =========================================================
 -- FUNCAO TRIGGER atualizado_em
 -- =========================================================
+-- [DOC-FUNC] fn_touch_atualizado_em
+-- Objetivo: Executa a rotina de 'f n t ou ch a tu al iz ad o e m'.
 create or replace function public.fn_touch_atualizado_em()
 returns trigger
 language plpgsql
@@ -256,6 +258,8 @@ create index idx_alertas_ip on public.alertas_impressoras (ip);
 -- =========================================================
 -- RETENCAO DE LEITURAS DE PAGINAS (3 MESES ROLLING)
 -- =========================================================
+-- [DOC-FUNC] fn_purgar_leituras_paginas_antigas
+-- Objetivo: Executa a rotina de 'f n p ur ga r l ei tu ra s p ag in as a nt ig as'.
 create or replace function public.fn_purgar_leituras_paginas_antigas(meses_manter integer default 3)
 returns integer
 language plpgsql
@@ -1004,6 +1008,8 @@ CREATE INDEX idx_suprimentos_tipo ON public.suprimentos(tp_suprimento);
 CREATE INDEX idx_suprimentos_situacao ON public.suprimentos(ie_situacao);
 
 -- Trigger para atualizar data de última atualização
+-- [DOC-FUNC] atualizar_timestamp_suprimentos
+-- Objetivo: Executa a rotina de 'a tu al iz ar t im es ta mp s up ri me nt os'.
 CREATE OR REPLACE FUNCTION public.atualizar_timestamp_suprimentos()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -1036,6 +1042,8 @@ CREATE TABLE public.telemetria_pagecount (
 CREATE INDEX idx_telemetria_pagecount_inventario ON public.telemetria_pagecount(nr_inventario);
 CREATE INDEX idx_telemetria_pagecount_data ON public.telemetria_pagecount(dt_leitura);
 
+-- [DOC-FUNC] fn_guardar_pagecount_consistente
+-- Objetivo: Executa a rotina de 'f n g ua rd ar p ag ec ou nt c on si st en te'.
 CREATE OR REPLACE FUNCTION public.fn_guardar_pagecount_consistente()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1074,6 +1082,8 @@ FOR EACH ROW
 EXECUTE FUNCTION public.fn_guardar_pagecount_consistente();
 
 -- Função para limpar histórico de telemetria com mais de 3 meses
+-- [DOC-FUNC] limpar_telemetria_antiga
+-- Objetivo: Executa a rotina de 'l im pa r t el em et ri a a nt ig a'.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS void AS $$
 BEGIN
@@ -1152,6 +1162,8 @@ $$;
 CREATE INDEX IF NOT EXISTS idx_inventario_sup
   ON public.inventario(nr_invent_sup);
 
+-- [DOC-FUNC] fn_inventario_evitar_ciclo
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o e vi ta r c ic lo'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1276,6 +1288,8 @@ $$;
 CREATE INDEX IF NOT EXISTS idx_inventario_tp_status
   ON public.inventario(tp_status);
 
+-- [DOC-FUNC] fn_inventario_validar_hierarquia_status
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o v al id ar h ie ra rq ui a s ta tu s'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1386,6 +1400,8 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_criacao
 CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
+-- [DOC-FUNC] fn_inventario_touch_dt_atualizacao
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o t ou ch d t a tu al iz ac ao'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1412,6 +1428,8 @@ BEFORE UPDATE ON public.inventario
 FOR EACH ROW
 EXECUTE FUNCTION public.fn_inventario_touch_dt_atualizacao();
 
+-- [DOC-FUNC] fn_inventario_auditoria_fill
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o a ud it or ia f il l'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_auditoria_fill()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1652,6 +1670,8 @@ CREATE INDEX IF NOT EXISTS idx_inventario_sup
   ON public.inventario(nr_invent_sup);
 
 -- Evita ciclos: A -> B -> C -> A
+-- [DOC-FUNC] fn_inventario_evitar_ciclo
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o e vi ta r c ic lo'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1699,6 +1719,8 @@ FOR EACH ROW
 EXECUTE FUNCTION public.fn_inventario_evitar_ciclo();
 
 -- Valida regra de negocio combinando tp_hierarquia + tp_status
+-- [DOC-FUNC] fn_inventario_validar_hierarquia_status
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o v al id ar h ie ra rq ui a s ta tu s'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2322,6 +2344,8 @@ WHERE u.cd_perfil IS NOT NULL
 ON CONFLICT (cd_usuario, cd_perfil)
 DO UPDATE SET ie_situacao = EXCLUDED.ie_situacao;
 
+-- [DOC-FUNC] fn_usuario_touch_dt_atualizacao
+-- Objetivo: Executa a rotina de 'f n u su ar io t ou ch d t a tu al iz ac ao'.
 CREATE OR REPLACE FUNCTION public.fn_usuario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2488,6 +2512,8 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_criacao
 CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
+-- [DOC-FUNC] fn_inventario_touch_dt_ultima_alteracao
+-- Objetivo: Executa a rotina de 'f n i nv en ta ri o t ou ch d t u lt im a a lt er ac ao'.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_ultima_alteracao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2603,6 +2629,8 @@ WHERE ie_situacao = 'I'
 -- =========================================================
 -- 2) Trigger: registra quem/quando ativou ou inativou
 -- =========================================================
+-- [DOC-FUNC] fn_usuario_controlar_status_auditoria
+-- Objetivo: Executa a rotina de 'f n u su ar io c on tr ol ar s ta tu s a ud it or ia'.
 CREATE OR REPLACE FUNCTION public.fn_usuario_controlar_status_auditoria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2648,6 +2676,8 @@ EXECUTE FUNCTION public.fn_usuario_controlar_status_auditoria();
 -- =========================================================
 -- 3) Login: usuario inativo nao autentica
 -- =========================================================
+-- [DOC-FUNC] fn_usuario_autenticavel
+-- Objetivo: Executa a rotina de 'f n u su ar io a ut en ti ca ve l'.
 CREATE OR REPLACE FUNCTION public.fn_usuario_autenticavel(p_login VARCHAR)
 RETURNS TABLE (
   cd_usuario INTEGER,
@@ -2676,6 +2706,8 @@ AS $$
   LIMIT 1;
 $$;
 
+-- [DOC-FUNC] fn_usuario_registrar_login
+-- Objetivo: Executa a rotina de 'f n u su ar io r eg is tr ar l og in'.
 CREATE OR REPLACE FUNCTION public.fn_usuario_registrar_login(p_cd_usuario INTEGER)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -2832,6 +2864,8 @@ CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_ultima_leitura
 -- ---------------------------------------------------------------------------
 -- 3) TRIGGER: sync pagecount atual -> consolidado diario
 -- ---------------------------------------------------------------------------
+-- [DOC-FUNC] fn_sync_telemetria_pagecount_diaria
+-- Objetivo: Executa a rotina de 'f n s yn c t el em et ri a p ag ec ou nt d ia ri a'.
 CREATE OR REPLACE FUNCTION public.fn_sync_telemetria_pagecount_diaria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2926,6 +2960,8 @@ EXECUTE FUNCTION public.fn_sync_telemetria_pagecount_diaria();
 -- ---------------------------------------------------------------------------
 -- 4) RETENCAO: diario por mais de 3 meses (default 12 meses = 365 dias)
 -- ---------------------------------------------------------------------------
+-- [DOC-FUNC] limpar_telemetria_pagecount_diaria_antiga
+-- Objetivo: Executa a rotina de 'l im pa r t el em et ri a p ag ec ou nt d ia ri a a nt ig a'.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_pagecount_diaria_antiga(p_dias INTEGER DEFAULT 365)
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -2942,6 +2978,8 @@ END;
 $$;
 
 -- Mantem compatibilidade com o nome legado ja existente no projeto.
+-- [DOC-FUNC] limpar_telemetria_antiga
+-- Objetivo: Executa a rotina de 'l im pa r t el em et ri a a nt ig a'.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS VOID
 LANGUAGE plpgsql
@@ -3012,6 +3050,8 @@ CREATE UNIQUE INDEX IF NOT EXISTS uq_tarifas_bilhetagem_competencia
 CREATE INDEX IF NOT EXISTS idx_tarifas_bilhetagem_ativo
   ON public.tarifas_bilhetagem (ativo, competencia_ano DESC, competencia_mes DESC);
 
+-- [DOC-FUNC] fn_tarifas_bilhetagem_touch_updated_at
+-- Objetivo: Executa a rotina de 'f n t ar if as b il he ta ge m t ou ch u pd at ed a t'.
 CREATE OR REPLACE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at()
 RETURNS trigger
 LANGUAGE plpgsql

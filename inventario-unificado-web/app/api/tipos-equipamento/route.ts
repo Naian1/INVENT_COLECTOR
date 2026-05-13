@@ -10,6 +10,10 @@ import {
   getTiposEquipamento,
 } from '@/services/tipoEquipamentoService';
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -22,6 +26,10 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request, { requireAdmin: true });

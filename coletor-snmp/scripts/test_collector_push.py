@@ -15,6 +15,8 @@ from utils.file_manager import load_printers, save_printers
 from utils.telemetry_mapper import build_collector_payload, build_payload_from_cache_entries
 
 
+# [DOC-FUNC] _group_cache_by_ip
+# Objetivo: Executa a rotina de 'g ro up c ac he b y i p'.
 def _group_cache_by_ip(cache_rows):
     grouped = {}
     for row in cache_rows:
@@ -25,6 +27,8 @@ def _group_cache_by_ip(cache_rows):
     return grouped
 
 
+# [DOC-FUNC] run_test
+# Objetivo: Executa a rotina de 'r un t es t'.
 def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     printers = load_printers()
     remote = fetch_printers_from_api(log_prefix="[test-printers-sync]")
@@ -119,6 +123,8 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     print(json.dumps(result, ensure_ascii=False, indent=2))
 
 
+# [DOC-FUNC] main
+# Objetivo: Executa a rotina de 'm ai n'.
 def main():
     parser = argparse.ArgumentParser(
         description="Teste manual de envio da telemetria do PjIMPRESS para a API nova."

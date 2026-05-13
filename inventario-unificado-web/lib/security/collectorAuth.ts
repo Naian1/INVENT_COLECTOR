@@ -4,6 +4,10 @@
  */
 import { timingSafeEqual } from "crypto";
 
+/**
+ * [DOC-FUNC] safeCompare
+ * Objetivo: Executa a rotina de 's af ec om pa re'.
+ */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
   const bufferB = Buffer.from(valueB);
@@ -12,6 +16,10 @@ function safeCompare(valueA: string, valueB: string) {
   return timingSafeEqual(bufferA, bufferB);
 }
 
+/**
+ * [DOC-FUNC] validateCollectorBearerToken
+ * Objetivo: Executa a rotina de 'v al id at ec ol le ct or be ar er to ke n'.
+ */
 export function validateCollectorBearerToken(authorizationHeader: string | null) {
   const expectedToken = process.env.COLLECTOR_API_TOKEN?.trim();
 

@@ -10,6 +10,10 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;

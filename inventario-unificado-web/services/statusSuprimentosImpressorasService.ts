@@ -14,15 +14,27 @@ import type {
   TelemetriaImpressora
 } from "@/types/impressora";
 
+/**
+ * [DOC-FUNC] toFiniteNumber
+ * Objetivo: Executa a rotina de 't of in it en um be r'.
+ */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * [DOC-FUNC] isEmptyValue
+ * Objetivo: Executa a rotina de 'i se mp ty va lu e'.
+ */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
 }
 
+/**
+ * [DOC-FUNC] isAlertaAberto
+ * Objetivo: Executa a rotina de 'i sa le rt aa be rt o'.
+ */
 function isAlertaAberto(alerta: Record<string, unknown>) {
   const status =
     typeof alerta.status_alerta === "string" ? alerta.status_alerta.toLowerCase() : "";
@@ -34,6 +46,10 @@ function isAlertaAberto(alerta: Record<string, unknown>) {
   return true;
 }
 
+/**
+ * [DOC-FUNC] buscarStatusSuprimentosImpressora
+ * Objetivo: Executa a rotina de 'b us ca rs ta tu ss up ri me nt os im pr es so ra'.
+ */
 export async function buscarStatusSuprimentosImpressora(
   impressoraId: string
 ): Promise<ResultadoServico<StatusSuprimentosImpressora>> {

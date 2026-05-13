@@ -5,6 +5,10 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Empresa, CreateEmpresaInput, UpdateEmpresaInput } from '@/types/empresa';
 
+/**
+ * [DOC-FUNC] getEmpresas
+ * Objetivo: Executa a rotina de 'g et em pr es as'.
+ */
 export async function getEmpresas(): Promise<Empresa[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -13,10 +17,18 @@ export async function getEmpresas(): Promise<Empresa[]> {
     .order('nm_empresa');
 
   if (error) throw new Error(`Erro ao listar empresas: ${error.message}`);
+  /**
+   * [DOC-FUNC] ativos
+   * Objetivo: Executa a rotina de 'a ti vo s'.
+   */
   const ativos = (data || []).filter((item) => String(item?.ie_situacao || 'A').trim().toUpperCase() !== 'I');
   return ativos as Empresa[];
 }
 
+/**
+ * [DOC-FUNC] getEmpresaByCgc
+ * Objetivo: Executa a rotina de 'g et em pr es ab yc gc'.
+ */
 export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -29,6 +41,10 @@ export async function getEmpresaByCgc(cdCgc: string): Promise<Empresa | null> {
   return (data as Empresa) || null;
 }
 
+/**
+ * [DOC-FUNC] createEmpresa
+ * Objetivo: Executa a rotina de 'c re at ee mp re sa'.
+ */
 export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -41,6 +57,10 @@ export async function createEmpresa(input: CreateEmpresaInput): Promise<Empresa>
   return data as Empresa;
 }
 
+/**
+ * [DOC-FUNC] updateEmpresa
+ * Objetivo: Executa a rotina de 'u pd at ee mp re sa'.
+ */
 export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): Promise<Empresa> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -54,6 +74,10 @@ export async function updateEmpresa(cdCgc: string, input: UpdateEmpresaInput): P
   return data as Empresa;
 }
 
+/**
+ * [DOC-FUNC] deleteEmpresa
+ * Objetivo: Executa a rotina de 'd el et ee mp re sa'.
+ */
 export async function deleteEmpresa(cdCgc: string): Promise<void> {
   const supabase = getSupabaseServerClient();
   const { error } = await supabase

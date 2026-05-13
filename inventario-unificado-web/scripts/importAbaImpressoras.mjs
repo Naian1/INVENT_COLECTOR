@@ -7,6 +7,10 @@ import path from "path";
 import XLSX from "xlsx";
 import { createClient } from "@supabase/supabase-js";
 
+/**
+ * [DOC-FUNC] loadEnvLocal
+ * Objetivo: Executa a rotina de 'l oa de nv lo ca l'.
+ */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
   const env = {};
@@ -23,10 +27,18 @@ function loadEnvLocal() {
   return env;
 }
 
+/**
+ * [DOC-FUNC] envValue
+ * Objetivo: Executa a rotina de 'e nv va lu e'.
+ */
 function envValue(name, fallback = "") {
   return process.env[name] || localEnv[name] || fallback;
 }
 
+/**
+ * [DOC-FUNC] slugify
+ * Objetivo: Executa a rotina de 's lu gi fy'.
+ */
 function slugify(value) {
   return String(value || "")
     .normalize("NFKD")
@@ -37,6 +49,10 @@ function slugify(value) {
     .replace(/-+/g, "-");
 }
 
+/**
+ * [DOC-FUNC] chaveCampo
+ * Objetivo: Executa a rotina de 'c ha ve ca mp o'.
+ */
 function chaveCampo(value) {
   const core = String(value || "")
     .normalize("NFKD")
@@ -49,6 +65,10 @@ function chaveCampo(value) {
   return pref.replace(/[^a-z0-9_]/g, "").slice(0, 63) || "nm_campo";
 }
 
+/**
+ * [DOC-FUNC] normHeader
+ * Objetivo: Executa a rotina de 'n or mh ea de r'.
+ */
 function normHeader(v) {
   return String(v || "")
     .normalize("NFKD")
@@ -58,6 +78,10 @@ function normHeader(v) {
     .trim();
 }
 
+/**
+ * [DOC-FUNC] pickHeaderIndex
+ * Objetivo: Executa a rotina de 'p ic kh ea de ri nd ex'.
+ */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
   for (const alias of aliases) {
@@ -68,11 +92,19 @@ function pickHeaderIndex(headers, aliases) {
   return -1;
 }
 
+/**
+ * [DOC-FUNC] toText
+ * Objetivo: Executa a rotina de 't ot ex t'.
+ */
 function toText(v) {
   const s = String(v ?? "").trim();
   return s || null;
 }
 
+/**
+ * [DOC-FUNC] inferFabricante
+ * Objetivo: Executa a rotina de 'i nf er fa br ic an te'.
+ */
 function inferFabricante(modelo) {
   const m = String(modelo || "").toLowerCase();
   if (m.includes("lexmark") || m.startsWith("m") || m.startsWith("xm") || m.startsWith("cx")) {
@@ -81,6 +113,10 @@ function inferFabricante(modelo) {
   return null;
 }
 
+/**
+ * [DOC-FUNC] ensureAba
+ * Objetivo: Executa a rotina de 'e ns ur ea ba'.
+ */
 async function ensureAba(nome) {
   const { data: existing, error } = await supabase
     .from("abas_inventario")
@@ -100,6 +136,10 @@ async function ensureAba(nome) {
   return data;
 }
 
+/**
+ * [DOC-FUNC] ensureCategoria
+ * Objetivo: Executa a rotina de 'e ns ur ec at eg or ia'.
+ */
 async function ensureCategoria(abaId, nome) {
   const { data: existing, error } = await supabase
     .from("categorias_inventario")
@@ -128,6 +168,10 @@ async function ensureCategoria(abaId, nome) {
   return data;
 }
 
+/**
+ * [DOC-FUNC] ensureCampos
+ * Objetivo: Executa a rotina de 'e ns ur ec am po s'.
+ */
 async function ensureCampos(categoriaId) {
   const camposEsperados = [
     ["Patrimonio", "nm_patrimonio", "patrimonio", "impressora_patrimonio", true, true, 1],
@@ -176,6 +220,10 @@ async function ensureCampos(categoriaId) {
   return new Map((finalCampos || []).map((c) => [String(c.chave_campo), String(c.id)]));
 }
 
+/**
+ * [DOC-FUNC] loadExistingLinhas
+ * Objetivo: Executa a rotina de 'l oa de xi st in gl in ha s'.
+ */
 async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
   const { data: linhas, error: lErr } = await supabase
     .from("linhas_inventario")
@@ -185,6 +233,10 @@ async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
     .limit(5000);
   if (lErr) throw new Error(`Erro carregando linhas existentes: ${lErr.message}`);
 
+  /**
+   * [DOC-FUNC] linhaIds
+   * Objetivo: Executa a rotina de 'l in ha id s'.
+   */
   const linhaIds = (linhas || []).map((l) => l.id);
   if (!linhaIds.length) return { porPat: new Map(), porIp: new Map() };
 
@@ -210,6 +262,10 @@ async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
   return { porPat, porIp };
 }
 
+/**
+ * [DOC-FUNC] upsertOperacional
+ * Objetivo: Executa a rotina de 'u ps er to pe ra ci on al'.
+ */
 async function upsertOperacional(row) {
   const payload = {
     patrimonio: row.patrimonio,
@@ -244,6 +300,10 @@ async function upsertOperacional(row) {
   throw new Error(`Erro upsert impressora (${row.ip}/${row.patrimonio}): ${error.message}`);
 }
 
+/**
+ * [DOC-FUNC] detectarHeader
+ * Objetivo: Executa a rotina de 'd et ec ta rh ea de r'.
+ */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 20); i++) {
     const row = rows[i] || [];
@@ -267,6 +327,10 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSession: false, autoRefreshToken: false } });
 
+/**
+ * [DOC-FUNC] main
+ * Objetivo: Executa a rotina de 'm ai n'.
+ */
 async function main() {
   const fileArg = process.argv[2];
   let filePath = fileArg;

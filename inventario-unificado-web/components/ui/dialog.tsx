@@ -10,10 +10,18 @@ interface DialogProps {
   children: ReactNode;
 }
 
+/**
+ * [DOC-FUNC] Dialog
+ * Objetivo: Executa a rotina de 'd ia lo g'.
+ */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useEffect(() => {
     if (!open) return;
 
+    /**
+     * [DOC-FUNC] handleKeyDown
+     * Objetivo: Executa a rotina de 'h an dl ek ey do wn'.
+     */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
         event.preventDefault();
@@ -72,6 +80,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   );
 }
 
+/**
+ * [DOC-FUNC] DialogContent
+ * Objetivo: Executa a rotina de 'd ia lo gc on te nt'.
+ */
 export function DialogContent({
   children,
   className: _className,
@@ -82,6 +94,10 @@ export function DialogContent({
   return <div>{children}</div>;
 }
 
+/**
+ * [DOC-FUNC] DialogHeader
+ * Objetivo: Executa a rotina de 'd ia lo gh ea de r'.
+ */
 export function DialogHeader({
   children,
   className: _className,
@@ -102,6 +118,10 @@ export function DialogHeader({
   );
 }
 
+/**
+ * [DOC-FUNC] DialogTitle
+ * Objetivo: Executa a rotina de 'd ia lo gt it le'.
+ */
 export function DialogTitle({
   children,
   className: _className,
@@ -112,6 +132,10 @@ export function DialogTitle({
   return <h2 style={{ margin: 0, fontSize: 26, lineHeight: 1.1, color: 'var(--text)' }}>{children}</h2>;
 }
 
+/**
+ * [DOC-FUNC] DialogDescription
+ * Objetivo: Executa a rotina de 'd ia lo gd es cr ip ti on'.
+ */
 export function DialogDescription({
   children,
   className: _className,

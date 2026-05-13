@@ -60,6 +60,10 @@ const INITIAL_FORM: UsuarioFormState = {
   perfis: [],
 };
 
+/**
+ * [DOC-FUNC] formatarDataHora
+ * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ */
 function formatarDataHora(value: string | null | undefined): string {
   if (!value) return '-';
   const data = new Date(value);
@@ -121,6 +125,10 @@ export default function UsuariosPage() {
   useEffect(() => {
     let active = true;
 
+    /**
+     * [DOC-FUNC] loadAuth
+     * Objetivo: Executa a rotina de 'l oa da ut h'.
+     */
     const loadAuth = async () => {
       try {
         const { data } = await supabase.auth.getSession();
@@ -157,6 +165,10 @@ export default function UsuariosPage() {
     };
   }, []);
 
+  /**
+   * [DOC-FUNC] carregarUsuarios
+   * Objetivo: Executa a rotina de 'c ar re ga ru su ar io s'.
+   */
   const carregarUsuarios = async () => {
     setLoading(true);
     setErrorMessage(null);
@@ -236,6 +248,10 @@ export default function UsuariosPage() {
     );
   }
 
+  /**
+   * [DOC-FUNC] resetForm
+   * Objetivo: Executa a rotina de 'r es et fo rm'.
+   */
   const resetForm = () => {
     setFormData(INITIAL_FORM);
     setEditingUsuario(null);
@@ -243,11 +259,19 @@ export default function UsuariosPage() {
     setSuccessMessage(null);
   };
 
+  /**
+   * [DOC-FUNC] openCreateModal
+   * Objetivo: Executa a rotina de 'o pe nc re at em od al'.
+   */
   const openCreateModal = () => {
     resetForm();
     setModalOpen(true);
   };
 
+  /**
+   * [DOC-FUNC] openEditModal
+   * Objetivo: Executa a rotina de 'o pe ne di tm od al'.
+   */
   const openEditModal = (usuario: Usuario) => {
     const perfisSelecionados = usuarioPerfis[usuario.cd_usuario] || [];
     setEditingUsuario(usuario);
@@ -263,10 +287,18 @@ export default function UsuariosPage() {
     setModalOpen(true);
   };
 
+  /**
+   * [DOC-FUNC] handleChangeForm
+   * Objetivo: Executa a rotina de 'h an dl ec ha ng ef or m'.
+   */
   const handleChangeForm = (campo: keyof UsuarioFormState, valor: string) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
   };
 
+  /**
+   * [DOC-FUNC] togglePerfilSelecionado
+   * Objetivo: Executa a rotina de 't og gl ep er fi ls el ec io na do'.
+   */
   const togglePerfilSelecionado = (perfilId: number) => {
     setFormData((prev) => {
       const atual = new Set(prev.perfis);
@@ -279,6 +311,10 @@ export default function UsuariosPage() {
     });
   };
 
+  /**
+   * [DOC-FUNC] handleSubmit
+   * Objetivo: Executa a rotina de 'h an dl es ub mi t'.
+   */
   const handleSubmit = async () => {
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -339,6 +375,10 @@ export default function UsuariosPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] handleToggleStatus
+   * Objetivo: Executa a rotina de 'h an dl et og gl es ta tu s'.
+   */
   const handleToggleStatus = async (usuario: Usuario) => {
     setErrorMessage(null);
     setSuccessMessage(null);

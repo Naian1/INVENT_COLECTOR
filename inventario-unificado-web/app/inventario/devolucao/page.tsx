@@ -27,6 +27,10 @@ type DevolucaoItem = {
   tp_status: string | null;
 };
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown): string {
   return String(value ?? '')
     .normalize('NFD')
@@ -34,6 +38,10 @@ function normalizarTexto(value: unknown): string {
     .toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] formatarDataHora
+ * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
   const dt = new Date(value);
@@ -44,6 +52,10 @@ function formatarDataHora(value: string | null): string {
   }).format(dt);
 }
 
+/**
+ * [DOC-FUNC] escapeCsvCell
+ * Objetivo: Executa a rotina de 'e sc ap ec sv ce ll'.
+ */
 function escapeCsvCell(value: unknown): string {
   const raw = String(value ?? '');
   const normalized = raw.replace(/\r?\n/g, ' ').trim();
@@ -154,6 +166,10 @@ export default function InventarioDevolucaoPage() {
     [filtrados],
   );
 
+  /**
+   * [DOC-FUNC] exportarPlanilha
+   * Objetivo: Executa a rotina de 'e xp or ta rp la ni lh a'.
+   */
   const exportarPlanilha = async () => {
     if (!filtrados.length) {
       setErrorMessage('Não há itens para exportar.');
@@ -188,6 +204,10 @@ export default function InventarioDevolucaoPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] exportarCsv
+   * Objetivo: Executa a rotina de 'e xp or ta rc sv'.
+   */
   const exportarCsv = () => {
     if (!filtrados.length) {
       setErrorMessage('Não há itens para exportar.');
@@ -245,6 +265,10 @@ export default function InventarioDevolucaoPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] exportarPdf
+   * Objetivo: Executa a rotina de 'e xp or ta rp df'.
+   */
   const exportarPdf = async () => {
     if (!gruposEmpresa.length) {
       setErrorMessage('Não há itens para exportar.');

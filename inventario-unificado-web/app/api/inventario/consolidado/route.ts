@@ -8,6 +8,10 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 type ConsolidadoRow = Record<string, unknown>;
 
+/**
+ * [DOC-FUNC] normalizarHeader
+ * Objetivo: Executa a rotina de 'n or ma li za rh ea de r'.
+ */
 function normalizarHeader(header: string) {
   return header
     .normalize('NFD')
@@ -17,12 +21,20 @@ function normalizarHeader(header: string) {
     .trim();
 }
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
   return text ? text : null;
 }
 
+/**
+ * [DOC-FUNC] normalizarStatus
+ * Objetivo: Executa a rotina de 'n or ma li za rs ta tu s'.
+ */
 function normalizarStatus(value: string | null): string | null {
   if (!value) return null;
   const normalized = value
@@ -38,12 +50,20 @@ function normalizarStatus(value: string | null): string | null {
   return null;
 }
 
+/**
+ * [DOC-FUNC] mapearLinha
+ * Objetivo: Executa a rotina de 'm ap ea rl in ha'.
+ */
 function mapearLinha(row: ConsolidadoRow) {
   const normalizado = new Map<string, unknown>();
   for (const [key, value] of Object.entries(row)) {
     normalizado.set(normalizarHeader(key), value);
   }
 
+  /**
+   * [DOC-FUNC] pick
+   * Objetivo: Executa a rotina de 'p ic k'.
+   */
   const pick = (...aliases: string[]) => {
     for (const alias of aliases) {
       const parsed = normalizarTexto(normalizado.get(alias));
@@ -52,6 +72,10 @@ function mapearLinha(row: ConsolidadoRow) {
     return null;
   };
 
+  /**
+   * [DOC-FUNC] normalizarTimestamp
+   * Objetivo: Executa a rotina de 'n or ma li za rt im es ta mp'.
+   */
   const normalizarTimestamp = (value: string | null) => {
     if (!value) return null;
 
@@ -123,10 +147,18 @@ function mapearLinha(row: ConsolidadoRow) {
   };
 }
 
+/**
+ * [DOC-FUNC] validarCompetencia
+ * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -151,6 +183,10 @@ export async function GET(request: NextRequest) {
   }
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request, { requireAdmin: true });

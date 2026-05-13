@@ -178,6 +178,10 @@ const SP_FORMATTER = new Intl.DateTimeFormat("en-CA", {
   day: "2-digit",
 });
 
+/**
+ * [DOC-FUNC] normalizeTimestamp
+ * Objetivo: Executa a rotina de 'n or ma li ze ti me st am p'.
+ */
 function normalizeTimestamp(value: string | null | undefined) {
   const raw = String(value || "").trim();
   if (!raw) return null;
@@ -185,6 +189,10 @@ function normalizeTimestamp(value: string | null | undefined) {
   return hasTimezone ? raw : `${raw}-03:00`;
 }
 
+/**
+ * [DOC-FUNC] normalizeCompare
+ * Objetivo: Executa a rotina de 'n or ma li ze co mp ar e'.
+ */
 function normalizeCompare(value: string | null | undefined) {
   return String(value || "")
     .trim()
@@ -193,17 +201,29 @@ function normalizeCompare(value: string | null | undefined) {
     .replace(/[\u0300-\u036f]/g, "");
 }
 
+/**
+ * [DOC-FUNC] clampDays
+ * Objetivo: Executa a rotina de 'c la mp da ys'.
+ */
 function clampDays(value: number) {
   if (!Number.isFinite(value)) return 30;
   return Math.max(1, Math.min(120, Math.trunc(value)));
 }
 
+/**
+ * [DOC-FUNC] toNumber
+ * Objetivo: Executa a rotina de 't on um be r'.
+ */
 function toNumber(value: unknown, fallback = 0) {
   const parsed = Number(value);
   if (!Number.isFinite(parsed)) return fallback;
   return parsed;
 }
 
+/**
+ * [DOC-FUNC] toDateKeySaoPaulo
+ * Objetivo: Executa a rotina de 't od at ek ey sa op au lo'.
+ */
 function toDateKeySaoPaulo(input: string | Date) {
   const normalizedInput =
     input instanceof Date ? input : (normalizeTimestamp(String(input)) ?? String(input));
@@ -212,6 +232,10 @@ function toDateKeySaoPaulo(input: string | Date) {
   return SP_FORMATTER.format(date);
 }
 
+/**
+ * [DOC-FUNC] parseDateKeyInput
+ * Objetivo: Executa a rotina de 'p ar se da te ke yi np ut'.
+ */
 function parseDateKeyInput(value: string | null | undefined) {
   const raw = String(value || "").trim();
   if (!raw) return null;
@@ -222,10 +246,18 @@ function parseDateKeyInput(value: string | null | undefined) {
   return toDateKeySaoPaulo(parsed);
 }
 
+/**
+ * [DOC-FUNC] dateKeyToUtcStartMs
+ * Objetivo: Executa a rotina de 'd at ek ey to ut cs ta rt ms'.
+ */
 function dateKeyToUtcStartMs(dateKey: string) {
   return new Date(`${dateKey}T00:00:00-03:00`).getTime();
 }
 
+/**
+ * [DOC-FUNC] daysBetweenInclusive
+ * Objetivo: Executa a rotina de 'd ay sb et we en in cl us iv e'.
+ */
 function daysBetweenInclusive(dateFrom: string, dateTo: string) {
   const fromMs = dateKeyToUtcStartMs(dateFrom);
   const toMs = dateKeyToUtcStartMs(dateTo);
@@ -233,14 +265,26 @@ function daysBetweenInclusive(dateFrom: string, dateTo: string) {
   return Math.floor((toMs - fromMs) / 86400000) + 1;
 }
 
+/**
+ * [DOC-FUNC] toIsoStartFromDateKey
+ * Objetivo: Executa a rotina de 't oi so st ar tf ro md at ek ey'.
+ */
 function toIsoStartFromDateKey(dateKey: string) {
   return new Date(`${dateKey}T00:00:00-03:00`).toISOString();
 }
 
+/**
+ * [DOC-FUNC] toIsoEndFromDateKey
+ * Objetivo: Executa a rotina de 't oi so en df ro md at ek ey'.
+ */
 function toIsoEndFromDateKey(dateKey: string) {
   return new Date(`${dateKey}T23:59:59.999-03:00`).toISOString();
 }
 
+/**
+ * [DOC-FUNC] normalizeStatus
+ * Objetivo: Executa a rotina de 'n or ma li ze st at us'.
+ */
 function normalizeStatus(value: string | null | undefined) {
   const status = String(value || "").trim().toLowerCase();
   if (!status) return "unknown";
@@ -248,6 +292,10 @@ function normalizeStatus(value: string | null | undefined) {
   return "unknown";
 }
 
+/**
+ * [DOC-FUNC] minutesFromNow
+ * Objetivo: Executa a rotina de 'm in ut es fr om no w'.
+ */
 function minutesFromNow(value: string | null | undefined) {
   const normalized = normalizeTimestamp(value);
   if (!normalized) return null;
@@ -256,6 +304,10 @@ function minutesFromNow(value: string | null | undefined) {
   return (Date.now() - timestamp) / 60000;
 }
 
+/**
+ * [DOC-FUNC] hasRecentSnmpCollection
+ * Objetivo: Executa a rotina de 'h as re ce nt sn mp co ll ec ti on'.
+ */
 function hasRecentSnmpCollection(statusRaw: string | null | undefined, dtLeitura: string | null | undefined) {
   const status = normalizeStatus(statusRaw);
   if (!["online", "warning"].includes(status)) return false;
@@ -264,6 +316,10 @@ function hasRecentSnmpCollection(statusRaw: string | null | undefined, dtLeitura
   return minutes <= SEM_COLETA_TIMEOUT_MINUTES;
 }
 
+/**
+ * [DOC-FUNC] isColorModel
+ * Objetivo: Executa a rotina de 'i sc ol or mo de l'.
+ */
 function isColorModel(modeloRaw: string | null | undefined) {
   const modelo = String(modeloRaw || "")
     .trim()
@@ -272,16 +328,28 @@ function isColorModel(modeloRaw: string | null | undefined) {
   return MODELOS_COLORIDOS.has(modelo);
 }
 
+/**
+ * [DOC-FUNC] isMissingColumnError
+ * Objetivo: Executa a rotina de 'i sm is si ng co lu mn er ro r'.
+ */
 function isMissingColumnError(message: string) {
   return /column .* does not exist/i.test(message) || /Could not find the .* column/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] dailyPages
+ * Objetivo: Executa a rotina de 'd ai ly pa ge s'.
+ */
 function dailyPages(row: DailyAggregate) {
   const inicio = toNumber(row.nr_paginas_inicio_dia, 0);
   const fim = toNumber(row.nr_paginas_fim_dia, toNumber(row.nr_paginas_total, 0));
   return Math.max(0, fim - inicio);
 }
 
+/**
+ * [DOC-FUNC] classificarSuprimento
+ * Objetivo: Executa a rotina de 'c la ss if ic ar su pr im en to'.
+ */
 function classificarSuprimento(
   statusRaw: string | null | undefined,
   nivelRaw: number | null | undefined,
@@ -306,10 +374,18 @@ function classificarSuprimento(
   return "desconhecido";
 }
 
+/**
+ * [DOC-FUNC] isMissingTableError
+ * Objetivo: Executa a rotina de 'i sm is si ng ta bl ee rr or'.
+ */
 function isMissingTableError(message: string) {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
 }
 
+/**
+ * [DOC-FUNC] parseMonthYearFromDateKey
+ * Objetivo: Executa a rotina de 'p ar se mo nt hy ea rf ro md at ek ey'.
+ */
 function parseMonthYearFromDateKey(dateKey: string) {
   const m = String(dateKey).match(/^(\d{4})-(\d{2})-/);
   if (!m) return null;
@@ -319,6 +395,10 @@ function parseMonthYearFromDateKey(dateKey: string) {
   return { mes, ano };
 }
 
+/**
+ * [DOC-FUNC] normalizeTipoImpressao
+ * Objetivo: Executa a rotina de 'n or ma li ze ti po im pr es sa o'.
+ */
 function normalizeTipoImpressao(value: string | null | undefined) {
   const raw = normalizeCompare(value);
   if (raw === "pb" || raw === "mono" || raw === "monocromatica" || raw === "pretoebranco") return "pb";
@@ -326,6 +406,10 @@ function normalizeTipoImpressao(value: string | null | undefined) {
   return "";
 }
 
+/**
+ * [DOC-FUNC] chooseTarifasFromRows
+ * Objetivo: Executa a rotina de 'c ho os et ar if as fr om ro ws'.
+ */
 function chooseTarifasFromRows(
   rows: TarifaBilhetagemRow[],
   fallbackCompetencia: { mes: number; ano: number },
@@ -387,6 +471,10 @@ function chooseTarifasFromRows(
   } as const;
 }
 
+/**
+ * [DOC-FUNC] loadTarifasBilhetagem
+ * Objetivo: Executa a rotina de 'l oa dt ar if as bi lh et ag em'.
+ */
 async function loadTarifasBilhetagem(dateKeyFimPeriodo: string) {
   const competencia = parseMonthYearFromDateKey(dateKeyFimPeriodo);
   const fallbackComp = competencia ?? { mes: new Date().getMonth() + 1, ano: new Date().getFullYear() };
@@ -438,6 +526,10 @@ async function loadTarifasBilhetagem(dateKeyFimPeriodo: string) {
   };
 }
 
+/**
+ * [DOC-FUNC] loadDailyRows
+ * Objetivo: Executa a rotina de 'l oa dd ai ly ro ws'.
+ */
 async function loadDailyRows(
   dateFrom: string,
   dateTo: string,
@@ -457,6 +549,10 @@ async function loadDailyRows(
     .returns<DailyRow[]>();
 
   if (!tentativaConsolidado.error) {
+    /**
+     * [DOC-FUNC] rows
+     * Objetivo: Executa a rotina de 'r ow s'.
+     */
     const rows = (tentativaConsolidado.data || []).map((row) => ({
       nr_inventario: toNumber(row.nr_inventario, 0),
       dt_referencia: row.dt_referencia,
@@ -548,6 +644,10 @@ async function loadDailyRows(
   };
 }
 
+/**
+ * [DOC-FUNC] loadInventarioMeta
+ * Objetivo: Executa a rotina de 'l oa di nv en ta ri om et a'.
+ */
 async function loadInventarioMeta(nrInventarios: number[]) {
   const supabase = getSupabaseServerClient();
   if (!nrInventarios.length) return new Map<number, MetaInventario>();
@@ -599,6 +699,10 @@ async function loadInventarioMeta(nrInventarios: number[]) {
   return meta;
 }
 
+/**
+ * [DOC-FUNC] loadInventarioMetaUniverse
+ * Objetivo: Executa a rotina de 'l oa di nv en ta ri om et au ni ve rs e'.
+ */
 async function loadInventarioMetaUniverse() {
   const supabase = getSupabaseServerClient();
 
@@ -656,6 +760,10 @@ async function loadInventarioMetaUniverse() {
     (tipos || []).map((row) => [toNumber(row.cd_tipo_equipamento, 0), row]),
   );
 
+  /**
+   * [DOC-FUNC] isPrinterEquipamento
+   * Objetivo: Executa a rotina de 'i sp ri nt er eq ui pa me nt o'.
+   */
   const isPrinterEquipamento = (equipamento: EquipamentoRow | undefined) => {
     if (!equipamento) return false;
     const tipo = tipoMap.get(toNumber(equipamento.cd_tipo_equipamento, 0));
@@ -684,6 +792,10 @@ async function loadInventarioMetaUniverse() {
   return meta;
 }
 
+/**
+ * [DOC-FUNC] loadLatestSnapshot
+ * Objetivo: Executa a rotina de 'l oa dl at es ts na ps ho t'.
+ */
 async function loadLatestSnapshot(nrInventarios: number[]) {
   const supabase = getSupabaseServerClient();
   if (!nrInventarios.length) return new Map<number, DailyAggregate>();
@@ -715,6 +827,10 @@ async function loadLatestSnapshot(nrInventarios: number[]) {
   return snapshot;
 }
 
+/**
+ * [DOC-FUNC] loadSuprimentos
+ * Objetivo: Executa a rotina de 'l oa ds up ri me nt os'.
+ */
 async function loadSuprimentos(inventarioIds: number[]) {
   const supabase = getSupabaseServerClient();
   if (!inventarioIds.length) return [] as SuprimentoRow[];
@@ -728,6 +844,10 @@ async function loadSuprimentos(inventarioIds: number[]) {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] buscarResumoTelemetriaDiaria
+ * Objetivo: Executa a rotina de 'b us ca rr es um ot el em et ri ad ia ri a'.
+ */
 export async function buscarResumoTelemetriaDiaria(options?: {
   dias?: number;
   de?: string | null;

@@ -32,16 +32,28 @@ type ConsolidadoItem = {
   ds_produto: string | null;
 };
 
+/**
+ * [DOC-FUNC] validarCompetencia
+ * Objetivo: Executa a rotina de 'v al id ar co mp et en ci a'.
+ */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
 }
 
+/**
+ * [DOC-FUNC] limparTexto
+ * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ */
 function limparTexto(value: string | null): string | null {
   if (!value) return null;
   const text = value.trim();
   return text ? text : null;
 }
 
+/**
+ * [DOC-FUNC] normalizarPatrimonio
+ * Objetivo: Executa a rotina de 'n or ma li za rp at ri mo ni o'.
+ */
 function normalizarPatrimonio(value: string | null): string | null {
   const text = limparTexto(value);
   if (!text) return null;
@@ -49,12 +61,20 @@ function normalizarPatrimonio(value: string | null): string | null {
   return normalized || null;
 }
 
+/**
+ * [DOC-FUNC] contemFiltro
+ * Objetivo: Executa a rotina de 'c on te mf il tr o'.
+ */
 function contemFiltro(value: string | null, filtroNormalizado: string | null): boolean {
   if (!filtroNormalizado) return true;
   const normalized = normalizarPatrimonio(value);
   return normalized ? normalized.includes(filtroNormalizado) : false;
 }
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request, { requireAdmin: true });

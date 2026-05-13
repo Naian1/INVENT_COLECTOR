@@ -15,6 +15,10 @@ const store =
 
 (globalThis as typeof globalThis & { __rateLimitStore?: Map<string, RateWindow> }).__rateLimitStore = store;
 
+/**
+ * [DOC-FUNC] getClientIp
+ * Objetivo: Executa a rotina de 'g et cl ie nt ip'.
+ */
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for") || "";
   const ip = forwarded.split(",")[0]?.trim();
@@ -22,6 +26,10 @@ function getClientIp(request: NextRequest) {
   return request.headers.get("x-real-ip") || "unknown";
 }
 
+/**
+ * [DOC-FUNC] applyRateLimit
+ * Objetivo: Executa a rotina de 'a pp ly ra te li mi t'.
+ */
 function applyRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
   const current = store.get(key);
@@ -41,6 +49,10 @@ function applyRateLimit(key: string, limit: number, windowMs: number) {
   return { allowed: true, remaining: Math.max(0, limit - current.count), resetAt: current.resetAt };
 }
 
+/**
+ * [DOC-FUNC] withSecurityHeaders
+ * Objetivo: Executa a rotina de 'w it hs ec ur it yh ea de rs'.
+ */
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
   response.headers.set("X-Content-Type-Options", "nosniff");
@@ -69,6 +81,10 @@ function withSecurityHeaders(response: NextResponse) {
   return response;
 }
 
+/**
+ * [DOC-FUNC] middleware
+ * Objetivo: Executa a rotina de 'm id dl ew ar e'.
+ */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
   const ip = getClientIp(request);

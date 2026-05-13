@@ -12,18 +12,30 @@ import { Inventario, CreateInventarioInput, UpdateInventarioInput } from '@/type
 type TpHierarquia = 'RAIZ' | 'FILHO' | 'AMBOS';
 type TpStatus = 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO';
 
+/**
+ * [DOC-FUNC] situacaoParaTpStatus
+ * Objetivo: Executa a rotina de 's it ua ca op ar at ps ta tu s'.
+ */
 function situacaoParaTpStatus(ieSituacao?: string | null): TpStatus {
   if (ieSituacao === 'M') return 'MANUTENCAO';
   if (ieSituacao === 'I') return 'BACKUP';
   return 'ATIVO';
 }
 
+/**
+ * [DOC-FUNC] tpStatusParaSituacao
+ * Objetivo: Executa a rotina de 't ps ta tu sp ar as it ua ca o'.
+ */
 function tpStatusParaSituacao(tpStatus: TpStatus): 'A' | 'M' | 'I' {
   if (tpStatus === 'MANUTENCAO') return 'M';
   if (tpStatus === 'BACKUP' || tpStatus === 'DEVOLUCAO') return 'I';
   return 'A';
 }
 
+/**
+ * [DOC-FUNC] getTpHierarquiaEquipamento
+ * Objetivo: Executa a rotina de 'g et tp hi er ar qu ia eq ui pa me nt o'.
+ */
 async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHierarquia> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -39,6 +51,10 @@ async function getTpHierarquiaEquipamento(cdEquipamento: number): Promise<TpHier
   return (data?.tp_hierarquia || 'AMBOS') as TpHierarquia;
 }
 
+/**
+ * [DOC-FUNC] validarHierarquiaInventario
+ * Objetivo: Executa a rotina de 'v al id ar hi er ar qu ia in ve nt ar io'.
+ */
 async function validarHierarquiaInventario(params: {
   cd_equipamento: number;
   cd_setor: number;
@@ -84,6 +100,10 @@ async function validarHierarquiaInventario(params: {
   }
 }
 
+/**
+ * [DOC-FUNC] getInventarios
+ * Objetivo: Executa a rotina de 'g et in ve nt ar io s'.
+ */
 export async function getInventarios(): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -95,6 +115,10 @@ export async function getInventarios(): Promise<Inventario[]> {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getInventarioById
+ * Objetivo: Executa a rotina de 'g et in ve nt ar io by id'.
+ */
 export async function getInventarioById(id: number): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -107,6 +131,10 @@ export async function getInventarioById(id: number): Promise<Inventario | null> 
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getInventarioByPatrimonio
+ * Objetivo: Executa a rotina de 'g et in ve nt ar io by pa tr im on io'.
+ */
 export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inventario | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -120,6 +148,10 @@ export async function getInventarioByPatrimonio(patrimonio: string): Promise<Inv
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getInventariosBySetor
+ * Objetivo: Executa a rotina de 'g et in ve nt ar io sb ys et or'.
+ */
 export async function getInventariosBySetor(setorId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -132,6 +164,10 @@ export async function getInventariosBySetor(setorId: number): Promise<Inventario
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getInventariosByEquipamento
+ * Objetivo: Executa a rotina de 'g et in ve nt ar io sb ye qu ip am en to'.
+ */
 export async function getInventariosByEquipamento(equipamentoId: number): Promise<Inventario[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -144,6 +180,10 @@ export async function getInventariosByEquipamento(equipamentoId: number): Promis
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] createInventario
+ * Objetivo: Executa a rotina de 'c re at ei nv en ta ri o'.
+ */
 export async function createInventario(input: CreateInventarioInput): Promise<Inventario> {
   const supabase = getSupabaseServerClient();
   const tpStatus = (input.tp_status || situacaoParaTpStatus(input.ie_situacao)) as TpStatus;
@@ -171,6 +211,10 @@ export async function createInventario(input: CreateInventarioInput): Promise<In
   return data;
 }
 
+/**
+ * [DOC-FUNC] updateInventario
+ * Objetivo: Executa a rotina de 'u pd at ei nv en ta ri o'.
+ */
 export async function updateInventario(
   id: number,
   input: UpdateInventarioInput,
@@ -217,6 +261,10 @@ export async function updateInventario(
   return data;
 }
 
+/**
+ * [DOC-FUNC] moveInventarioToSetor
+ * Objetivo: Executa a rotina de 'm ov ei nv en ta ri ot os et or'.
+ */
 export async function moveInventarioToSetor(
   id: number,
   novoSetorId: number,
@@ -244,6 +292,10 @@ export async function moveInventarioToSetor(
   return updateInventario(id, { cd_setor: novoSetorId });
 }
 
+/**
+ * [DOC-FUNC] deleteInventario
+ * Objetivo: Executa a rotina de 'd el et ei nv en ta ri o'.
+ */
 export async function deleteInventario(id: number): Promise<void> {
   // Soft delete
   const supabase = getSupabaseServerClient();

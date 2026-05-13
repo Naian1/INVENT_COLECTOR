@@ -14,6 +14,10 @@ type RouteContext = {
   params: Promise<{ id: string }>;
 };
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;
@@ -34,6 +38,10 @@ export async function GET(request: NextRequest, context: RouteContext) {
   });
 }
 
+/**
+ * [DOC-FUNC] PATCH
+ * Objetivo: Executa a rotina de 'p at ch'.
+ */
 export async function PATCH(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request, { requireAdmin: true });
   if (auth.response) return auth.response;

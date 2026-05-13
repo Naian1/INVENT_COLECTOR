@@ -99,6 +99,10 @@ export default function InventarioConciliacaoPage() {
   const [competencia, setCompetencia] = useState('');
   const [patrimonio, setPatrimonio] = useState('');
 
+  /**
+   * [DOC-FUNC] carregar
+   * Objetivo: Executa a rotina de 'c ar re ga r'.
+   */
   const carregar = async (filtros?: { competencia?: string; patrimonio?: string }) => {
     setCarregando(true);
     setErro(null);
@@ -138,6 +142,10 @@ export default function InventarioConciliacaoPage() {
     [dados],
   );
 
+  /**
+   * [DOC-FUNC] onSubmit
+   * Objetivo: Executa a rotina de 'o ns ub mi t'.
+   */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     void carregar({ competencia, patrimonio });

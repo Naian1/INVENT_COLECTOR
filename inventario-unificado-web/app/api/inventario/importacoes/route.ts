@@ -22,16 +22,28 @@ type LinhaImportacao = {
 };
 const MAX_IMPORT_ROWS = 5000;
 
+/**
+ * [DOC-FUNC] txt
+ * Objetivo: Executa a rotina de 't xt'.
+ */
 function txt(v: unknown): string | null {
   if (v === null || v === undefined) return null;
   const s = String(v).trim();
   return s.length ? s : null;
 }
 
+/**
+ * [DOC-FUNC] autoCgc
+ * Objetivo: Executa a rotina de 'a ut oc gc'.
+ */
 function autoCgc(nomeEmpresa: string) {
   return `AUTO-${nomeEmpresa.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18) || 'EMPRESA'}`;
 }
 
+/**
+ * [DOC-FUNC] upsertEmpresa
+ * Objetivo: Executa a rotina de 'u ps er te mp re sa'.
+ */
 async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient>, row: LinhaImportacao) {
   const nm_empresa = txt(row.nm_empresa) ?? 'SEM EMPRESA';
   const cd_cgc = txt(row.cd_cgc) ?? autoCgc(nm_empresa);
@@ -54,6 +66,10 @@ async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient
   return data.cd_cgc as string;
 }
 
+/**
+ * [DOC-FUNC] upsertTipo
+ * Objetivo: Executa a rotina de 'u ps er tt ip o'.
+ */
 async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, nomeTipo: string) {
   const { data: existente } = await supabase
     .from('tipo_equipamento')
@@ -73,6 +89,10 @@ async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, 
   return Number(data.cd_tipo_equipamento);
 }
 
+/**
+ * [DOC-FUNC] upsertSetor
+ * Objetivo: Executa a rotina de 'u ps er ts et or'.
+ */
 async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>, nomeSetor: string, dsSetor?: string | null) {
   const { data: existente } = await supabase
     .from('setor')
@@ -92,6 +112,10 @@ async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>,
   return Number(data.cd_setor);
 }
 
+/**
+ * [DOC-FUNC] upsertEquipamento
+ * Objetivo: Executa a rotina de 'u ps er te qu ip am en to'.
+ */
 async function upsertEquipamento(
   supabase: ReturnType<typeof getSupabaseServerClient>,
   params: {
@@ -133,6 +157,10 @@ async function upsertEquipamento(
   return Number(data.cd_equipamento);
 }
 
+/**
+ * [DOC-FUNC] upsertInventario
+ * Objetivo: Executa a rotina de 'u ps er ti nv en ta ri o'.
+ */
 async function upsertInventario(
   supabase: ReturnType<typeof getSupabaseServerClient>,
   params: {
@@ -186,6 +214,10 @@ async function upsertInventario(
   return { nr_inventario: Number(data.nr_inventario), atualizado: false };
 }
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request, { requireAdmin: true });

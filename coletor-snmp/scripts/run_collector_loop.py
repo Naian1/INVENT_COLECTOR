@@ -22,12 +22,16 @@ from utils.file_manager import load_settings
 STOP = False
 
 
+# [DOC-FUNC] _handle_stop
+# Objetivo: Executa a rotina de 'h an dl e s to p'.
 def _handle_stop(signum, _frame):
     global STOP
     STOP = True
     logging.info("[collector-loop] Sinal recebido (%s). Encerrando com seguranca...", signum)
 
 
+# [DOC-FUNC] _resolve_interval
+# Objetivo: Executa a rotina de 'r es ol ve i nt er va l'.
 def _resolve_interval(cli_interval):
     if cli_interval and cli_interval > 0:
         return cli_interval
@@ -53,6 +57,8 @@ def _resolve_interval(cli_interval):
     return 300
 
 
+# [DOC-FUNC] run_loop
+# Objetivo: Executa a rotina de 'r un l oo p'.
 def run_loop(interval_seconds, run_once=False):
     cycle = 0
     while not STOP:
@@ -79,6 +85,8 @@ def run_loop(interval_seconds, run_once=False):
     logging.info("[collector-loop] Finalizado.")
 
 
+# [DOC-FUNC] main
+# Objetivo: Executa a rotina de 'm ai n'.
 def main():
     parser = argparse.ArgumentParser(
         description="Executa somente o coletor (SNMP -> API) sem subir o frontend legado Flask."

@@ -19,6 +19,10 @@ type TelemetryIngestResult = {
   errors: Array<{ ingest_id: string; error: string }>;
 };
 
+/**
+ * [DOC-FUNC] shouldRefreshLastSeen
+ * Objetivo: Executa a rotina de 's ho ul dr ef re sh la st se en'.
+ */
 function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: string) {
   if (!currentLastSeenAt) return true;
   const currentTs = Date.parse(currentLastSeenAt);
@@ -28,6 +32,10 @@ function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: s
   return candidateTs > currentTs;
 }
 
+/**
+ * [DOC-FUNC] resolveSupplyStatus
+ * Objetivo: Executa a rotina de 'r es ol ve su pp ly st at us'.
+ */
 function resolveSupplyStatus(
   explicitStatus: string | undefined,
   levelPercent: number | null | undefined
@@ -40,6 +48,10 @@ function resolveSupplyStatus(
   return "ok";
 }
 
+/**
+ * [DOC-FUNC] writeTelemetryEvent
+ * Objetivo: Executa a rotina de 'w ri te te le me tr ye ve nt'.
+ */
 async function writeTelemetryEvent(
   collectorId: string,
   event: CollectorTelemetryEvent,
@@ -168,6 +180,10 @@ async function writeTelemetryEvent(
   };
 }
 
+/**
+ * [DOC-FUNC] ingestCollectorTelemetry
+ * Objetivo: Executa a rotina de 'i ng es tc ol le ct or te le me tr y'.
+ */
 export async function ingestCollectorTelemetry(
   payload: CollectorTelemetryBatchPayload
 ): Promise<TelemetryIngestResult> {

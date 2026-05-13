@@ -113,6 +113,10 @@ export type LoteTelemetriaColetorPt = z.infer<typeof loteTelemetriaColetorPtSche
 export type PayloadSimplesColetorPt = z.infer<typeof payloadSimplesColetorPtSchema>;
 export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema>;
 
+/**
+ * [DOC-FUNC] toLote
+ * Objetivo: Executa a rotina de 't ol ot e'.
+ */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
     payload.impressora ??
@@ -148,6 +152,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   };
 }
 
+/**
+ * [DOC-FUNC] normalizarPayloadColetorPtParaLote
+ * Objetivo: Executa a rotina de 'n or ma li za rp ay lo ad co le to rp tp ar al ot e'.
+ */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt
 ): LoteTelemetriaColetorPt {

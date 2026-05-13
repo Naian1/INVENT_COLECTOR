@@ -5,6 +5,10 @@
 import { getSupabaseServerClient } from '@/lib/supabase/server';
 import { Suprimentos, CreateSuprimentosInput, UpdateSuprimentosInput } from '@/types/suprimentos';
 
+/**
+ * [DOC-FUNC] getSuprimentos
+ * Objetivo: Executa a rotina de 'g et su pr im en to s'.
+ */
 export async function getSuprimentos(): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -16,6 +20,10 @@ export async function getSuprimentos(): Promise<Suprimentos[]> {
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getSuprimentosById
+ * Objetivo: Executa a rotina de 'g et su pr im en to sb yi d'.
+ */
 export async function getSuprimentosById(id: number): Promise<Suprimentos | null> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -28,6 +36,10 @@ export async function getSuprimentosById(id: number): Promise<Suprimentos | null
   return data || null;
 }
 
+/**
+ * [DOC-FUNC] getSuprimentosByInventario
+ * Objetivo: Executa a rotina de 'g et su pr im en to sb yi nv en ta ri o'.
+ */
 export async function getSuprimentosByInventario(inventarioId: number): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -40,6 +52,10 @@ export async function getSuprimentosByInventario(inventarioId: number): Promise<
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] getSuprimentosByPatrimonio
+ * Objetivo: Executa a rotina de 'g et su pr im en to sb yp at ri mo ni o'.
+ */
 export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
   const { data, error } = await supabase
@@ -52,6 +68,10 @@ export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Su
   return data || [];
 }
 
+/**
+ * [DOC-FUNC] upsertSuprimento
+ * Objetivo: Executa a rotina de 'u ps er ts up ri me nt o'.
+ */
 export async function upsertSuprimento(
   input: CreateSuprimentosInput,
 ): Promise<Suprimentos> {
@@ -88,6 +108,10 @@ export async function upsertSuprimento(
   return data;
 }
 
+/**
+ * [DOC-FUNC] createSuprimento
+ * Objetivo: Executa a rotina de 'c re at es up ri me nt o'.
+ */
 export async function createSuprimento(
   input: CreateSuprimentosInput,
 ): Promise<Suprimentos> {
@@ -102,6 +126,10 @@ export async function createSuprimento(
   return data;
 }
 
+/**
+ * [DOC-FUNC] updateSuprimento
+ * Objetivo: Executa a rotina de 'u pd at es up ri me nt o'.
+ */
 export async function updateSuprimento(
   id: number,
   input: UpdateSuprimentosInput,
@@ -118,6 +146,10 @@ export async function updateSuprimento(
   return data;
 }
 
+/**
+ * [DOC-FUNC] deleteSuprimento
+ * Objetivo: Executa a rotina de 'd el et es up ri me nt o'.
+ */
 export async function deleteSuprimento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();
   const { error } = await supabase

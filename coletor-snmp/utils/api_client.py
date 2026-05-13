@@ -18,6 +18,8 @@ INVALID_PENDING_QUEUE_FILE = os.path.join(DATA_DIR, "collector_pending_invalid.j
 _ENV_CACHE = None
 
 
+# [DOC-FUNC] _load_env_file
+# Objetivo: Executa a rotina de 'l oa d e nv f il e'.
 def _load_env_file():
     global _ENV_CACHE
     if _ENV_CACHE is not None:
@@ -40,11 +42,15 @@ def _load_env_file():
     return loaded
 
 
+# [DOC-FUNC] _get_env
+# Objetivo: Executa a rotina de 'g et e nv'.
 def _get_env(name, default_value=None):
     file_env = _load_env_file()
     return os.getenv(name) or file_env.get(name, default_value)
 
 
+# [DOC-FUNC] _parse_list_env
+# Objetivo: Executa a rotina de 'p ar se l is t e nv'.
 def _parse_list_env(raw_value):
     raw = str(raw_value or "").strip()
     if not raw:
@@ -52,6 +58,8 @@ def _parse_list_env(raw_value):
     return [item.strip() for item in raw.split(",") if item.strip()]
 
 
+# [DOC-FUNC] _parse_int_env
+# Objetivo: Executa a rotina de 'p ar se i nt e nv'.
 def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
     try:
         parsed = int(str(raw_value).strip())
@@ -60,6 +68,8 @@ def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
     return max(min_value, min(max_value, parsed))
 
 
+# [DOC-FUNC] _parse_float_env
+# Objetivo: Executa a rotina de 'p ar se f lo at e nv'.
 def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.0):
     try:
         parsed = float(str(raw_value).strip())
@@ -68,6 +78,8 @@ def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.
     return max(min_value, min(max_value, parsed))
 
 
+# [DOC-FUNC] _parse_bool_env
+# Objetivo: Executa a rotina de 'p ar se b oo l e nv'.
 def _parse_bool_env(raw_value, default_value=False):
     if raw_value is None:
         return default_value
@@ -79,6 +91,8 @@ def _parse_bool_env(raw_value, default_value=False):
     return default_value
 
 
+# [DOC-FUNC] _compact_error_message
+# Objetivo: Executa a rotina de 'c om pa ct e rr or m es sa ge'.
 def _compact_error_message(exc):
     reason = getattr(exc, "reason", None)
     base = reason if reason is not None else exc
@@ -88,6 +102,8 @@ def _compact_error_message(exc):
     return text or str(type(exc).__name__)
 
 
+# [DOC-FUNC] _shorten_text
+# Objetivo: Executa a rotina de 's ho rt en t ex t'.
 def _shorten_text(text, max_len=180):
     clean = str(text or "").replace("\r", " ").replace("\n", " ").strip()
     if len(clean) <= max_len:
@@ -95,6 +111,8 @@ def _shorten_text(text, max_len=180):
     return f"{clean[:max_len].rstrip()}..."
 
 
+# [DOC-FUNC] _extract_http_error_hint
+# Objetivo: Executa a rotina de 'e xt ra ct h tt p e rr or h in t'.
 def _extract_http_error_hint(raw_body):
     try:
         parsed = json.loads(raw_body)
@@ -130,6 +148,8 @@ def _extract_http_error_hint(raw_body):
     return _shorten_text(" :: ".join(hint_parts), max_len=900)
 
 
+# [DOC-FUNC] _clean_text_value
+# Objetivo: Executa a rotina de 'c le an t ex t v al ue'.
 def _clean_text_value(value):
     if value is None:
         return None
@@ -137,6 +157,8 @@ def _clean_text_value(value):
     return text or None
 
 
+# [DOC-FUNC] get_collector_config
+# Objetivo: Executa a rotina de 'g et c ol le ct or c on fi g'.
 def get_collector_config():
     base_url = (_get_env("COLLECTOR_API_BASE_URL", "") or "").strip().rstrip("/")
     if base_url:
@@ -253,6 +275,8 @@ def get_collector_config():
     }
 
 
+# [DOC-FUNC] _normalize_remote_printers
+# Objetivo: Executa a rotina de 'n or ma li ze r em ot e p ri nt er s'.
 def _normalize_remote_printers(records, default_community):
     printers = {}
     for item in records:
@@ -283,6 +307,8 @@ def _normalize_remote_printers(records, default_community):
     return printers
 
 
+# [DOC-FUNC] _normalize_remote_printers_from_inventario
+# Objetivo: Executa a rotina de 'n or ma li ze r em ot e p ri nt er s f ro m i nv en ta ri o'.
 def _normalize_remote_printers_from_inventario(
     records,
     default_community,
@@ -347,6 +373,8 @@ def _normalize_remote_printers_from_inventario(
     return printers
 
 
+# [DOC-FUNC] _fetch_printers_via_api
+# Objetivo: Executa a rotina de 'f et ch p ri nt er s v ia a pi'.
 def _fetch_printers_via_api(config, log_prefix):
     if not config["token"]:
         msg = "COLLECTOR_API_TOKEN nao configurado. Sync de impressoras desativado."
@@ -460,6 +488,8 @@ def _fetch_printers_via_api(config, log_prefix):
     return {"success": False, "status_code": last_status_code, "error": last_error, "source": "api"}
 
 
+# [DOC-FUNC] _fetch_printers_via_supabase
+# Objetivo: Executa a rotina de 'f et ch p ri nt er s v ia s up ab as e'.
 def _fetch_printers_via_supabase(config, log_prefix):
     supabase_url = str(config.get("supabase_url") or "").strip().rstrip("/")
     supabase_key = str(config.get("supabase_key") or "").strip()
@@ -634,6 +664,8 @@ def _fetch_printers_via_supabase(config, log_prefix):
     }
 
 
+# [DOC-FUNC] fetch_printers_from_api
+# Objetivo: Executa a rotina de 'f et ch p ri nt er s f ro m a pi'.
 def fetch_printers_from_api(log_prefix="[collector-api]"):
     config = get_collector_config()
     source = str(config.get("printers_source") or "api").strip().lower()
@@ -670,6 +702,8 @@ def fetch_printers_from_api(log_prefix="[collector-api]"):
     return _fetch_printers_via_api(config=config, log_prefix=log_prefix)
 
 
+# [DOC-FUNC] _queue_pending_payload
+# Objetivo: Executa a rotina de 'q ue ue p en di ng p ay lo ad'.
 def _queue_pending_payload(payload, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -684,6 +718,8 @@ def _queue_pending_payload(payload, reason):
         logging.error(f"Falha ao salvar payload pendente: {exc}")
 
 
+# [DOC-FUNC] _archive_invalid_pending_record
+# Objetivo: Executa a rotina de 'a rc hi ve i nv al id p en di ng r ec or d'.
 def _archive_invalid_pending_record(record, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -698,6 +734,8 @@ def _archive_invalid_pending_record(record, reason):
         logging.error("Falha ao arquivar pendencia invalida: %s", exc)
 
 
+# [DOC-FUNC] _extract_ingestao_id
+# Objetivo: Executa a rotina de 'e xt ra ct i ng es ta o i d'.
 def _extract_ingestao_id(payload):
     ingestao_id = None
     if isinstance(payload, dict):
@@ -711,6 +749,8 @@ def _extract_ingestao_id(payload):
     return ingestao_id
 
 
+# [DOC-FUNC] send_telemetry_payload
+# Objetivo: Executa a rotina de 's en d t el em et ry p ay lo ad'.
 def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failure=True):
     config = get_collector_config()
 
@@ -885,6 +925,8 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
     return {"success": False, "status_code": last_status_code, "error": last_error}
 
 
+# [DOC-FUNC] replay_pending_payloads
+# Objetivo: Executa a rotina de 'r ep la y p en di ng p ay lo ad s'.
 def replay_pending_payloads(max_items=None, log_prefix="[collector-replay]"):
     if not os.path.exists(PENDING_QUEUE_FILE):
         return {"success": True, "processed": 0, "sent": 0, "remaining": 0}

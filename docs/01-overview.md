@@ -50,6 +50,7 @@ Fora do escopo:
 - Operacao TI: [06-collector](06-collector.md), [10-troubleshooting](10-troubleshooting.md)
 - Arquitetura/Governanca: [02-architecture](02-architecture.md), [ADR](ADR/001-edge-first.md), [08-security](08-security.md)
 - Estudo/TCC (mapa de codigo e comentarios globais): [18-mapa-codigo-linhas-tcc](18-mapa-codigo-linhas-tcc.md), [19-cobertura-global-comentarios-sistema](19-cobertura-global-comentarios-sistema.md)
+- Leitura funcao por funcao: buscar marcador `DOC-FUNC` no projeto.
 
 ## Atualizacao 2026-05-04
 

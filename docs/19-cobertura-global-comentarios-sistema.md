@@ -6,30 +6,26 @@
 
 Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo coletor, backend, frontend, scripts e SQL.
 
-## Regra aplicada no codigo
+## Regras aplicadas no codigo
 
 - Todo arquivo de codigo recebe cabecalho com marcador `DOC-CODEMAP`.
-- O cabecalho identifica caminho do arquivo e papel arquitetural.
-- Esse marcador facilita busca global no editor (`DOC-CODEMAP`).
+- Toda funcao do sistema recebe comentario com marcador `DOC-FUNC` imediatamente acima da declaracao.
+- Os dois marcadores podem ser buscados globalmente no editor para navegacao rapida.
 
 ## Escopo desta rodada
 
 - Arquivos de codigo anotados: 131
-- Linhas totais de codigo no escopo: 40667
-
-## Cobertura por modulo
-
-| Modulo | Arquivos | Linhas |
-|---|---:|---:|
-| Outros arquivos de codigo | 131 | 40667 |
+- Linhas de codigo no escopo: 43726
+- Comentarios de funcao (`DOC-FUNC`) inseridos: 856
 
 ## Como estudar
 
 1. Comecar por `docs/18-mapa-codigo-linhas-tcc.md` para localizar fluxos-chave.
 2. Abrir o arquivo alvo e ler o cabecalho `DOC-CODEMAP` para entender contexto.
-3. Seguir para funcoes principais do modulo (servicos, rotas e componentes).
+3. Ler funcao por funcao usando os blocos `DOC-FUNC` como guia do objetivo de cada rotina.
+4. Cruza com `docs/18-mapa-codigo-linhas-tcc.md` quando precisar entender fluxo ponta-a-ponta.
 
 ## Observacao importante
 
-- Comentarios em todas as linhas, literalmente, tendem a poluir manutencao e aumentar risco de conflito.
-- A estrategia adotada prioriza didatica por arquivo e por bloco funcional, preservando legibilidade do codigo.
+- A base agora esta comentada por funcao para estudo integral.
+- Em trechos legados comentados por bloco (`/* ... */`), os comentarios de funcao podem ser omitidos para nao quebrar sintaxe.

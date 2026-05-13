@@ -16,18 +16,30 @@ type ToastItem = {
   message: string;
 };
 
+/**
+ * [DOC-FUNC] normalizarMensagemToast
+ * Objetivo: Executa a rotina de 'n or ma li za rm en sa ge mt oa st'.
+ */
 function normalizarMensagemToast(input: string): string {
   const mensagem = String(input || "").trim();
   if (!mensagem) return "Operação finalizada.";
   return mensagem.replace(/^Falha ao executar inventory-core:\s*/i, "").trim() || mensagem;
 }
 
+/**
+ * [DOC-FUNC] StatusFeedback
+ * Objetivo: Executa a rotina de 's ta tu sf ee db ac k'.
+ */
 export function StatusFeedback({ loading, error, success }: StatusFeedbackProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
   const nextToastIdRef = useRef(1);
   const prevErrorRef = useRef<string | null>(null);
   const prevSuccessRef = useRef<string | null>(null);
 
+  /**
+   * [DOC-FUNC] removerToast
+   * Objetivo: Executa a rotina de 'r em ov er to as t'.
+   */
   const removerToast = (id: number) => {
     setToasts((current) => current.filter((item) => item.id !== id));
   };

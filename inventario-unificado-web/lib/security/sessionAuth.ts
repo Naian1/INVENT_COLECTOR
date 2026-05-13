@@ -15,6 +15,10 @@ type SessionPayload = {
   exp: number;
 };
 
+/**
+ * [DOC-FUNC] safeCompare
+ * Objetivo: Executa a rotina de 's af ec om pa re'.
+ */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
   const bufferB = Buffer.from(valueB);
@@ -23,6 +27,10 @@ function safeCompare(valueA: string, valueB: string) {
   return timingSafeEqual(bufferA, bufferB);
 }
 
+/**
+ * [DOC-FUNC] getSessionSecret
+ * Objetivo: Executa a rotina de 'g et se ss io ns ec re t'.
+ */
 function getSessionSecret() {
   const secret =
     process.env.AUTH_SESSION_SECRET?.trim() ||
@@ -38,14 +46,26 @@ function getSessionSecret() {
   return secret;
 }
 
+/**
+ * [DOC-FUNC] getSessionCookieName
+ * Objetivo: Executa a rotina de 'g et se ss io nc oo ki en am e'.
+ */
 export function getSessionCookieName() {
   return SESSION_COOKIE_NAME;
 }
 
+/**
+ * [DOC-FUNC] getSessionTtlSeconds
+ * Objetivo: Executa a rotina de 'g et se ss io nt tl se co nd s'.
+ */
 export function getSessionTtlSeconds() {
   return SESSION_TTL_SECONDS;
 }
 
+/**
+ * [DOC-FUNC] buildSessionToken
+ * Objetivo: Executa a rotina de 'b ui ld se ss io nt ok en'.
+ */
 export function buildSessionToken(input: {
   cdUsuario: number;
   nmUsuario: string;
@@ -68,6 +88,10 @@ export function buildSessionToken(input: {
   return `${encodedPayload}.${signature}`;
 }
 
+/**
+ * [DOC-FUNC] readSessionToken
+ * Objetivo: Executa a rotina de 'r ea ds es si on to ke n'.
+ */
 export function readSessionToken(token: string | undefined | null) {
   if (!token) return null;
 
@@ -102,10 +126,18 @@ export function readSessionToken(token: string | undefined | null) {
   }
 }
 
+/**
+ * [DOC-FUNC] sha256Hex
+ * Objetivo: Executa a rotina de 's ha256 he x'.
+ */
 function sha256Hex(value: string) {
   return createHash("sha256").update(value).digest("hex");
 }
 
+/**
+ * [DOC-FUNC] verifyPassword
+ * Objetivo: Executa a rotina de 'v er if yp as sw or d'.
+ */
 export function verifyPassword(inputPassword: string, storedHash: string | null | undefined) {
   const normalizedHash = String(storedHash ?? "").trim();
 

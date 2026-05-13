@@ -80,21 +80,37 @@ const STATUS_RECENT_ONLINE_GRACE_MINUTES = 75;
 const STATUS_STALE_WARNING_MINUTES = 45;
 const STATUS_STALE_OFFLINE_MINUTES = 180;
 
+/**
+ * [DOC-FUNC] normalizarIp
+ * Objetivo: Executa a rotina de 'n or ma li za ri p'.
+ */
 function normalizarIp(value: string) {
   return value.replace(/\/32$/, "");
 }
 
+/**
+ * [DOC-FUNC] toFiniteNumber
+ * Objetivo: Executa a rotina de 't of in it en um be r'.
+ */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
   return Number.isFinite(parsed) ? parsed : null;
 }
 
+/**
+ * [DOC-FUNC] limparTexto
+ * Objetivo: Executa a rotina de 'l im pa rt ex to'.
+ */
 function limparTexto(value: string | null | undefined) {
   if (value === null || value === undefined) return null;
   const v = String(value).trim();
   return v.length ? v : null;
 }
 
+/**
+ * [DOC-FUNC] extrairValorTexto
+ * Objetivo: Executa a rotina de 'e xt ra ir va lo rt ex to'.
+ */
 function extrairValorTexto(row: LinhaValorRow) {
   if (row.valor_texto !== null && row.valor_texto !== undefined) return limparTexto(row.valor_texto);
   if (row.valor_numero !== null && row.valor_numero !== undefined) return limparTexto(String(row.valor_numero));
@@ -105,6 +121,10 @@ function extrairValorTexto(row: LinhaValorRow) {
   return null;
 }
 
+/**
+ * [DOC-FUNC] pickSemantico
+ * Objetivo: Executa a rotina de 'p ic ks em an ti co'.
+ */
 function pickSemantico(
   bag: Map<string, string>,
   semanticos: string[]
@@ -116,15 +136,27 @@ function pickSemantico(
   return null;
 }
 
+/**
+ * [DOC-FUNC] normalizarTextoComparacao
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to co mp ar ac ao'.
+ */
 function normalizarTextoComparacao(value: string | null | undefined) {
   const txt = limparTexto(value);
   return txt ? txt.toLowerCase() : null;
 }
 
+/**
+ * [DOC-FUNC] clamp
+ * Objetivo: Executa a rotina de 'c la mp'.
+ */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
 }
 
+/**
+ * [DOC-FUNC] normalizarStatusOperacional
+ * Objetivo: Executa a rotina de 'n or ma li za rs ta tu so pe ra ci on al'.
+ */
 function normalizarStatusOperacional(value: unknown): string {
   const status = String(value ?? "").trim().toLowerCase();
   if (!status) return "unknown";
@@ -135,12 +167,20 @@ function normalizarStatusOperacional(value: unknown): string {
   return "unknown";
 }
 
+/**
+ * [DOC-FUNC] parseDateMs
+ * Objetivo: Executa a rotina de 'p ar se da te ms'.
+ */
 function parseDateMs(value: string | null | undefined): number | null {
   if (!value) return null;
   const ts = new Date(value).getTime();
   return Number.isFinite(ts) ? ts : null;
 }
 
+/**
+ * [DOC-FUNC] minutesSince
+ * Objetivo: Executa a rotina de 'm in ut es si nc e'.
+ */
 function minutesSince(value: string | null | undefined): number | null {
   const ts = parseDateMs(value);
   if (ts === null) return null;
@@ -149,14 +189,26 @@ function minutesSince(value: string | null | undefined): number | null {
   return diff / 60000;
 }
 
+/**
+ * [DOC-FUNC] isOfflineLikeStatus
+ * Objetivo: Executa a rotina de 'i so ff li ne li ke st at us'.
+ */
 function isOfflineLikeStatus(status: string): boolean {
   return ["offline", "error"].includes(status);
 }
 
+/**
+ * [DOC-FUNC] isOnlineLikeStatus
+ * Objetivo: Executa a rotina de 'i so nl in el ik es ta tu s'.
+ */
 function isOnlineLikeStatus(status: string): boolean {
   return ["online", "warning"].includes(status);
 }
 
+/**
+ * [DOC-FUNC] resolverStatusOperacionalConfiavel
+ * Objetivo: Executa a rotina de 'r es ol ve rs ta tu so pe ra ci on al co nf ia ve l'.
+ */
 function resolverStatusOperacionalConfiavel(
   rows: Array<{ status: string; coletado_em: string | null }>,
   fallbackStatus?: string | null,
@@ -236,6 +288,10 @@ function resolverStatusOperacionalConfiavel(
   return fallback || latest.status || "unknown";
 }
 
+/**
+ * [DOC-FUNC] carregarPendentesInventario
+ * Objetivo: Executa a rotina de 'c ar re ga rp en de nt es in ve nt ar io'.
+ */
 async function carregarPendentesInventario(
   operacionais: ImpressoraVisaoGeral[]
 ): Promise<ResultadoServico<ImpressoraVisaoGeral[]>> {
@@ -410,6 +466,10 @@ async function carregarPendentesInventario(
   return { success: true, data: pendentes };
 }
 
+/**
+ * [DOC-FUNC] listarVisaoGeralImpressoras
+ * Objetivo: Executa a rotina de 'l is ta rv is ao ge ra li mp re ss or as'.
+ */
 export async function listarVisaoGeralImpressoras(options?: {
   incluir_nao_operacionais?: boolean;
 }): Promise<ResultadoServico<ImpressoraVisaoGeral[]>> {
@@ -483,6 +543,10 @@ export async function listarVisaoGeralImpressoras(options?: {
 
   const latestStatusByImpressora = new Map<string, StatusRow>();
   const statusHistoryByImpressora = new Map<string, Array<{ status: string; coletado_em: string | null }>>();
+  /**
+   * [DOC-FUNC] registrarStatus
+   * Objetivo: Executa a rotina de 'r eg is tr ar st at us'.
+   */
   const registrarStatus = (rows: StatusRow[]) => {
     for (const row of rows) {
       if (!latestStatusByImpressora.has(row.impressora_id)) {
@@ -523,6 +587,10 @@ export async function listarVisaoGeralImpressoras(options?: {
     }
   >();
 
+  /**
+   * [DOC-FUNC] registrarSuprimentos
+   * Objetivo: Executa a rotina de 'r eg is tr ar su pr im en to s'.
+   */
   const registrarSuprimentos = (rows: SuprimentoRow[]) => {
     for (const row of rows) {
       const atual = snapshotSuprimentosByImpressora.get(row.impressora_id);

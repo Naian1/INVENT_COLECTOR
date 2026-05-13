@@ -11,6 +11,10 @@ const __dirname = path.dirname(__filename);
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   outputFileTracingRoot: __dirname,
+  /**
+   * [DOC-FUNC] headers
+   * Objetivo: Executa a rotina de 'h ea de rs'.
+   */
   async headers() {
     return [
       {

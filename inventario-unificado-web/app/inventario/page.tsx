@@ -141,6 +141,10 @@ type CriacaoInventario = {
   nm_usuario_criacao: string | null;
 };
 
+/**
+ * [DOC-FUNC] normalizarTexto
+ * Objetivo: Executa a rotina de 'n or ma li za rt ex to'.
+ */
 function normalizarTexto(texto: string): string {
   return texto
     .normalize('NFD')
@@ -148,6 +152,10 @@ function normalizarTexto(texto: string): string {
     .toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] normalizarIpSemMascara
+ * Objetivo: Executa a rotina de 'n or ma li za ri ps em ma sc ar a'.
+ */
 function normalizarIpSemMascara(ip: string | null | undefined): string | null {
   if (!ip) return null;
   const normalizado = ip.trim();
@@ -155,6 +163,10 @@ function normalizarIpSemMascara(ip: string | null | undefined): string | null {
   return normalizado.replace(/\/32$/, '').toLowerCase();
 }
 
+/**
+ * [DOC-FUNC] normalizarMacSemMascara
+ * Objetivo: Executa a rotina de 'n or ma li za rm ac se mm as ca ra'.
+ */
 function normalizarMacSemMascara(mac: string | null | undefined): string | null {
   if (!mac) return null;
   const normalizado = mac.trim();
@@ -166,18 +178,30 @@ function normalizarMacSemMascara(mac: string | null | undefined): string | null 
   return normalizado.toUpperCase();
 }
 
+/**
+ * [DOC-FUNC] labelInventario
+ * Objetivo: Executa a rotina de 'l ab el in ve nt ar io'.
+ */
 function labelInventario(item: InventarioComDetalhes): string {
   const patrimonio = item.nr_patrimonio || `ID ${item.nr_inventario}`;
   const modelo = item.equipamento?.nm_modelo || 'Sem modelo';
   return `${patrimonio} - ${modelo}`;
 }
 
+/**
+ * [DOC-FUNC] labelInventarioComHostname
+ * Objetivo: Executa a rotina de 'l ab el in ve nt ar io co mh os tn am e'.
+ */
 function labelInventarioComHostname(item: InventarioComDetalhes): string {
   const base = labelInventario(item);
   const hostname = String(item.nm_hostname || '').trim();
   return hostname ? `${base} | ${hostname}` : base;
 }
 
+/**
+ * [DOC-FUNC] formatSetorLabel
+ * Objetivo: Executa a rotina de 'f or ma ts et or la be l'.
+ */
 function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null): string {
   if (!setor) return '-';
   return [setor.nm_piso || '', setor.nm_setor || '', setor.nm_localizacao || '']
@@ -186,12 +210,20 @@ function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_local
     .join(' > ');
 }
 
+/**
+ * [DOC-FUNC] statusFromLegacy
+ * Objetivo: Executa a rotina de 's ta tu sf ro ml eg ac y'.
+ */
 function statusFromLegacy(situacao?: string | null): TpStatus {
   if (situacao === 'M') return 'MANUTENCAO';
   if (situacao === 'I') return 'BACKUP';
   return 'ATIVO';
 }
 
+/**
+ * [DOC-FUNC] formatarDataHora
+ * Objetivo: Executa a rotina de 'f or ma ta rd at ah or a'.
+ */
 function formatarDataHora(value: string | null): string {
   if (!value) return '-';
   const data = new Date(value);
@@ -202,6 +234,10 @@ function formatarDataHora(value: string | null): string {
   }).format(data);
 }
 
+/**
+ * [DOC-FUNC] getLabelTpStatus
+ * Objetivo: Executa a rotina de 'g et la be lt ps ta tu s'.
+ */
 function getLabelTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'Manutencao';
   if (tpStatus === 'BACKUP') return 'Backup';
@@ -209,6 +245,10 @@ function getLabelTpStatus(tpStatus: TpStatus): string {
   return 'Ativo';
 }
 
+/**
+ * [DOC-FUNC] getClassTpStatus
+ * Objetivo: Executa a rotina de 'g et cl as st ps ta tu s'.
+ */
 function getClassTpStatus(tpStatus: TpStatus): string {
   if (tpStatus === 'MANUTENCAO') return 'bg-amber-100 text-amber-800';
   if (tpStatus === 'BACKUP') return 'bg-slate-100 text-slate-700';
@@ -216,6 +256,10 @@ function getClassTpStatus(tpStatus: TpStatus): string {
   return 'bg-green-100 text-green-800';
 }
 
+/**
+ * [DOC-FUNC] FieldDbHint
+ * Objetivo: Executa a rotina de 'f ie ld db hi nt'.
+ */
 function FieldDbHint({ text }: { text: string }) {
   return <span className="inv-db-hint">Banco: {text}</span>;
 }
@@ -327,6 +371,10 @@ export default function InventarioPage() {
   const perfilNomeAtivo = String(usuarioSessao?.perfil?.nm_perfil || '').trim().toUpperCase();
   const canEditInventario = perfilNomeAtivo !== 'VIEWER';
 
+  /**
+   * [DOC-FUNC] loadData
+   * Objetivo: Executa a rotina de 'l oa dd at a'.
+   */
   const loadData = async () => {
     setLoading(true);
     setErrorMessage(null);
@@ -416,6 +464,10 @@ export default function InventarioPage() {
   useEffect(() => {
     let active = true;
 
+    /**
+     * [DOC-FUNC] carregarSessao
+     * Objetivo: Executa a rotina de 'c ar re ga rs es sa o'.
+     */
     const carregarSessao = async () => {
       try {
         const { data } = await supabase.auth.getSession();
@@ -682,6 +734,10 @@ export default function InventarioPage() {
       }));
   }, [paintedItems, setores]);
 
+  /**
+   * [DOC-FUNC] handleChangeForm
+   * Objetivo: Executa a rotina de 'h an dl ec ha ng ef or m'.
+   */
   const handleChangeForm = (campo: keyof FormInventarioState, valor: string) => {
     if (campo === 'nr_patrimonio') {
       setAutoFillItem(null);
@@ -730,6 +786,10 @@ export default function InventarioPage() {
     );
   };
 
+  /**
+   * [DOC-FUNC] autoPreencherPorPatrimonio
+   * Objetivo: Executa a rotina de 'a ut op re en ch er po rp at ri mo ni o'.
+   */
   const autoPreencherPorPatrimonio = async () => {
     const patrimonio = formData.nr_patrimonio.trim();
 
@@ -796,6 +856,10 @@ export default function InventarioPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] handleSelectTipoFormulario
+   * Objetivo: Executa a rotina de 'h an dl es el ec tt ip of or mu la ri o'.
+   */
   const handleSelectTipoFormulario = (value: string) => {
     const tipoId = value ? Number(value) : null;
     setFormTipoEquipamento(tipoId);
@@ -815,6 +879,10 @@ export default function InventarioPage() {
     });
   };
 
+  /**
+   * [DOC-FUNC] handleSelectEquipamento
+   * Objetivo: Executa a rotina de 'h an dl es el ec te qu ip am en to'.
+   */
   const handleSelectEquipamento = (value: string) => {
     const equipamento = equipamentos.find((item) => item.cd_equipamento === Number(value));
     setFormData((previous) => ({
@@ -826,6 +894,10 @@ export default function InventarioPage() {
     setFormTipoEquipamento(equipamento?.cd_tipo_equipamento || null);
   };
 
+  /**
+   * [DOC-FUNC] handleSelectItemSuperior
+   * Objetivo: Executa a rotina de 'h an dl es el ec ti te ms up er io r'.
+   */
   const handleSelectItemSuperior = (value: string) => {
     const itemSuperior = items.find((item) => item.nr_inventario === Number(value));
     setFormData((previous) => ({
@@ -835,6 +907,10 @@ export default function InventarioPage() {
     }));
   };
 
+  /**
+   * [DOC-FUNC] stopScanner
+   * Objetivo: Executa a rotina de 's to ps ca nn er'.
+   */
   const stopScanner = () => {
     if (scannerTimerRef.current !== null) {
       window.clearInterval(scannerTimerRef.current);
@@ -853,6 +929,10 @@ export default function InventarioPage() {
     scannerBusyRef.current = false;
   };
 
+  /**
+   * [DOC-FUNC] applyScannedCode
+   * Objetivo: Executa a rotina de 'a pp ly sc an ne dc od e'.
+   */
   const applyScannedCode = (codigo: string) => {
     const codigoLimpo = codigo.trim();
     if (!codigoLimpo) return;
@@ -867,6 +947,10 @@ export default function InventarioPage() {
     stopScanner();
   };
 
+  /**
+   * [DOC-FUNC] iniciarScanner
+   * Objetivo: Executa a rotina de 'i ni ci ar sc an ne r'.
+   */
   const iniciarScanner = async () => {
     setScannerError(null);
     setScannerStatus('Solicitando acesso à câmera...');
@@ -942,6 +1026,10 @@ export default function InventarioPage() {
     stopScanner();
   }, []);
 
+  /**
+   * [DOC-FUNC] resetModalForm
+   * Objetivo: Executa a rotina de 'r es et mo da lf or m'.
+   */
   const resetModalForm = () => {
     setEditingItem(null);
     setFormData(INITIAL_FORM);
@@ -962,6 +1050,10 @@ export default function InventarioPage() {
     setCriacaoInventario(null);
   };
 
+  /**
+   * [DOC-FUNC] carregarUltimaMovimentacao
+   * Objetivo: Executa a rotina de 'c ar re ga ru lt im am ov im en ta ca o'.
+   */
   const carregarUltimaMovimentacao = async (nrInventario: number) => {
     setUltimaMovimentacaoLoading(true);
     setUltimaMovimentacao(null);
@@ -992,6 +1084,10 @@ export default function InventarioPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] openEditModal
+   * Objetivo: Executa a rotina de 'o pe ne di tm od al'.
+   */
   const openEditModal = (item: InventarioComDetalhes) => {
     if (!canEditInventario) {
       setErrorMessage('Perfil VIEWER possui acesso somente leitura ao inventario.');
@@ -1024,6 +1120,10 @@ export default function InventarioPage() {
     setModalOpen(true);
   };
 
+  /**
+   * [DOC-FUNC] resetResolucaoModal
+   * Objetivo: Executa a rotina de 'r es et re so lu ca om od al'.
+   */
   const resetResolucaoModal = () => {
     setResolvendoItem(null);
     setResolucaoForm(INITIAL_RESOLUCAO_FORM);
@@ -1032,6 +1132,10 @@ export default function InventarioPage() {
     setSuccessMessage(null);
   };
 
+  /**
+   * [DOC-FUNC] openResolucaoModal
+   * Objetivo: Executa a rotina de 'o pe nr es ol uc ao mo da l'.
+   */
   const openResolucaoModal = (item: InventarioComDetalhes) => {
     setResolvendoItem(item);
     setResolucaoForm(INITIAL_RESOLUCAO_FORM);
@@ -1041,6 +1145,10 @@ export default function InventarioPage() {
     setResolucaoModalOpen(true);
   };
 
+  /**
+   * [DOC-FUNC] resetMovimentacaoModal
+   * Objetivo: Executa a rotina de 'r es et mo vi me nt ac ao mo da l'.
+   */
   const resetMovimentacaoModal = () => {
     setMovimentandoItem(null);
     setMovimentacaoForm(INITIAL_MOVIMENTACAO_FORM);
@@ -1051,6 +1159,10 @@ export default function InventarioPage() {
     setSuccessMessage(null);
   };
 
+  /**
+   * [DOC-FUNC] openMovimentacaoModal
+   * Objetivo: Executa a rotina de 'o pe nm ov im en ta ca om od al'.
+   */
   const openMovimentacaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
     const acoesIniciais: Record<number, AcaoFilhoMovimentacao> = {};
@@ -1072,6 +1184,10 @@ export default function InventarioPage() {
     setMovimentacaoModalOpen(true);
   };
 
+  /**
+   * [DOC-FUNC] resetSubstituicaoModal
+   * Objetivo: Executa a rotina de 'r es et su bs ti tu ic ao mo da l'.
+   */
   const resetSubstituicaoModal = () => {
     setSubstituindoItem(null);
     setSubstituicaoForm(INITIAL_SUBSTITUICAO_FORM);
@@ -1081,6 +1197,10 @@ export default function InventarioPage() {
     setSuccessMessage(null);
   };
 
+  /**
+   * [DOC-FUNC] openSubstituicaoModal
+   * Objetivo: Executa a rotina de 'o pe ns ub st it ui ca om od al'.
+   */
   const openSubstituicaoModal = (item: InventarioComDetalhes) => {
     const filhosDiretos = filhosByParentAll.get(item.nr_inventario) || [];
     const acoesIniciais: Record<number, AcaoFilhoSubstituicao> = {};
@@ -1104,6 +1224,10 @@ export default function InventarioPage() {
     setMovimentacaoForm((prev) => ({ ...prev, [campo]: valor }));
   };
 
+  /**
+   * [DOC-FUNC] handleChangeAcaoFilhoMovimentacao
+   * Objetivo: Executa a rotina de 'h an dl ec ha ng ea ca of il ho mo vi me nt ac ao'.
+   */
   const handleChangeAcaoFilhoMovimentacao = (nrInventarioFilho: number, acao: AcaoFilhoMovimentacao) => {
     setMovimentacaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
   };
@@ -1115,10 +1239,18 @@ export default function InventarioPage() {
     setSubstituicaoForm((prev) => ({ ...prev, [campo]: valor }));
   };
 
+  /**
+   * [DOC-FUNC] handleChangeAcaoFilhoSubstituicao
+   * Objetivo: Executa a rotina de 'h an dl ec ha ng ea ca of il ho su bs ti tu ic ao'.
+   */
   const handleChangeAcaoFilhoSubstituicao = (nrInventarioFilho: number, acao: AcaoFilhoSubstituicao) => {
     setSubstituicaoFilhosAcoes((prev) => ({ ...prev, [nrInventarioFilho]: acao }));
   };
 
+  /**
+   * [DOC-FUNC] handleSubmitMovimentacao
+   * Objetivo: Executa a rotina de 'h an dl es ub mi tm ov im en ta ca o'.
+   */
   const handleSubmitMovimentacao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -1167,6 +1299,10 @@ export default function InventarioPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] handleSubmitSubstituicao
+   * Objetivo: Executa a rotina de 'h an dl es ub mi ts ub st it ui ca o'.
+   */
   const handleSubmitSubstituicao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -1225,6 +1361,10 @@ export default function InventarioPage() {
     });
   };
 
+  /**
+   * [DOC-FUNC] handleSubmitResolucao
+   * Objetivo: Executa a rotina de 'h an dl es ub mi tr es ol uc ao'.
+   */
   const handleSubmitResolucao = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);
@@ -1270,6 +1410,10 @@ export default function InventarioPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] handleCreateInventario
+   * Objetivo: Executa a rotina de 'h an dl ec re at ei nv en ta ri o'.
+   */
   const handleCreateInventario = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     setErrorMessage(null);

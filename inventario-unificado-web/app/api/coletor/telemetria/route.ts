@@ -10,6 +10,10 @@ import {
 } from "@/lib/validation/coletorSchemasPtBr";
 import { ingerirTelemetriaColetorPt } from "@/services/coletorTelemetriaPtService";
 
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: Request) {
   const authResult = validateCollectorBearerToken(request.headers.get("authorization"));
   if (!authResult.valid) {

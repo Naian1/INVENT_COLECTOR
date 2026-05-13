@@ -7,6 +7,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/security/apiAuth";
 import { buscarResumoTelemetriaDiaria } from "@/services/telemetriaDiariaService";
 
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   const auth = await authenticateApiRequest(request);
   if (auth.response) return auth.response;

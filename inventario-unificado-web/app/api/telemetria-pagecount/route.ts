@@ -16,6 +16,10 @@ const TelemetriaPagecountCreateSchema = z.object({
   dt_leitura: z.coerce.date().optional(),
 });
 
+/**
+ * [DOC-FUNC] hasOnConflictConstraintError
+ * Objetivo: Executa a rotina de 'h as on co nf li ct co ns tr ai nt er ro r'.
+ */
 function hasOnConflictConstraintError(message: string) {
   return (
     /no unique or exclusion constraint matching the ON CONFLICT specification/i.test(message) ||
@@ -24,6 +28,10 @@ function hasOnConflictConstraintError(message: string) {
 }
 
 // GET /api/telemetria-pagecount - estado atual de pagecount por inventario
+/**
+ * [DOC-FUNC] GET
+ * Objetivo: Executa a rotina de 'g et'.
+ */
 export async function GET(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
@@ -53,6 +61,10 @@ export async function GET(request: NextRequest) {
 }
 
 // POST /api/telemetria-pagecount - upsert por inventario (1 linha por impressora)
+/**
+ * [DOC-FUNC] POST
+ * Objetivo: Executa a rotina de 'p os t'.
+ */
 export async function POST(request: NextRequest) {
   try {
     const auth = await authenticateApiRequest(request);
