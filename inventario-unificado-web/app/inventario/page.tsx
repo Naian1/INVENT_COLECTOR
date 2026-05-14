@@ -104,12 +104,18 @@ const INITIAL_RESOLUCAO_FORM: ResolucaoFormState = {
 
 type MovimentacaoFormState = {
   cd_setor_destino: string;
+  tp_status_destino: '' | TpStatus;
+  ajustar_ip_destino: boolean;
+  nr_ip_destino: string;
   nr_chamado: string;
   observacao: string;
 };
 
 const INITIAL_MOVIMENTACAO_FORM: MovimentacaoFormState = {
   cd_setor_destino: '',
+  tp_status_destino: '',
+  ajustar_ip_destino: false,
+  nr_ip_destino: '',
   nr_chamado: '',
   observacao: '',
 };
@@ -1257,6 +1263,9 @@ export default function InventarioPage() {
     setMovimentandoItem(item);
     setMovimentacaoForm({
       cd_setor_destino: '',
+      tp_status_destino: '',
+      ajustar_ip_destino: false,
+      nr_ip_destino: item.nr_ip || '',
       nr_chamado: '',
       observacao: '',
     });
@@ -1371,6 +1380,26 @@ export default function InventarioPage() {
       return;
     }
 
+    const tpStatusPlanejado = movimentacaoForm.tp_status_destino || ((movimentandoItem.tp_status || statusFromLegacy(movimentandoItem.ie_situacao)) as TpStatus);
+    const ipDestinoNormalizado = normalizarIpSemMascara(movimentacaoForm.nr_ip_destino);
+    if (movimentacaoForm.ajustar_ip_destino && ipDestinoNormalizado && tpStatusPlanejado !== 'BACKUP' && tpStatusPlanejado !== 'DEVOLUCAO') {
+      const ipExistente = items.find((item) => {
+        if (item.nr_inventario === movimentandoItem.nr_inventario) return false;
+        const tpStatusItem = (item.tp_status || statusFromLegacy(item.ie_situacao)) as TpStatus;
+        const inativoPorSituacao = String(item.ie_situacao || '').toUpperCase() === 'I';
+        if (inativoPorSituacao || tpStatusItem === 'BACKUP' || tpStatusItem === 'DEVOLUCAO') {
+          return false;
+        }
+        const itemIp = normalizarIpSemMascara(item.nr_ip);
+        return itemIp === ipDestinoNormalizado;
+      });
+
+      if (ipExistente) {
+        setErrorMessage(`IP ${ipDestinoNormalizado} ja existe no inventario (ID ${ipExistente.nr_inventario}).`);
+        return;
+      }
+    }
+
     const filhosDiretos = filhosByParentAll.get(movimentandoItem.nr_inventario) || [];
     const filhosAcoesPayload = filhosDiretos.map((filho) => ({
       nr_inventario_filho: filho.nr_inventario,
@@ -1382,6 +1411,11 @@ export default function InventarioPage() {
       await invokeInventoryCore('move_inventario', {
         nr_inventario: movimentandoItem.nr_inventario,
         cd_setor_destino: setorDestino,
+        tp_status_destino: movimentacaoForm.tp_status_destino || undefined,
+        ajustar_ip_destino: movimentacaoForm.ajustar_ip_destino,
+        nr_ip_destino: movimentacaoForm.ajustar_ip_destino
+          ? (movimentacaoForm.nr_ip_destino.trim() || null)
+          : undefined,
         nr_chamado: movimentacaoForm.nr_chamado.trim() || undefined,
         observacao: movimentacaoForm.observacao.trim() || null,
         filhos_acoes: filhosAcoesPayload,
@@ -2396,6 +2430,45 @@ export default function InventarioPage() {
               </select>
             </label>
 
+            <label className="flex flex-col gap-1 text-sm">
+              <span className="font-medium text-slate-700">Status no destino (opcional)</span>
+              <select
+                value={movimentacaoForm.tp_status_destino}
+                onChange={(event) => handleChangeMovimentacao('tp_status_destino', event.target.value as '' | TpStatus)}
+                className="rounded-md border border-slate-300 px-3 py-2"
+              >
+                <option value="">Manter status atual</option>
+                <option value="ATIVO">ATIVO</option>
+                <option value="MANUTENCAO">MANUTENCAO</option>
+                <option value="BACKUP">BACKUP</option>
+                <option value="DEVOLUCAO">DEVOLUCAO</option>
+              </select>
+            </label>
+
+            <label className="flex items-center gap-2 text-sm text-slate-700">
+              <input
+                type="checkbox"
+                checked={movimentacaoForm.ajustar_ip_destino}
+                onChange={(event) => handleChangeMovimentacao('ajustar_ip_destino', event.target.checked)}
+              />
+              <span>Ajustar IP no destino</span>
+            </label>
+
+            {movimentacaoForm.ajustar_ip_destino ? (
+              <label className="flex flex-col gap-1 text-sm">
+                <span className="font-medium text-slate-700">IP no destino</span>
+                <input
+                  value={movimentacaoForm.nr_ip_destino}
+                  onChange={(event) => handleChangeMovimentacao('nr_ip_destino', event.target.value)}
+                  className="rounded-md border border-slate-300 px-3 py-2"
+                  placeholder="Ex: 10.0.0.12 (deixe vazio para limpar)"
+                />
+                <span className="text-xs text-slate-500">
+                  Deixe vazio para limpar o IP do item no momento da movimentação.
+                </span>
+              </label>
+            ) : null}
+
             {filhosDiretosMovimentacao.length > 0 ? (
               <div className="rounded-md border border-slate-200 bg-slate-50 p-3 text-sm space-y-2">
                 <p className="font-medium text-slate-700">Filhos vinculados</p>
@@ -2729,4 +2802,3 @@ export default function InventarioPage() {
     </BasicPageShell>
   );
 }
-

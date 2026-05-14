@@ -2071,8 +2071,12 @@ Deno.serve(async (req) => {
       const cd_setor_destino = Number(payload?.cd_setor_destino);
       const observacao = limparTexto(payload?.observacao);
       const nrChamadoInformado = limparTexto(payload?.nr_chamado);
+      const tpStatusDestinoRaw = limparTexto(payload?.tp_status_destino);
+      const ajustarIpDestino = Boolean(payload?.ajustar_ip_destino);
+      const nrIpDestino = normalizarIp(limparTexto(payload?.nr_ip_destino));
       const filhosAcoesPayload = Array.isArray(payload?.filhos_acoes) ? payload.filhos_acoes : [];
       const acoesFilhos = new Map<number, "ACOMPANHAR_DESTINO" | "MOVER_ESTOQUE">();
+      const tpStatusDestino = tpStatusDestinoRaw ? parseTpStatus(tpStatusDestinoRaw) : null;
 
       for (const entrada of filhosAcoesPayload) {
         const filhoId = Number((entrada as any)?.nr_inventario_filho);
@@ -2112,6 +2116,7 @@ Deno.serve(async (req) => {
       }
 
       const tpStatusAtual = parseTpStatus(existente.tp_status);
+      const tpStatusDestinoEfetivo = tpStatusDestino || tpStatusAtual;
       const nrInventSupAtual =
         Number.isFinite(Number(existente.nr_invent_sup)) && Number(existente.nr_invent_sup) > 0
           ? Number(existente.nr_invent_sup)
@@ -2122,7 +2127,7 @@ Deno.serve(async (req) => {
         cd_equipamento: Number(existente.cd_equipamento),
         cd_setor: cd_setor_destino,
         nr_invent_sup: nrInventSupAtual,
-        tp_status: tpStatusAtual,
+        tp_status: tpStatusDestinoEfetivo,
       });
 
       const nrChamado = nrChamadoInformado;
@@ -2139,12 +2144,23 @@ Deno.serve(async (req) => {
       const partesObs: string[] = [];
       if (nrChamado) partesObs.push(`CHAMADO: ${nrChamado}`);
       if (observacao) partesObs.push(`OBS: ${observacao}`);
+      if (tpStatusDestino) partesObs.push(`STATUS_DESTINO: ${tpStatusDestino}`);
+      if (ajustarIpDestino) partesObs.push(`IP_DESTINO: ${nrIpDestino ?? "LIMPAR"}`);
       const observacaoMov =
         partesObs.join(" | ") || `Movimentacao manual de setor ${setorOrigem} para ${cd_setor_destino}`;
 
+      const payloadMove: Record<string, unknown> = { cd_setor: cd_setor_destino };
+      if (tpStatusDestino) {
+        payloadMove.tp_status = tpStatusDestino;
+        payloadMove.ie_situacao = tpStatusParaSituacao(tpStatusDestino);
+      }
+      if (ajustarIpDestino) {
+        payloadMove.nr_ip = nrIpDestino;
+      }
+
       const { data: atualizado, error: updateError } = await supabase
         .from("inventario")
-        .update({ cd_setor: cd_setor_destino })
+        .update(payloadMove)
         .eq("nr_inventario", nr_inventario)
         .select("*")
         .single();
@@ -2241,6 +2257,8 @@ Deno.serve(async (req) => {
             cd_setor_origem: setorOrigem,
             cd_setor_destino,
             nr_chamado: nrChamado,
+            tp_status_final: tpStatusDestinoEfetivo,
+            nr_ip_final: ajustarIpDestino ? nrIpDestino : limparTexto(atualizado?.nr_ip),
             filhos_acompanharam_destino: filhosAcompanhando,
             filhos_movidos_estoque: filhosParaEstoque,
           },

@@ -130,6 +130,9 @@ Acoes:
   "payload": {
     "nr_inventario": 101,
     "cd_setor_destino": 20,
+    "tp_status_destino": "ATIVO",
+    "ajustar_ip_destino": true,
+    "nr_ip_destino": "10.0.0.12",
     "nr_chamado": "GLPI-123456",
     "observacao": "Mudanca de sala",
     "filhos_acoes": [
@@ -150,6 +153,8 @@ Acoes:
       "nr_inventario": 101,
       "cd_setor_origem": 10,
       "cd_setor_destino": 20,
+      "tp_status_final": "ATIVO",
+      "nr_ip_final": "10.0.0.12",
       "filhos_acompanharam_destino": 1,
       "filhos_movidos_estoque": 1
     }
@@ -164,6 +169,10 @@ Acoes:
 - Nesse caso a observacao final fica:
   - `OBS: ...` quando houver observacao manual.
   - ou texto padrao de movimentacao quando chamado e observacao estiverem vazios.
+- `tp_status_destino` e opcional (`ATIVO`, `MANUTENCAO`, `BACKUP`, `DEVOLUCAO`).
+- `ajustar_ip_destino=true` permite atualizar IP no mesmo fluxo:
+  - `nr_ip_destino` preenchido: define novo IP.
+  - `nr_ip_destino` vazio/null: limpa IP do item.
 
 ## Action: substituir_manutencao
 
