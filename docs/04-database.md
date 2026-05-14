@@ -18,6 +18,7 @@
 - suprimentos
 - telemetria_pagecount
 - telemetria_pagecount_diaria
+- telemetria_substituicao_pendente
 - tarifas_bilhetagem
 
 ## Entidades Matrix
@@ -38,6 +39,7 @@
 - suprimentos -> inventario
 - telemetria_pagecount -> inventario
 - telemetria_pagecount_diaria -> inventario
+- telemetria_substituicao_pendente -> inventario (referencia/substituto) e setor
 - tarifas_bilhetagem -> tabela parametrica (sem FK obrigatoria)
 - inventario_consolidado_linha -> inventario_consolidado_carga
 
@@ -115,9 +117,33 @@ Detalhes: [16-telemetria-pagecount-modelo-diario](16-telemetria-pagecount-modelo
   - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql`
 - Migration avulsa `20260505_tarifas_bilhetagem.sql` removida.
 
+## Atualizacao 2026-05-14 - Substituicao assistida por telemetria
+
+1. `telemetria_substituicao_pendente`
+- Guarda alertas de divergencia de identidade por IP (esperado x detectado).
+- Campos principais:
+  - `ie_status` (`PENDENTE`, `CONFIRMADO`, `DESCARTADO`)
+  - `nr_inventario_referencia`
+  - `nr_inventario_substituto`
+  - `nr_ip_detectado`
+  - `nr_patrimonio_*`, `nr_serie_*`, `nr_mac_*`
+  - `payload_evento`
+- Unicidade: (`nr_inventario_referencia`, `nr_ip_detectado`) para acumular ocorrencias da mesma vaga.
+
+2. Fluxo operacional
+- Collector detecta divergencia e grava pendencia.
+- Inventory-core lista e resolve manualmente (confirmar troca ou descartar alerta).
+- Confirmacao move o item detectado para ativo no IP e deixa o item antigo em backup.
+
+3. Migration
+- `inventario-unificado-web/supabase/migrations/20260514_telemetria_substituicao_pendente.sql`
+
 ## Referencia de estudo (linhas de codigo)
 
 - Trigger diaria: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2918`
 - Funcao de consolidacao: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2833`
 - Tabela de tarifas: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2964`
+- Deteccao de divergencia na ingestao: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:1097`
+- Registro da pendencia: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:582`
+- Resolucao assistida da pendencia: `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2038`
 - Mapa completo: `docs/18-mapa-codigo-linhas-tcc.md`

@@ -9,6 +9,8 @@ import { corsHeaders, jsonResponse } from "../_shared/cors.ts";
 type Action =
   | "list_context"
   | "list_devolucao"
+  | "list_substituicao_pendente"
+  | "resolver_substituicao_pendente"
   | "create_inventario"
   | "update_inventario"
   | "move_inventario"
@@ -603,6 +605,48 @@ async function columnExists(
   if (isMissingColumnError(error)) return false;
   if (isMissingTableError(error)) return false;
   throw new Error(error.message || `Falha ao verificar coluna ${table}.${column}`);
+}
+
+/**
+ * [DOC-FUNC] atualizarInventarioComFallbackDt
+ * O que faz: Atualiza inventario com fallback para ambientes legados sem coluna `dt_atualizacao`.
+ * Entradas: supabase, nrInventario, patch.
+ * Como executa: tenta update completo; em erro de coluna ausente, remove `dt_atualizacao` e tenta novamente.
+ * Retorno/Efeitos: retorna registro atualizado do inventario.
+ */
+async function atualizarInventarioComFallbackDt(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  nrInventario: number;
+  patch: Record<string, unknown>;
+}): Promise<any> {
+  const payloadBase = { ...params.patch };
+  const tentativaPrincipal = await params.supabase
+    .from("inventario")
+    .update(payloadBase)
+    .eq("nr_inventario", params.nrInventario)
+    .select("*")
+    .single();
+
+  if (!tentativaPrincipal.error) return tentativaPrincipal.data;
+
+  if (!isMissingColumnError(tentativaPrincipal.error)) {
+    throw new Error(`Erro ao atualizar inventario ${params.nrInventario}: ${tentativaPrincipal.error.message}`);
+  }
+
+  const payloadFallback = { ...payloadBase };
+  delete payloadFallback.dt_atualizacao;
+  const tentativaFallback = await params.supabase
+    .from("inventario")
+    .update(payloadFallback)
+    .eq("nr_inventario", params.nrInventario)
+    .select("*")
+    .single();
+
+  if (tentativaFallback.error) {
+    throw new Error(`Erro ao atualizar inventario ${params.nrInventario}: ${tentativaFallback.error.message}`);
+  }
+
+  return tentativaFallback.data;
 }
 
 /**
@@ -1879,6 +1923,376 @@ Deno.serve(async (req) => {
       });
 
       return jsonResponse({ ok: true, data: itens });
+    }
+
+    if (action === "list_substituicao_pendente") {
+      const hasTabela = await tableExists(supabase, "telemetria_substituicao_pendente");
+      if (!hasTabela) {
+        return jsonResponse({ ok: true, data: [] });
+      }
+
+      const somentePendentes = payload?.somente_pendentes !== false;
+      const limite = Number(payload?.limite || 200);
+      const limiteSeguro = Number.isFinite(limite) ? Math.min(Math.max(1, Math.trunc(limite)), 1000) : 200;
+
+      let query = supabase
+        .from("telemetria_substituicao_pendente")
+        .select("*")
+        .order("dt_ultima_detecao", { ascending: false })
+        .limit(limiteSeguro);
+
+      if (somentePendentes) {
+        query = query.eq("ie_status", "PENDENTE");
+      }
+
+      const { data: pendencias, error: erroPendencias } = await query;
+      if (erroPendencias) {
+        throw new Error(`telemetria_substituicao_pendente: ${erroPendencias.message}`);
+      }
+
+      if (!(pendencias || []).length) {
+        return jsonResponse({ ok: true, data: [] });
+      }
+
+      const inventarioRefIds = Array.from(new Set(
+        (pendencias || [])
+          .map((item: any) => Number(item.nr_inventario_referencia))
+          .filter((id) => Number.isFinite(id) && id > 0),
+      ));
+
+      const [inventariosRefRes, setoresRes] = await Promise.all([
+        inventarioRefIds.length
+          ? supabase
+            .from("inventario")
+            .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+            .in("nr_inventario", inventarioRefIds)
+          : Promise.resolve({ data: [], error: null }),
+        supabase
+          .from("vw_setor")
+          .select("cd_setor,cd_piso,nm_piso,nm_setor,nm_localizacao,ds_setor"),
+      ]);
+
+      if (inventariosRefRes.error) throw new Error(`inventario: ${inventariosRefRes.error.message}`);
+      if (setoresRes.error) throw new Error(`setor: ${setoresRes.error.message}`);
+
+      const invRefById = new Map(
+        (inventariosRefRes.data || []).map((item: any) => [Number(item.nr_inventario), item]),
+      );
+      const setorById = new Map(
+        (setoresRes.data || []).map((setor: any) => [Number(setor.cd_setor), setor]),
+      );
+
+      const itens = (pendencias || []).map((item: any) => {
+        const invRefId = Number(item.nr_inventario_referencia);
+        const inventarioRef = invRefById.get(invRefId);
+        const setorRef = setorById.get(Number(item.cd_setor_referencia ?? inventarioRef?.cd_setor));
+
+        return {
+          id: Number(item.id),
+          ie_status: limparTexto(item.ie_status) || "PENDENTE",
+          dt_detectado: limparTexto(item.dt_detectado),
+          dt_ultima_detecao: limparTexto(item.dt_ultima_detecao),
+          nr_ocorrencias: Number(item.nr_ocorrencias || 1),
+          ds_motivo: limparTexto(item.ds_motivo),
+          coletor_id: limparTexto(item.coletor_id),
+          nr_inventario_referencia: invRefId,
+          nr_inventario_substituto: Number.isFinite(Number(item.nr_inventario_substituto))
+            ? Number(item.nr_inventario_substituto)
+            : null,
+          cd_setor_referencia: Number.isFinite(Number(item.cd_setor_referencia))
+            ? Number(item.cd_setor_referencia)
+            : Number(inventarioRef?.cd_setor || 0) || null,
+          setor_referencia_label: formatarLabelSetor(setorRef),
+          referencia: inventarioRef
+            ? {
+                nr_inventario: Number(inventarioRef.nr_inventario),
+                nr_patrimonio: limparTexto(inventarioRef.nr_patrimonio),
+                nr_serie: limparTexto(inventarioRef.nr_serie),
+                nr_ip: limparTexto(inventarioRef.nr_ip),
+                tp_status: limparTexto(inventarioRef.tp_status),
+                ie_situacao: limparTexto(inventarioRef.ie_situacao),
+              }
+            : null,
+          detectado: {
+            nr_ip: limparTexto(item.nr_ip_detectado),
+            nr_patrimonio: limparTexto(item.nr_patrimonio_detectado),
+            nr_serie: limparTexto(item.nr_serie_detectada),
+            nm_mac: normalizarMac(limparTexto(item.nr_mac_detectado)),
+          },
+          esperado: {
+            nr_patrimonio: limparTexto(item.nr_patrimonio_esperado),
+            nr_serie: limparTexto(item.nr_serie_esperada),
+            nm_mac: normalizarMac(limparTexto(item.nr_mac_esperado)),
+          },
+          resolucao: {
+            dt_resolucao: limparTexto(item.dt_resolucao),
+            nm_usuario_resolucao: limparTexto(item.nm_usuario_resolucao),
+            ds_resolucao: limparTexto(item.ds_resolucao),
+          },
+        };
+      });
+
+      return jsonResponse({ ok: true, data: itens });
+    }
+
+    if (action === "resolver_substituicao_pendente") {
+      const hasTabela = await tableExists(supabase, "telemetria_substituicao_pendente");
+      if (!hasTabela) {
+        return badRequest("Tabela telemetria_substituicao_pendente nao encontrada. Rode a migration antes.");
+      }
+
+      const idPendencia = Number(payload?.id_pendencia);
+      const acao = String(payload?.acao || "").trim().toUpperCase();
+      const observacao = limparTexto(payload?.observacao);
+      const nrChamado = limparTexto(payload?.nr_chamado);
+      const moverSubstitutoParaSetorReferencia = payload?.mover_substituto_para_setor_referencia !== false;
+
+      if (!Number.isFinite(idPendencia) || idPendencia <= 0) {
+        return badRequest("id_pendencia e obrigatorio.");
+      }
+
+      if (!["CONFIRMAR_TROCA", "DESCARTAR_ALERTA"].includes(acao)) {
+        return badRequest("acao invalida. Use CONFIRMAR_TROCA ou DESCARTAR_ALERTA.");
+      }
+
+      const { data: pendencia, error: erroPendencia } = await supabase
+        .from("telemetria_substituicao_pendente")
+        .select("*")
+        .eq("id", idPendencia)
+        .single();
+
+      if (erroPendencia || !pendencia) {
+        return badRequest("Pendencia nao encontrada.");
+      }
+
+      const statusAtualPendencia = String(pendencia.ie_status || "PENDENTE").toUpperCase();
+      if (statusAtualPendencia !== "PENDENTE") {
+        return badRequest("Esta pendencia ja foi resolvida anteriormente.");
+      }
+
+      const dsResolucaoBase = [
+        `ACAO: ${acao}`,
+        nrChamado ? `CHAMADO: ${nrChamado}` : null,
+        observacao ? `OBS: ${observacao}` : null,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+
+      if (acao === "DESCARTAR_ALERTA") {
+        const { data: atualizado, error: erroAtualizar } = await supabase
+          .from("telemetria_substituicao_pendente")
+          .update({
+            ie_status: "DESCARTADO",
+            dt_resolucao: new Date().toISOString(),
+            cd_usuario_resolucao: cdUsuario,
+            nm_usuario_resolucao: nmUsuario,
+            ds_resolucao: dsResolucaoBase || "DESCARTAR_ALERTA",
+          })
+          .eq("id", idPendencia)
+          .select("*")
+          .single();
+
+        if (erroAtualizar) {
+          throw new Error(`Erro ao descartar pendencia: ${erroAtualizar.message}`);
+        }
+
+        return jsonResponse({
+          ok: true,
+          data: {
+            pendencia: atualizado,
+            resumo: {
+              id_pendencia: idPendencia,
+              acao,
+            },
+          },
+        });
+      }
+
+      const nrInventarioReferencia = Number(pendencia.nr_inventario_referencia);
+      if (!Number.isFinite(nrInventarioReferencia) || nrInventarioReferencia <= 0) {
+        return badRequest("Pendencia sem nr_inventario_referencia valido.");
+      }
+
+      const { data: referencia, error: erroRef } = await supabase
+        .from("inventario")
+        .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+        .eq("nr_inventario", nrInventarioReferencia)
+        .single();
+
+      if (erroRef || !referencia) {
+        return badRequest("Inventario de referencia nao encontrado.");
+      }
+
+      const candidatoEncontradoPor: string[] = [];
+      let substituto: any = null;
+
+      const patrimonioDetectado = limparTexto(pendencia.nr_patrimonio_detectado);
+      if (patrimonioDetectado) {
+        const { data } = await supabase
+          .from("inventario")
+          .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+          .ilike("nr_patrimonio", patrimonioDetectado)
+          .neq("nr_inventario", nrInventarioReferencia)
+          .eq("ie_situacao", "A")
+          .limit(1)
+          .maybeSingle();
+        if (data?.nr_inventario) {
+          substituto = data;
+          candidatoEncontradoPor.push("patrimonio");
+        }
+      }
+
+      const serieDetectada = limparTexto(pendencia.nr_serie_detectada);
+      if (!substituto && serieDetectada) {
+        const { data } = await supabase
+          .from("inventario")
+          .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+          .ilike("nr_serie", serieDetectada)
+          .neq("nr_inventario", nrInventarioReferencia)
+          .eq("ie_situacao", "A")
+          .limit(1)
+          .maybeSingle();
+        if (data?.nr_inventario) {
+          substituto = data;
+          candidatoEncontradoPor.push("serie");
+        }
+      }
+
+      const hasNmMac = await columnExists(supabase, "inventario", "nm_mac");
+      const macDetectado = normalizarMac(limparTexto(pendencia.nr_mac_detectado));
+      if (!substituto && hasNmMac && macDetectado) {
+        const { data } = await supabase
+          .from("inventario")
+          .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+          .eq("nm_mac", macDetectado)
+          .neq("nr_inventario", nrInventarioReferencia)
+          .eq("ie_situacao", "A")
+          .limit(1)
+          .maybeSingle();
+        if (data?.nr_inventario) {
+          substituto = data;
+          candidatoEncontradoPor.push("mac");
+        }
+      }
+
+      if (!substituto?.nr_inventario) {
+        return badRequest(
+          "Nao encontrei item substituto no inventario com os identificadores detectados (patrimonio/serie/mac).",
+        );
+      }
+
+      const nrInventarioSubstituto = Number(substituto.nr_inventario);
+      const cdSetorReferencia = Number.isFinite(Number(pendencia.cd_setor_referencia))
+        ? Number(pendencia.cd_setor_referencia)
+        : Number(referencia.cd_setor || 0);
+      const cdSetorDestinoSubstituto = moverSubstitutoParaSetorReferencia && Number.isFinite(cdSetorReferencia) && cdSetorReferencia > 0
+        ? cdSetorReferencia
+        : Number(substituto.cd_setor || 0);
+
+      const ipDetectado = normalizarIp(limparTexto(pendencia.nr_ip_detectado));
+      if (!ipDetectado) {
+        return badRequest("Pendencia sem IP detectado valido.");
+      }
+
+      const patchSubstituto: Record<string, unknown> = {
+        nr_ip: ipDetectado,
+        tp_status: "ATIVO",
+        ie_situacao: tpStatusParaSituacao("ATIVO"),
+        dt_atualizacao: new Date().toISOString(),
+      };
+      if (Number.isFinite(cdSetorDestinoSubstituto) && cdSetorDestinoSubstituto > 0) {
+        patchSubstituto.cd_setor = cdSetorDestinoSubstituto;
+      }
+
+      const patchReferencia: Record<string, unknown> = {
+        nr_ip: null,
+        tp_status: "BACKUP",
+        ie_situacao: tpStatusParaSituacao("BACKUP"),
+        dt_atualizacao: new Date().toISOString(),
+      };
+
+      const [referenciaAtualizada, substitutoAtualizado] = await Promise.all([
+        atualizarInventarioComFallbackDt({
+          supabase,
+          nrInventario: nrInventarioReferencia,
+          patch: patchReferencia,
+        }),
+        atualizarInventarioComFallbackDt({
+          supabase,
+          nrInventario: nrInventarioSubstituto,
+          patch: patchSubstituto,
+        }),
+      ]);
+
+      const dsObsMov = [
+        "SUBSTITUICAO ASSISTIDA POR TELEMETRIA",
+        `PENDENCIA_ID: ${idPendencia}`,
+        `REF: ${limparTexto(referencia.nr_patrimonio) || nrInventarioReferencia}`,
+        `SUBSTITUTO: ${limparTexto(substituto.nr_patrimonio) || nrInventarioSubstituto}`,
+        `IP: ${ipDetectado}`,
+        nrChamado ? `CHAMADO: ${nrChamado}` : null,
+        observacao ? `OBS: ${observacao}` : null,
+      ]
+        .filter(Boolean)
+        .join(" | ");
+
+      await Promise.all([
+        registrarMovimentacaoSeNecessario({
+          supabase,
+          nr_inventario: nrInventarioSubstituto,
+          cd_setor_origem: Number.isFinite(Number(substituto.cd_setor)) ? Number(substituto.cd_setor) : null,
+          cd_setor_destino: Number.isFinite(cdSetorDestinoSubstituto) && cdSetorDestinoSubstituto > 0
+            ? cdSetorDestinoSubstituto
+            : Number(substituto.cd_setor || 0),
+          cd_usuario: cdUsuario,
+          nm_usuario: nmUsuario,
+          ds_observacao: dsObsMov,
+        }),
+        registrarMovimentacaoSeNecessario({
+          supabase,
+          nr_inventario: nrInventarioReferencia,
+          cd_setor_origem: Number.isFinite(Number(referencia.cd_setor)) ? Number(referencia.cd_setor) : null,
+          cd_setor_destino: Number.isFinite(Number(referencia.cd_setor)) ? Number(referencia.cd_setor) : null,
+          cd_usuario: cdUsuario,
+          nm_usuario: nmUsuario,
+          ds_observacao: `${dsObsMov} | Referencia movida para BACKUP`,
+        }),
+      ]);
+
+      const { data: pendenciaAtualizada, error: erroPendenciaAtualizada } = await supabase
+        .from("telemetria_substituicao_pendente")
+        .update({
+          ie_status: "CONFIRMADO",
+          nr_inventario_substituto: nrInventarioSubstituto,
+          dt_resolucao: new Date().toISOString(),
+          cd_usuario_resolucao: cdUsuario,
+          nm_usuario_resolucao: nmUsuario,
+          ds_resolucao: dsResolucaoBase || "CONFIRMAR_TROCA",
+        })
+        .eq("id", idPendencia)
+        .select("*")
+        .single();
+
+      if (erroPendenciaAtualizada) {
+        throw new Error(`Erro ao concluir pendencia: ${erroPendenciaAtualizada.message}`);
+      }
+
+      return jsonResponse({
+        ok: true,
+        data: {
+          pendencia: pendenciaAtualizada,
+          referencia: referenciaAtualizada,
+          substituto: substitutoAtualizado,
+          resumo: {
+            id_pendencia: idPendencia,
+            acao,
+            nr_inventario_referencia: nrInventarioReferencia,
+            nr_inventario_substituto: nrInventarioSubstituto,
+            ip_aplicado: ipDetectado,
+            identificador_usado: candidatoEncontradoPor.join("+") || null,
+          },
+        },
+      });
     }
 
     if (action === "create_inventario") {

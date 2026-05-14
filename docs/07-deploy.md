@@ -51,3 +51,15 @@ npx vercel --prod --yes
 4. Rodar coletor por 1 ciclo e validar:
 - `telemetria_pagecount` com 1 linha por inventario.
 - `telemetria_pagecount_diaria` com linha do dia atual.
+
+## Checklist extra (substituicao assistida - 2026-05-14)
+
+1. Aplicar migration `20260514_telemetria_substituicao_pendente.sql`.
+2. Reimplantar `collector-telemetria` e `inventory-core`.
+3. Rodar coletor em um IP de teste com serie diferente da esperada.
+4. Confirmar registro em `telemetria_substituicao_pendente` com `ie_status=PENDENTE`.
+5. Executar action `list_substituicao_pendente`.
+6. Executar action `resolver_substituicao_pendente` com `CONFIRMAR_TROCA`.
+7. Validar no inventario:
+- item antigo ficou `BACKUP` e sem IP.
+- item substituto ficou `ATIVO` com o IP aplicado.

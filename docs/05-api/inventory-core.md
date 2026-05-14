@@ -8,6 +8,8 @@ Acoes:
 
 - list_context
 - list_devolucao
+- list_substituicao_pendente
+- resolver_substituicao_pendente
 - create_inventario
 - update_inventario
 - move_inventario
@@ -90,6 +92,106 @@ Acoes:
 
 - `nm_hostname` deve ser enviado para equipamentos com hierarquia `RAIZ` ou `AMBOS`.
 - Quando o equipamento e `FILHO`, o backend ignora/limpa `nm_hostname`.
+
+## Action: list_substituicao_pendente
+
+Lista alertas de substituicao detectados pela telemetria quando o IP respondeu com serie/mac/patrimonio diferente do esperado.
+
+### Request
+
+```json
+{
+  "action": "list_substituicao_pendente",
+  "payload": {
+    "somente_pendentes": true,
+    "limite": 200
+  }
+}
+```
+
+### Response (resumo)
+
+```json
+{
+  "ok": true,
+  "data": [
+    {
+      "id": 12,
+      "ie_status": "PENDENTE",
+      "nr_ocorrencias": 3,
+      "ds_motivo": "Numero de serie detectado diferente do numero de serie esperado para o IP",
+      "nr_inventario_referencia": 50,
+      "setor_referencia_label": "1 Andar - Setor X",
+      "referencia": {
+        "nr_patrimonio": "293273",
+        "nr_serie": "SER-ANTIGA",
+        "nr_ip": "10.6.0.50"
+      },
+      "detectado": {
+        "nr_ip": "10.6.0.50",
+        "nr_patrimonio": "330731",
+        "nr_serie": "SER-NOVA"
+      }
+    }
+  ]
+}
+```
+
+## Action: resolver_substituicao_pendente
+
+Resolve uma pendencia detectada pela telemetria.
+
+`CONFIRMAR_TROCA`:
+- coloca o item detectado como `ATIVO` com o IP da pendencia;
+- opcionalmente move o item detectado para o setor da referencia;
+- move o item de referencia para `BACKUP` e limpa IP.
+
+`DESCARTAR_ALERTA`:
+- marca a pendencia como descartada sem mexer no inventario.
+
+### Request (confirmar)
+
+```json
+{
+  "action": "resolver_substituicao_pendente",
+  "payload": {
+    "id_pendencia": 12,
+    "acao": "CONFIRMAR_TROCA",
+    "mover_substituto_para_setor_referencia": true,
+    "nr_chamado": "GLPI-789",
+    "observacao": "Troca fisica validada em campo"
+  }
+}
+```
+
+### Request (descartar)
+
+```json
+{
+  "action": "resolver_substituicao_pendente",
+  "payload": {
+    "id_pendencia": 12,
+    "acao": "DESCARTAR_ALERTA",
+    "observacao": "Falso positivo apos validacao"
+  }
+}
+```
+
+### Erros comuns
+
+- 400: `id_pendencia` invalido.
+- 400: `acao` invalida.
+- 400: pendencia ja resolvida.
+- 400: nao encontrou substituto por patrimonio/serie/mac no inventario.
+
+## Mapa de codigo (linhas)
+
+- Listagem de pendencias:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1928`
+- Resolucao de pendencias:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2038`
+- Atualizacao com fallback para ambientes sem `dt_atualizacao`:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:617`
 
 ## Action: update_inventario
 

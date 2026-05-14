@@ -77,6 +77,7 @@ Contrato:
     "gravacoes_telemetria": 1,
     "gravacoes_leituras_paginas": 1,
     "gravacoes_suprimentos": 1,
+    "alertas_substituicao_detectados": 0,
     "erros": [],
     "modo_gravacao": {
       "impressoras": true,
@@ -85,7 +86,8 @@ Contrato:
       "suprimentos_impressoras": true,
       "inventario": false,
       "telemetria_pagecount": false,
-      "suprimentos": false
+      "suprimentos": false,
+      "telemetria_substituicao_pendente": false
     }
   }
 }
@@ -101,6 +103,20 @@ Observacao (2026-05-06):
 - Datas de leitura no banco usam `TIMESTAMPTZ` para evitar deslocamento de fuso no painel.
 - No coletor SNMP, quando mais de um OID de contador responde no mesmo ciclo, o seletor prioriza valor valido mais consistente e evita preferir leitura `0` quando existe leitura positiva no mesmo evento.
 
+Observacao (2026-05-14) - Substituicao assistida:
+
+- Quando existir tabela `telemetria_substituicao_pendente`, o collector compara a identidade detectada no IP com a identidade esperada na vaga do inventario.
+- Se detectar divergencia relevante (patrimonio/serie/mac), cria/atualiza pendencia para confirmacao manual no `inventory-core`.
+- Nessa etapa o collector nao substitui item automaticamente.
+
+## Fluxo de comparacao de identidade
+
+1. Coleta recebe IP + identificadores da impressora (serie/mac/patrimonio).
+2. Backend busca o item ativo do inventario para esse IP.
+3. Compara esperado x detectado.
+4. Se houver divergencia, registra em `telemetria_substituicao_pendente`.
+5. Time resolve manualmente via action `resolver_substituicao_pendente`.
+
 ## Mapa de codigo (linhas)
 
 - Montagem do payload padrao do coletor:
@@ -113,6 +129,12 @@ Observacao (2026-05-06):
   - `coletor-snmp/utils/runtime_trace.py:37`
 - Painel de execucao real no app desktop:
   - `coletor-snmp/scripts/collector_control_app.py:609`
+- Deteccao de alerta de substituicao na ingestao:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:1097`
+- Comparacao esperado x detectado:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:529`
+- Registro da pendencia no banco:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:582`
 
 ## Resposta parcial
 

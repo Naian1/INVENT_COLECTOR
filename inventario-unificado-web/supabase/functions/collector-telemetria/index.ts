@@ -50,6 +50,30 @@ type Capacidades = {
   inventario: boolean;
   telemetria_pagecount: boolean;
   suprimentos: boolean;
+  telemetria_substituicao_pendente: boolean;
+};
+
+type InventarioIpSlot = {
+  nr_inventario: number;
+  cd_setor: number | null;
+  nr_patrimonio: string | null;
+  nr_serie: string | null;
+  nr_ip: string | null;
+  tp_status: string | null;
+  ie_situacao: string | null;
+};
+
+type AlertaSubstituicaoDetectado = {
+  nr_inventario_referencia: number;
+  cd_setor_referencia: number | null;
+  nr_ip_detectado: string;
+  nr_patrimonio_esperado: string | null;
+  nr_patrimonio_detectado: string | null;
+  nr_serie_esperada: string | null;
+  nr_serie_detectada: string | null;
+  nr_mac_esperado: string | null;
+  nr_mac_detectado: string | null;
+  ds_motivo: string;
 };
 
 const corsHeaders = {
@@ -121,6 +145,34 @@ function cleanText(value: unknown): string | null {
   if (value === null || value === undefined) return null;
   const text = String(value).trim();
   return text ? text : null;
+}
+
+/**
+ * [DOC-FUNC] normalizeComparableText
+ * O que faz: Padroniza identificadores textuais (patrimonio/serie) para comparacao segura entre fontes diferentes.
+ * Entradas: value.
+ * Como executa: remove espacos extras e converte para maiusculas.
+ * Retorno/Efeitos: devolve string normalizada ou null.
+ */
+function normalizeComparableText(value: unknown): string | null {
+  const text = cleanText(value);
+  if (!text) return null;
+  return text.toUpperCase();
+}
+
+/**
+ * [DOC-FUNC] normalizeMac
+ * O que faz: Padroniza MAC para comparacao, removendo separadores e mantendo apenas hexadecimal.
+ * Entradas: value.
+ * Como executa: limpa caracteres nao hexadecimais e valida tamanho de 12 digitos.
+ * Retorno/Efeitos: MAC no formato AABBCCDDEEFF ou null.
+ */
+function normalizeMac(value: unknown): string | null {
+  const text = cleanText(value);
+  if (!text) return null;
+  const hex = text.replace(/[^0-9a-fA-F]/g, "").toUpperCase();
+  if (hex.length !== 12) return null;
+  return hex;
 }
 
 /**
@@ -388,7 +440,218 @@ async function carregarCapacidades(supabase: ReturnType<typeof getAdminClient>):
     inventario: await tableExists(supabase, "inventario"),
     telemetria_pagecount: await tableExists(supabase, "telemetria_pagecount"),
     suprimentos: await tableExists(supabase, "suprimentos"),
+    telemetria_substituicao_pendente: await tableExists(supabase, "telemetria_substituicao_pendente"),
   };
+}
+
+/**
+ * [DOC-FUNC] buscarInventarioAtivoPorIp
+ * O que faz: Encontra o item ativo do inventario vinculado ao IP coletado para servir como referencia da "vaga" de rede.
+ * Entradas: supabase, ip.
+ * Como executa: consulta inventario por `nr_ip`, filtra registros ativos e ignora status BACKUP/DEVOLUCAO.
+ * Retorno/Efeitos: retorna a referencia do slot de inventario ou null.
+ */
+async function buscarInventarioAtivoPorIp(
+  supabase: ReturnType<typeof getAdminClient>,
+  ip: string | null,
+): Promise<InventarioIpSlot | null> {
+  const ipNormalizado = normalizeIp(ip);
+  if (!ipNormalizado) return null;
+
+  const { data, error } = await supabase
+    .from("inventario")
+    .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+    .eq("nr_ip", ipNormalizado)
+    .eq("ie_situacao", "A")
+    .limit(20);
+
+  if (error) throw new Error(`inventario (ip-slot): ${error.message}`);
+
+  const candidatos = (data || []).filter((item: any) => {
+    const tpStatus = String(item?.tp_status || "").toUpperCase();
+    if (tpStatus === "BACKUP" || tpStatus === "DEVOLUCAO") return false;
+    return true;
+  });
+
+  if (!candidatos.length) return null;
+  const escolhido = candidatos[0];
+  return {
+    nr_inventario: Number(escolhido.nr_inventario),
+    cd_setor: Number.isFinite(Number(escolhido.cd_setor)) ? Number(escolhido.cd_setor) : null,
+    nr_patrimonio: cleanText(escolhido.nr_patrimonio),
+    nr_serie: cleanText(escolhido.nr_serie),
+    nr_ip: cleanText(escolhido.nr_ip),
+    tp_status: cleanText(escolhido.tp_status),
+    ie_situacao: cleanText(escolhido.ie_situacao),
+  };
+}
+
+/**
+ * [DOC-FUNC] buscarImpressoraLegadaPorIp
+ * O que faz: Consulta a tabela legada `impressoras` para obter MAC/serie/patrimonio esperados no mesmo IP.
+ * Entradas: supabase, ip.
+ * Como executa: busca por IP exato e retorna um registro unico quando existir.
+ * Retorno/Efeitos: dados legados da impressora esperada no IP ou null.
+ */
+async function buscarImpressoraLegadaPorIp(
+  supabase: ReturnType<typeof getAdminClient>,
+  ip: string | null,
+): Promise<{ patrimonio: string | null; numero_serie: string | null; endereco_mac: string | null } | null> {
+  const ipNormalizado = normalizeIp(ip);
+  if (!ipNormalizado) return null;
+
+  const { data, error } = await supabase
+    .from("impressoras")
+    .select("patrimonio,numero_serie,endereco_mac")
+    .eq("ip", ipNormalizado)
+    .maybeSingle();
+
+  if (error) {
+    if (isMissingTableErrorMessage(String(error.message || ""))) return null;
+    throw new Error(`impressoras (ip-slot): ${error.message}`);
+  }
+
+  if (!data) return null;
+  return {
+    patrimonio: cleanText((data as any).patrimonio),
+    numero_serie: cleanText((data as any).numero_serie),
+    endereco_mac: cleanText((data as any).endereco_mac),
+  };
+}
+
+/**
+ * [DOC-FUNC] detectarAlertaSubstituicao
+ * O que faz: Compara o equipamento coletado no IP com os identificadores esperados da vaga no inventario.
+ * Entradas: slotInventario, esperadoLegado, evento.
+ * Como executa: compara patrimonio/serie/mac normalizados e monta lista de motivos em caso de divergencia.
+ * Retorno/Efeitos: retorna o alerta pronto para persistir ou null quando nao houver indicio de troca.
+ */
+function detectarAlertaSubstituicao(
+  slotInventario: InventarioIpSlot,
+  esperadoLegado: { patrimonio: string | null; numero_serie: string | null; endereco_mac: string | null } | null,
+  evento: EventoNormalizado,
+): AlertaSubstituicaoDetectado | null {
+  const ipDetectado = normalizeIp(evento.impressora.ip);
+  if (!ipDetectado) return null;
+
+  const patrimonioEsperado = normalizeComparableText(slotInventario.nr_patrimonio ?? esperadoLegado?.patrimonio);
+  const serieEsperada = normalizeComparableText(slotInventario.nr_serie ?? esperadoLegado?.numero_serie);
+  const macEsperado = normalizeMac(esperadoLegado?.endereco_mac);
+
+  const patrimonioDetectado = normalizeComparableText(evento.impressora.patrimonio);
+  const serieDetectada = normalizeComparableText(evento.impressora.numero_serie);
+  const macDetectado = normalizeMac(evento.impressora.endereco_mac);
+
+  const motivos: string[] = [];
+
+  if (patrimonioEsperado && patrimonioDetectado && patrimonioEsperado !== patrimonioDetectado) {
+    motivos.push("Patrimonio detectado diferente do patrimonio esperado para o IP");
+  }
+
+  if (serieEsperada && serieDetectada && serieEsperada !== serieDetectada) {
+    motivos.push("Numero de serie detectado diferente do numero de serie esperado para o IP");
+  }
+
+  if (macEsperado && macDetectado && macEsperado !== macDetectado) {
+    motivos.push("Endereco MAC detectado diferente do MAC esperado para o IP");
+  }
+
+  if (!motivos.length) return null;
+
+  return {
+    nr_inventario_referencia: slotInventario.nr_inventario,
+    cd_setor_referencia: slotInventario.cd_setor,
+    nr_ip_detectado: ipDetectado,
+    nr_patrimonio_esperado: patrimonioEsperado,
+    nr_patrimonio_detectado: patrimonioDetectado,
+    nr_serie_esperada: serieEsperada,
+    nr_serie_detectada: serieDetectada,
+    nr_mac_esperado: macEsperado,
+    nr_mac_detectado: macDetectado,
+    ds_motivo: motivos.join(" | "),
+  };
+}
+
+/**
+ * [DOC-FUNC] registrarPendenciaSubstituicao
+ * O que faz: Cria/atualiza pendencia assistida de substituicao para revisao manual no painel.
+ * Entradas: supabase, coletorId, evento, alerta.
+ * Como executa: procura pendencia aberta por (inventario_referencia + ip) e atualiza ocorrencias; se nao existir, insere.
+ * Retorno/Efeitos: mantém trilha de auditoria sem alterar automaticamente o inventario.
+ */
+async function registrarPendenciaSubstituicao(
+  supabase: ReturnType<typeof getAdminClient>,
+  coletorId: string,
+  evento: EventoNormalizado,
+  alerta: AlertaSubstituicaoDetectado,
+): Promise<void> {
+  const { data: existente, error: erroExistente } = await supabase
+    .from("telemetria_substituicao_pendente")
+    .select("id,nr_ocorrencias")
+    .eq("nr_inventario_referencia", alerta.nr_inventario_referencia)
+    .eq("nr_ip_detectado", alerta.nr_ip_detectado)
+    .maybeSingle();
+
+  if (erroExistente) {
+    const msg = String(erroExistente.message || "");
+    if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return;
+    throw new Error(`telemetria_substituicao_pendente (select): ${msg}`);
+  }
+
+  if (existente?.id) {
+    const novoTotalOcorrencias = Math.max(1, Number(existente.nr_ocorrencias || 0) + 1);
+    const { error: erroUpdate } = await supabase
+      .from("telemetria_substituicao_pendente")
+      .update({
+        dt_ultima_detecao: evento.coletado_em,
+        ie_status: "PENDENTE",
+        nr_ocorrencias: novoTotalOcorrencias,
+        nr_patrimonio_esperado: alerta.nr_patrimonio_esperado,
+        nr_patrimonio_detectado: alerta.nr_patrimonio_detectado,
+        nr_serie_esperada: alerta.nr_serie_esperada,
+        nr_serie_detectada: alerta.nr_serie_detectada,
+        nr_mac_esperado: alerta.nr_mac_esperado,
+        nr_mac_detectado: alerta.nr_mac_detectado,
+        ds_motivo: alerta.ds_motivo,
+        coletor_id: coletorId,
+        payload_evento: evento as unknown as JsonRecord,
+        cd_usuario_resolucao: null,
+        nm_usuario_resolucao: null,
+        ds_resolucao: null,
+        dt_resolucao: null,
+      })
+      .eq("id", Number(existente.id));
+
+    if (erroUpdate) {
+      throw new Error(`telemetria_substituicao_pendente (update): ${erroUpdate.message}`);
+    }
+    return;
+  }
+
+  const { error: erroInsert } = await supabase.from("telemetria_substituicao_pendente").insert([
+    {
+      dt_detectado: evento.coletado_em,
+      dt_ultima_detecao: evento.coletado_em,
+      ie_status: "PENDENTE",
+      nr_ocorrencias: 1,
+      nr_inventario_referencia: alerta.nr_inventario_referencia,
+      cd_setor_referencia: alerta.cd_setor_referencia,
+      nr_ip_detectado: alerta.nr_ip_detectado,
+      nr_patrimonio_esperado: alerta.nr_patrimonio_esperado,
+      nr_patrimonio_detectado: alerta.nr_patrimonio_detectado,
+      nr_serie_esperada: alerta.nr_serie_esperada,
+      nr_serie_detectada: alerta.nr_serie_detectada,
+      nr_mac_esperado: alerta.nr_mac_esperado,
+      nr_mac_detectado: alerta.nr_mac_detectado,
+      ds_motivo: alerta.ds_motivo,
+      coletor_id: coletorId,
+      payload_evento: evento as unknown as JsonRecord,
+    },
+  ]);
+
+  if (erroInsert) {
+    throw new Error(`telemetria_substituicao_pendente (insert): ${erroInsert.message}`);
+  }
 }
 
 /**
@@ -803,6 +1066,7 @@ Deno.serve(async (req) => {
       gravacoes_telemetria: 0,
       gravacoes_leituras_paginas: 0,
       gravacoes_suprimentos: 0,
+      alertas_substituicao_detectados: 0,
       erros: [] as Array<{ ingestao_id: string; erro: string }>,
       modo_gravacao: caps,
     };
@@ -827,6 +1091,21 @@ Deno.serve(async (req) => {
 
         if (caps.inventario) {
           inventarioId = await resolveInventarioId(supabase, evento);
+        }
+
+        // 1.1) Deteccao assistida de substituicao: compara identidade da impressora que respondeu no IP.
+        if (caps.telemetria_substituicao_pendente && caps.inventario) {
+          const slotInventario = await buscarInventarioAtivoPorIp(supabase, evento.impressora.ip);
+          if (slotInventario) {
+            const esperadoLegado = caps.impressoras
+              ? await buscarImpressoraLegadaPorIp(supabase, evento.impressora.ip)
+              : null;
+            const alerta = detectarAlertaSubstituicao(slotInventario, esperadoLegado, evento);
+            if (alerta) {
+              await registrarPendenciaSubstituicao(supabase, lote.coletor_id, evento, alerta);
+              result.alertas_substituicao_detectados += 1;
+            }
+          }
         }
 
         // 2) Gravar nos destinos legados quando as tabelas existirem.
