@@ -138,10 +138,10 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] toFiniteNullable
- * O que faz: Normaliza entradas na funcao 'toFiniteNullable', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toFiniteNullable' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toFiniteNullable(value: unknown): number | null {
   if (value === null || value === undefined || value === "") return null;
@@ -164,10 +164,10 @@ function resolverNivelPercentualSuprimento(item: {
 
 /**
  * [DOC-FUNC] classificarSuprimentos
- * O que faz: Normaliza entradas na funcao 'classificarSuprimentos', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: menorNivel, resumo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'classificarSuprimentos' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: menorNivel, resumo; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function classificarSuprimentos(
   menorNivel: number | null,
@@ -197,10 +197,10 @@ function classificarSuprimentos(
 
 /**
  * [DOC-FUNC] formatarPercentualSuprimento
- * O que faz: Executa a responsabilidade central da funcao 'formatarPercentualSuprimento', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarPercentualSuprimento' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarPercentualSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -209,10 +209,10 @@ function formatarPercentualSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] formatarIndicadorSuprimento
- * O que faz: Executa a responsabilidade central da funcao 'formatarIndicadorSuprimento', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarIndicadorSuprimento' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarIndicadorSuprimento(value: number | null) {
   if (value !== null && !Number.isNaN(value)) return formatarPercentualSuprimento(value);
@@ -221,10 +221,10 @@ function formatarIndicadorSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] classeNivelSuprimento
- * O que faz: Executa a responsabilidade central da funcao 'classeNivelSuprimento', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'classeNivelSuprimento' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function classeNivelSuprimento(value: number | null) {
   if (value === null || Number.isNaN(value)) return "warn";
@@ -235,10 +235,10 @@ function classeNivelSuprimento(value: number | null) {
 
 /**
  * [DOC-FUNC] obterMenorSuprimentoInfo
- * O que faz: Executa a responsabilidade central da funcao 'obterMenorSuprimentoInfo', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: suprimentos; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'obterMenorSuprimentoInfo' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: suprimentos; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function obterMenorSuprimentoInfo(
   suprimentos: ImpressoraVisao["resumo_suprimentos"]
@@ -286,10 +286,10 @@ function obterMenorSuprimentoInfo(
 
 /**
  * [DOC-FUNC] classePillStatus
- * O que faz: Normaliza entradas na funcao 'classePillStatus', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: status; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'classePillStatus' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: status; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function classePillStatus(status: string) {
   const s = String(status || "unknown").toLowerCase();
@@ -300,10 +300,10 @@ function classePillStatus(status: string) {
 
 /**
  * [DOC-FUNC] parseColetaDate
- * O que faz: Normaliza entradas na funcao 'parseColetaDate', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'parseColetaDate', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function parseColetaDate(value: string | null) {
   if (!value) return null;
@@ -319,10 +319,10 @@ function parseColetaDate(value: string | null) {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Normaliza entradas na funcao 'formatarDataHora', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarDataHora' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarDataHora(value: string | null) {
   const dt = parseColetaDate(value);
@@ -335,10 +335,10 @@ function formatarDataHora(value: string | null) {
 
 /**
  * [DOC-FUNC] minutosDesdeColeta
- * O que faz: Normaliza entradas na funcao 'minutosDesdeColeta', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'minutosDesdeColeta' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function minutosDesdeColeta(value: string | null) {
   const dt = parseColetaDate(value);
@@ -348,10 +348,10 @@ function minutosDesdeColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] formatarTempoRelativoColeta
- * O que faz: Executa a responsabilidade central da funcao 'formatarTempoRelativoColeta', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarTempoRelativoColeta' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarTempoRelativoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
@@ -366,10 +366,10 @@ function formatarTempoRelativoColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] classeAtualizacaoColeta
- * O que faz: Executa a responsabilidade central da funcao 'classeAtualizacaoColeta', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'classeAtualizacaoColeta' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function classeAtualizacaoColeta(value: string | null) {
   const minutos = minutosDesdeColeta(value);
@@ -381,10 +381,10 @@ function classeAtualizacaoColeta(value: string | null) {
 
 /**
  * [DOC-FUNC] obterValorOrdenacao
- * O que faz: Normaliza entradas na funcao 'obterValorOrdenacao', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: row, coluna; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'obterValorOrdenacao' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: row, coluna; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function obterValorOrdenacao(row: ImpressoraVisao, coluna: ColunaOrdenacao): string | number {
   switch (coluna) {
@@ -445,10 +445,10 @@ export default function ImpressorasPage() {
 
   /**
    * [DOC-FUNC] valorParaTexto
-   * O que faz: Normaliza entradas na funcao 'valorParaTexto', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'valorParaTexto' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: valor; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   function valorParaTexto(valor: LinhaValorDef["valor"]) {
     if (!valor) return "";

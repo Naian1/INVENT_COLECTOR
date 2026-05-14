@@ -16,10 +16,10 @@ import { CreateInventarioSchema } from '@/types/inventario';
 
 /**
  * [DOC-FUNC] parseIdOrThrow
- * O que faz: Normaliza entradas na funcao 'parseIdOrThrow', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: raw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'parseIdOrThrow', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: raw; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function parseIdOrThrow(raw: string) {
   if (!/^\d+$/.test(raw)) {
@@ -45,10 +45,10 @@ const UpdateInventarioSchema = CreateInventarioSchema.partial();
 // GET /api/inventario/[id] - get specific inventario item
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa o endpoint HTTP GET 'GET' para leitura de dados com resposta padronizada.
- * Entradas: Parametros esperados: request, { params }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Implementa endpoint HTTP GET 'GET', retornando dados de forma segura e padronizada.
+ * Entradas: Parametros esperados: request, { params }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resposta de leitura tipada/padronizada ou erro claro de validacao/autorizacao/acesso.
  */
 export async function GET(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -75,10 +75,10 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 // PUT /api/inventario/[id] - update inventario item
 /**
  * [DOC-FUNC] PUT
- * O que faz: Implementa o endpoint HTTP PUT 'PUT' para mutar estado com seguranca e consistencia.
- * Entradas: Parametros esperados: request, { params }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Implementa endpoint HTTP PUT 'PUT', atualizando estado com validacao e consistencia.
+ * Entradas: Parametros esperados: request, { params }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna estado atualizado e sinaliza conflitos/erros de integridade com contexto.
  */
 export async function PUT(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';
@@ -114,10 +114,10 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
 // DELETE /api/inventario/[id] - delete inventario item
 /**
  * [DOC-FUNC] DELETE
- * O que faz: Implementa o endpoint HTTP DELETE 'DELETE' para mutar estado com seguranca e consistencia.
- * Entradas: Parametros esperados: request, { params }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Implementa endpoint HTTP DELETE 'DELETE', removendo/inativando recursos com seguranca.
+ * Entradas: Parametros esperados: request, { params }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna confirmacao de remocao/inativacao e bloqueios quando houver dependencia.
  */
 export async function DELETE(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   let id = '?';

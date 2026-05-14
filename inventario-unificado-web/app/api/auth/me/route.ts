@@ -8,10 +8,10 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 
 /**
  * [DOC-FUNC] getBearerToken
- * O que faz: Consulta e organiza informacoes na funcao 'getBearerToken', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getBearerToken' para retorno confiavel.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getBearerToken(request: NextRequest) {
   const authHeader = request.headers.get("authorization") || "";
@@ -21,10 +21,10 @@ function getBearerToken(request: NextRequest) {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa o endpoint HTTP GET 'GET' para leitura de dados com resposta padronizada.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Implementa endpoint HTTP GET 'GET', retornando dados de forma segura e padronizada.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resposta de leitura tipada/padronizada ou erro claro de validacao/autorizacao/acesso.
  */
 export async function GET(request: NextRequest) {
   const token = getBearerToken(request);

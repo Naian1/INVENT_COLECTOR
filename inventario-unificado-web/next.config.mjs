@@ -13,10 +13,10 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   /**
    * [DOC-FUNC] headers
-   * O que faz: Executa a responsabilidade central da funcao 'headers', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'headers' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Executa processamento local em sequencia previsivel.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   async headers() {
     return [

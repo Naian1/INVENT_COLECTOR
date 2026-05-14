@@ -41,10 +41,10 @@ const HISTORICO_PAGINAS_DIAS_MAX = 92;
 
 /**
  * [DOC-FUNC] clamp
- * O que faz: Executa a responsabilidade central da funcao 'clamp', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value, min, max; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'clamp' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value, min, max; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function clamp(value: number, min: number, max: number) {
   return Math.max(min, Math.min(max, value));
@@ -52,10 +52,10 @@ function clamp(value: number, min: number, max: number) {
 
 /**
  * [DOC-FUNC] normalizarFiltro
- * O que faz: Normaliza entradas na funcao 'normalizarFiltro', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarFiltro', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarFiltro(value: string) {
   return value.trim().toLowerCase();
@@ -63,10 +63,10 @@ function normalizarFiltro(value: string) {
 
 /**
  * [DOC-FUNC] nomeSetor
- * O que faz: Normaliza entradas na funcao 'nomeSetor', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'nomeSetor' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function nomeSetor(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -75,10 +75,10 @@ function nomeSetor(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] nomeLocalizacao
- * O que faz: Normaliza entradas na funcao 'nomeLocalizacao', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'nomeLocalizacao' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function nomeLocalizacao(value: string | null | undefined) {
   const txt = String(value ?? "").trim();
@@ -87,10 +87,10 @@ function nomeLocalizacao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] inicioPeriodoIso
- * O que faz: Normaliza entradas na funcao 'inicioPeriodoIso', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: dias; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'inicioPeriodoIso' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: dias; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function inicioPeriodoIso(dias: number) {
   const now = new Date();
@@ -102,10 +102,10 @@ function inicioPeriodoIso(dias: number) {
 
 /**
  * [DOC-FUNC] chaveBucket
- * O que faz: Normaliza entradas na funcao 'chaveBucket', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: dataIso, agrupamento; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'chaveBucket' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: dataIso, agrupamento; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
   const dt = new Date(dataIso);
@@ -118,10 +118,10 @@ function chaveBucket(dataIso: string, agrupamento: AgrupamentoPeriodo) {
 
 /**
  * [DOC-FUNC] buscarLeiturasHistoricas
- * O que faz: Consulta e organiza informacoes na funcao 'buscarLeiturasHistoricas', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: impressoraIds, deIso, ateIso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarLeiturasHistoricas' para retorno confiavel.
+ * Entradas: Parametros esperados: impressoraIds, deIso, ateIso; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function buscarLeiturasHistoricas(
   impressoraIds: string[],
@@ -167,10 +167,10 @@ async function buscarLeiturasHistoricas(
 
 /**
  * [DOC-FUNC] buscarFaixaHistoricaGlobal
- * O que faz: Consulta e organiza informacoes na funcao 'buscarFaixaHistoricaGlobal', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Consulta fontes de dados/servicos externos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarFaixaHistoricaGlobal' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
   const supabase = getSupabaseServerClient();
@@ -197,10 +197,10 @@ async function buscarFaixaHistoricaGlobal(): Promise<FaixaHistorica> {
 
 /**
  * [DOC-FUNC] buscarDashboardAnalitico
- * O que faz: Consulta e organiza informacoes na funcao 'buscarDashboardAnalitico', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarDashboardAnalitico' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function buscarDashboardAnalitico(options?: {
   dias?: number;

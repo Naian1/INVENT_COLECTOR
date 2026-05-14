@@ -101,10 +101,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] carregar
-   * O que faz: Normaliza entradas na funcao 'carregar', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: filtros?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'carregar' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: filtros?; com validacao de formato e fallback quando necessario.
+   * Como executa: Padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const carregar = async (filtros?: { competencia?: string; patrimonio?: string }) => {
     setCarregando(true);
@@ -147,10 +147,10 @@ export default function InventarioConciliacaoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Normaliza entradas na funcao 'onSubmit', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'onSubmit' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: event; com validacao de formato e fallback quando necessario.
+   * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();

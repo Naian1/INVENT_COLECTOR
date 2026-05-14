@@ -8,10 +8,10 @@ let cachedClient: SupabaseClient | null = null;
 
 /**
  * [DOC-FUNC] getSupabaseEnv
- * O que faz: Consulta e organiza informacoes na funcao 'getSupabaseEnv', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSupabaseEnv' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getSupabaseEnv() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -28,10 +28,10 @@ function getSupabaseEnv() {
 
 /**
  * [DOC-FUNC] getSupabaseServerClient
- * O que faz: Consulta e organiza informacoes na funcao 'getSupabaseServerClient', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSupabaseServerClient' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export function getSupabaseServerClient() {
   if (cachedClient) return cachedClient;

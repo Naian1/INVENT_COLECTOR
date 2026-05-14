@@ -12,10 +12,10 @@ interface DialogProps {
 
 /**
  * [DOC-FUNC] Dialog
- * O que faz: Executa a responsabilidade central da funcao 'Dialog', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: { open, onOpenChange, children }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'Dialog' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { open, onOpenChange, children }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useEffect(() => {
@@ -23,10 +23,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
     /**
      * [DOC-FUNC] handleKeyDown
-     * O que faz: Normaliza entradas na funcao 'handleKeyDown', reduzindo variacoes de formato antes da regra principal.
-     * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-     * Como executa: Valida pre-condicoes e regras de negocio.
-     * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+     * O que faz: Normaliza entradas na funcao 'handleKeyDown', reduzindo ambiguidade antes da regra principal.
+     * Entradas: Parametros esperados: event; com validacao de formato e fallback quando necessario.
+     * Como executa: Valida condicoes e decide caminhos.
+     * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
      */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -88,10 +88,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 /**
  * [DOC-FUNC] DialogContent
- * O que faz: Executa a responsabilidade central da funcao 'DialogContent', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'DialogContent' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function DialogContent({
   children,
@@ -105,10 +105,10 @@ export function DialogContent({
 
 /**
  * [DOC-FUNC] DialogHeader
- * O que faz: Executa a responsabilidade central da funcao 'DialogHeader', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'DialogHeader' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function DialogHeader({
   children,
@@ -132,10 +132,10 @@ export function DialogHeader({
 
 /**
  * [DOC-FUNC] DialogTitle
- * O que faz: Executa a responsabilidade central da funcao 'DialogTitle', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'DialogTitle' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function DialogTitle({
   children,
@@ -149,10 +149,10 @@ export function DialogTitle({
 
 /**
  * [DOC-FUNC] DialogDescription
- * O que faz: Executa a responsabilidade central da funcao 'DialogDescription', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'DialogDescription' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function DialogDescription({
   children,

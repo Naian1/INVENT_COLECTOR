@@ -13,10 +13,10 @@ type RouteContext = {
 
 /**
  * [DOC-FUNC] getDefaultMonthRange
- * O que faz: Consulta e organiza informacoes na funcao 'getDefaultMonthRange', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getDefaultMonthRange' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getDefaultMonthRange() {
   const now = new Date();
@@ -29,10 +29,10 @@ function getDefaultMonthRange() {
 
 /**
  * [DOC-FUNC] isValidDateString
- * O que faz: Avalia condicoes de controle na funcao 'isValidDateString' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isValidDateString' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isValidDateString(value: string) {
   return !Number.isNaN(Date.parse(value));
@@ -40,10 +40,10 @@ function isValidDateString(value: string) {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa o endpoint HTTP GET 'GET' para leitura de dados com resposta padronizada.
- * Entradas: Parametros esperados: request, context; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Implementa endpoint HTTP GET 'GET', retornando dados de forma segura e padronizada.
+ * Entradas: Parametros esperados: request, context; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resposta de leitura tipada/padronizada ou erro claro de validacao/autorizacao/acesso.
  */
 export async function GET(request: NextRequest, context: RouteContext) {
   const auth = await authenticateApiRequest(request);

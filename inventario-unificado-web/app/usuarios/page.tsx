@@ -62,10 +62,10 @@ const INITIAL_FORM: UsuarioFormState = {
 
 /**
  * [DOC-FUNC] formatarDataHora
- * O que faz: Consulta e organiza informacoes na funcao 'formatarDataHora', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarDataHora' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarDataHora(value: string | null | undefined): string {
   if (!value) return '-';
@@ -130,10 +130,10 @@ export default function UsuariosPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * O que faz: Consulta e organiza informacoes na funcao 'loadAuth', entregando retorno confiavel para camadas superiores.
-     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+     * O que faz: Consulta e organiza informacoes na funcao 'loadAuth' para retorno confiavel.
+     * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+     * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+     * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
      */
     const loadAuth = async () => {
       try {
@@ -173,10 +173,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] carregarUsuarios
-   * O que faz: Normaliza entradas na funcao 'carregarUsuarios', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'carregarUsuarios' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const carregarUsuarios = async () => {
     setLoading(true);
@@ -259,10 +259,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] resetForm
-   * O que faz: Executa a responsabilidade central da funcao 'resetForm', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'resetForm' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Executa processamento local em sequencia previsivel.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const resetForm = () => {
     setFormData(INITIAL_FORM);
@@ -273,10 +273,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openCreateModal
-   * O que faz: Cria e persiste dados na funcao 'openCreateModal', aplicando validacao para preservar integridade do dominio.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+   * O que faz: Cria e persiste dados na funcao 'openCreateModal' com validacao de integridade.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Executa processamento local em sequencia previsivel.
+   * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
    */
   const openCreateModal = () => {
     resetForm();
@@ -285,10 +285,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] openEditModal
-   * O que faz: Normaliza entradas na funcao 'openEditModal', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: usuario; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'openEditModal' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: usuario; com validacao de formato e fallback quando necessario.
+   * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const openEditModal = (usuario: Usuario) => {
     const perfisSelecionados = usuarioPerfis[usuario.cd_usuario] || [];
@@ -307,10 +307,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleChangeForm
-   * O que faz: Executa a responsabilidade central da funcao 'handleChangeForm', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Parametros esperados: campo, valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'handleChangeForm' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: campo, valor; com validacao de formato e fallback quando necessario.
+   * Como executa: Executa processamento local em sequencia previsivel.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const handleChangeForm = (campo: keyof UsuarioFormState, valor: string) => {
     setFormData((prev) => ({ ...prev, [campo]: valor }));
@@ -318,10 +318,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] togglePerfilSelecionado
-   * O que faz: Remove/inativa dados na funcao 'togglePerfilSelecionado', respeitando regras de ciclo de vida e dependencias.
-   * Entradas: Parametros esperados: perfilId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa remocao de forma controlada.
-   * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+   * O que faz: Executa a responsabilidade principal da funcao 'togglePerfilSelecionado' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: perfilId; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; remove/inativa dados conforme regra.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const togglePerfilSelecionado = (perfilId: number) => {
     setFormData((prev) => {
@@ -337,10 +337,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleSubmit
-   * O que faz: Consulta e organiza informacoes na funcao 'handleSubmit', entregando retorno confiavel para camadas superiores.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+   * O que faz: Executa a responsabilidade principal da funcao 'handleSubmit' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const handleSubmit = async () => {
     setErrorMessage(null);
@@ -404,10 +404,10 @@ export default function UsuariosPage() {
 
   /**
    * [DOC-FUNC] handleToggleStatus
-   * O que faz: Executa a responsabilidade central da funcao 'handleToggleStatus', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Parametros esperados: usuario; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'handleToggleStatus' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: usuario; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const handleToggleStatus = async (usuario: Usuario) => {
     setErrorMessage(null);

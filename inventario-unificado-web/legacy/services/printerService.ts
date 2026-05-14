@@ -15,10 +15,10 @@ export type ServiceResult<T> =
 
 /**
  * [DOC-FUNC] normalizeSupabaseError
- * O que faz: Normaliza entradas na funcao 'normalizeSupabaseError', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: message; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeSupabaseError', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: message; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeSupabaseError(message: string) {
   if (message.includes("uq_printers_ip_address")) {
@@ -35,10 +35,10 @@ function normalizeSupabaseError(message: string) {
 
 /**
  * [DOC-FUNC] withDisplayName
- * O que faz: Executa a responsabilidade central da funcao 'withDisplayName', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'withDisplayName' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function withDisplayName(input: {
   display_name?: string | null;
@@ -62,10 +62,10 @@ function withDisplayName(input: {
 
 /**
  * [DOC-FUNC] getAllPrinters
- * O que faz: Consulta e organiza informacoes na funcao 'getAllPrinters', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getAllPrinters' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
   const supabase = getSupabaseServerClient();
@@ -84,10 +84,10 @@ export async function getAllPrinters(): Promise<ServiceResult<Printer[]>> {
 
 /**
  * [DOC-FUNC] getPrinterByUniqueField
- * O que faz: Consulta e organiza informacoes na funcao 'getPrinterByUniqueField', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: field, value, label; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPrinterByUniqueField' para retorno confiavel.
+ * Entradas: Parametros esperados: field, value, label; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function getPrinterByUniqueField(
   field: "ip_address" | "serial_number" | "asset_tag",
@@ -121,10 +121,10 @@ async function getPrinterByUniqueField(
 
 /**
  * [DOC-FUNC] getPrinterById
- * O que faz: Consulta e organiza informacoes na funcao 'getPrinterById', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPrinterById' para retorno confiavel.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getPrinterById(id: string): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
@@ -147,10 +147,10 @@ export async function getPrinterById(id: string): Promise<ServiceResult<Printer>
 
 /**
  * [DOC-FUNC] createPrinter
- * O que faz: Cria e persiste dados na funcao 'createPrinter', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'createPrinter' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function createPrinter(input: CreatePrinterInput): Promise<ServiceResult<Printer>> {
   const supabase = getSupabaseServerClient();
@@ -197,10 +197,10 @@ export async function createPrinter(input: CreatePrinterInput): Promise<ServiceR
 
 /**
  * [DOC-FUNC] updatePrinter
- * O que faz: Atualiza estado na funcao 'updatePrinter', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: id, input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Atualiza estado na funcao 'updatePrinter' mantendo coerencia das regras de negocio.
+ * Entradas: Parametros esperados: id, input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
  */
 export async function updatePrinter(
   id: string,
@@ -294,10 +294,10 @@ const COLLECTOR_UNKNOWN_VALUES = new Set([
 
 /**
  * [DOC-FUNC] normalizeCollectorText
- * O que faz: Normaliza entradas na funcao 'normalizeCollectorText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeCollectorText', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeCollectorText(value: string | null | undefined): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -309,10 +309,10 @@ function normalizeCollectorText(value: string | null | undefined): string | unde
 
 /**
  * [DOC-FUNC] normalizeCollectorModel
- * O que faz: Normaliza entradas na funcao 'normalizeCollectorModel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeCollectorModel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeCollectorModel(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -322,10 +322,10 @@ function normalizeCollectorModel(value: string | undefined): string | undefined 
 
 /**
  * [DOC-FUNC] normalizeCollectorIp
- * O que faz: Normaliza entradas na funcao 'normalizeCollectorIp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeCollectorIp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeCollectorIp(value: string | undefined): string | undefined {
   if (!value) return undefined;
@@ -354,10 +354,10 @@ function resolveCollectorDisplayName(input: {
 
 /**
  * [DOC-FUNC] upsertPrinterFromCollector
- * O que faz: Cria e persiste dados na funcao 'upsertPrinterFromCollector', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertPrinterFromCollector' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function upsertPrinterFromCollector(
   input: CollectorPrinterUpsertInput

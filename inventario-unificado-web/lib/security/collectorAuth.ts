@@ -6,10 +6,10 @@ import { timingSafeEqual } from "crypto";
 
 /**
  * [DOC-FUNC] safeCompare
- * O que faz: Consulta e organiza informacoes na funcao 'safeCompare', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: valueA, valueB; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'safeCompare' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: valueA, valueB; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -21,10 +21,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] validateCollectorBearerToken
- * O que faz: Normaliza entradas na funcao 'validateCollectorBearerToken', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: authorizationHeader; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'validateCollectorBearerToken' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: authorizationHeader; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function validateCollectorBearerToken(authorizationHeader: string | null) {
   const expectedToken = process.env.COLLECTOR_API_TOKEN?.trim();

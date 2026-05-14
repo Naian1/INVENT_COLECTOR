@@ -19,10 +19,10 @@ type AuthOptions = {
 
 /**
  * [DOC-FUNC] getBearerToken
- * O que faz: Consulta e organiza informacoes na funcao 'getBearerToken', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getBearerToken' para retorno confiavel.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getBearerToken(request: NextRequest): string | null {
   const authHeader = request.headers.get("authorization") || "";
@@ -37,10 +37,10 @@ type PerfilNomeLookupRow = {
 
 /**
  * [DOC-FUNC] getPerfilNome
- * O que faz: Consulta e organiza informacoes na funcao 'getPerfilNome', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPerfilNome' para retorno confiavel.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
   if (Array.isArray(value)) return String(value[0]?.nm_perfil || "");
@@ -49,10 +49,10 @@ function getPerfilNome(value: PerfilNomeLookupRow["perfil"]): string {
 
 /**
  * [DOC-FUNC] resolveIsAdmin
- * O que faz: Avalia condicoes de controle na funcao 'resolveIsAdmin' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: cdUsuario, cdPerfilPrincipal; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'resolveIsAdmin' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: cdUsuario, cdPerfilPrincipal; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Promise<boolean> {
   const supabase = getSupabaseServerClient();
@@ -88,10 +88,10 @@ async function resolveIsAdmin(cdUsuario: number, cdPerfilPrincipal: number): Pro
 
 /**
  * [DOC-FUNC] authenticateApiRequest
- * O que faz: Consulta e organiza informacoes na funcao 'authenticateApiRequest', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'authenticateApiRequest' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export async function authenticateApiRequest(
   request: NextRequest,

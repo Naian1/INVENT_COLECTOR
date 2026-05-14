@@ -42,10 +42,10 @@ type ValorLinhaRow = {
 
 /**
  * [DOC-FUNC] erroColunaAusente
- * O que faz: Avalia condicoes de controle na funcao 'erroColunaAusente' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: errorMessage?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'erroColunaAusente' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: errorMessage?; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function erroColunaAusente(errorMessage?: string | null) {
   if (!errorMessage) return false;
@@ -55,10 +55,10 @@ function erroColunaAusente(errorMessage?: string | null) {
 
 /**
  * [DOC-FUNC] syncHabilitado
- * O que faz: Avalia condicoes de controle na funcao 'syncHabilitado' para decidir se o fluxo pode avancar.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Sincroniza dados na funcao 'syncHabilitado' entre este modulo e outras camadas/servicos.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna status/metadados da sincronizacao para observabilidade e retentativa.
  */
 function syncHabilitado() {
   return process.env.GOOGLE_SHEETS_SYNC_ENABLED === "true";
@@ -66,10 +66,10 @@ function syncHabilitado() {
 
 /**
  * [DOC-FUNC] modoEstrito
- * O que faz: Avalia condicoes de controle na funcao 'modoEstrito' para decidir se o fluxo pode avancar.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Executa a responsabilidade principal da funcao 'modoEstrito' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function modoEstrito() {
   return process.env.GOOGLE_SHEETS_SYNC_STRICT === "true";
@@ -77,10 +77,10 @@ function modoEstrito() {
 
 /**
  * [DOC-FUNC] sheetTitle
- * O que faz: Normaliza entradas na funcao 'sheetTitle', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: nomeCategoria; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'sheetTitle' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: nomeCategoria; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function sheetTitle(nomeCategoria: string) {
   const clean = nomeCategoria.replace(/[:\\/?*\[\]]/g, " ").trim();
@@ -89,10 +89,10 @@ function sheetTitle(nomeCategoria: string) {
 
 /**
  * [DOC-FUNC] toCell
- * O que faz: Normaliza entradas na funcao 'toCell', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toCell' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: valor; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toCell(valor: ValorLinhaRow) {
   if (valor.valor_texto !== null) return String(valor.valor_texto);
@@ -106,10 +106,10 @@ function toCell(valor: ValorLinhaRow) {
 
 /**
  * [DOC-FUNC] colunaAte
- * O que faz: Executa a responsabilidade central da funcao 'colunaAte', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: indice; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'colunaAte' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: indice; com validacao de formato e fallback quando necessario.
+ * Como executa: Itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function colunaAte(indice: number) {
   let n = indice + 1;
@@ -124,10 +124,10 @@ function colunaAte(indice: number) {
 
 /**
  * [DOC-FUNC] getSheetsClient
- * O que faz: Consulta e organiza informacoes na funcao 'getSheetsClient', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSheetsClient' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getSheetsClient() {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
@@ -153,10 +153,10 @@ function getSheetsClient() {
 
 /**
  * [DOC-FUNC] buscarCategoriaCampos
- * O que faz: Consulta e organiza informacoes na funcao 'buscarCategoriaCampos', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: categoriaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarCategoriaCampos' para retorno confiavel.
+ * Entradas: Parametros esperados: categoriaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServico<{ categoria: CategoriaRow; campos: CampoRow[] }>> {
   const supabase = getSupabaseServerClient();
@@ -209,10 +209,10 @@ async function buscarCategoriaCampos(categoriaId: string): Promise<ResultadoServ
 
 /**
  * [DOC-FUNC] resolverAbaPlanilha
- * O que faz: Monta a estrutura central na funcao 'resolverAbaPlanilha', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: categoria, titleDesejado; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'resolverAbaPlanilha', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: categoria, titleDesejado; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: string) {
   const client = getSheetsClient();
@@ -281,10 +281,10 @@ async function resolverAbaPlanilha(categoria: CategoriaRow, titleDesejado: strin
 
 /**
  * [DOC-FUNC] sincronizarCabecalhoCategoriaNaPlanilha
- * O que faz: Atualiza estado na funcao 'sincronizarCabecalhoCategoriaNaPlanilha', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: categoriaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Sincroniza dados na funcao 'sincronizarCabecalhoCategoriaNaPlanilha' entre este modulo e outras camadas/servicos.
+ * Entradas: Parametros esperados: categoriaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna status/metadados da sincronizacao para observabilidade e retentativa.
  */
 export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string; sheet: string }>> {
   if (!syncHabilitado()) {
@@ -323,10 +323,10 @@ export async function sincronizarCabecalhoCategoriaNaPlanilha(categoriaId: strin
 
 /**
  * [DOC-FUNC] sincronizarLinhaNaPlanilha
- * O que faz: Atualiza estado na funcao 'sincronizarLinhaNaPlanilha', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: linhaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Sincroniza dados na funcao 'sincronizarLinhaNaPlanilha' entre este modulo e outras camadas/servicos.
+ * Entradas: Parametros esperados: linhaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna status/metadados da sincronizacao para observabilidade e retentativa.
  */
 export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string; sheet: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId, sheet: "sync-desabilitado" } };
@@ -404,10 +404,10 @@ export async function sincronizarLinhaNaPlanilha(linhaId: string): Promise<Resul
 
 /**
  * [DOC-FUNC] removerLinhaDaPlanilha
- * O que faz: Consulta e organiza informacoes na funcao 'removerLinhaDaPlanilha', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: linhaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'removerLinhaDaPlanilha' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: linhaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export async function removerLinhaDaPlanilha(linhaId: string): Promise<ResultadoServico<{ linha_id: string }>> {
   if (!syncHabilitado()) return { success: true, data: { linha_id: linhaId } };
@@ -444,10 +444,10 @@ export async function removerLinhaDaPlanilha(linhaId: string): Promise<Resultado
 
 /**
  * [DOC-FUNC] sincronizarCategoriaCompletaNaPlanilha
- * O que faz: Sincroniza dados na funcao 'sincronizarCategoriaCompletaNaPlanilha', conectando este modulo com outras camadas/servicos.
- * Entradas: Parametros esperados: categoriaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna status da sincronizacao com informacoes suficientes para observabilidade e retentativa.
+ * O que faz: Sincroniza dados na funcao 'sincronizarCategoriaCompletaNaPlanilha' entre este modulo e outras camadas/servicos.
+ * Entradas: Parametros esperados: categoriaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna status/metadados da sincronizacao para observabilidade e retentativa.
  */
 export async function sincronizarCategoriaCompletaNaPlanilha(categoriaId: string): Promise<ResultadoServico<{ categoria_id: string }>> {
   const cabecalho = await sincronizarCabecalhoCategoriaNaPlanilha(categoriaId);

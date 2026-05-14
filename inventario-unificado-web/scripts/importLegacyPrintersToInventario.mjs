@@ -9,10 +9,10 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * [DOC-FUNC] loadEnvLocal
- * O que faz: Consulta e organiza informacoes na funcao 'loadEnvLocal', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'loadEnvLocal' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
@@ -55,10 +55,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, {
 
 /**
  * [DOC-FUNC] normHeader
- * O que faz: Normaliza entradas na funcao 'normHeader', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: v; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'normHeader' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: v; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function normHeader(v) {
   return String(v || "")
@@ -71,10 +71,10 @@ function normHeader(v) {
 
 /**
  * [DOC-FUNC] pickHeaderIndex
- * O que faz: Normaliza entradas na funcao 'pickHeaderIndex', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: headers, aliases; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'pickHeaderIndex' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: headers, aliases; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
@@ -88,10 +88,10 @@ function pickHeaderIndex(headers, aliases) {
 
 /**
  * [DOC-FUNC] toText
- * O que faz: Normaliza entradas na funcao 'toText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: v; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toText' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: v; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toText(v) {
   const s = String(v ?? "").replace(/\s+/g, " ").trim();
@@ -103,10 +103,10 @@ function toText(v) {
 
 /**
  * [DOC-FUNC] normalizeIp
- * O que faz: Normaliza entradas na funcao 'normalizeIp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: ip; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeIp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: ip; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeIp(ip) {
   const txt = toText(ip);
@@ -119,10 +119,10 @@ function normalizeIp(ip) {
 
 /**
  * [DOC-FUNC] normalizeMac
- * O que faz: Normaliza entradas na funcao 'normalizeMac', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: mac; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeMac', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: mac; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeMac(mac) {
   const txt = toText(mac);
@@ -134,10 +134,10 @@ function normalizeMac(mac) {
 
 /**
  * [DOC-FUNC] inferMarca
- * O que faz: Normaliza entradas na funcao 'inferMarca', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: modelo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'inferMarca' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: modelo; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function inferMarca(modelo) {
   const m = String(modelo || "").toLowerCase();
@@ -149,10 +149,10 @@ function inferMarca(modelo) {
 
 /**
  * [DOC-FUNC] detectarHeader
- * O que faz: Normaliza entradas na funcao 'detectarHeader', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: rows; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'detectarHeader' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: rows; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 30); i++) {
@@ -168,10 +168,10 @@ function detectarHeader(rows) {
 
 /**
  * [DOC-FUNC] fetchBaseContext
- * O que faz: Consulta e organiza informacoes na funcao 'fetchBaseContext', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'fetchBaseContext' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function fetchBaseContext() {
   const [empresasRes, tiposRes, pisosRes, setoresRes, equipamentosRes] = await Promise.all([
@@ -217,10 +217,10 @@ async function fetchBaseContext() {
 
 /**
  * [DOC-FUNC] pisoKey
- * O que faz: Normaliza entradas na funcao 'pisoKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: nomePiso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'pisoKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: nomePiso; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function pisoKey(nomePiso) {
   return String(nomePiso || "").trim().toLowerCase();
@@ -228,10 +228,10 @@ function pisoKey(nomePiso) {
 
 /**
  * [DOC-FUNC] setorKey
- * O que faz: Normaliza entradas na funcao 'setorKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: cdPiso, nomeSetor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'setorKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: cdPiso, nomeSetor; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function setorKey(cdPiso, nomeSetor) {
   return `${cdPiso}::${String(nomeSetor || "").trim().toLowerCase()}`;
@@ -239,10 +239,10 @@ function setorKey(cdPiso, nomeSetor) {
 
 /**
  * [DOC-FUNC] equipamentoKey
- * O que faz: Normaliza entradas na funcao 'equipamentoKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: modelo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'equipamentoKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: modelo; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function equipamentoKey(modelo) {
   return String(modelo || "").trim().toLowerCase();
@@ -250,10 +250,10 @@ function equipamentoKey(modelo) {
 
 /**
  * [DOC-FUNC] ensurePiso
- * O que faz: Cria e persiste dados na funcao 'ensurePiso', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: nomePiso, cachePisos; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensurePiso' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: nomePiso, cachePisos; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensurePiso(nomePiso, cachePisos) {
   const cleanNome = toText(nomePiso) || "NAO INFORMADO";
@@ -272,10 +272,10 @@ async function ensurePiso(nomePiso, cachePisos) {
 
 /**
  * [DOC-FUNC] ensureSetor
- * O que faz: Cria e persiste dados na funcao 'ensureSetor', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: cdPiso, nomeSetor, cacheSetores; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensureSetor' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: cdPiso, nomeSetor, cacheSetores; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
   const cleanSetor = toText(nomeSetor) || "IMPRESSORAS";
@@ -299,10 +299,10 @@ async function ensureSetor(cdPiso, nomeSetor, cacheSetores) {
 
 /**
  * [DOC-FUNC] ensureEquipamento
- * O que faz: Cria e persiste dados na funcao 'ensureEquipamento', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: modelo, marca, context, cacheEquipamentos; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensureEquipamento' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: modelo, marca, context, cacheEquipamentos; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
   const cleanModelo = toText(modelo);
@@ -332,10 +332,10 @@ async function ensureEquipamento(modelo, marca, context, cacheEquipamentos) {
 
 /**
  * [DOC-FUNC] carregarInventarioExistente
- * O que faz: Consulta e organiza informacoes na funcao 'carregarInventarioExistente', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'carregarInventarioExistente' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function carregarInventarioExistente() {
   const { data, error } = await supabase
@@ -360,10 +360,10 @@ async function carregarInventarioExistente() {
 
 /**
  * [DOC-FUNC] main
- * O que faz: Atualiza estado na funcao 'main', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function main() {
   const fileArg = process.argv[2];

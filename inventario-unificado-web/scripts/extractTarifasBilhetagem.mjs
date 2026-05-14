@@ -9,10 +9,10 @@ import XLSX from "xlsx";
 
 /**
  * [DOC-FUNC] toNumber
- * O que faz: Normaliza entradas na funcao 'toNumber', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toNumber' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -25,10 +25,10 @@ function toNumber(value) {
 
 /**
  * [DOC-FUNC] normalizeText
- * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -36,10 +36,10 @@ function normalizeText(value) {
 
 /**
  * [DOC-FUNC] findTarifas
- * O que faz: Consulta e organiza informacoes na funcao 'findTarifas', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: rows; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'findTarifas' para retorno confiavel.
+ * Entradas: Parametros esperados: rows; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function findTarifas(rows) {
   for (const row of rows) {
@@ -57,10 +57,10 @@ function findTarifas(rows) {
 
 /**
  * [DOC-FUNC] inferCompetenciaFromName
- * O que faz: Normaliza entradas na funcao 'inferCompetenciaFromName', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: fileName; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'inferCompetenciaFromName' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: fileName; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function inferCompetenciaFromName(fileName) {
   const m = fileName.match(/(\d{2})_(\d{4})/);
@@ -70,10 +70,10 @@ function inferCompetenciaFromName(fileName) {
 
 /**
  * [DOC-FUNC] main
- * O que faz: Normaliza entradas na funcao 'main', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function main() {
   const input = process.argv[2];

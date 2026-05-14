@@ -13,10 +13,10 @@ interface SelectProps {
 
 /**
  * [DOC-FUNC] Select
- * O que faz: Executa a responsabilidade central da funcao 'Select', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: { value, onValueChange, children }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'Select' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { value, onValueChange, children }; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function Select({ value, onValueChange, children }: SelectProps) {
   return (
@@ -33,10 +33,10 @@ const SelectContext = React.createContext<{
 
 /**
  * [DOC-FUNC] SelectTrigger
- * O que faz: Executa a responsabilidade central da funcao 'SelectTrigger', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'SelectTrigger' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function SelectTrigger({
   children,
@@ -63,10 +63,10 @@ export function SelectTrigger({
 
 /**
  * [DOC-FUNC] SelectValue
- * O que faz: Executa a responsabilidade central da funcao 'SelectValue', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: { placeholder }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'SelectValue' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { placeholder }; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function SelectValue({ placeholder }: { placeholder?: string }) {
   const context = React.useContext(SelectContext);
@@ -75,10 +75,10 @@ export function SelectValue({ placeholder }: { placeholder?: string }) {
 
 /**
  * [DOC-FUNC] SelectContent
- * O que faz: Executa a responsabilidade central da funcao 'SelectContent', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: { children }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'SelectContent' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { children }; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function SelectContent({ children }: { children: ReactNode }) {
   return (
@@ -90,10 +90,10 @@ export function SelectContent({ children }: { children: ReactNode }) {
 
 /**
  * [DOC-FUNC] SelectItem
- * O que faz: Executa a responsabilidade central da funcao 'SelectItem', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'SelectItem' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function SelectItem({
   value,

@@ -31,10 +31,10 @@ if is_history_enabled():
 
 
 # [DOC-FUNC] load_printers
-# O que faz: Consulta e organiza informacoes na funcao 'load_printers', entregando retorno confiavel para camadas superiores.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio.
-# Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+# O que faz: Consulta e organiza informacoes na funcao 'load_printers' para retorno confiavel.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos.
+# Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
 def load_printers():
     if os.path.exists(PRINTERS_FILE):
         with open(PRINTERS_FILE, "r", encoding="utf-8") as f:
@@ -43,20 +43,20 @@ def load_printers():
 
 
 # [DOC-FUNC] save_printers
-# O que faz: Cria e persiste dados na funcao 'save_printers', aplicando validacao para preservar integridade do dominio.
-# Entradas: Parametros esperados: printers; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-# Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+# O que faz: Cria e persiste dados na funcao 'save_printers' com validacao de integridade.
+# Entradas: Parametros esperados: printers; com validacao de formato e fallback quando necessario.
+# Como executa: Executa processamento local em sequencia previsivel.
+# Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
 def save_printers(printers):
     with open(PRINTERS_FILE, "w", encoding="utf-8") as f:
         json.dump(printers, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_settings
-# O que faz: Consulta e organiza informacoes na funcao 'load_settings', entregando retorno confiavel para camadas superiores.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio.
-# Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+# O que faz: Consulta e organiza informacoes na funcao 'load_settings' para retorno confiavel.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos.
+# Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
@@ -65,20 +65,20 @@ def load_settings():
 
 
 # [DOC-FUNC] save_settings
-# O que faz: Cria e persiste dados na funcao 'save_settings', aplicando validacao para preservar integridade do dominio.
-# Entradas: Parametros esperados: settings; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-# Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+# O que faz: Cria e persiste dados na funcao 'save_settings' com validacao de integridade.
+# Entradas: Parametros esperados: settings; com validacao de formato e fallback quando necessario.
+# Como executa: Executa processamento local em sequencia previsivel.
+# Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
 def save_settings(settings):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(settings, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] load_chamados
-# O que faz: Consulta e organiza informacoes na funcao 'load_chamados', entregando retorno confiavel para camadas superiores.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio.
-# Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+# O que faz: Consulta e organiza informacoes na funcao 'load_chamados' para retorno confiavel.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos.
+# Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
 def load_chamados():
     if os.path.exists(CHAMADOS_FILE):
         with open(CHAMADOS_FILE, "r", encoding="utf-8") as f:
@@ -87,30 +87,30 @@ def load_chamados():
 
 
 # [DOC-FUNC] init_chamados
-# O que faz: Executa a responsabilidade central da funcao 'init_chamados', conectando validacao, processamento e retorno de forma didatica.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+# O que faz: Executa a responsabilidade principal da funcao 'init_chamados' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def init_chamados():
     if not os.path.exists(CHAMADOS_FILE):
         save_chamados({})
 
 
 # [DOC-FUNC] save_chamados
-# O que faz: Cria e persiste dados na funcao 'save_chamados', aplicando validacao para preservar integridade do dominio.
-# Entradas: Parametros esperados: chamados; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-# Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+# O que faz: Cria e persiste dados na funcao 'save_chamados' com validacao de integridade.
+# Entradas: Parametros esperados: chamados; com validacao de formato e fallback quando necessario.
+# Como executa: Executa processamento local em sequencia previsivel.
+# Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
 def save_chamados(chamados):
     with open(CHAMADOS_FILE, "w", encoding="utf-8") as f:
         json.dump(chamados, f, ensure_ascii=False, indent=2)
 
 
 # [DOC-FUNC] save_history
-# O que faz: Cria e persiste dados na funcao 'save_history', aplicando validacao para preservar integridade do dominio.
-# Entradas: Parametros esperados: ip, data; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+# O que faz: Cria e persiste dados na funcao 'save_history' com validacao de integridade.
+# Entradas: Parametros esperados: ip, data; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
 def save_history(ip, data):
     if not is_history_enabled():
         return

@@ -17,10 +17,10 @@ type SuprimentosListaProps = {
 
 /**
  * [DOC-FUNC] normalizarNivel
- * O que faz: Normaliza entradas na funcao 'normalizarNivel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarNivel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return null;
@@ -31,10 +31,10 @@ function normalizarNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] resolverNivel
- * O que faz: Monta a estrutura central na funcao 'resolverNivel', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: item; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'resolverNivel', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: item; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function resolverNivel(item: SuprimentoItem) {
   const nivel = normalizarNivel(item.nivel_percentual);
@@ -46,10 +46,10 @@ function resolverNivel(item: SuprimentoItem) {
 
 /**
  * [DOC-FUNC] formatNivel
- * O que faz: Normaliza entradas na funcao 'formatNivel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatNivel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatNivel(value: number | null) {
   if (value === null || Number.isNaN(value)) return "-";
@@ -60,10 +60,10 @@ function formatNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] formatIndicador
- * O que faz: Normaliza entradas na funcao 'formatIndicador', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatIndicador', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatIndicador(value: number | null) {
   const nivel = formatNivel(value);
@@ -73,10 +73,10 @@ function formatIndicador(value: number | null) {
 
 /**
  * [DOC-FUNC] tomPorNivel
- * O que faz: Executa a responsabilidade central da funcao 'tomPorNivel', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'tomPorNivel' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function tomPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -88,10 +88,10 @@ function tomPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] statusPorNivel
- * O que faz: Executa a responsabilidade central da funcao 'statusPorNivel', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'statusPorNivel' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function statusPorNivel(value: number | null) {
   const n = normalizarNivel(value);
@@ -103,10 +103,10 @@ function statusPorNivel(value: number | null) {
 
 /**
  * [DOC-FUNC] classePillPorStatus
- * O que faz: Normaliza entradas na funcao 'classePillPorStatus', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: status; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'classePillPorStatus' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: status; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function classePillPorStatus(status: string) {
   const s = String(status ?? "").toLowerCase();
@@ -117,10 +117,10 @@ function classePillPorStatus(status: string) {
 
 /**
  * [DOC-FUNC] SuprimentosLista
- * O que faz: Normaliza entradas na funcao 'SuprimentosLista', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: { suprimentos, filtroNome }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'SuprimentosLista' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { suprimentos, filtroNome }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaProps) {
   const filtro = String(filtroNome ?? "")

@@ -25,10 +25,10 @@ const META_KEYS = new Set(["id", "categoryid", "category_id", "status"]);
 
 /**
  * [DOC-FUNC] normalizeKey
- * O que faz: Normaliza entradas na funcao 'normalizeKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeKey(value) {
   return String(value ?? "")
@@ -41,10 +41,10 @@ function normalizeKey(value) {
 
 /**
  * [DOC-FUNC] normalizeText
- * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeText(value) {
   if (value === null || value === undefined) return null;
@@ -56,10 +56,10 @@ function normalizeText(value) {
 
 /**
  * [DOC-FUNC] normalizeIp
- * O que faz: Normaliza entradas na funcao 'normalizeIp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeIp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeIp(value) {
   const text = normalizeText(value);
@@ -71,10 +71,10 @@ function normalizeIp(value) {
 
 /**
  * [DOC-FUNC] normalizeMac
- * O que faz: Normaliza entradas na funcao 'normalizeMac', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeMac', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeMac(value) {
   const text = normalizeText(value);
@@ -86,10 +86,10 @@ function normalizeMac(value) {
 
 /**
  * [DOC-FUNC] normalizeAssetTagForLabel
- * O que faz: Normaliza entradas na funcao 'normalizeAssetTagForLabel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: assetTag; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeAssetTagForLabel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: assetTag; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeAssetTagForLabel(assetTag) {
   if (!assetTag) return null;
@@ -98,10 +98,10 @@ function normalizeAssetTagForLabel(assetTag) {
 
 /**
  * [DOC-FUNC] buildDisplayName
- * O que faz: Monta a estrutura central na funcao 'buildDisplayName', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: { hostname, asset_tag, sector, model, ip_address }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'buildDisplayName', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: { hostname, asset_tag, sector, model, ip_address }; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildDisplayName({ hostname, asset_tag, sector, model, ip_address }) {
   const cleanHostname = normalizeText(hostname);
@@ -125,10 +125,10 @@ function buildDisplayName({ hostname, asset_tag, sector, model, ip_address }) {
 
 /**
  * [DOC-FUNC] parseArgs
- * O que faz: Normaliza entradas na funcao 'parseArgs', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: argv; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'parseArgs', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: argv; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function parseArgs(argv) {
   const args = {
@@ -166,10 +166,10 @@ function parseArgs(argv) {
 
 /**
  * [DOC-FUNC] loadDotEnvLocal
- * O que faz: Consulta e organiza informacoes na funcao 'loadDotEnvLocal', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: cwd; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'loadDotEnvLocal' para retorno confiavel.
+ * Entradas: Parametros esperados: cwd; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function loadDotEnvLocal(cwd) {
   const envPath = path.join(cwd, ".env.local");
@@ -190,10 +190,10 @@ function loadDotEnvLocal(cwd) {
 
 /**
  * [DOC-FUNC] readJson
- * O que faz: Consulta e organiza informacoes na funcao 'readJson', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: filePath; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'readJson' para retorno confiavel.
+ * Entradas: Parametros esperados: filePath; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function readJson(filePath) {
   const content = fs.readFileSync(filePath, "utf8");
@@ -202,10 +202,10 @@ function readJson(filePath) {
 
 /**
  * [DOC-FUNC] buildLegacyFieldNameMap
- * O que faz: Monta a estrutura central na funcao 'buildLegacyFieldNameMap', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: legacy; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'buildLegacyFieldNameMap', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: legacy; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildLegacyFieldNameMap(legacy) {
   const byCategory = new Map();
@@ -222,10 +222,10 @@ function buildLegacyFieldNameMap(legacy) {
 
 /**
  * [DOC-FUNC] isLikelyPrinterItem
- * O que faz: Avalia condicoes de controle na funcao 'isLikelyPrinterItem' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: categoryName, itemEntries; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isLikelyPrinterItem' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: categoryName, itemEntries; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isLikelyPrinterItem(categoryName, itemEntries) {
   const cat = normalizeKey(categoryName ?? "");
@@ -255,10 +255,10 @@ function isLikelyPrinterItem(categoryName, itemEntries) {
 
 /**
  * [DOC-FUNC] itemEntriesWithFieldLabels
- * O que faz: Normaliza entradas na funcao 'itemEntriesWithFieldLabels', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: item, fieldMapForCategory; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'itemEntriesWithFieldLabels' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: item, fieldMapForCategory; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function itemEntriesWithFieldLabels(item, fieldMapForCategory) {
   const entries = [];
@@ -281,10 +281,10 @@ function itemEntriesWithFieldLabels(item, fieldMapForCategory) {
 
 /**
  * [DOC-FUNC] pickFromAliases
- * O que faz: Normaliza entradas na funcao 'pickFromAliases', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: entries, aliases; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'pickFromAliases' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: entries, aliases; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function pickFromAliases(entries, aliases) {
   const normalizedAliases = aliases.map((alias) => normalizeKey(alias));
@@ -317,10 +317,10 @@ function pickFromAliases(entries, aliases) {
 
 /**
  * [DOC-FUNC] extractLegacyPrinterRecords
- * O que faz: Normaliza entradas na funcao 'extractLegacyPrinterRecords', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: legacy; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'extractLegacyPrinterRecords' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: legacy; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function extractLegacyPrinterRecords(legacy) {
   const categoriesById = new Map((legacy.categories ?? []).map((c) => [String(c.id), c.name]));
@@ -406,10 +406,10 @@ function extractLegacyPrinterRecords(legacy) {
 
 /**
  * [DOC-FUNC] isMissingOrUnknown
- * O que faz: Avalia condicoes de controle na funcao 'isMissingOrUnknown' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isMissingOrUnknown' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isMissingOrUnknown(value) {
   if (value === null || value === undefined) return true;
@@ -420,10 +420,10 @@ function isMissingOrUnknown(value) {
 
 /**
  * [DOC-FUNC] normalizeMatchKey
- * O que faz: Normaliza entradas na funcao 'normalizeMatchKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeMatchKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeMatchKey(value) {
   const text = normalizeText(value);
@@ -432,10 +432,10 @@ function normalizeMatchKey(value) {
 
 /**
  * [DOC-FUNC] buildIndex
- * O que faz: Monta a estrutura central na funcao 'buildIndex', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: printers, key; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'buildIndex', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: printers, key; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildIndex(printers, key) {
   const index = new Map();
@@ -450,10 +450,10 @@ function buildIndex(printers, key) {
 
 /**
  * [DOC-FUNC] pickMatch
- * O que faz: Normaliza entradas na funcao 'pickMatch', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: candidate, indexes; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'pickMatch' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: candidate, indexes; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function pickMatch(candidate, indexes) {
   const order = [
@@ -496,10 +496,10 @@ function pickMatch(candidate, indexes) {
 
 /**
  * [DOC-FUNC] buildUpdatePayload
- * O que faz: Atualiza estado na funcao 'buildUpdatePayload', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: existing, candidate; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Monta estrutura/payload na funcao 'buildUpdatePayload', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: existing, candidate; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildUpdatePayload(existing, candidate) {
   const payload = {};
@@ -557,10 +557,10 @@ function buildUpdatePayload(existing, candidate) {
 
 /**
  * [DOC-FUNC] parsePrinterInventoryJson
- * O que faz: Normaliza entradas na funcao 'parsePrinterInventoryJson', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: legacyRaw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'parsePrinterInventoryJson', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: legacyRaw; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function parsePrinterInventoryJson(legacyRaw) {
   if (
@@ -589,10 +589,10 @@ function parsePrinterInventoryJson(legacyRaw) {
 
 /**
  * [DOC-FUNC] printUsage
- * O que faz: Executa a responsabilidade central da funcao 'printUsage', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'printUsage' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function printUsage() {
   console.log("Uso:");
@@ -605,10 +605,10 @@ function printUsage() {
 
 /**
  * [DOC-FUNC] main
- * O que faz: Atualiza estado na funcao 'main', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function main() {
   const args = parseArgs(process.argv.slice(2));

@@ -17,10 +17,10 @@ type SessionPayload = {
 
 /**
  * [DOC-FUNC] safeCompare
- * O que faz: Consulta e organiza informacoes na funcao 'safeCompare', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: valueA, valueB; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'safeCompare' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: valueA, valueB; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function safeCompare(valueA: string, valueB: string) {
   const bufferA = Buffer.from(valueA);
@@ -32,10 +32,10 @@ function safeCompare(valueA: string, valueB: string) {
 
 /**
  * [DOC-FUNC] getSessionSecret
- * O que faz: Consulta e organiza informacoes na funcao 'getSessionSecret', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSessionSecret' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getSessionSecret() {
   const secret =
@@ -54,10 +54,10 @@ function getSessionSecret() {
 
 /**
  * [DOC-FUNC] getSessionCookieName
- * O que faz: Consulta e organiza informacoes na funcao 'getSessionCookieName', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSessionCookieName' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export function getSessionCookieName() {
   return SESSION_COOKIE_NAME;
@@ -65,10 +65,10 @@ export function getSessionCookieName() {
 
 /**
  * [DOC-FUNC] getSessionTtlSeconds
- * O que faz: Atualiza estado na funcao 'getSessionTtlSeconds', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSessionTtlSeconds' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export function getSessionTtlSeconds() {
   return SESSION_TTL_SECONDS;
@@ -98,10 +98,10 @@ export function buildSessionToken(input: {
 
 /**
  * [DOC-FUNC] readSessionToken
- * O que faz: Atualiza estado na funcao 'readSessionToken', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: token; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Consulta e organiza informacoes na funcao 'readSessionToken' para retorno confiavel.
+ * Entradas: Parametros esperados: token; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export function readSessionToken(token: string | undefined | null) {
   if (!token) return null;
@@ -139,10 +139,10 @@ export function readSessionToken(token: string | undefined | null) {
 
 /**
  * [DOC-FUNC] sha256Hex
- * O que faz: Atualiza estado na funcao 'sha256Hex', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'sha256Hex' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Aplica atualizacoes de estado.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function sha256Hex(value: string) {
   return createHash("sha256").update(value).digest("hex");
@@ -150,10 +150,10 @@ function sha256Hex(value: string) {
 
 /**
  * [DOC-FUNC] verifyPassword
- * O que faz: Normaliza entradas na funcao 'verifyPassword', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: inputPassword, storedHash; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'verifyPassword' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: inputPassword, storedHash; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function verifyPassword(inputPassword: string, storedHash: string | null | undefined) {
   const normalizedHash = String(storedHash ?? "").trim();

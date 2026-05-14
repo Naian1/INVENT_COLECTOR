@@ -16,10 +16,10 @@ def _utc_now_iso() -> str:
 
 
 # [DOC-FUNC] _sanitize
-# O que faz: Normaliza entradas na funcao '_sanitize', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Parametros esperados: value, max_len; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Normaliza entradas na funcao '_sanitize', reduzindo ambiguidade antes da regra principal.
+# Entradas: Parametros esperados: value, max_len; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
 def _sanitize(value: Any, max_len: int = 2400):
     if value is None:
         return None
@@ -42,10 +42,10 @@ def _sanitize(value: Any, max_len: int = 2400):
 
 
 # [DOC-FUNC] append_backend_trace
-# O que faz: Normaliza entradas na funcao 'append_backend_trace', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Parametros esperados: event, payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Executa a responsabilidade principal da funcao 'append_backend_trace' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: event, payload; com validacao de formato e fallback quando necessario.
+# Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

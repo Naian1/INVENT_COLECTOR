@@ -24,10 +24,10 @@ const MAX_IMPORT_ROWS = 5000;
 
 /**
  * [DOC-FUNC] txt
- * O que faz: Normaliza entradas na funcao 'txt', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: v; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'txt' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: v; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function txt(v: unknown): string | null {
   if (v === null || v === undefined) return null;
@@ -37,10 +37,10 @@ function txt(v: unknown): string | null {
 
 /**
  * [DOC-FUNC] autoCgc
- * O que faz: Normaliza entradas na funcao 'autoCgc', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: nomeEmpresa; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'autoCgc' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: nomeEmpresa; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function autoCgc(nomeEmpresa: string) {
   return `AUTO-${nomeEmpresa.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 18) || 'EMPRESA'}`;
@@ -48,10 +48,10 @@ function autoCgc(nomeEmpresa: string) {
 
 /**
  * [DOC-FUNC] upsertEmpresa
- * O que faz: Cria e persiste dados na funcao 'upsertEmpresa', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: supabase, row; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertEmpresa' com validacao de integridade.
+ * Entradas: Parametros esperados: supabase, row; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient>, row: LinhaImportacao) {
   const nm_empresa = txt(row.nm_empresa) ?? 'SEM EMPRESA';
@@ -77,10 +77,10 @@ async function upsertEmpresa(supabase: ReturnType<typeof getSupabaseServerClient
 
 /**
  * [DOC-FUNC] upsertTipo
- * O que faz: Cria e persiste dados na funcao 'upsertTipo', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: supabase, nomeTipo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertTipo' com validacao de integridade.
+ * Entradas: Parametros esperados: supabase, nomeTipo; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, nomeTipo: string) {
   const { data: existente } = await supabase
@@ -103,10 +103,10 @@ async function upsertTipo(supabase: ReturnType<typeof getSupabaseServerClient>, 
 
 /**
  * [DOC-FUNC] upsertSetor
- * O que faz: Cria e persiste dados na funcao 'upsertSetor', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: supabase, nomeSetor, dsSetor?; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertSetor' com validacao de integridade.
+ * Entradas: Parametros esperados: supabase, nomeSetor, dsSetor?; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>, nomeSetor: string, dsSetor?: string | null) {
   const { data: existente } = await supabase
@@ -129,10 +129,10 @@ async function upsertSetor(supabase: ReturnType<typeof getSupabaseServerClient>,
 
 /**
  * [DOC-FUNC] upsertEquipamento
- * O que faz: Cria e persiste dados na funcao 'upsertEquipamento', aplicando validacao para preservar integridade do dominio.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertEquipamento' com validacao de integridade.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertEquipamento(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -177,10 +177,10 @@ async function upsertEquipamento(
 
 /**
  * [DOC-FUNC] upsertInventario
- * O que faz: Atualiza estado na funcao 'upsertInventario', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertInventario' com validacao de integridade.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertInventario(
   supabase: ReturnType<typeof getSupabaseServerClient>,
@@ -237,10 +237,10 @@ async function upsertInventario(
 
 /**
  * [DOC-FUNC] POST
- * O que faz: Implementa o endpoint HTTP POST 'POST' para receber payload, validar regras e processar/gravar dados.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Implementa endpoint HTTP POST 'POST', validando payload e processando persistencia/integracao.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado da operacao de escrita/processamento e efeitos de persistencia quando aplicavel.
  */
 export async function POST(request: NextRequest) {
   try {

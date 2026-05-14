@@ -16,10 +16,10 @@ import type {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Normaliza entradas na funcao 'toFiniteNumber', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toFiniteNumber' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -28,10 +28,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] isEmptyValue
- * O que faz: Avalia condicoes de controle na funcao 'isEmptyValue' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isEmptyValue' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isEmptyValue(value: unknown) {
   return value === null || value === undefined || value === "";
@@ -39,10 +39,10 @@ function isEmptyValue(value: unknown) {
 
 /**
  * [DOC-FUNC] isAlertaAberto
- * O que faz: Avalia condicoes de controle na funcao 'isAlertaAberto' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: alerta, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isAlertaAberto' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: alerta, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isAlertaAberto(alerta: Record<string, unknown>) {
   const status =
@@ -57,10 +57,10 @@ function isAlertaAberto(alerta: Record<string, unknown>) {
 
 /**
  * [DOC-FUNC] buscarStatusSuprimentosImpressora
- * O que faz: Consulta e organiza informacoes na funcao 'buscarStatusSuprimentosImpressora', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: impressoraId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarStatusSuprimentosImpressora' para retorno confiavel.
+ * Entradas: Parametros esperados: impressoraId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function buscarStatusSuprimentosImpressora(
   impressoraId: string

@@ -115,10 +115,10 @@ export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema
 
 /**
  * [DOC-FUNC] toLote
- * O que faz: Executa a responsabilidade central da funcao 'toLote', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'toLote' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
@@ -157,10 +157,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
 
 /**
  * [DOC-FUNC] normalizarPayloadColetorPtParaLote
- * O que faz: Normaliza entradas na funcao 'normalizarPayloadColetorPtParaLote', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: payload; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarPayloadColetorPtParaLote', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt

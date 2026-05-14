@@ -7,10 +7,10 @@ import { Suprimentos, CreateSuprimentosInput, UpdateSuprimentosInput } from '@/t
 
 /**
  * [DOC-FUNC] getSuprimentos
- * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentos', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentos' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getSuprimentos(): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -25,10 +25,10 @@ export async function getSuprimentos(): Promise<Suprimentos[]> {
 
 /**
  * [DOC-FUNC] getSuprimentosById
- * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosById', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosById' para retorno confiavel.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getSuprimentosById(id: number): Promise<Suprimentos | null> {
   const supabase = getSupabaseServerClient();
@@ -44,10 +44,10 @@ export async function getSuprimentosById(id: number): Promise<Suprimentos | null
 
 /**
  * [DOC-FUNC] getSuprimentosByInventario
- * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosByInventario', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: inventarioId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosByInventario' para retorno confiavel.
+ * Entradas: Parametros esperados: inventarioId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getSuprimentosByInventario(inventarioId: number): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -63,10 +63,10 @@ export async function getSuprimentosByInventario(inventarioId: number): Promise<
 
 /**
  * [DOC-FUNC] getSuprimentosByPatrimonio
- * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosByPatrimonio', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: patrimonio; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getSuprimentosByPatrimonio' para retorno confiavel.
+ * Entradas: Parametros esperados: patrimonio; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Suprimentos[]> {
   const supabase = getSupabaseServerClient();
@@ -82,10 +82,10 @@ export async function getSuprimentosByPatrimonio(patrimonio: string): Promise<Su
 
 /**
  * [DOC-FUNC] upsertSuprimento
- * O que faz: Atualiza estado na funcao 'upsertSuprimento', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertSuprimento' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function upsertSuprimento(
   input: CreateSuprimentosInput,
@@ -125,10 +125,10 @@ export async function upsertSuprimento(
 
 /**
  * [DOC-FUNC] createSuprimento
- * O que faz: Cria e persiste dados na funcao 'createSuprimento', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'createSuprimento' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function createSuprimento(
   input: CreateSuprimentosInput,
@@ -146,10 +146,10 @@ export async function createSuprimento(
 
 /**
  * [DOC-FUNC] updateSuprimento
- * O que faz: Atualiza estado na funcao 'updateSuprimento', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: id, input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Atualiza estado na funcao 'updateSuprimento' mantendo coerencia das regras de negocio.
+ * Entradas: Parametros esperados: id, input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
  */
 export async function updateSuprimento(
   id: number,
@@ -169,10 +169,10 @@ export async function updateSuprimento(
 
 /**
  * [DOC-FUNC] deleteSuprimento
- * O que faz: Remove/inativa dados na funcao 'deleteSuprimento', respeitando regras de ciclo de vida e dependencias.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa remocao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Remove/inativa dados na funcao 'deleteSuprimento' respeitando dependencias e ciclo de vida.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; remove/inativa dados conforme regra; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna confirmacao de exclusao logica/fisica e contexto de restricoes.
  */
 export async function deleteSuprimento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();

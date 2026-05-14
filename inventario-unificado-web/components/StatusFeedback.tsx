@@ -18,10 +18,10 @@ type ToastItem = {
 
 /**
  * [DOC-FUNC] normalizarMensagemToast
- * O que faz: Normaliza entradas na funcao 'normalizarMensagemToast', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarMensagemToast', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarMensagemToast(input: string): string {
   const mensagem = String(input || "").trim();
@@ -31,10 +31,10 @@ function normalizarMensagemToast(input: string): string {
 
 /**
  * [DOC-FUNC] StatusFeedback
- * O que faz: Executa a responsabilidade central da funcao 'StatusFeedback', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: { loading, error, success }; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'StatusFeedback' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: { loading, error, success }; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function StatusFeedback({ loading, error, success }: StatusFeedbackProps) {
   const [toasts, setToasts] = useState<ToastItem[]>([]);
@@ -44,10 +44,10 @@ export function StatusFeedback({ loading, error, success }: StatusFeedbackProps)
 
   /**
    * [DOC-FUNC] removerToast
-   * O que faz: Executa a responsabilidade central da funcao 'removerToast', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'removerToast' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const removerToast = (id: number) => {
     setToasts((current) => current.filter((item) => item.id !== id));

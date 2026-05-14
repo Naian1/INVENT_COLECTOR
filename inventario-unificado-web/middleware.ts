@@ -17,10 +17,10 @@ const store =
 
 /**
  * [DOC-FUNC] getClientIp
- * O que faz: Consulta e organiza informacoes na funcao 'getClientIp', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getClientIp' para retorno confiavel.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getClientIp(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for") || "";
@@ -31,10 +31,10 @@ function getClientIp(request: NextRequest) {
 
 /**
  * [DOC-FUNC] applyRateLimit
- * O que faz: Executa a responsabilidade central da funcao 'applyRateLimit', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: key, limit, windowMs; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'applyRateLimit' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: key, limit, windowMs; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function applyRateLimit(key: string, limit: number, windowMs: number) {
   const now = Date.now();
@@ -57,10 +57,10 @@ function applyRateLimit(key: string, limit: number, windowMs: number) {
 
 /**
  * [DOC-FUNC] withSecurityHeaders
- * O que faz: Consulta e organiza informacoes na funcao 'withSecurityHeaders', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: response; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'withSecurityHeaders' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: response; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function withSecurityHeaders(response: NextResponse) {
   response.headers.set("X-Frame-Options", "DENY");
@@ -92,10 +92,10 @@ function withSecurityHeaders(response: NextResponse) {
 
 /**
  * [DOC-FUNC] middleware
- * O que faz: Normaliza entradas na funcao 'middleware', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: request; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'middleware' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

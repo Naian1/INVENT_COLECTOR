@@ -29,10 +29,10 @@ type TelemetriaRow = {
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarTexto(value: unknown) {
   if (value === null || value === undefined) return null;
@@ -42,10 +42,10 @@ function normalizarTexto(value: unknown) {
 
 /**
  * [DOC-FUNC] normalizarIp
- * O que faz: Normaliza entradas na funcao 'normalizarIp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarIp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarIp(value: string | null | undefined) {
   if (!value) return null;
@@ -54,10 +54,10 @@ function normalizarIp(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] extrairTipoEquipamento
- * O que faz: Executa a responsabilidade central da funcao 'extrairTipoEquipamento', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: payload, unknown> | null; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'extrairTipoEquipamento' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: payload, unknown> | null; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
   if (!payload) return "impressora";
@@ -81,10 +81,10 @@ function extrairTipoEquipamento(payload: Record<string, unknown> | null) {
 
 /**
  * [DOC-FUNC] montarChave
- * O que faz: Monta a estrutura central na funcao 'montarChave', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: row; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'montarChave', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: row; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function montarChave(row: TelemetriaRow) {
   const patrimonio = normalizarTexto(row.patrimonio);
@@ -94,10 +94,10 @@ function montarChave(row: TelemetriaRow) {
 
 /**
  * [DOC-FUNC] listarResumoSca
- * O que faz: Consulta e organiza informacoes na funcao 'listarResumoSca', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: limit; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'listarResumoSca' para retorno confiavel.
+ * Entradas: Parametros esperados: limit; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function listarResumoSca(limit = 1800): Promise<ResultadoServico<ScaResumoItem[]>> {
   const supabase = getSupabaseServerClient();

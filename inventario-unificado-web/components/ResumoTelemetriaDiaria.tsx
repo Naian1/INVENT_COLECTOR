@@ -129,10 +129,10 @@ const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
 
 /**
  * [DOC-FUNC] formatNumber
- * O que faz: Normaliza entradas na funcao 'formatNumber', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatNumber', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatNumber(value: number | null | undefined) {
   const n = Number(value ?? 0);
@@ -142,10 +142,10 @@ function formatNumber(value: number | null | undefined) {
 
 /**
  * [DOC-FUNC] formatCurrency
- * O que faz: Normaliza entradas na funcao 'formatCurrency', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatCurrency', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatCurrency(value: number) {
   if (!Number.isFinite(value)) return currencyFormatter.format(0);
@@ -154,10 +154,10 @@ function formatCurrency(value: number) {
 
 /**
  * [DOC-FUNC] formatDateTime
- * O que faz: Normaliza entradas na funcao 'formatDateTime', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatDateTime', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatDateTime(value: string | null | undefined) {
   if (!value) return "-";
@@ -171,10 +171,10 @@ function formatDateTime(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] formatDateBr
- * O que faz: Normaliza entradas na funcao 'formatDateBr', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: dateKey; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'formatDateBr', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: dateKey; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function formatDateBr(dateKey: string) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -184,10 +184,10 @@ function formatDateBr(dateKey: string) {
 
 /**
  * [DOC-FUNC] shiftDateKey
- * O que faz: Normaliza entradas na funcao 'shiftDateKey', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: dateKey, days; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'shiftDateKey', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: dateKey, days; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function shiftDateKey(dateKey: string, days: number) {
   const m = String(dateKey || "").match(/^(\d{4})-(\d{2})-(\d{2})$/);
@@ -202,10 +202,10 @@ function shiftDateKey(dateKey: string, days: number) {
 
 /**
  * [DOC-FUNC] normalizeText
- * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeText(value: string) {
   return value
@@ -217,10 +217,10 @@ function normalizeText(value: string) {
 
 /**
  * [DOC-FUNC] defaultDateRange
- * O que faz: Executa a responsabilidade central da funcao 'defaultDateRange', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'defaultDateRange' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function defaultDateRange() {
   const end = new Date();
@@ -228,10 +228,10 @@ function defaultDateRange() {
   start.setDate(start.getDate() - 6);
   /**
    * [DOC-FUNC] toIso
-   * O que faz: Normaliza entradas na funcao 'toIso', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: date; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Padroniza campos para evitar divergencia de formato.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'toIso' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: date; com validacao de formato e fallback quando necessario.
+   * Como executa: Padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const toIso = (date: Date) => {
     const year = date.getFullYear();
@@ -244,10 +244,10 @@ function defaultDateRange() {
 
 /**
  * [DOC-FUNC] buildChart
- * O que faz: Monta a estrutura central na funcao 'buildChart', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: pointsRaw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'buildChart', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: pointsRaw; com validacao de formato e fallback quando necessario.
+ * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   const points = pointsRaw.map((item) => ({
@@ -285,10 +285,10 @@ function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
 
 /**
  * [DOC-FUNC] toneFromStatus
- * O que faz: Normaliza entradas na funcao 'toneFromStatus', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: status; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toneFromStatus' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: status; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toneFromStatus(status: string) {
   const s = normalizeText(status);
@@ -300,10 +300,10 @@ function toneFromStatus(status: string) {
 
 /**
  * [DOC-FUNC] isColorModel
- * O que faz: Avalia condicoes de controle na funcao 'isColorModel' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: modeloRaw; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'isColorModel' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: modeloRaw; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function isColorModel(modeloRaw: string) {
   const modelo = String(modeloRaw || "")
@@ -315,10 +315,10 @@ function isColorModel(modeloRaw: string) {
 
 /**
  * [DOC-FUNC] buildTrend
- * O que faz: Monta a estrutura central na funcao 'buildTrend', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: current, previous; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'buildTrend', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: current, previous; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function buildTrend(current: number, previous: number) {
   const cur = Number.isFinite(current) ? current : 0;
@@ -336,10 +336,10 @@ function buildTrend(current: number, previous: number) {
 
 /**
  * [DOC-FUNC] ResumoTelemetriaDiaria
- * O que faz: Consulta e organiza informacoes na funcao 'ResumoTelemetriaDiaria', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'ResumoTelemetriaDiaria' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export function ResumoTelemetriaDiaria() {
   const initialRange = useMemo(defaultDateRange, []);

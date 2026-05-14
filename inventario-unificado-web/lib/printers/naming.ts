@@ -15,10 +15,10 @@ const UNKNOWN_VALUES = new Set([
 
 /**
  * [DOC-FUNC] normalizeWhitespace
- * O que faz: Normaliza entradas na funcao 'normalizeWhitespace', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeWhitespace', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeWhitespace(value: string) {
   return value.replace(/\s+/g, " ").trim();
@@ -26,10 +26,10 @@ function normalizeWhitespace(value: string) {
 
 /**
  * [DOC-FUNC] normalizeIpForLabel
- * O que faz: Normaliza entradas na funcao 'normalizeIpForLabel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeIpForLabel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeIpForLabel(value: string | null) {
   if (!value) return null;
@@ -38,10 +38,10 @@ function normalizeIpForLabel(value: string | null) {
 
 /**
  * [DOC-FUNC] sanitizeOptionalText
- * O que faz: Normaliza entradas na funcao 'sanitizeOptionalText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'sanitizeOptionalText', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 export function sanitizeOptionalText(value: string | null | undefined): string | null {
   if (value === null || value === undefined) return null;
@@ -53,10 +53,10 @@ export function sanitizeOptionalText(value: string | null | undefined): string |
 
 /**
  * [DOC-FUNC] normalizeAssetTagForLabel
- * O que faz: Normaliza entradas na funcao 'normalizeAssetTagForLabel', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: assetTag; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizeAssetTagForLabel', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: assetTag; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizeAssetTagForLabel(assetTag: string) {
   const cleaned = normalizeWhitespace(assetTag);

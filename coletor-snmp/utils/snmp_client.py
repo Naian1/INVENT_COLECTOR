@@ -46,10 +46,10 @@ def _stringify(value: Any) -> str:
 
 
 # [DOC-FUNC] _run_async
-# O que faz: Executa a responsabilidade central da funcao '_run_async', conectando validacao, processamento e retorno de forma didatica.
-# Entradas: Parametros esperados: coro; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+# O que faz: Executa a responsabilidade principal da funcao '_run_async' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: coro; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def _run_async(coro):
     try:
         return asyncio.run(coro)

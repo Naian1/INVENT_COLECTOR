@@ -11,10 +11,10 @@ import { Equipamento, CreateEquipamentoInput, UpdateEquipamentoInput } from '@/t
 
 /**
  * [DOC-FUNC] getEquipamentos
- * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentos', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentos' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getEquipamentos(): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -30,10 +30,10 @@ export async function getEquipamentos(): Promise<Equipamento[]> {
 
 /**
  * [DOC-FUNC] getEquipamentoById
- * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentoById', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentoById' para retorno confiavel.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getEquipamentoById(id: number): Promise<Equipamento | null> {
   const supabase = getSupabaseServerClient();
@@ -49,10 +49,10 @@ export async function getEquipamentoById(id: number): Promise<Equipamento | null
 
 /**
  * [DOC-FUNC] getEquipamentosByTipo
- * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentosByTipo', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: tipoId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getEquipamentosByTipo' para retorno confiavel.
+ * Entradas: Parametros esperados: tipoId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -69,10 +69,10 @@ export async function getEquipamentosByTipo(tipoId: number): Promise<Equipamento
 
 /**
  * [DOC-FUNC] createEquipamento
- * O que faz: Cria e persiste dados na funcao 'createEquipamento', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'createEquipamento' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function createEquipamento(input: CreateEquipamentoInput): Promise<Equipamento> {
   const supabase = getSupabaseServerClient();
@@ -88,10 +88,10 @@ export async function createEquipamento(input: CreateEquipamentoInput): Promise<
 
 /**
  * [DOC-FUNC] updateEquipamento
- * O que faz: Atualiza estado na funcao 'updateEquipamento', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: id, input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Atualiza estado na funcao 'updateEquipamento' mantendo coerencia das regras de negocio.
+ * Entradas: Parametros esperados: id, input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
  */
 export async function updateEquipamento(
   id: number,
@@ -111,10 +111,10 @@ export async function updateEquipamento(
 
 /**
  * [DOC-FUNC] deleteEquipamento
- * O que faz: Remove/inativa dados na funcao 'deleteEquipamento', respeitando regras de ciclo de vida e dependencias.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Remove/inativa dados na funcao 'deleteEquipamento' respeitando dependencias e ciclo de vida.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna confirmacao de exclusao logica/fisica e contexto de restricoes.
  */
 export async function deleteEquipamento(id: number): Promise<void> {
   // Soft delete - apenas marcar como inativo

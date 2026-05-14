@@ -7,10 +7,10 @@ import { Movimentacao, CreateMovimentacaoInput } from '@/types/movimentacao';
 
 /**
  * [DOC-FUNC] getMovimentacoes
- * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoes', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoes' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getMovimentacoes(): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -25,10 +25,10 @@ export async function getMovimentacoes(): Promise<Movimentacao[]> {
 
 /**
  * [DOC-FUNC] getMovimentacaoById
- * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacaoById', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: id; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacaoById' para retorno confiavel.
+ * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getMovimentacaoById(id: number): Promise<Movimentacao | null> {
   const supabase = getSupabaseServerClient();
@@ -44,10 +44,10 @@ export async function getMovimentacaoById(id: number): Promise<Movimentacao | nu
 
 /**
  * [DOC-FUNC] getMovimentacoesByInventario
- * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesByInventario', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: inventarioId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesByInventario' para retorno confiavel.
+ * Entradas: Parametros esperados: inventarioId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getMovimentacoesByInventario(inventarioId: number): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -63,10 +63,10 @@ export async function getMovimentacoesByInventario(inventarioId: number): Promis
 
 /**
  * [DOC-FUNC] getMovimentacoesByPatrimonio
- * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesByPatrimonio', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: patrimonio; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesByPatrimonio' para retorno confiavel.
+ * Entradas: Parametros esperados: patrimonio; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<Movimentacao[]> {
   const supabase = getSupabaseServerClient();
@@ -82,10 +82,10 @@ export async function getMovimentacoesByPatrimonio(patrimonio: string): Promise<
 
 /**
  * [DOC-FUNC] getMovimentacoesBySetor
- * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesBySetor', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: setorId, limit; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMovimentacoesBySetor' para retorno confiavel.
+ * Entradas: Parametros esperados: setorId, limit; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getMovimentacoesBySetor(
   setorId: number,
@@ -105,10 +105,10 @@ export async function getMovimentacoesBySetor(
 
 /**
  * [DOC-FUNC] createMovimentacao
- * O que faz: Cria e persiste dados na funcao 'createMovimentacao', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'createMovimentacao' com validacao de integridade.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 export async function createMovimentacao(
   input: CreateMovimentacaoInput,
@@ -126,10 +126,10 @@ export async function createMovimentacao(
 
 /**
  * [DOC-FUNC] getHistoricoEquipamento
- * O que faz: Consulta e organiza informacoes na funcao 'getHistoricoEquipamento', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: patrimonio; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getHistoricoEquipamento' para retorno confiavel.
+ * Entradas: Parametros esperados: patrimonio; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getHistoricoEquipamento(patrimonio: string): Promise<{
   inventario: any;

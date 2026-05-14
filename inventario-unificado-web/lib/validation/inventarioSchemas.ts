@@ -34,10 +34,10 @@ const textoOpcionalNulo = z
 
 /**
  * [DOC-FUNC] uuidObrigatorio
- * O que faz: Normaliza entradas na funcao 'uuidObrigatorio', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: campo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'uuidObrigatorio' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: campo; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 const uuidObrigatorio = (campo: string) =>
   z.string().uuid(`${campo} deve ser UUID valido`);
@@ -104,10 +104,10 @@ const boolFromQuery = z
 
 /**
  * [DOC-FUNC] numeroPositivoComDefault
- * O que faz: Normaliza entradas na funcao 'numeroPositivoComDefault', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: defaultValue; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'numeroPositivoComDefault' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: defaultValue; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z

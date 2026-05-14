@@ -17,10 +17,10 @@ export type PrinterMetrics = {
 
 /**
  * [DOC-FUNC] getPrinterMetricsByRange
- * O que faz: Consulta e organiza informacoes na funcao 'getPrinterMetricsByRange', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: printerId, from, to; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPrinterMetricsByRange' para retorno confiavel.
+ * Entradas: Parametros esperados: printerId, from, to; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  * Processamento: Executa a consulta, trata cenarios de erro e normaliza o resultado.
  * Retorno/Efeitos: Retorna os dados consolidados; em falha, propaga excecao/erro controlado.
  */

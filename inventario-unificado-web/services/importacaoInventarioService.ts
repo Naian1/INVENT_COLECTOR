@@ -93,10 +93,10 @@ const VALORES_VAZIOS = new Set(["", "null", "none", "n/a", "na", "-", "desconhec
 
 /**
  * [DOC-FUNC] normalizarTexto
- * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarTexto', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarTexto(value: unknown): string | undefined {
   if (value === null || value === undefined) return undefined;
@@ -108,10 +108,10 @@ function normalizarTexto(value: unknown): string | undefined {
 
 /**
  * [DOC-FUNC] normalizarChave
- * O que faz: Normaliza entradas na funcao 'normalizarChave', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarChave', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarChave(value: string): string {
   return value
@@ -124,10 +124,10 @@ function normalizarChave(value: string): string {
 
 /**
  * [DOC-FUNC] slugify
- * O que faz: Normaliza entradas na funcao 'slugify', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'slugify' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function slugify(value: string): string {
   return normalizarChave(value).replace(/_+/g, "-");
@@ -135,10 +135,10 @@ function slugify(value: string): string {
 
 /**
  * [DOC-FUNC] normalizarIp
- * O que faz: Normaliza entradas na funcao 'normalizarIp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarIp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarIp(value: string): string {
   return value.replace(/\/32$/, "").trim();
@@ -146,10 +146,10 @@ function normalizarIp(value: string): string {
 
 /**
  * [DOC-FUNC] ipValido
- * O que faz: Avalia condicoes de controle na funcao 'ipValido' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: ip; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Avalia condicoes de controle na funcao 'ipValido' para permitir ou bloquear o proximo passo.
+ * Entradas: Parametros esperados: ip; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
  */
 function ipValido(ip: string): boolean {
   const ipv4Regex =
@@ -159,10 +159,10 @@ function ipValido(ip: string): boolean {
 
 /**
  * [DOC-FUNC] toBoolean
- * O que faz: Normaliza entradas na funcao 'toBoolean', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toBoolean' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toBoolean(value: unknown): boolean | undefined {
   if (typeof value === "boolean") return value;
@@ -176,10 +176,10 @@ function toBoolean(value: unknown): boolean | undefined {
 
 /**
  * [DOC-FUNC] resolverCampoDestino
- * O que faz: Monta a estrutura central na funcao 'resolverCampoDestino', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: coluna, mapping, string>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'resolverCampoDestino', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: coluna, mapping, string>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function resolverCampoDestino(coluna: string, mapping: Record<string, string>): string {
   const mapped = mapping[coluna];
@@ -189,10 +189,10 @@ function resolverCampoDestino(coluna: string, mapping: Record<string, string>): 
 
 /**
  * [DOC-FUNC] validarReferenciasBase
- * O que faz: Consulta e organiza informacoes na funcao 'validarReferenciasBase', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'validarReferenciasBase' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function validarReferenciasBase(input: PreviewInput): Promise<
   ResultadoServico<{ tipoEhImpressora: boolean }>
@@ -242,10 +242,10 @@ async function validarReferenciasBase(input: PreviewInput): Promise<
 
 /**
  * [DOC-FUNC] normalizarLinha
- * O que faz: Normaliza entradas na funcao 'normalizarLinha', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: row, unknown>, mapping, string>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarLinha', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: row, unknown>, mapping, string>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarLinha(
   row: Record<string, unknown>,
@@ -322,10 +322,10 @@ function normalizarLinha(
 
 /**
  * [DOC-FUNC] buscarIdsPorChave
- * O que faz: Consulta e organiza informacoes na funcao 'buscarIdsPorChave', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: campo, valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'buscarIdsPorChave' para retorno confiavel.
+ * Entradas: Parametros esperados: campo, valor; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function buscarIdsPorChave(
   campo: ChaveMatching,
@@ -408,10 +408,10 @@ async function detectarMatching(
 
 /**
  * [DOC-FUNC] persistirPreviewImportacao
- * O que faz: Cria e persiste dados na funcao 'persistirPreviewImportacao', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: input, linhas, resumo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'persistirPreviewImportacao' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: input, linhas, resumo; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function persistirPreviewImportacao(
   input: PreviewInput,
@@ -484,10 +484,10 @@ async function persistirPreviewImportacao(
 
 /**
  * [DOC-FUNC] gerarPreviewImportacao
- * O que faz: Monta a estrutura central na funcao 'gerarPreviewImportacao', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: input, persistir; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'gerarPreviewImportacao', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: input, persistir; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 export async function gerarPreviewImportacao(
   input: PreviewInput,
@@ -613,10 +613,10 @@ type LinhaPersistida = {
 
 /**
  * [DOC-FUNC] pickUpdatePayload
- * O que faz: Atualiza estado na funcao 'pickUpdatePayload', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: dados, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Monta estrutura/payload na funcao 'pickUpdatePayload', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: dados, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unknown> {
   const allowed = [
@@ -643,10 +643,10 @@ function pickUpdatePayload(dados: Record<string, unknown>): Record<string, unkno
 
 /**
  * [DOC-FUNC] normalizarErroBanco
- * O que faz: Avalia condicoes de controle na funcao 'normalizarErroBanco' para decidir se o fluxo pode avancar.
- * Entradas: Parametros esperados: errorMessage; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio.
- * Retorno/Efeitos: Retorna verdadeiro/falso para controlar a continuidade do fluxo nas proximas etapas.
+ * O que faz: Normaliza entradas na funcao 'normalizarErroBanco', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: errorMessage; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarErroBanco(errorMessage: string) {
   if (errorMessage.includes("uq_itens_inventario_patrimonio_ci")) {
@@ -663,10 +663,10 @@ function normalizarErroBanco(errorMessage: string) {
 
 /**
  * [DOC-FUNC] linhaPareceImpressora
- * O que faz: Normaliza entradas na funcao 'linhaPareceImpressora', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: dados, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'linhaPareceImpressora' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: dados, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
   const descricao = String(dados.descricao ?? "").toLowerCase();
@@ -687,10 +687,10 @@ function linhaPareceImpressora(dados: Record<string, unknown>): boolean {
 
 /**
  * [DOC-FUNC] encontrarImpressoraPorChaves
- * O que faz: Consulta e organiza informacoes na funcao 'encontrarImpressoraPorChaves', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: dados, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'encontrarImpressoraPorChaves' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: dados, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function encontrarImpressoraPorChaves(
   dados: Record<string, unknown>
@@ -746,10 +746,10 @@ async function encontrarImpressoraPorChaves(
 
 /**
  * [DOC-FUNC] tentarVincularItemComImpressora
- * O que faz: Cria e persiste dados na funcao 'tentarVincularItemComImpressora', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: itemInventarioId, dados, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'tentarVincularItemComImpressora' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: itemInventarioId, dados, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function tentarVincularItemComImpressora(
   itemInventarioId: string,
@@ -785,10 +785,10 @@ async function tentarVincularItemComImpressora(
 
 /**
  * [DOC-FUNC] executarLinhaCriar
- * O que faz: Cria e persiste dados na funcao 'executarLinhaCriar', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: linha, abaInventarioId, tipoItemId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'executarLinhaCriar' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: linha, abaInventarioId, tipoItemId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function executarLinhaCriar(
   linha: LinhaPersistida,
@@ -821,10 +821,10 @@ async function executarLinhaCriar(
 
 /**
  * [DOC-FUNC] executarLinhaAtualizar
- * O que faz: Atualiza estado na funcao 'executarLinhaAtualizar', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: linha; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Atualiza estado na funcao 'executarLinhaAtualizar' mantendo coerencia das regras de negocio.
+ * Entradas: Parametros esperados: linha; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
  */
 async function executarLinhaAtualizar(
   linha: LinhaPersistida
@@ -859,10 +859,10 @@ async function executarLinhaAtualizar(
 
 /**
  * [DOC-FUNC] carregarPreviewPersistido
- * O que faz: Consulta e organiza informacoes na funcao 'carregarPreviewPersistido', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: importacaoId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'carregarPreviewPersistido' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: importacaoId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function carregarPreviewPersistido(importacaoId: string): Promise<
   ResultadoServico<{
@@ -907,10 +907,10 @@ async function carregarPreviewPersistido(importacaoId: string): Promise<
 
 /**
  * [DOC-FUNC] obterOuCriarAbaInventario
- * O que faz: Cria e persiste dados na funcao 'obterOuCriarAbaInventario', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: nomeAba; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'obterOuCriarAbaInventario' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: nomeAba; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -951,10 +951,10 @@ async function obterOuCriarAbaInventario(nomeAba: string): Promise<ResultadoServ
 
 /**
  * [DOC-FUNC] obterOuCriarTipoPadrao
- * O que faz: Cria e persiste dados na funcao 'obterOuCriarTipoPadrao', aplicando validacao para preservar integridade do dominio.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa escrita de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'obterOuCriarTipoPadrao' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
   const supabase = getSupabaseServerClient();
@@ -987,10 +987,10 @@ async function obterOuCriarTipoPadrao(): Promise<ResultadoServico<string>> {
 
 /**
  * [DOC-FUNC] atualizarLinhaProcessada
- * O que faz: Atualiza estado na funcao 'atualizarLinhaProcessada', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: importacaoId, indiceLinha, status, erro, itemId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Atualiza estado na funcao 'atualizarLinhaProcessada' mantendo coerencia das regras de negocio.
+ * Entradas: Parametros esperados: importacaoId, indiceLinha, status, erro, itemId; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
  */
 async function atualizarLinhaProcessada(
   importacaoId: string,
@@ -1014,10 +1014,10 @@ async function atualizarLinhaProcessada(
 
 /**
  * [DOC-FUNC] finalizarImportacao
- * O que faz: Atualiza estado na funcao 'finalizarImportacao', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: importacaoId, resumo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; executa atualizacao de forma controlada.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'finalizarImportacao' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: importacaoId, resumo; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function finalizarImportacao(
   importacaoId: string,
@@ -1036,10 +1036,10 @@ async function finalizarImportacao(
 
 /**
  * [DOC-FUNC] executarImportacaoInventario
- * O que faz: Executa a responsabilidade central da funcao 'executarImportacaoInventario', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: input; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'executarImportacaoInventario' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 export async function executarImportacaoInventario(
   input: ExecutarInput

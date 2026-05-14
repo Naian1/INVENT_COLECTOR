@@ -29,10 +29,10 @@ type LinhaImportacao = {
 
 /**
  * [DOC-FUNC] normalizarHeader
- * O que faz: Normaliza entradas na funcao 'normalizarHeader', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: header; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarHeader', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: header; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarHeader(header: unknown) {
   return String(header ?? '')
@@ -99,10 +99,10 @@ const CAMPOS_CHAVE_MATRIX: Array<{ campo: string; aliases: string[] }> = [
 
 /**
  * [DOC-FUNC] analisarCabecalhosMatrix
- * O que faz: Normaliza entradas na funcao 'analisarCabecalhosMatrix', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: headersOriginais; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'analisarCabecalhosMatrix' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: headersOriginais; com validacao de formato e fallback quando necessario.
+ * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function analisarCabecalhosMatrix(headersOriginais: string[]) {
   const headersNormalizados = headersOriginais
@@ -128,10 +128,10 @@ function analisarCabecalhosMatrix(headersOriginais: string[]) {
 
 /**
  * [DOC-FUNC] mapearLinha
- * O que faz: Monta a estrutura central na funcao 'mapearLinha', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: raw, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'mapearLinha', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: raw, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -139,10 +139,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
   /**
    * [DOC-FUNC] pick
-   * O que faz: Normaliza entradas na funcao 'pick', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: keys; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'pick' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: keys; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -179,10 +179,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
 /**
  * [DOC-FUNC] competenciaAtual
- * O que faz: Normaliza entradas na funcao 'competenciaAtual', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'competenciaAtual' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function competenciaAtual() {
   const now = new Date();
@@ -193,10 +193,10 @@ function competenciaAtual() {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * O que faz: Normaliza entradas na funcao 'validarCompetencia', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: valor; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'validarCompetencia' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: valor; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function validarCompetencia(valor: string) {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(valor.trim());
@@ -204,10 +204,10 @@ function validarCompetencia(valor: string) {
 
 /**
  * [DOC-FUNC] normalizarStatus
- * O que faz: Normaliza entradas na funcao 'normalizarStatus', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarStatus', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO' | null {
   const raw = String(value ?? '')
@@ -225,10 +225,10 @@ function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | '
 
 /**
  * [DOC-FUNC] normalizarTimestamp
- * O que faz: Normaliza entradas na funcao 'normalizarTimestamp', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Normaliza entradas na funcao 'normalizarTimestamp', reduzindo ambiguidade antes da regra principal.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
  */
 function normalizarTimestamp(value: unknown): string | null {
   const texto = String(value ?? '').trim();
@@ -247,10 +247,10 @@ function normalizarTimestamp(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] mapearLinhaMatrixParaBanco
- * O que faz: Monta a estrutura central na funcao 'mapearLinhaMatrixParaBanco', combinando dados brutos em payload coerente.
- * Entradas: Parametros esperados: raw, unknown>; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna estrutura consolidada (payload/objeto) pronta para API, banco, servico ou camada de UI.
+ * O que faz: Monta estrutura/payload na funcao 'mapearLinhaMatrixParaBanco', consolidando dados para a proxima camada.
+ * Entradas: Parametros esperados: raw, unknown>; com validacao de formato e fallback quando necessario.
+ * Como executa: Itera colecoes para montar/filtrar dados.
+ * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
  */
 function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -258,10 +258,10 @@ function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
 
   /**
    * [DOC-FUNC] pick
-   * O que faz: Normaliza entradas na funcao 'pick', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: keys; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'pick' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: keys; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -341,10 +341,10 @@ export default function ImportacoesInventarioPage() {
   useEffect(() => {
     /**
      * [DOC-FUNC] carregarEmpresas
-     * O que faz: Consulta e organiza informacoes na funcao 'carregarEmpresas', entregando retorno confiavel para camadas superiores.
-     * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-     * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-     * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+     * O que faz: Executa a responsabilidade principal da funcao 'carregarEmpresas' com fluxo previsivel para estudo.
+     * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+     * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+     * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
      */
     const carregarEmpresas = async () => {
       try {
@@ -384,10 +384,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] onArquivoSelecionado
-   * O que faz: Normaliza entradas na funcao 'onArquivoSelecionado', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: file; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'onArquivoSelecionado' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: file; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   async function onArquivoSelecionado(file: File) {
     setErro(null);
@@ -432,10 +432,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] importarConsolidadoMensal
-   * O que faz: Consulta e organiza informacoes na funcao 'importarConsolidadoMensal', entregando retorno confiavel para camadas superiores.
-   * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-   * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-   * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+   * O que faz: Executa a responsabilidade principal da funcao 'importarConsolidadoMensal' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   async function importarConsolidadoMensal() {
     if (!linhasBrutas.length) {

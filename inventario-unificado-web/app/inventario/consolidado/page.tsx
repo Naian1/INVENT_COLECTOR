@@ -79,10 +79,10 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
 
 /**
  * [DOC-FUNC] formatarData
- * O que faz: Consulta e organiza informacoes na funcao 'formatarData', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: dataIso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Executa a responsabilidade principal da funcao 'formatarData' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: dataIso; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function formatarData(dataIso: string | null): string {
   if (!dataIso) return '-';
@@ -199,10 +199,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Executa a responsabilidade central da funcao 'onSubmit', conectando validacao, processamento e retorno de forma didatica.
-   * Entradas: Parametros esperados: event; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-   * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+   * O que faz: Executa a responsabilidade principal da funcao 'onSubmit' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: event; com validacao de formato e fallback quando necessario.
+   * Como executa: Executa processamento local em sequencia previsivel.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const onSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -211,10 +211,10 @@ export default function InventarioConsolidadoPage() {
 
   /**
    * [DOC-FUNC] irParaPagina
-   * O que faz: Normaliza entradas na funcao 'irParaPagina', reduzindo variacoes de formato antes da regra principal.
-   * Entradas: Parametros esperados: novaPagina; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-   * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
-   * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+   * O que faz: Executa a responsabilidade principal da funcao 'irParaPagina' com fluxo previsivel para estudo.
+   * Entradas: Parametros esperados: novaPagina; com validacao de formato e fallback quando necessario.
+   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
    */
   const irParaPagina = (novaPagina: number) => {
     if (!dados?.paginacao) return;

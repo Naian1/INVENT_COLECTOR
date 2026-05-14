@@ -17,10 +17,10 @@ type DashboardSummary = {
 
 /**
  * [DOC-FUNC] getMonthStartIsoUtc
- * O que faz: Consulta e organiza informacoes na funcao 'getMonthStartIsoUtc', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: now; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getMonthStartIsoUtc' para retorno confiavel.
+ * Entradas: Parametros esperados: now; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function getMonthStartIsoUtc(now: Date) {
   return new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1)).toISOString();
@@ -28,10 +28,10 @@ function getMonthStartIsoUtc(now: Date) {
 
 /**
  * [DOC-FUNC] getPagesPrintedCurrentMonth
- * O que faz: Consulta e organiza informacoes na funcao 'getPagesPrintedCurrentMonth', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: nowIso; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getPagesPrintedCurrentMonth' para retorno confiavel.
+ * Entradas: Parametros esperados: nowIso; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function getPagesPrintedCurrentMonth(nowIso: string) {
   const supabase = getSupabaseServerClient();
@@ -72,10 +72,10 @@ async function getPagesPrintedCurrentMonth(nowIso: string) {
 
 /**
  * [DOC-FUNC] getOperationalCountersFromOverview
- * O que faz: Consulta e organiza informacoes na funcao 'getOperationalCountersFromOverview', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getOperationalCountersFromOverview' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function getOperationalCountersFromOverview() {
   const overview = await getPrintersOverview();
@@ -111,10 +111,10 @@ async function getOperationalCountersFromOverview() {
 
 /**
  * [DOC-FUNC] getDashboardSummary
- * O que faz: Consulta e organiza informacoes na funcao 'getDashboardSummary', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'getDashboardSummary' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 export async function getDashboardSummary(): Promise<DashboardSummary> {
   const supabase = getSupabaseServerClient();

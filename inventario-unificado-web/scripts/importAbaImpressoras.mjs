@@ -9,10 +9,10 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * [DOC-FUNC] loadEnvLocal
- * O que faz: Consulta e organiza informacoes na funcao 'loadEnvLocal', entregando retorno confiavel para camadas superiores.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'loadEnvLocal' para retorno confiavel.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 function loadEnvLocal() {
   const envPath = path.join(process.cwd(), ".env.local");
@@ -32,10 +32,10 @@ function loadEnvLocal() {
 
 /**
  * [DOC-FUNC] envValue
- * O que faz: Executa a responsabilidade central da funcao 'envValue', conectando validacao, processamento e retorno de forma didatica.
- * Entradas: Parametros esperados: name, fallback; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
- * Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+ * O que faz: Executa a responsabilidade principal da funcao 'envValue' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: name, fallback; com validacao de formato e fallback quando necessario.
+ * Como executa: Executa processamento local em sequencia previsivel.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function envValue(name, fallback = "") {
   return process.env[name] || localEnv[name] || fallback;
@@ -43,10 +43,10 @@ function envValue(name, fallback = "") {
 
 /**
  * [DOC-FUNC] slugify
- * O que faz: Normaliza entradas na funcao 'slugify', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'slugify' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function slugify(value) {
   return String(value || "")
@@ -60,10 +60,10 @@ function slugify(value) {
 
 /**
  * [DOC-FUNC] chaveCampo
- * O que faz: Normaliza entradas na funcao 'chaveCampo', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: value; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'chaveCampo' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function chaveCampo(value) {
   const core = String(value || "")
@@ -79,10 +79,10 @@ function chaveCampo(value) {
 
 /**
  * [DOC-FUNC] normHeader
- * O que faz: Normaliza entradas na funcao 'normHeader', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: v; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'normHeader' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: v; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function normHeader(v) {
   return String(v || "")
@@ -95,10 +95,10 @@ function normHeader(v) {
 
 /**
  * [DOC-FUNC] pickHeaderIndex
- * O que faz: Normaliza entradas na funcao 'pickHeaderIndex', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: headers, aliases; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'pickHeaderIndex' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: headers, aliases; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function pickHeaderIndex(headers, aliases) {
   const normalized = headers.map(normHeader);
@@ -112,10 +112,10 @@ function pickHeaderIndex(headers, aliases) {
 
 /**
  * [DOC-FUNC] toText
- * O que faz: Normaliza entradas na funcao 'toText', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: v; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'toText' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: v; com validacao de formato e fallback quando necessario.
+ * Como executa: Padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function toText(v) {
   const s = String(v ?? "").trim();
@@ -124,10 +124,10 @@ function toText(v) {
 
 /**
  * [DOC-FUNC] inferFabricante
- * O que faz: Normaliza entradas na funcao 'inferFabricante', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: modelo; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'inferFabricante' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: modelo; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function inferFabricante(modelo) {
   const m = String(modelo || "").toLowerCase();
@@ -139,10 +139,10 @@ function inferFabricante(modelo) {
 
 /**
  * [DOC-FUNC] ensureAba
- * O que faz: Cria e persiste dados na funcao 'ensureAba', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: nome; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensureAba' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: nome; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensureAba(nome) {
   const { data: existing, error } = await supabase
@@ -165,10 +165,10 @@ async function ensureAba(nome) {
 
 /**
  * [DOC-FUNC] ensureCategoria
- * O que faz: Cria e persiste dados na funcao 'ensureCategoria', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: abaId, nome; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensureCategoria' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: abaId, nome; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensureCategoria(abaId, nome) {
   const { data: existing, error } = await supabase
@@ -200,10 +200,10 @@ async function ensureCategoria(abaId, nome) {
 
 /**
  * [DOC-FUNC] ensureCampos
- * O que faz: Cria e persiste dados na funcao 'ensureCampos', aplicando validacao para preservar integridade do dominio.
- * Entradas: Parametros esperados: categoriaId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'ensureCampos' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: categoriaId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function ensureCampos(categoriaId) {
   const camposEsperados = [
@@ -255,10 +255,10 @@ async function ensureCampos(categoriaId) {
 
 /**
  * [DOC-FUNC] loadExistingLinhas
- * O que faz: Consulta e organiza informacoes na funcao 'loadExistingLinhas', entregando retorno confiavel para camadas superiores.
- * Entradas: Parametros esperados: categoriaId, campoPatId, campoIpId; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna dados prontos para consumo (tipados e consistentes) ou sinaliza ausencia/erro sem ambiguidade.
+ * O que faz: Consulta e organiza informacoes na funcao 'loadExistingLinhas' para retorno confiavel.
+ * Entradas: Parametros esperados: categoriaId, campoPatId, campoIpId; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
  */
 async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
   const { data: linhas, error: lErr } = await supabase
@@ -296,10 +296,10 @@ async function loadExistingLinhas(categoriaId, campoPatId, campoIpId) {
 
 /**
  * [DOC-FUNC] upsertOperacional
- * O que faz: Atualiza estado na funcao 'upsertOperacional', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Parametros esperados: row; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Cria e persiste dados na funcao 'upsertOperacional' com validacao de integridade.
+ * Entradas: Parametros esperados: row; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
  */
 async function upsertOperacional(row) {
   const payload = {
@@ -337,10 +337,10 @@ async function upsertOperacional(row) {
 
 /**
  * [DOC-FUNC] detectarHeader
- * O que faz: Normaliza entradas na funcao 'detectarHeader', reduzindo variacoes de formato antes da regra principal.
- * Entradas: Parametros esperados: rows; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
- * Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+ * O que faz: Executa a responsabilidade principal da funcao 'detectarHeader' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: rows; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 function detectarHeader(rows) {
   for (let i = 0; i < Math.min(rows.length, 20); i++) {
@@ -367,10 +367,10 @@ const supabase = createClient(SUPABASE_URL, SUPABASE_KEY, { auth: { persistSessi
 
 /**
  * [DOC-FUNC] main
- * O que faz: Atualiza estado na funcao 'main', mantendo coerencia entre dados atuais e alteracoes recebidas.
- * Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
- * Como executa: Valida pre-condicoes e regras de negocio; consulta fontes de dados/servicos externos; padroniza campos para evitar divergencia de formato; itera listas/objetos para consolidar calculos e mapeamentos; executa escrita/atualizacao de forma controlada; captura e propaga erros com contexto de diagnostico.
- * Retorno/Efeitos: Retorna o resultado da mutacao e registra efeitos de persistencia/integracao com tratamento de falhas claro.
+ * O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+ * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+ * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+ * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
  */
 async function main() {
   const fileArg = process.argv[2];

@@ -23,10 +23,10 @@ STOP = False
 
 
 # [DOC-FUNC] _handle_stop
-# O que faz: Executa a responsabilidade central da funcao '_handle_stop', conectando validacao, processamento e retorno de forma didatica.
-# Entradas: Parametros esperados: signum, _frame; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Executa um fluxo linear de validacao e processamento local, mantendo resultado previsivel para quem consome a funcao.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+# O que faz: Executa a responsabilidade principal da funcao '_handle_stop' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: signum, _frame; com validacao de formato e fallback quando necessario.
+# Como executa: Executa processamento local em sequencia previsivel.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def _handle_stop(signum, _frame):
     global STOP
     STOP = True
@@ -34,10 +34,10 @@ def _handle_stop(signum, _frame):
 
 
 # [DOC-FUNC] _resolve_interval
-# O que faz: Normaliza entradas na funcao '_resolve_interval', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Parametros esperados: cli_interval; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Executa a responsabilidade principal da funcao '_resolve_interval' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: cli_interval; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def _resolve_interval(cli_interval):
     if cli_interval and cli_interval > 0:
         return cli_interval
@@ -64,10 +64,10 @@ def _resolve_interval(cli_interval):
 
 
 # [DOC-FUNC] run_loop
-# O que faz: Executa a responsabilidade central da funcao 'run_loop', conectando validacao, processamento e retorno de forma didatica.
-# Entradas: Parametros esperados: interval_seconds, run_once; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+# O que faz: Executa a responsabilidade principal da funcao 'run_loop' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: interval_seconds, run_once; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def run_loop(interval_seconds, run_once=False):
     cycle = 0
     while not STOP:
@@ -95,10 +95,10 @@ def run_loop(interval_seconds, run_once=False):
 
 
 # [DOC-FUNC] main
-# O que faz: Normaliza entradas na funcao 'main', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def main():
     parser = argparse.ArgumentParser(
         description="Executa somente o coletor (SNMP -> API) sem subir o frontend legado Flask."

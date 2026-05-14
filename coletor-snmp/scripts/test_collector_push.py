@@ -16,10 +16,10 @@ from utils.telemetry_mapper import build_collector_payload, build_payload_from_c
 
 
 # [DOC-FUNC] _group_cache_by_ip
-# O que faz: Executa a responsabilidade central da funcao '_group_cache_by_ip', conectando validacao, processamento e retorno de forma didatica.
-# Entradas: Parametros esperados: cache_rows; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; itera listas/objetos para consolidar calculos e mapeamentos.
-# Retorno/Efeitos: Retorna resultado util para a camada chamadora com contrato claro de sucesso e falha.
+# O que faz: Executa a responsabilidade principal da funcao '_group_cache_by_ip' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: cache_rows; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def _group_cache_by_ip(cache_rows):
     grouped = {}
     for row in cache_rows:
@@ -31,10 +31,10 @@ def _group_cache_by_ip(cache_rows):
 
 
 # [DOC-FUNC] run_test
-# O que faz: Normaliza entradas na funcao 'run_test', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Parametros esperados: ip, refresh_cache, dry_run, real_read; o fluxo valida formato e aplica fallback quando a entrada vier incompleta.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato; captura e propaga erros com contexto de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Executa a responsabilidade principal da funcao 'run_test' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: ip, refresh_cache, dry_run, real_read; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     printers = load_printers()
     remote = fetch_printers_from_api(log_prefix="[test-printers-sync]")
@@ -130,10 +130,10 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
 
 
 # [DOC-FUNC] main
-# O que faz: Normaliza entradas na funcao 'main', reduzindo variacoes de formato antes da regra principal.
-# Entradas: Sem parametros obrigatorios; usa contexto local, variaveis de ambiente ou estado de execucao quando necessario.
-# Como executa: Valida pre-condicoes e regras de negocio; padroniza campos para evitar divergencia de formato.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao com menos ruido semantico.
+# O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
+# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
+# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
+# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
 def main():
     parser = argparse.ArgumentParser(
         description="Teste manual de envio da telemetria do PjIMPRESS para a API nova."
