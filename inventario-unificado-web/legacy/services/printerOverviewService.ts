@@ -54,10 +54,10 @@ type SupplyRow = {
 
 /**
  * [DOC-FUNC] toFiniteNumber
- * O que faz: Executa a responsabilidade principal da funcao 'toFiniteNumber' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'toFiniteNumber' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toFiniteNumber(value: unknown): number | null {
   const parsed = Number(value);
@@ -66,10 +66,10 @@ function toFiniteNumber(value: unknown): number | null {
 
 /**
  * [DOC-FUNC] getPrintersOverview
- * O que faz: Consulta e organiza informacoes na funcao 'getPrintersOverview' para retorno confiavel.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'getPrintersOverview' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export async function getPrintersOverview(): Promise<ServiceResult<PrinterOverviewItem[]>> {
   const supabase = getSupabaseServerClient();

@@ -18,10 +18,10 @@ const TelemetriaPagecountCreateSchema = z.object({
 
 /**
  * [DOC-FUNC] hasOnConflictConstraintError
- * O que faz: Avalia condicoes de controle na funcao 'hasOnConflictConstraintError' para permitir ou bloquear o proximo passo.
- * Entradas: Parametros esperados: message; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+ * O que faz: A funcao 'hasOnConflictConstraintError' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: message. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function hasOnConflictConstraintError(message: string) {
   return (
@@ -33,10 +33,10 @@ function hasOnConflictConstraintError(message: string) {
 // GET /api/telemetria-pagecount - estado atual de pagecount por inventario
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa endpoint HTTP GET 'GET', retornando dados de forma segura e padronizada.
- * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna resposta de leitura tipada/padronizada ou erro claro de validacao/autorizacao/acesso.
+ * O que faz: A funcao 'GET' atende uma rota HTTP desta camada. Ela interpreta a requisicao recebida, valida o contrato esperado, aciona as regras de negocio e monta a resposta padronizada para o cliente.
+ * Entradas: Recebe os parametros: request. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+ * Retorno/Efeitos: Retorna uma resposta HTTP padronizada (sucesso ou erro), com mensagem e payload no formato esperado por quem consome a API.
  */
 export async function GET(request: NextRequest) {
   try {
@@ -69,10 +69,10 @@ export async function GET(request: NextRequest) {
 // POST /api/telemetria-pagecount - upsert por inventario (1 linha por impressora)
 /**
  * [DOC-FUNC] POST
- * O que faz: Implementa endpoint HTTP POST 'POST', validando payload e processando persistencia/integracao.
- * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna resultado da operacao de escrita/processamento e efeitos de persistencia quando aplicavel.
+ * O que faz: A funcao 'POST' atende uma rota HTTP desta camada. Ela interpreta a requisicao recebida, valida o contrato esperado, aciona as regras de negocio e monta a resposta padronizada para o cliente.
+ * Entradas: Recebe os parametros: request. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+ * Retorno/Efeitos: Retorna uma resposta HTTP padronizada (sucesso ou erro), com mensagem e payload no formato esperado por quem consome a API.
  */
 export async function POST(request: NextRequest) {
   try {

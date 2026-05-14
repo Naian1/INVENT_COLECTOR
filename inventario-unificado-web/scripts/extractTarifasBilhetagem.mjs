@@ -9,10 +9,10 @@ import XLSX from "xlsx";
 
 /**
  * [DOC-FUNC] toNumber
- * O que faz: Executa a responsabilidade principal da funcao 'toNumber' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'toNumber' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toNumber(value) {
   if (typeof value === "number" && Number.isFinite(value)) return value;
@@ -25,10 +25,10 @@ function toNumber(value) {
 
 /**
  * [DOC-FUNC] normalizeText
- * O que faz: Normaliza entradas na funcao 'normalizeText', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeText' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizeText(value) {
   return String(value ?? "").trim();
@@ -36,10 +36,10 @@ function normalizeText(value) {
 
 /**
  * [DOC-FUNC] findTarifas
- * O que faz: Consulta e organiza informacoes na funcao 'findTarifas' para retorno confiavel.
- * Entradas: Parametros esperados: rows; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'findTarifas' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: rows. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function findTarifas(rows) {
   for (const row of rows) {
@@ -57,10 +57,10 @@ function findTarifas(rows) {
 
 /**
  * [DOC-FUNC] inferCompetenciaFromName
- * O que faz: Executa a responsabilidade principal da funcao 'inferCompetenciaFromName' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: fileName; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'inferCompetenciaFromName' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: fileName. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function inferCompetenciaFromName(fileName) {
   const m = fileName.match(/(\d{2})_(\d{4})/);
@@ -70,10 +70,10 @@ function inferCompetenciaFromName(fileName) {
 
 /**
  * [DOC-FUNC] main
- * O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'main' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function main() {
   const input = process.argv[2];

@@ -13,10 +13,10 @@ const nextConfig = {
   outputFileTracingRoot: __dirname,
   /**
    * [DOC-FUNC] headers
-   * O que faz: Executa a responsabilidade principal da funcao 'headers' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Executa processamento local em sequencia previsivel.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'headers' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async headers() {
     return [

@@ -180,10 +180,10 @@ const SP_FORMATTER = new Intl.DateTimeFormat("en-CA", {
 
 /**
  * [DOC-FUNC] normalizeTimestamp
- * O que faz: Normaliza entradas na funcao 'normalizeTimestamp', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeTimestamp' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizeTimestamp(value: string | null | undefined) {
   const raw = String(value || "").trim();
@@ -194,10 +194,10 @@ function normalizeTimestamp(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] normalizeCompare
- * O que faz: Normaliza entradas na funcao 'normalizeCompare', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeCompare' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizeCompare(value: string | null | undefined) {
   return String(value || "")
@@ -209,10 +209,10 @@ function normalizeCompare(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] clampDays
- * O que faz: Executa a responsabilidade principal da funcao 'clampDays' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'clampDays' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function clampDays(value: number) {
   if (!Number.isFinite(value)) return 30;
@@ -221,10 +221,10 @@ function clampDays(value: number) {
 
 /**
  * [DOC-FUNC] toNumber
- * O que faz: Executa a responsabilidade principal da funcao 'toNumber' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: value, fallback; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'toNumber' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value, fallback. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toNumber(value: unknown, fallback = 0) {
   const parsed = Number(value);
@@ -234,10 +234,10 @@ function toNumber(value: unknown, fallback = 0) {
 
 /**
  * [DOC-FUNC] toDateKeySaoPaulo
- * O que faz: Normaliza entradas na funcao 'toDateKeySaoPaulo', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'toDateKeySaoPaulo' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: input. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toDateKeySaoPaulo(input: string | Date) {
   const normalizedInput =
@@ -249,10 +249,10 @@ function toDateKeySaoPaulo(input: string | Date) {
 
 /**
  * [DOC-FUNC] parseDateKeyInput
- * O que faz: Normaliza entradas na funcao 'parseDateKeyInput', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; aplica atualizacoes de estado; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'parseDateKeyInput' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function parseDateKeyInput(value: string | null | undefined) {
   const raw = String(value || "").trim();
@@ -266,10 +266,10 @@ function parseDateKeyInput(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] dateKeyToUtcStartMs
- * O que faz: Normaliza entradas na funcao 'dateKeyToUtcStartMs', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: dateKey; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'dateKeyToUtcStartMs' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: dateKey. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function dateKeyToUtcStartMs(dateKey: string) {
   return new Date(`${dateKey}T00:00:00-03:00`).getTime();
@@ -277,10 +277,10 @@ function dateKeyToUtcStartMs(dateKey: string) {
 
 /**
  * [DOC-FUNC] daysBetweenInclusive
- * O que faz: Executa a responsabilidade principal da funcao 'daysBetweenInclusive' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: dateFrom, dateTo; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'daysBetweenInclusive' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: dateFrom, dateTo. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function daysBetweenInclusive(dateFrom: string, dateTo: string) {
   const fromMs = dateKeyToUtcStartMs(dateFrom);
@@ -291,10 +291,10 @@ function daysBetweenInclusive(dateFrom: string, dateTo: string) {
 
 /**
  * [DOC-FUNC] toIsoStartFromDateKey
- * O que faz: Normaliza entradas na funcao 'toIsoStartFromDateKey', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: dateKey; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'toIsoStartFromDateKey' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: dateKey. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toIsoStartFromDateKey(dateKey: string) {
   return new Date(`${dateKey}T00:00:00-03:00`).toISOString();
@@ -302,10 +302,10 @@ function toIsoStartFromDateKey(dateKey: string) {
 
 /**
  * [DOC-FUNC] toIsoEndFromDateKey
- * O que faz: Normaliza entradas na funcao 'toIsoEndFromDateKey', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: dateKey; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'toIsoEndFromDateKey' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: dateKey. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toIsoEndFromDateKey(dateKey: string) {
   return new Date(`${dateKey}T23:59:59.999-03:00`).toISOString();
@@ -313,10 +313,10 @@ function toIsoEndFromDateKey(dateKey: string) {
 
 /**
  * [DOC-FUNC] normalizeStatus
- * O que faz: Normaliza entradas na funcao 'normalizeStatus', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeStatus' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizeStatus(value: string | null | undefined) {
   const status = String(value || "").trim().toLowerCase();
@@ -327,10 +327,10 @@ function normalizeStatus(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] minutesFromNow
- * O que faz: Executa a responsabilidade principal da funcao 'minutesFromNow' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'minutesFromNow' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function minutesFromNow(value: string | null | undefined) {
   const normalized = normalizeTimestamp(value);
@@ -342,10 +342,10 @@ function minutesFromNow(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] hasRecentSnmpCollection
- * O que faz: Avalia condicoes de controle na funcao 'hasRecentSnmpCollection' para permitir ou bloquear o proximo passo.
- * Entradas: Parametros esperados: statusRaw, dtLeitura; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+ * O que faz: A funcao 'hasRecentSnmpCollection' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: statusRaw, dtLeitura. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function hasRecentSnmpCollection(statusRaw: string | null | undefined, dtLeitura: string | null | undefined) {
   const status = normalizeStatus(statusRaw);
@@ -357,10 +357,10 @@ function hasRecentSnmpCollection(statusRaw: string | null | undefined, dtLeitura
 
 /**
  * [DOC-FUNC] isColorModel
- * O que faz: Avalia condicoes de controle na funcao 'isColorModel' para permitir ou bloquear o proximo passo.
- * Entradas: Parametros esperados: modeloRaw; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+ * O que faz: A funcao 'isColorModel' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: modeloRaw. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function isColorModel(modeloRaw: string | null | undefined) {
   const modelo = String(modeloRaw || "")
@@ -372,10 +372,10 @@ function isColorModel(modeloRaw: string | null | undefined) {
 
 /**
  * [DOC-FUNC] isMissingColumnError
- * O que faz: Avalia condicoes de controle na funcao 'isMissingColumnError' para permitir ou bloquear o proximo passo.
- * Entradas: Parametros esperados: message; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+ * O que faz: A funcao 'isMissingColumnError' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: message. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function isMissingColumnError(message: string) {
   return /column .* does not exist/i.test(message) || /Could not find the .* column/i.test(message);
@@ -383,10 +383,10 @@ function isMissingColumnError(message: string) {
 
 /**
  * [DOC-FUNC] dailyPages
- * O que faz: Executa a responsabilidade principal da funcao 'dailyPages' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: row; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'dailyPages' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: row. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function dailyPages(row: DailyAggregate) {
   const inicio = toNumber(row.nr_paginas_inicio_dia, 0);
@@ -420,10 +420,10 @@ function classificarSuprimento(
 
 /**
  * [DOC-FUNC] isMissingTableError
- * O que faz: Avalia condicoes de controle na funcao 'isMissingTableError' para permitir ou bloquear o proximo passo.
- * Entradas: Parametros esperados: message; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+ * O que faz: A funcao 'isMissingTableError' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: message. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function isMissingTableError(message: string) {
   return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
@@ -431,10 +431,10 @@ function isMissingTableError(message: string) {
 
 /**
  * [DOC-FUNC] parseMonthYearFromDateKey
- * O que faz: Normaliza entradas na funcao 'parseMonthYearFromDateKey', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: dateKey; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'parseMonthYearFromDateKey' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: dateKey. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function parseMonthYearFromDateKey(dateKey: string) {
   const m = String(dateKey).match(/^(\d{4})-(\d{2})-/);
@@ -447,10 +447,10 @@ function parseMonthYearFromDateKey(dateKey: string) {
 
 /**
  * [DOC-FUNC] normalizeTipoImpressao
- * O que faz: Normaliza entradas na funcao 'normalizeTipoImpressao', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeTipoImpressao' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizeTipoImpressao(value: string | null | undefined) {
   const raw = normalizeCompare(value);
@@ -461,10 +461,10 @@ function normalizeTipoImpressao(value: string | null | undefined) {
 
 /**
  * [DOC-FUNC] chooseTarifasFromRows
- * O que faz: Executa a responsabilidade principal da funcao 'chooseTarifasFromRows' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'chooseTarifasFromRows' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function chooseTarifasFromRows(
   rows: TarifaBilhetagemRow[],
@@ -529,10 +529,10 @@ function chooseTarifasFromRows(
 
 /**
  * [DOC-FUNC] loadTarifasBilhetagem
- * O que faz: Consulta e organiza informacoes na funcao 'loadTarifasBilhetagem' para retorno confiavel.
- * Entradas: Parametros esperados: dateKeyFimPeriodo; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadTarifasBilhetagem' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: dateKeyFimPeriodo. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadTarifasBilhetagem(dateKeyFimPeriodo: string) {
   const competencia = parseMonthYearFromDateKey(dateKeyFimPeriodo);
@@ -587,10 +587,10 @@ async function loadTarifasBilhetagem(dateKeyFimPeriodo: string) {
 
 /**
  * [DOC-FUNC] loadDailyRows
- * O que faz: Consulta e organiza informacoes na funcao 'loadDailyRows' para retorno confiavel.
- * Entradas: Parametros esperados: dateFrom, dateTo; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadDailyRows' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadDailyRows(
   dateFrom: string,
@@ -704,10 +704,10 @@ async function loadDailyRows(
 
 /**
  * [DOC-FUNC] loadInventarioMeta
- * O que faz: Consulta e organiza informacoes na funcao 'loadInventarioMeta' para retorno confiavel.
- * Entradas: Parametros esperados: nrInventarios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadInventarioMeta' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: nrInventarios. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadInventarioMeta(nrInventarios: number[]) {
   const supabase = getSupabaseServerClient();
@@ -762,10 +762,10 @@ async function loadInventarioMeta(nrInventarios: number[]) {
 
 /**
  * [DOC-FUNC] loadInventarioMetaUniverse
- * O que faz: Consulta e organiza informacoes na funcao 'loadInventarioMetaUniverse' para retorno confiavel.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadInventarioMetaUniverse' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadInventarioMetaUniverse() {
   const supabase = getSupabaseServerClient();
@@ -826,10 +826,10 @@ async function loadInventarioMetaUniverse() {
 
   /**
    * [DOC-FUNC] isPrinterEquipamento
-   * O que faz: Avalia condicoes de controle na funcao 'isPrinterEquipamento' para permitir ou bloquear o proximo passo.
-   * Entradas: Parametros esperados: equipamento; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-   * Retorno/Efeitos: Retorna verdadeiro/falso para conduzir o fluxo de negocio de forma segura.
+   * O que faz: A funcao 'isPrinterEquipamento' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+   * Entradas: Recebe os parametros: equipamento. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+   * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
    */
   const isPrinterEquipamento = (equipamento: EquipamentoRow | undefined) => {
     if (!equipamento) return false;
@@ -861,10 +861,10 @@ async function loadInventarioMetaUniverse() {
 
 /**
  * [DOC-FUNC] loadLatestSnapshot
- * O que faz: Consulta e organiza informacoes na funcao 'loadLatestSnapshot' para retorno confiavel.
- * Entradas: Parametros esperados: nrInventarios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadLatestSnapshot' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: nrInventarios. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadLatestSnapshot(nrInventarios: number[]) {
   const supabase = getSupabaseServerClient();
@@ -899,10 +899,10 @@ async function loadLatestSnapshot(nrInventarios: number[]) {
 
 /**
  * [DOC-FUNC] loadSuprimentos
- * O que faz: Consulta e organiza informacoes na funcao 'loadSuprimentos' para retorno confiavel.
- * Entradas: Parametros esperados: inventarioIds; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'loadSuprimentos' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: inventarioIds. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 async function loadSuprimentos(inventarioIds: number[]) {
   const supabase = getSupabaseServerClient();
@@ -919,10 +919,10 @@ async function loadSuprimentos(inventarioIds: number[]) {
 
 /**
  * [DOC-FUNC] buscarResumoTelemetriaDiaria
- * O que faz: Consulta e organiza informacoes na funcao 'buscarResumoTelemetriaDiaria' para retorno confiavel.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; aplica atualizacoes de estado; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'buscarResumoTelemetriaDiaria' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export async function buscarResumoTelemetriaDiaria(options?: {
   dias?: number;
@@ -954,6 +954,9 @@ export async function buscarResumoTelemetriaDiaria(options?: {
       return { success: false, error: "Informe as duas datas: inicio e fim." };
     }
 
+    // A função aceita dois modos de período:
+    // 1) faixa explícita (de/ate), útil para auditoria pontual;
+    // 2) janela relativa por quantidade de dias, útil para dashboard diário.
     if (deCustom && ateCustom) {
       if (deCustom > ateCustom) {
         return { success: false, error: "A data inicial deve ser menor ou igual a data final." };
@@ -976,6 +979,8 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     const loaded = await loadDailyRows(dataDe, dataAte);
     const rows = loaded.rows;
 
+    // Tenta primeiro o universo completo de inventário monitorado.
+    // Se vier vazio (ambiente parcial/migração), cai para universo derivado das linhas lidas.
     let meta = await loadInventarioMetaUniverse();
     if (!meta.size) {
       const inventariosBrutos = Array.from(new Set(rows.map((row) => row.nr_inventario).filter((id) => id > 0)));
@@ -1012,6 +1017,7 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     let paginasColorPeriodo = 0;
     let ultimaLeituraGeral: string | null = null;
 
+    // Bloco 1: estado atual do parque (contador total + última leitura + disponibilidade recente).
     for (const inventarioId of inventariosElegiveis) {
       const snapshot = latestSnapshot.get(inventarioId);
       if (!snapshot) continue;
@@ -1029,6 +1035,7 @@ export async function buscarResumoTelemetriaDiaria(options?: {
       }
     }
 
+    // Bloco 2: consolidação histórica do período (série diária + ranking + separação PB/Color).
     for (const row of rowsFiltradas) {
       if (row.nr_inventario <= 0) continue;
 
@@ -1061,6 +1068,7 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     let suprimentosAtencao = 0;
     let suprimentosOk = 0;
 
+    // Ordena suprimentos por criticidade para exibir primeiro itens com maior risco operacional.
     const suprimentosItens = suprimentosRows
       .map((item) => {
         const info = meta.get(toNumber(item.nr_inventario, 0));
@@ -1090,6 +1098,8 @@ export async function buscarResumoTelemetriaDiaria(options?: {
       })
       .slice(0, 200);
 
+    // Tabela de "Top impressoras do dia":
+    // combina páginas do dia com snapshot mais recente para contexto operacional na tela.
     const topImpressorasHoje = rowsFiltradas
       .filter((row) => row.dt_referencia === dataHoje)
       .map((row) => {
@@ -1128,6 +1138,7 @@ export async function buscarResumoTelemetriaDiaria(options?: {
       .sort((a, b) => b.paginas_periodo - a.paginas_periodo)
       .slice(0, 12);
 
+    // Custo final do período = (páginas PB * tarifa PB) + (páginas coloridas * tarifa colorida).
     const tarifas = await loadTarifasBilhetagem(dataAte);
     const paginasPb = Math.max(0, Math.round(paginasPbPeriodo));
     const paginasColor = Math.max(0, Math.round(paginasColorPeriodo));
@@ -1191,4 +1202,3 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     };
   }
 }
-

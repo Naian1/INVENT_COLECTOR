@@ -8,10 +8,10 @@ import { getSupabaseServerClient } from '@/lib/supabase/server';
 
 /**
  * [DOC-FUNC] validarCompetencia
- * O que faz: Executa a responsabilidade principal da funcao 'validarCompetencia' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: competencia; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'validarCompetencia' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: competencia. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function validarCompetencia(competencia: string): boolean {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
@@ -19,10 +19,10 @@ function validarCompetencia(competencia: string): boolean {
 
 /**
  * [DOC-FUNC] limparTexto
- * O que faz: Normaliza entradas na funcao 'limparTexto', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'limparTexto' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function limparTexto(value: string | null): string | null {
   if (!value) return null;
@@ -32,10 +32,10 @@ function limparTexto(value: string | null): string | null {
 
 /**
  * [DOC-FUNC] GET
- * O que faz: Implementa endpoint HTTP GET 'GET', retornando dados de forma segura e padronizada.
- * Entradas: Parametros esperados: request; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna resposta de leitura tipada/padronizada ou erro claro de validacao/autorizacao/acesso.
+ * O que faz: A funcao 'GET' atende uma rota HTTP desta camada. Ela interpreta a requisicao recebida, valida o contrato esperado, aciona as regras de negocio e monta a resposta padronizada para o cliente.
+ * Entradas: Recebe os parametros: request. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+ * Retorno/Efeitos: Retorna uma resposta HTTP padronizada (sucesso ou erro), com mensagem e payload no formato esperado por quem consome a API.
  */
 export async function GET(request: NextRequest) {
   try {

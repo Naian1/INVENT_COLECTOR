@@ -148,10 +148,10 @@ export type CollectorTelemetryEvent = z.infer<typeof collectorTelemetryEventSche
 
 /**
  * [DOC-FUNC] normalizeSinglePayloadToBatch
- * O que faz: Normaliza entradas na funcao 'normalizeSinglePayloadToBatch', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeSinglePayloadToBatch' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */
@@ -194,10 +194,10 @@ function normalizeSinglePayloadToBatch(
 
 /**
  * [DOC-FUNC] normalizeCollectorTelemetryPayload
- * O que faz: Normaliza entradas na funcao 'normalizeCollectorTelemetryPayload', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizeCollectorTelemetryPayload' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  * Processamento: Aplica saneamento, conversao de tipo e fallback para entradas invalidas.
  * Retorno/Efeitos: Retorna valor padronizado pronto para comparacao, persistencia ou exibicao.
  */

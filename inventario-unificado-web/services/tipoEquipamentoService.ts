@@ -11,10 +11,10 @@ import {
 
 /**
  * [DOC-FUNC] getTiposEquipamento
- * O que faz: Consulta e organiza informacoes na funcao 'getTiposEquipamento' para retorno confiavel.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'getTiposEquipamento' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
   const supabase = getSupabaseServerClient();
@@ -30,10 +30,10 @@ export async function getTiposEquipamento(): Promise<TipoEquipamento[]> {
 
 /**
  * [DOC-FUNC] getTipoEquipamentoById
- * O que faz: Consulta e organiza informacoes na funcao 'getTipoEquipamentoById' para retorno confiavel.
- * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+ * O que faz: A funcao 'getTipoEquipamentoById' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: id. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export async function getTipoEquipamentoById(id: number): Promise<TipoEquipamento | null> {
   const supabase = getSupabaseServerClient();
@@ -49,10 +49,10 @@ export async function getTipoEquipamentoById(id: number): Promise<TipoEquipament
 
 /**
  * [DOC-FUNC] createTipoEquipamento
- * O que faz: Cria e persiste dados na funcao 'createTipoEquipamento' com validacao de integridade.
- * Entradas: Parametros esperados: input; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; persiste novos registros quando necessario; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
+ * O que faz: A funcao 'createTipoEquipamento' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+ * Entradas: Recebe os parametros: input. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
  */
 export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): Promise<TipoEquipamento> {
   const supabase = getSupabaseServerClient();
@@ -68,10 +68,10 @@ export async function createTipoEquipamento(input: CreateTipoEquipamentoInput): 
 
 /**
  * [DOC-FUNC] updateTipoEquipamento
- * O que faz: Atualiza estado na funcao 'updateTipoEquipamento' mantendo coerencia das regras de negocio.
- * Entradas: Parametros esperados: id, input; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+ * O que faz: A funcao 'updateTipoEquipamento' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
  */
 export async function updateTipoEquipamento(
   id: number,
@@ -91,10 +91,10 @@ export async function updateTipoEquipamento(
 
 /**
  * [DOC-FUNC] deleteTipoEquipamento
- * O que faz: Remove/inativa dados na funcao 'deleteTipoEquipamento' respeitando dependencias e ciclo de vida.
- * Entradas: Parametros esperados: id; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; aplica atualizacoes de estado; trata erros com mensagens de diagnostico.
- * Retorno/Efeitos: Retorna confirmacao de exclusao logica/fisica e contexto de restricoes.
+ * O que faz: A funcao 'deleteTipoEquipamento' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+ * Entradas: Recebe os parametros: id. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
  */
 export async function deleteTipoEquipamento(id: number): Promise<void> {
   const supabase = getSupabaseServerClient();

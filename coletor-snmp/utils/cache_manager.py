@@ -119,10 +119,10 @@ def _oid_suffix(oid_base: str, full_oid: str) -> str:
 
 
 # [DOC-FUNC] _index_sort_key
-# O que faz: Normaliza entradas na funcao '_index_sort_key', reduzindo ambiguidade antes da regra principal.
-# Entradas: Parametros esperados: index; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+# O que faz: A funcao '_index_sort_key' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: index. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def _index_sort_key(index: str):
     parts = []
     for chunk in index.split("."):
@@ -633,10 +633,10 @@ def _coletar_e_enviar_impressora(
 
 
 # [DOC-FUNC] atualizar_cache
-# O que faz: Atualiza estado na funcao 'atualizar_cache' mantendo coerencia das regras de negocio.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+# O que faz: A funcao 'atualizar_cache' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def atualizar_cache():
     """Atualiza o cache local e envia 1 payload por impressora para a API nova."""
     logging.info("Iniciando atualizacao do cache.")

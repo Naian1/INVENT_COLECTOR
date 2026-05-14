@@ -65,10 +65,10 @@ create type public.conceito_semantico_campo_t as enum (
 -- FUNCAO TRIGGER atualizado_em
 -- =========================================================
 -- [DOC-FUNC] fn_touch_atualizado_em
--- O que faz: Executa a responsabilidade principal da funcao 'fn_touch_atualizado_em' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; padroniza formato e fallback de campos.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_touch_atualizado_em' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 create or replace function public.fn_touch_atualizado_em()
 returns trigger
 language plpgsql
@@ -262,10 +262,10 @@ create index idx_alertas_ip on public.alertas_impressoras (ip);
 -- RETENCAO DE LEITURAS DE PAGINAS (3 MESES ROLLING)
 -- =========================================================
 -- [DOC-FUNC] fn_purgar_leituras_paginas_antigas
--- O que faz: Executa a responsabilidade principal da funcao 'fn_purgar_leituras_paginas_antigas' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_purgar_leituras_paginas_antigas' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Recebe os parametros: meses_manter integer default 3. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 create or replace function public.fn_purgar_leituras_paginas_antigas(meses_manter integer default 3)
 returns integer
 language plpgsql
@@ -1015,10 +1015,10 @@ CREATE INDEX idx_suprimentos_situacao ON public.suprimentos(ie_situacao);
 
 -- Trigger para atualizar data de ltima atualizao
 -- [DOC-FUNC] atualizar_timestamp_suprimentos
--- O que faz: Atualiza estado na funcao 'atualizar_timestamp_suprimentos' mantendo coerencia das regras de negocio.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado.
--- Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+-- O que faz: A funcao 'atualizar_timestamp_suprimentos' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.atualizar_timestamp_suprimentos()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -1052,10 +1052,10 @@ CREATE INDEX idx_telemetria_pagecount_inventario ON public.telemetria_pagecount(
 CREATE INDEX idx_telemetria_pagecount_data ON public.telemetria_pagecount(dt_leitura);
 
 -- [DOC-FUNC] fn_guardar_pagecount_consistente
--- O que faz: Executa a responsabilidade principal da funcao 'fn_guardar_pagecount_consistente' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; padroniza formato e fallback de campos.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_guardar_pagecount_consistente' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_guardar_pagecount_consistente()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1095,10 +1095,10 @@ EXECUTE FUNCTION public.fn_guardar_pagecount_consistente();
 
 -- Funo para limpar histrico de telemetria com mais de 3 meses
 -- [DOC-FUNC] limpar_telemetria_antiga
--- O que faz: Normaliza entradas na funcao 'limpar_telemetria_antiga', reduzindo ambiguidade antes da regra principal.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; persiste novos registros quando necessario; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+-- O que faz: A funcao 'limpar_telemetria_antiga' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS void AS $$
 BEGIN
@@ -1178,10 +1178,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_sup
   ON public.inventario(nr_invent_sup);
 
 -- [DOC-FUNC] fn_inventario_evitar_ciclo
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_evitar_ciclo' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_evitar_ciclo' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1307,10 +1307,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_tp_status
   ON public.inventario(tp_status);
 
 -- [DOC-FUNC] fn_inventario_validar_hierarquia_status
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_validar_hierarquia_status' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_validar_hierarquia_status' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1422,10 +1422,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
 -- [DOC-FUNC] fn_inventario_touch_dt_atualizacao
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_touch_dt_atualizacao' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_touch_dt_atualizacao' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1453,10 +1453,10 @@ FOR EACH ROW
 EXECUTE FUNCTION public.fn_inventario_touch_dt_atualizacao();
 
 -- [DOC-FUNC] fn_inventario_auditoria_fill
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_auditoria_fill' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; padroniza formato e fallback de campos.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_auditoria_fill' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_auditoria_fill()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1698,10 +1698,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_sup
 
 -- Evita ciclos: A -> B -> C -> A
 -- [DOC-FUNC] fn_inventario_evitar_ciclo
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_evitar_ciclo' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_evitar_ciclo' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_evitar_ciclo()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -1750,10 +1750,10 @@ EXECUTE FUNCTION public.fn_inventario_evitar_ciclo();
 
 -- Valida regra de negocio combinando tp_hierarquia + tp_status
 -- [DOC-FUNC] fn_inventario_validar_hierarquia_status
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_validar_hierarquia_status' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_validar_hierarquia_status' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_validar_hierarquia_status()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2378,10 +2378,10 @@ ON CONFLICT (cd_usuario, cd_perfil)
 DO UPDATE SET ie_situacao = EXCLUDED.ie_situacao;
 
 -- [DOC-FUNC] fn_usuario_touch_dt_atualizacao
--- O que faz: Executa a responsabilidade principal da funcao 'fn_usuario_touch_dt_atualizacao' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; padroniza formato e fallback de campos.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_usuario_touch_dt_atualizacao' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_usuario_touch_dt_atualizacao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2549,10 +2549,10 @@ CREATE INDEX IF NOT EXISTS idx_inventario_usuario_ultima_alteracao
   ON public.inventario (cd_usuario_ultima_alteracao);
 
 -- [DOC-FUNC] fn_inventario_touch_dt_ultima_alteracao
--- O que faz: Executa a responsabilidade principal da funcao 'fn_inventario_touch_dt_ultima_alteracao' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_inventario_touch_dt_ultima_alteracao' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_inventario_touch_dt_ultima_alteracao()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2669,10 +2669,10 @@ WHERE ie_situacao = 'I'
 -- 2) Trigger: registra quem/quando ativou ou inativou
 -- =========================================================
 -- [DOC-FUNC] fn_usuario_controlar_status_auditoria
--- O que faz: Executa a responsabilidade principal da funcao 'fn_usuario_controlar_status_auditoria' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra; trata erros com mensagens de diagnostico.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_usuario_controlar_status_auditoria' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_usuario_controlar_status_auditoria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -2719,10 +2719,10 @@ EXECUTE FUNCTION public.fn_usuario_controlar_status_auditoria();
 -- 3) Login: usuario inativo nao autentica
 -- =========================================================
 -- [DOC-FUNC] fn_usuario_autenticavel
--- O que faz: Executa a responsabilidade principal da funcao 'fn_usuario_autenticavel' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Persiste novos registros quando necessario; padroniza formato e fallback de campos.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_usuario_autenticavel' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Recebe os parametros: p_login VARCHAR. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+-- Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 CREATE OR REPLACE FUNCTION public.fn_usuario_autenticavel(p_login VARCHAR)
 RETURNS TABLE (
   cd_usuario INTEGER,
@@ -2752,10 +2752,10 @@ AS $$
 $$;
 
 -- [DOC-FUNC] fn_usuario_registrar_login
--- O que faz: Cria e persiste dados na funcao 'fn_usuario_registrar_login' com validacao de integridade.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
+-- O que faz: A funcao 'fn_usuario_registrar_login' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Recebe os parametros: p_cd_usuario INTEGER. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_usuario_registrar_login(p_cd_usuario INTEGER)
 RETURNS BOOLEAN
 LANGUAGE plpgsql
@@ -2913,10 +2913,10 @@ CREATE INDEX IF NOT EXISTS idx_telemetria_pagecount_diaria_ultima_leitura
 -- 3) TRIGGER: sync pagecount atual -> consolidado diario
 -- ---------------------------------------------------------------------------
 -- [DOC-FUNC] fn_sync_telemetria_pagecount_diaria
--- O que faz: Sincroniza dados na funcao 'fn_sync_telemetria_pagecount_diaria' entre este modulo e outras camadas/servicos.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna status/metadados da sincronizacao para observabilidade e retentativa.
+-- O que faz: A funcao 'fn_sync_telemetria_pagecount_diaria' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_sync_telemetria_pagecount_diaria()
 RETURNS trigger
 LANGUAGE plpgsql
@@ -3012,10 +3012,10 @@ EXECUTE FUNCTION public.fn_sync_telemetria_pagecount_diaria();
 -- 4) RETENCAO: diario por mais de 3 meses (default 12 meses = 365 dias)
 -- ---------------------------------------------------------------------------
 -- [DOC-FUNC] limpar_telemetria_pagecount_diaria_antiga
--- O que faz: Normaliza entradas na funcao 'limpar_telemetria_pagecount_diaria_antiga', reduzindo ambiguidade antes da regra principal.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Persiste novos registros quando necessario; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+-- O que faz: A funcao 'limpar_telemetria_pagecount_diaria_antiga' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+-- Entradas: Recebe os parametros: p_dias INTEGER DEFAULT 365. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_pagecount_diaria_antiga(p_dias INTEGER DEFAULT 365)
 RETURNS INTEGER
 LANGUAGE plpgsql
@@ -3033,10 +3033,10 @@ $$;
 
 -- Mantem compatibilidade com o nome legado ja existente no projeto.
 -- [DOC-FUNC] limpar_telemetria_antiga
--- O que faz: Normaliza entradas na funcao 'limpar_telemetria_antiga', reduzindo ambiguidade antes da regra principal.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; persiste novos registros quando necessario; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+-- O que faz: A funcao 'limpar_telemetria_antiga' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 CREATE OR REPLACE FUNCTION public.limpar_telemetria_antiga()
 RETURNS VOID
 LANGUAGE plpgsql
@@ -3108,10 +3108,10 @@ CREATE INDEX IF NOT EXISTS idx_tarifas_bilhetagem_ativo
   ON public.tarifas_bilhetagem (ativo, competencia_ano DESC, competencia_mes DESC);
 
 -- [DOC-FUNC] fn_tarifas_bilhetagem_touch_updated_at
--- O que faz: Executa a responsabilidade principal da funcao 'fn_tarifas_bilhetagem_touch_updated_at' com fluxo previsivel para estudo.
--- Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
--- Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; persiste novos registros quando necessario; aplica atualizacoes de estado; remove/inativa dados conforme regra.
--- Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+-- O que faz: A funcao 'fn_tarifas_bilhetagem_touch_updated_at' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+-- Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+-- Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+-- Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 CREATE OR REPLACE FUNCTION public.fn_tarifas_bilhetagem_touch_updated_at()
 RETURNS trigger
 LANGUAGE plpgsql

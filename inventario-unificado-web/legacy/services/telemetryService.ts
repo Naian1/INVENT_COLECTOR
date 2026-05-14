@@ -21,10 +21,10 @@ type TelemetryIngestResult = {
 
 /**
  * [DOC-FUNC] shouldRefreshLastSeen
- * O que faz: Executa a responsabilidade principal da funcao 'shouldRefreshLastSeen' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: currentLastSeenAt, candidateIso; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'shouldRefreshLastSeen' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: currentLastSeenAt, candidateIso. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
  */
 function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: string) {
   if (!currentLastSeenAt) return true;
@@ -37,10 +37,10 @@ function shouldRefreshLastSeen(currentLastSeenAt: string | null, candidateIso: s
 
 /**
  * [DOC-FUNC] resolveSupplyStatus
- * O que faz: Executa a responsabilidade principal da funcao 'resolveSupplyStatus' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: explicitStatus, levelPercent; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'resolveSupplyStatus' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function resolveSupplyStatus(
   explicitStatus: string | undefined,
@@ -56,10 +56,10 @@ function resolveSupplyStatus(
 
 /**
  * [DOC-FUNC] writeTelemetryEvent
- * O que faz: Executa a responsabilidade principal da funcao 'writeTelemetryEvent' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: collectorId, event, defaultCollectedAt; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; persiste novos registros quando necessario; aplica atualizacoes de estado; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'writeTelemetryEvent' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+ * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
  */
 async function writeTelemetryEvent(
   collectorId: string,
@@ -191,10 +191,10 @@ async function writeTelemetryEvent(
 
 /**
  * [DOC-FUNC] ingestCollectorTelemetry
- * O que faz: Executa a responsabilidade principal da funcao 'ingestCollectorTelemetry' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'ingestCollectorTelemetry' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export async function ingestCollectorTelemetry(
   payload: CollectorTelemetryBatchPayload

@@ -87,10 +87,10 @@ async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, 
 
 /**
  * [DOC-FUNC] formatSetorLabel
- * O que faz: Normaliza entradas na funcao 'formatSetorLabel', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>; com validacao de formato e fallback quando necessario.
- * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'formatSetorLabel' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'>): string {
   const piso = (setor.nm_piso || '').trim();
@@ -102,10 +102,10 @@ function formatSetorLabel(setor: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_locali
 
 /**
  * [DOC-FUNC] formatPisoLabel
- * O que faz: Normaliza entradas na funcao 'formatPisoLabel', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: piso, 'nm_piso' | 'ds_piso'>; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'formatPisoLabel' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: piso, 'nm_piso' | 'ds_piso'>. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
   const nome = (piso.nm_piso || '').trim();
@@ -206,10 +206,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] carregarTudo
-   * O que faz: Executa a responsabilidade principal da funcao 'carregarTudo' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'carregarTudo' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function carregarTudo() {
     setLoading(true);
@@ -241,10 +241,10 @@ export default function GerenciarCategoriasPage() {
 
     /**
      * [DOC-FUNC] loadAuth
-     * O que faz: Consulta e organiza informacoes na funcao 'loadAuth' para retorno confiavel.
-     * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-     * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-     * Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+     * O que faz: A funcao 'loadAuth' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+     * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+     * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+     * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
      */
     const loadAuth = async () => {
       try {
@@ -357,10 +357,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEmpresa
-   * O que faz: Executa a responsabilidade principal da funcao 'criarEmpresa' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'criarEmpresa' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function criarEmpresa() {
     if (!novaEmpresa.cd_cgc || !novaEmpresa.nm_empresa) {
@@ -390,10 +390,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarTipo
-   * O que faz: Executa a responsabilidade principal da funcao 'criarTipo' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'criarTipo' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function criarTipo() {
     if (!novoTipo.nm_tipo_equipamento) {
@@ -420,10 +420,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarPiso
-   * O que faz: Executa a responsabilidade principal da funcao 'criarPiso' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'criarPiso' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function criarPiso() {
     if (!novoPiso.nm_piso.trim()) {
@@ -450,10 +450,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarSetor
-   * O que faz: Executa a responsabilidade principal da funcao 'criarSetor' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'criarSetor' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function criarSetor() {
     if (!novoSetor.cd_piso || !novoSetor.nm_setor) {
@@ -482,10 +482,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] criarEquipamento
-   * O que faz: Executa a responsabilidade principal da funcao 'criarEquipamento' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'criarEquipamento' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function criarEquipamento() {
     if (
@@ -530,10 +530,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEmpresa
-   * O que faz: Atualiza estado na funcao 'atualizarEmpresa' mantendo coerencia das regras de negocio.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+   * O que faz: A funcao 'atualizarEmpresa' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function atualizarEmpresa() {
     if (!empresaSelecionada) {
@@ -565,10 +565,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarTipo
-   * O que faz: Atualiza estado na funcao 'atualizarTipo' mantendo coerencia das regras de negocio.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+   * O que faz: A funcao 'atualizarTipo' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function atualizarTipo() {
     if (!tipoSelecionado) {
@@ -598,10 +598,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarPiso
-   * O que faz: Atualiza estado na funcao 'atualizarPiso' mantendo coerencia das regras de negocio.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+   * O que faz: A funcao 'atualizarPiso' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function atualizarPiso() {
     if (!pisoSelecionado) {
@@ -631,10 +631,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarSetor
-   * O que faz: Atualiza estado na funcao 'atualizarSetor' mantendo coerencia das regras de negocio.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+   * O que faz: A funcao 'atualizarSetor' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function atualizarSetor() {
     if (!setorSelecionado) {
@@ -671,10 +671,10 @@ export default function GerenciarCategoriasPage() {
 
   /**
    * [DOC-FUNC] atualizarEquipamento
-   * O que faz: Atualiza estado na funcao 'atualizarEquipamento' mantendo coerencia das regras de negocio.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna estado final apos atualizacao, com diagnostico claro em falhas.
+   * O que faz: A funcao 'atualizarEquipamento' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function atualizarEquipamento() {
     if (!equipamentoSelecionado) {

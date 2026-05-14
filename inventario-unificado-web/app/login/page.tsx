@@ -40,10 +40,10 @@ export default function LoginPage() {
 
   /**
    * [DOC-FUNC] onSubmit
-   * O que faz: Executa a responsabilidade principal da funcao 'onSubmit' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: event; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'onSubmit' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+   * Entradas: Recebe os parametros: event. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -85,10 +85,10 @@ export default function LoginPage() {
 
   /**
    * [DOC-FUNC] handleRecuperarSenha
-   * O que faz: Executa a responsabilidade principal da funcao 'handleRecuperarSenha' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'handleRecuperarSenha' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   const handleRecuperarSenha = async () => {
     setErro(null);

@@ -87,10 +87,10 @@ DEFAULTS = {
 
 
 # [DOC-FUNC] load_env
-# O que faz: Consulta e organiza informacoes na funcao 'load_env' para retorno confiavel.
-# Entradas: Parametros esperados: path; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+# O que faz: A funcao 'load_env' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+# Entradas: Recebe os parametros: path. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def load_env(path: Path):
     values = {}
     if not path.exists():
@@ -105,10 +105,10 @@ def load_env(path: Path):
 
 
 # [DOC-FUNC] save_env
-# O que faz: Cria e persiste dados na funcao 'save_env' com validacao de integridade.
-# Entradas: Parametros esperados: path, values; com validacao de formato e fallback quando necessario.
-# Como executa: Itera colecoes para montar/filtrar dados; aplica atualizacoes de estado; padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
+# O que faz: A funcao 'save_env' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+# Entradas: Recebe os parametros: path, values. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) persiste alteracoes somente quando as regras de negocio permitem.
+# Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
 def save_env(path: Path, values):
     existing = load_env(path)
     existing.update(values)
@@ -117,10 +117,10 @@ def save_env(path: Path, values):
 
 
 # [DOC-FUNC] resolve_python_command
-# O que faz: Executa a responsabilidade principal da funcao 'resolve_python_command' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'resolve_python_command' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def resolve_python_command():
     candidates = [
         BASE_DIR / ".venv" / "Scripts" / "pythonw.exe",
@@ -142,10 +142,10 @@ def resolve_python_command():
 
 
 # [DOC-FUNC] acquire_single_instance_lock
-# O que faz: Executa a responsabilidade principal da funcao 'acquire_single_instance_lock' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'acquire_single_instance_lock' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def acquire_single_instance_lock():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     lock_file = open(APP_LOCK_PATH, "a+")
@@ -163,10 +163,10 @@ def acquire_single_instance_lock():
 
 
 # [DOC-FUNC] acquire_single_instance_mutex
-# O que faz: Executa a responsabilidade principal da funcao 'acquire_single_instance_mutex' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'acquire_single_instance_mutex' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def acquire_single_instance_mutex():
     if os.name != "nt":
         return object()
@@ -180,10 +180,10 @@ def acquire_single_instance_mutex():
 
 
 # [DOC-FUNC] release_single_instance_mutex
-# O que faz: Executa a responsabilidade principal da funcao 'release_single_instance_mutex' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: handle; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'release_single_instance_mutex' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+# Entradas: Recebe os parametros: handle. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def release_single_instance_mutex(handle):
     if os.name != "nt" or not handle:
         return
@@ -216,10 +216,10 @@ def is_pid_running(pid: int) -> bool:
 
 
 # [DOC-FUNC] read_pid
-# O que faz: Consulta e organiza informacoes na funcao 'read_pid' para retorno confiavel.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna dados consistentes para consumo da camada chamadora ou ausencia tratada.
+# O que faz: A funcao 'read_pid' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def read_pid():
     try:
         if not PID_PATH.exists():
@@ -233,20 +233,20 @@ def read_pid():
 
 
 # [DOC-FUNC] write_pid
-# O que faz: Executa a responsabilidade principal da funcao 'write_pid' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: pid; com validacao de formato e fallback quando necessario.
-# Como executa: Padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'write_pid' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+# Entradas: Recebe os parametros: pid. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def write_pid(pid: int):
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     PID_PATH.write_text(str(pid), encoding="utf-8")
 
 
 # [DOC-FUNC] clear_pid
-# O que faz: Executa a responsabilidade principal da funcao 'clear_pid' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'clear_pid' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def clear_pid():
     try:
         PID_PATH.unlink(missing_ok=True)
@@ -264,10 +264,10 @@ def mask_secret(secret: str, keep: int = 4) -> str:
 
 
 # [DOC-FUNC] tail_lines
-# O que faz: Executa a responsabilidade principal da funcao 'tail_lines' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: path, max_lines; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'tail_lines' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: path, max_lines. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def tail_lines(path: Path, max_lines: int = 80):
     try:
         if not path.exists():
@@ -279,10 +279,10 @@ def tail_lines(path: Path, max_lines: int = 80):
 
 
 # [DOC-FUNC] tail_jsonl
-# O que faz: Executa a responsabilidade principal da funcao 'tail_jsonl' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: path, max_lines; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'tail_jsonl' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: path, max_lines. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def tail_jsonl(path: Path, max_lines: int = 120):
     events = []
     try:
@@ -305,10 +305,10 @@ def tail_jsonl(path: Path, max_lines: int = 120):
 
 
 # [DOC-FUNC] shorten_text
-# O que faz: Executa a responsabilidade principal da funcao 'shorten_text' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: value, max_len; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'shorten_text' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: value, max_len. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def shorten_text(value, max_len: int = 140):
     text = str(value or "").replace("\r", " ").replace("\n", " ").strip()
     if len(text) <= max_len:
@@ -317,10 +317,10 @@ def shorten_text(value, max_len: int = 140):
 
 
 # [DOC-FUNC] stop_pid
-# O que faz: Executa a responsabilidade principal da funcao 'stop_pid' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: pid; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'stop_pid' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: pid. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def stop_pid(pid: int):
     if pid <= 0:
         return
@@ -342,10 +342,10 @@ def stop_pid(pid: int):
 
 class CollectorControlApp:
     # [DOC-FUNC] __init__
-    # O que faz: Executa a responsabilidade principal da funcao '__init__' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: root; com validacao de formato e fallback quando necessario.
-    # Como executa: Itera colecoes para montar/filtrar dados.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao '__init__' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Recebe os parametros: root. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Collector Control - Inventario")
@@ -371,10 +371,10 @@ class CollectorControlApp:
         self.root.protocol("WM_DELETE_WINDOW", self.on_close)
 
     # [DOC-FUNC] _build_ui
-    # O que faz: Monta estrutura/payload na funcao '_build_ui', consolidando dados para a proxima camada.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
-    # Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
+    # O que faz: A funcao '_build_ui' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _build_ui(self):
         outer = ttk.Frame(self.root, padding=12)
         outer.pack(fill="both", expand=True)
@@ -454,10 +454,10 @@ class CollectorControlApp:
         self.refresh_backend_panel()
 
     # [DOC-FUNC] _set_busy
-    # O que faz: Executa a responsabilidade principal da funcao '_set_busy' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: busy; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao '_set_busy' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+    # Entradas: Recebe os parametros: busy. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _set_busy(self, busy: bool):
         state = "disabled" if busy else "normal"
         for btn in [self.btn_save, self.btn_start, self.btn_stop, self.btn_refresh, self.btn_logs, self.btn_tray]:
@@ -467,10 +467,10 @@ class CollectorControlApp:
                 pass
 
     # [DOC-FUNC] save_config
-    # O que faz: Cria e persiste dados na funcao 'save_config' com validacao de integridade.
-    # Entradas: Parametros esperados: silent; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna registro/resultado de escrita com erros de integridade tratados.
+    # O que faz: A funcao 'save_config' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+    # Entradas: Recebe os parametros: silent. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def save_config(self, silent: bool = False):
         try:
             payload = {k: v.get().strip() for k, v in self.vars.items()}
@@ -484,10 +484,10 @@ class CollectorControlApp:
             return False
 
     # [DOC-FUNC] start_collector
-    # O que faz: Executa a responsabilidade principal da funcao 'start_collector' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'start_collector' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def start_collector(self):
         if self.starting:
             return
@@ -496,10 +496,10 @@ class CollectorControlApp:
         self.status_var.set("Status: iniciando...")
 
         # [DOC-FUNC] worker
-        # O que faz: Executa a responsabilidade principal da funcao 'worker' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-        # Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'worker' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def worker():
             err = None
             started_pid = None
@@ -558,10 +558,10 @@ class CollectorControlApp:
                 err = str(exc)
 
             # [DOC-FUNC] done
-            # O que faz: Executa a responsabilidade principal da funcao 'done' com fluxo previsivel para estudo.
-            # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-            # Como executa: Valida condicoes e decide caminhos.
-            # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+            # O que faz: A funcao 'done' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+            # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+            # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+            # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
             def done():
                 self.starting = False
                 self._set_busy(False)
@@ -576,10 +576,10 @@ class CollectorControlApp:
         threading.Thread(target=worker, daemon=True).start()
 
     # [DOC-FUNC] stop_collector
-    # O que faz: Executa a responsabilidade principal da funcao 'stop_collector' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'stop_collector' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def stop_collector(self):
         if self.starting:
             return
@@ -587,10 +587,10 @@ class CollectorControlApp:
         self.status_var.set("Status: parando...")
 
         # [DOC-FUNC] worker
-        # O que faz: Executa a responsabilidade principal da funcao 'worker' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-        # Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'worker' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def worker():
             err = None
             try:
@@ -603,10 +603,10 @@ class CollectorControlApp:
                 err = str(exc)
 
             # [DOC-FUNC] done
-            # O que faz: Executa a responsabilidade principal da funcao 'done' com fluxo previsivel para estudo.
-            # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-            # Como executa: Valida condicoes e decide caminhos.
-            # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+            # O que faz: A funcao 'done' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+            # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+            # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+            # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
             def done():
                 self._set_busy(False)
                 self.refresh_status()
@@ -618,10 +618,10 @@ class CollectorControlApp:
         threading.Thread(target=worker, daemon=True).start()
 
     # [DOC-FUNC] refresh_status
-    # O que faz: Executa a responsabilidade principal da funcao 'refresh_status' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'refresh_status' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def refresh_status(self):
         pid = read_pid()
         running = bool(pid and is_pid_running(pid))
@@ -638,10 +638,10 @@ class CollectorControlApp:
         self.refresh_backend_panel()
 
     # [DOC-FUNC] open_logs
-    # O que faz: Executa a responsabilidade principal da funcao 'open_logs' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'open_logs' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def open_logs(self):
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         if os.name == "nt":
@@ -650,10 +650,10 @@ class CollectorControlApp:
             messagebox.showinfo("Logs", str(LOG_DIR))
 
     # [DOC-FUNC] _compact_ts
-    # O que faz: Executa a responsabilidade principal da funcao '_compact_ts' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: ts; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao '_compact_ts' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Recebe os parametros: ts. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _compact_ts(self, ts):
         text = str(ts or "").strip()
         if "T" in text and "." in text:
@@ -667,10 +667,10 @@ class CollectorControlApp:
         return text[-8:] if len(text) >= 8 else text
 
     # [DOC-FUNC] _format_payload_for_panel
-    # O que faz: Normaliza entradas na funcao '_format_payload_for_panel', reduzindo ambiguidade antes da regra principal.
-    # Entradas: Parametros esperados: raw_payload; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+    # O que faz: A funcao '_format_payload_for_panel' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+    # Entradas: Recebe os parametros: raw_payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _format_payload_for_panel(self, raw_payload):
         if not raw_payload:
             return "(ainda nao houve POST de telemetria nesta sessao)"
@@ -720,10 +720,10 @@ class CollectorControlApp:
         )
 
     # [DOC-FUNC] _event_line
-    # O que faz: Executa a responsabilidade principal da funcao '_event_line' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: event; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao '_event_line' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+    # Entradas: Recebe os parametros: event. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _event_line(self, event):
         ts = self._compact_ts(event.get("ts"))
         ev = str(event.get("event") or "").strip().lower()
@@ -749,10 +749,10 @@ class CollectorControlApp:
         return f"[{ts}] {ev} -> {event}"
 
     # [DOC-FUNC] build_backend_panel_snapshot
-    # O que faz: Monta estrutura/payload na funcao 'build_backend_panel_snapshot', consolidando dados para a proxima camada.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-    # Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
+    # O que faz: A funcao 'build_backend_panel_snapshot' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def build_backend_panel_snapshot(self):
         payload = {k: v.get().strip() for k, v in self.vars.items()}
         trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=300)
@@ -815,10 +815,10 @@ class CollectorControlApp:
         )
 
     # [DOC-FUNC] refresh_backend_panel
-    # O que faz: Executa a responsabilidade principal da funcao 'refresh_backend_panel' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; persiste novos registros quando necessario; remove/inativa dados conforme regra.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'refresh_backend_panel' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
+    # Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
     def refresh_backend_panel(self):
         if self.backend_panel_text is None or not self.backend_panel_text.winfo_exists():
             return
@@ -828,10 +828,10 @@ class CollectorControlApp:
         self.backend_panel_text.configure(state="disabled")
 
     # [DOC-FUNC] _build_tray_image
-    # O que faz: Monta estrutura/payload na funcao '_build_tray_image', consolidando dados para a proxima camada.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos.
-    # Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
+    # O que faz: A funcao '_build_tray_image' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def _build_tray_image(self):
         if Image is None:
             return None
@@ -842,10 +842,10 @@ class CollectorControlApp:
         return img
 
     # [DOC-FUNC] minimize_to_tray
-    # O que faz: Executa a responsabilidade principal da funcao 'minimize_to_tray' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'minimize_to_tray' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def minimize_to_tray(self):
         if self.tray_icon is not None:
             self.root.withdraw()
@@ -858,10 +858,10 @@ class CollectorControlApp:
         self.root.withdraw()
 
         # [DOC-FUNC] on_show
-        # O que faz: Executa a responsabilidade principal da funcao 'on_show' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: icon, _item; com validacao de formato e fallback quando necessario.
-        # Como executa: Trata erros com mensagens de diagnostico.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'on_show' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Recebe os parametros: icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def on_show(icon, _item):
             try:
                 icon.stop()
@@ -871,10 +871,10 @@ class CollectorControlApp:
             self.root.after(0, self.root.deiconify)
 
         # [DOC-FUNC] on_start
-        # O que faz: Executa a responsabilidade principal da funcao 'on_start' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: _icon, _item; com validacao de formato e fallback quando necessario.
-        # Como executa: Executa processamento local em sequencia previsivel.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'on_start' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Recebe os parametros: _icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def on_start(_icon, _item):
             self.root.after(0, self.start_collector)
 
@@ -882,10 +882,10 @@ class CollectorControlApp:
             self.root.after(0, self.stop_collector)
 
         # [DOC-FUNC] on_quit
-        # O que faz: Executa a responsabilidade principal da funcao 'on_quit' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: icon, _item; com validacao de formato e fallback quando necessario.
-        # Como executa: Trata erros com mensagens de diagnostico.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'on_quit' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Recebe os parametros: icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def on_quit(icon, _item):
             try:
                 icon.stop()
@@ -905,10 +905,10 @@ class CollectorControlApp:
         self.tray_icon = icon
 
         # [DOC-FUNC] run_icon
-        # O que faz: Executa a responsabilidade principal da funcao 'run_icon' com fluxo previsivel para estudo.
-        # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-        # Como executa: Executa processamento local em sequencia previsivel.
-        # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+        # O que faz: A funcao 'run_icon' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+        # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+        # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+        # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
         def run_icon():
             icon.run()
 
@@ -916,10 +916,10 @@ class CollectorControlApp:
         self.tray_thread.start()
 
     # [DOC-FUNC] on_close
-    # O que faz: Executa a responsabilidade principal da funcao 'on_close' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'on_close' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def on_close(self):
         try:
             state = {"last_closed_at": int(time.time()), "was_running": self.running}
@@ -937,10 +937,10 @@ class CollectorControlApp:
 
 
 # [DOC-FUNC] main
-# O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'main' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def main():
     mutex_handle = acquire_single_instance_mutex()
     if mutex_handle is None:
@@ -964,10 +964,10 @@ def main():
     app = CollectorControlApp(root)
 
     # [DOC-FUNC] periodic_refresh
-    # O que faz: Executa a responsabilidade principal da funcao 'periodic_refresh' com fluxo previsivel para estudo.
-    # Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-    # Como executa: Valida condicoes e decide caminhos; trata erros com mensagens de diagnostico.
-    # Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+    # O que faz: A funcao 'periodic_refresh' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+    # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+    # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
+    # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
     def periodic_refresh():
         app.refresh_status()
         root.after(5000, periodic_refresh)

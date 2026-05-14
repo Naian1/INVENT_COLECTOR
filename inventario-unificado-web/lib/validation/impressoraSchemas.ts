@@ -20,10 +20,10 @@ const termosInvalidos = new Set([
 
 /**
  * [DOC-FUNC] textoObrigatorio
- * O que faz: Executa a responsabilidade principal da funcao 'textoObrigatorio' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: campo; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'textoObrigatorio' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: campo. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 const textoObrigatorio = (campo: string) =>
   z

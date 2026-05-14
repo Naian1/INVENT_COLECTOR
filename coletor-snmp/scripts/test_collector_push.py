@@ -16,10 +16,10 @@ from utils.telemetry_mapper import build_collector_payload, build_payload_from_c
 
 
 # [DOC-FUNC] _group_cache_by_ip
-# O que faz: Executa a responsabilidade principal da funcao '_group_cache_by_ip' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: cache_rows; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao '_group_cache_by_ip' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: cache_rows. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def _group_cache_by_ip(cache_rows):
     grouped = {}
     for row in cache_rows:
@@ -31,10 +31,10 @@ def _group_cache_by_ip(cache_rows):
 
 
 # [DOC-FUNC] run_test
-# O que faz: Executa a responsabilidade principal da funcao 'run_test' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: ip, refresh_cache, dry_run, real_read; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'run_test' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: ip, refresh_cache, dry_run, real_read. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     printers = load_printers()
     remote = fetch_printers_from_api(log_prefix="[test-printers-sync]")
@@ -130,10 +130,10 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
 
 
 # [DOC-FUNC] main
-# O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'main' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def main():
     parser = argparse.ArgumentParser(
         description="Teste manual de envio da telemetria do PjIMPRESS para a API nova."

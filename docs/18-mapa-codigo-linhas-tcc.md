@@ -11,47 +11,47 @@ Guia rapido para localizar no codigo onde cada regra importante acontece.
 - Selecao de contador de paginas por familia/OID:
   - `coletor-snmp/utils/cache_manager.py:227` (`_resolve_page_counter`)
 - Rastro local de eventos (jsonl para auditoria):
-  - `coletor-snmp/utils/runtime_trace.py:49` (`append_backend_trace`)
+  - `coletor-snmp/utils/runtime_trace.py:44` (`append_backend_trace`)
 - Leitura SNMP GET com trace:
   - `coletor-snmp/utils/snmp_client.py:134` (`snmp_get`)
 - Leitura SNMP WALK com trace:
   - `coletor-snmp/utils/snmp_client.py:222` (`snmp_walk`)
 - Envio do payload para API com retry e fila de falha:
-  - `coletor-snmp/utils/api_client.py:809` (`send_telemetry_payload`)
+  - `coletor-snmp/utils/api_client.py:804` (`send_telemetry_payload`)
 - Painel "Backend ao vivo" no app desktop:
-  - `coletor-snmp/scripts/collector_control_app.py:674` (`_format_payload_for_panel`)
-  - `coletor-snmp/scripts/collector_control_app.py:756` (`build_backend_panel_snapshot`)
+  - `coletor-snmp/scripts/collector_control_app.py:669` (`_format_payload_for_panel`)
+  - `coletor-snmp/scripts/collector_control_app.py:751` (`build_backend_panel_snapshot`)
 
 ## API e agregacao diaria
 
 - Endpoint do resumo diario (query params + auth):
-  - `inventario-unificado-web/app/api/telemetria/resumo-diario/route.ts:17` (`GET`)
+  - `inventario-unificado-web/app/api/telemetria/resumo-diario/route.ts:11` (`GET`)
 - Carregamento do consolidado diario (com fallback legado):
-  - `inventario-unificado-web/services/telemetriaDiariaService.ts:595` (`loadDailyRows`)
+  - `inventario-unificado-web/services/telemetriaDiariaService.ts:589` (`loadDailyRows`)
 - Delta de paginas por dia:
-  - `inventario-unificado-web/services/telemetriaDiariaService.ts:391` (`dailyPages`)
+  - `inventario-unificado-web/services/telemetriaDiariaService.ts:385` (`dailyPages`)
 - Regra de selecao de tarifas por competencia/empresa:
-  - `inventario-unificado-web/services/telemetriaDiariaService.ts:469` (`chooseTarifasFromRows`)
+  - `inventario-unificado-web/services/telemetriaDiariaService.ts:463` (`chooseTarifasFromRows`)
 - Busca de tarifas com fallback:
-  - `inventario-unificado-web/services/telemetriaDiariaService.ts:537` (`loadTarifasBilhetagem`)
+  - `inventario-unificado-web/services/telemetriaDiariaService.ts:531` (`loadTarifasBilhetagem`)
 - Montagem final do resumo para frontend:
-  - `inventario-unificado-web/services/telemetriaDiariaService.ts:927` (`buscarResumoTelemetriaDiaria`)
+  - `inventario-unificado-web/services/telemetriaDiariaService.ts:921` (`buscarResumoTelemetriaDiaria`)
 
 ## Bilhetagem e utilitarios
 
 - API de tarifas (GET/POST):
-  - `inventario-unificado-web/app/api/bilhetagem/tarifas/route.ts:52` (`GET`)
-  - `inventario-unificado-web/app/api/bilhetagem/tarifas/route.ts:91` (`POST`)
+  - `inventario-unificado-web/app/api/bilhetagem/tarifas/route.ts:46` (`GET`)
+  - `inventario-unificado-web/app/api/bilhetagem/tarifas/route.ts:85` (`POST`)
 - Script de extracao da planilha de tarifas:
-  - `inventario-unificado-web/scripts/extractTarifasBilhetagem.mjs:44` (`findTarifas`)
-  - `inventario-unificado-web/scripts/extractTarifasBilhetagem.mjs:78` (`main`)
+  - `inventario-unificado-web/scripts/extractTarifasBilhetagem.mjs:38` (`findTarifas`)
+  - `inventario-unificado-web/scripts/extractTarifasBilhetagem.mjs:72` (`main`)
 
 ## Frontend do dashboard
 
 - Construcao das coordenadas do grafico de paginas:
-  - `inventario-unificado-web/components/ResumoTelemetriaDiaria.tsx:252` (`buildChart`)
+  - `inventario-unificado-web/components/ResumoTelemetriaDiaria.tsx:246` (`buildChart`)
 - Calculo de tendencia do painel:
-  - `inventario-unificado-web/components/ResumoTelemetriaDiaria.tsx:323` (`buildTrend`)
+  - `inventario-unificado-web/components/ResumoTelemetriaDiaria.tsx:317` (`buildTrend`)
 
 ## Banco de dados (SQL consolidado)
 

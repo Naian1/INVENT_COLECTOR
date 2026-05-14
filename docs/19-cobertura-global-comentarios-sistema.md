@@ -1,6 +1,6 @@
 ﻿# 19 - Cobertura global de comentarios (sistema inteiro)
 
-## Atualizado em 2026-05-13
+## Atualizado em 2026-05-14
 
 ## Objetivo
 
@@ -16,7 +16,7 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 
 - Arquivos de codigo no escopo: 130
 - Arquivos com cabecalho `DOC-CODEMAP`: 129
-- Linhas de codigo no escopo: 42914
+- Linhas de codigo no escopo: 42956
 - Comentarios de funcao (`DOC-FUNC`) ativos: 779
 
 ## Como estudar
@@ -24,7 +24,7 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 1. Comecar por `docs/18-mapa-codigo-linhas-tcc.md` para localizar fluxos-chave.
 2. Abrir o arquivo alvo e ler o cabecalho `DOC-CODEMAP` para entender contexto.
 3. Ler funcao por funcao usando os blocos `DOC-FUNC` como guia do objetivo de cada rotina.
-4. Cruza com `docs/18-mapa-codigo-linhas-tcc.md` quando precisar entender fluxo ponta-a-ponta.
+4. Cruzar com `docs/18-mapa-codigo-linhas-tcc.md` quando precisar entender fluxo ponta-a-ponta.
 
 ## Estrutura do comentario `DOC-FUNC`
 
@@ -37,6 +37,7 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 
 - Os comentarios foram enriquecidos para linguagem didatica, com foco em leitura por iniciantes.
 - O texto descreve explicitamente passos de validacao, transformacao, consulta/escrita e tratamento de erro quando presentes.
+- Em funcoes com logica mais densa, foram mantidos comentarios inline para explicar trechos que costumam gerar duvida em leitura de primeira passagem.
 - A navegacao por linha foi atualizada em `docs/18-mapa-codigo-linhas-tcc.md` para bater com a versao atual do codigo.
 
 ## Observacao importante

@@ -115,10 +115,10 @@ export type PayloadAceitoColetorPt = z.infer<typeof payloadAceitoColetorPtSchema
 
 /**
  * [DOC-FUNC] toLote
- * O que faz: Executa a responsabilidade principal da funcao 'toLote' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'toLote' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
   const impressora =
@@ -157,10 +157,10 @@ function toLote(payload: PayloadSimplesColetorPt): LoteTelemetriaColetorPt {
 
 /**
  * [DOC-FUNC] normalizarPayloadColetorPtParaLote
- * O que faz: Normaliza entradas na funcao 'normalizarPayloadColetorPtParaLote', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: payload; com validacao de formato e fallback quando necessario.
- * Como executa: Executa processamento local em sequencia previsivel.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizarPayloadColetorPtParaLote' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 export function normalizarPayloadColetorPtParaLote(
   payload: PayloadAceitoColetorPt

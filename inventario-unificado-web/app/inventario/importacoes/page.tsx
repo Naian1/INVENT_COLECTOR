@@ -29,10 +29,10 @@ type LinhaImportacao = {
 
 /**
  * [DOC-FUNC] normalizarHeader
- * O que faz: Normaliza entradas na funcao 'normalizarHeader', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: header; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizarHeader' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: header. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizarHeader(header: unknown) {
   return String(header ?? '')
@@ -99,10 +99,10 @@ const CAMPOS_CHAVE_MATRIX: Array<{ campo: string; aliases: string[] }> = [
 
 /**
  * [DOC-FUNC] analisarCabecalhosMatrix
- * O que faz: Executa a responsabilidade principal da funcao 'analisarCabecalhosMatrix' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: headersOriginais; com validacao de formato e fallback quando necessario.
- * Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'analisarCabecalhosMatrix' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: headersOriginais. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function analisarCabecalhosMatrix(headersOriginais: string[]) {
   const headersNormalizados = headersOriginais
@@ -128,10 +128,10 @@ function analisarCabecalhosMatrix(headersOriginais: string[]) {
 
 /**
  * [DOC-FUNC] mapearLinha
- * O que faz: Monta estrutura/payload na funcao 'mapearLinha', consolidando dados para a proxima camada.
- * Entradas: Parametros esperados: raw, unknown>; com validacao de formato e fallback quando necessario.
- * Como executa: Itera colecoes para montar/filtrar dados.
- * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
+ * O que faz: A funcao 'mapearLinha' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: raw, unknown>. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -139,10 +139,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
   /**
    * [DOC-FUNC] pick
-   * O que faz: Executa a responsabilidade principal da funcao 'pick' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: keys; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'pick' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+   * Entradas: Recebe os parametros: keys. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -179,10 +179,10 @@ function mapearLinha(raw: Record<string, unknown>): LinhaImportacao {
 
 /**
  * [DOC-FUNC] competenciaAtual
- * O que faz: Executa a responsabilidade principal da funcao 'competenciaAtual' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'competenciaAtual' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function competenciaAtual() {
   const now = new Date();
@@ -193,10 +193,10 @@ function competenciaAtual() {
 
 /**
  * [DOC-FUNC] validarCompetencia
- * O que faz: Executa a responsabilidade principal da funcao 'validarCompetencia' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: valor; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'validarCompetencia' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
+ * Entradas: Recebe os parametros: valor. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function validarCompetencia(valor: string) {
   return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(valor.trim());
@@ -204,10 +204,10 @@ function validarCompetencia(valor: string) {
 
 /**
  * [DOC-FUNC] normalizarStatus
- * O que faz: Normaliza entradas na funcao 'normalizarStatus', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizarStatus' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | 'DEVOLUCAO' | null {
   const raw = String(value ?? '')
@@ -225,10 +225,10 @@ function normalizarStatus(value: unknown): 'ATIVO' | 'MANUTENCAO' | 'BACKUP' | '
 
 /**
  * [DOC-FUNC] normalizarTimestamp
- * O que faz: Normaliza entradas na funcao 'normalizarTimestamp', reduzindo ambiguidade antes da regra principal.
- * Entradas: Parametros esperados: value; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+ * O que faz: A funcao 'normalizarTimestamp' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+ * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function normalizarTimestamp(value: unknown): string | null {
   const texto = String(value ?? '').trim();
@@ -247,10 +247,10 @@ function normalizarTimestamp(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] mapearLinhaMatrixParaBanco
- * O que faz: Monta estrutura/payload na funcao 'mapearLinhaMatrixParaBanco', consolidando dados para a proxima camada.
- * Entradas: Parametros esperados: raw, unknown>; com validacao de formato e fallback quando necessario.
- * Como executa: Itera colecoes para montar/filtrar dados.
- * Retorno/Efeitos: Retorna estrutura consolidada pronta para API, servico, banco ou interface.
+ * O que faz: A funcao 'mapearLinhaMatrixParaBanco' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+ * Entradas: Recebe os parametros: raw, unknown>. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
   const entries = Object.entries(raw).map(([k, v]) => [normalizarHeader(k), v] as const);
@@ -258,10 +258,10 @@ function mapearLinhaMatrixParaBanco(raw: Record<string, unknown>) {
 
   /**
    * [DOC-FUNC] pick
-   * O que faz: Executa a responsabilidade principal da funcao 'pick' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: keys; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'pick' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+   * Entradas: Recebe os parametros: keys. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   const pick = (...keys: string[]) => {
     for (const key of keys) {
@@ -341,10 +341,10 @@ export default function ImportacoesInventarioPage() {
   useEffect(() => {
     /**
      * [DOC-FUNC] carregarEmpresas
-     * O que faz: Executa a responsabilidade principal da funcao 'carregarEmpresas' com fluxo previsivel para estudo.
-     * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-     * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-     * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+     * O que faz: A funcao 'carregarEmpresas' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+     * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+     * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
+     * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
      */
     const carregarEmpresas = async () => {
       try {
@@ -384,10 +384,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] onArquivoSelecionado
-   * O que faz: Executa a responsabilidade principal da funcao 'onArquivoSelecionado' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: file; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'onArquivoSelecionado' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+   * Entradas: Recebe os parametros: file. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function onArquivoSelecionado(file: File) {
     setErro(null);
@@ -432,10 +432,10 @@ export default function ImportacoesInventarioPage() {
 
   /**
    * [DOC-FUNC] importarConsolidadoMensal
-   * O que faz: Executa a responsabilidade principal da funcao 'importarConsolidadoMensal' com fluxo previsivel para estudo.
-   * Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-   * Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; consulta dados em fonte interna/externa; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-   * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+   * O que faz: A funcao 'importarConsolidadoMensal' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+   * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+   * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
+   * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
    */
   async function importarConsolidadoMensal() {
     if (!linhasBrutas.length) {

@@ -16,10 +16,10 @@ def _utc_now_iso() -> str:
 
 
 # [DOC-FUNC] _sanitize
-# O que faz: Normaliza entradas na funcao '_sanitize', reduzindo ambiguidade antes da regra principal.
-# Entradas: Parametros esperados: value, max_len; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna valor padronizado para comparacao, persistencia e exibicao sem ruido de formato.
+# O que faz: A funcao '_sanitize' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
+# Entradas: Recebe os parametros: value, max_len. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def _sanitize(value: Any, max_len: int = 2400):
     if value is None:
         return None
@@ -42,10 +42,10 @@ def _sanitize(value: Any, max_len: int = 2400):
 
 
 # [DOC-FUNC] append_backend_trace
-# O que faz: Executa a responsabilidade principal da funcao 'append_backend_trace' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: event, payload; com validacao de formato e fallback quando necessario.
-# Como executa: Itera colecoes para montar/filtrar dados; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'append_backend_trace' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
+# Entradas: Recebe os parametros: event, **payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

@@ -23,10 +23,10 @@ STOP = False
 
 
 # [DOC-FUNC] _handle_stop
-# O que faz: Executa a responsabilidade principal da funcao '_handle_stop' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: signum, _frame; com validacao de formato e fallback quando necessario.
-# Como executa: Executa processamento local em sequencia previsivel.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao '_handle_stop' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: signum, _frame. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def _handle_stop(signum, _frame):
     global STOP
     STOP = True
@@ -34,10 +34,10 @@ def _handle_stop(signum, _frame):
 
 
 # [DOC-FUNC] _resolve_interval
-# O que faz: Executa a responsabilidade principal da funcao '_resolve_interval' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: cli_interval; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao '_resolve_interval' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+# Entradas: Recebe os parametros: cli_interval. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def _resolve_interval(cli_interval):
     if cli_interval and cli_interval > 0:
         return cli_interval
@@ -64,10 +64,10 @@ def _resolve_interval(cli_interval):
 
 
 # [DOC-FUNC] run_loop
-# O que faz: Executa a responsabilidade principal da funcao 'run_loop' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: interval_seconds, run_once; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; itera colecoes para montar/filtrar dados; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'run_loop' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Recebe os parametros: interval_seconds, run_once. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def run_loop(interval_seconds, run_once=False):
     cycle = 0
     while not STOP:
@@ -95,10 +95,10 @@ def run_loop(interval_seconds, run_once=False):
 
 
 # [DOC-FUNC] main
-# O que faz: Executa a responsabilidade principal da funcao 'main' com fluxo previsivel para estudo.
-# Entradas: Parametros esperados: sem parametros obrigatorios; com validacao de formato e fallback quando necessario.
-# Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos; trata erros com mensagens de diagnostico.
-# Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+# O que faz: A funcao 'main' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
+# Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
+# Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
+# Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
 def main():
     parser = argparse.ArgumentParser(
         description="Executa somente o coletor (SNMP -> API) sem subir o frontend legado Flask."

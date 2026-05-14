@@ -34,10 +34,10 @@ const textoOpcionalNulo = z
 
 /**
  * [DOC-FUNC] uuidObrigatorio
- * O que faz: Executa a responsabilidade principal da funcao 'uuidObrigatorio' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: campo; com validacao de formato e fallback quando necessario.
- * Como executa: Padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'uuidObrigatorio' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: campo. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 const uuidObrigatorio = (campo: string) =>
   z.string().uuid(`${campo} deve ser UUID valido`);
@@ -104,10 +104,10 @@ const boolFromQuery = z
 
 /**
  * [DOC-FUNC] numeroPositivoComDefault
- * O que faz: Executa a responsabilidade principal da funcao 'numeroPositivoComDefault' com fluxo previsivel para estudo.
- * Entradas: Parametros esperados: defaultValue; com validacao de formato e fallback quando necessario.
- * Como executa: Valida condicoes e decide caminhos; padroniza formato e fallback de campos.
- * Retorno/Efeitos: Retorna resultado util com contrato claro de sucesso/falha para quem consome.
+ * O que faz: A funcao 'numeroPositivoComDefault' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
+ * Entradas: Recebe os parametros: defaultValue. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
+ * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
+ * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 const numeroPositivoComDefault = (defaultValue: number) =>
   z
