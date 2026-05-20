@@ -1,4 +1,4 @@
-﻿# Inventário Unificado e Telemetria de Impressoras
+# Inventário Unificado e Telemetria de Impressoras
 
 Sistema de inventário unificado e operação de impressoras para ambiente hospitalar. O projeto junta três mundos que antes ficavam separados: inventário patrimonial, coleta SNMP das impressoras e análise operacional de impressão/suprimentos.
 
@@ -124,6 +124,162 @@ public.suprimentos
 10. Enquanto a pendência está aberta, o sistema não grava pagecount no item errado.
 11. A produção fica retida por dia em `telemetria_substituicao_evento_retido`.
 12. Quando o usuário confirma, corrige ou descarta, `inventory-core` resolve a pendência.
+
+## Fluxograma Corrigido - Impressoras e Telemetria
+
+Este fluxo corrige uma confus?o comum: no sistema atual, a fonte oficial das impressoras ? `public.inventario`. A Edge `collector-impressoras` ainda possui fallback para uma tabela chamada `impressoras` caso ela exista em algum ambiente antigo, mas no banco atual a coleta vem do invent?rio.
+
+Outro ponto importante: o frontend n?o grava regra cr?tica direto no banco. As telas chamam Edge Functions, e as Edge Functions aplicam valida??es, permiss?es e regras de neg?cio antes de escrever no Supabase.
+
+```mermaid
+flowchart TD
+  classDef user fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#000;
+  classDef frontend fill:#E8F5E9,stroke:#2E7D32,stroke-width:1px,color:#000;
+  classDef collector fill:#FFF3E0,stroke:#EF6C00,stroke-width:1px,color:#000;
+  classDef edge fill:#F3E5F5,stroke:#6A1B9A,stroke-width:1px,color:#000;
+  classDef db fill:#ECEFF1,stroke:#37474F,stroke-width:1px,color:#000;
+  classDef decision fill:#FFFDE7,stroke:#F9A825,stroke-width:2px,color:#000;
+  classDef danger fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#000;
+  classDef ok fill:#E8F5E9,stroke:#1B5E20,stroke-width:2px,color:#000;
+
+  U1["Usu?rio de TI<br/>usa Invent?rio, Impressoras ou Painel"]:::user
+  F1["Frontend Next.js<br/>telas do sistema"]:::frontend
+  F2["supabase.functions.invoke<br/>chama inventory-core ou inventory-print"]:::frontend
+  DB_INV["public.inventario<br/>fonte oficial dos equipamentos"]:::db
+  DB_MOV["public.movimentacao<br/>hist?rico de altera??es"]:::db
+  DB_PC["public.telemetria_pagecount<br/>contador bruto atual"]:::db
+  DB_DIA["public.telemetria_pagecount_diaria<br/>produ??o di?ria por delta"]:::db
+  DB_SUP["public.suprimentos<br/>n?veis atuais"]:::db
+  DB_PEND["public.telemetria_substituicao_pendente<br/>alertas de diverg?ncia"]:::db
+  DB_RET["public.telemetria_substituicao_evento_retido<br/>resumo di?rio retido"]:::db
+  TRG_DIA["Trigger SQL<br/>fn_sync_telemetria_pagecount_diaria"]:::db
+  EDGE_CORE["Edge inventory-core<br/>invent?rio, devolu??o, troca e corre??o"]:::edge
+  EDGE_PRINT["Edge inventory-print<br/>opera??o e dashboards de impressoras"]:::edge
+  EDGE_LIST["Edge collector-impressoras<br/>valida COLLECTOR_API_TOKEN"]:::edge
+  EDGE_TEL["Edge collector-telemetria<br/>valida token e payload"]:::edge
+  EDGE_CMP["Compara IP + patrim?nio + s?rie + MAC<br/>com a vaga esperada no invent?rio"]:::edge
+  DEC_ID{"Identidade bate<br/>com o invent?rio?"}:::decision
+  C0["Coletor Python<br/>run_collector_loop.py"]:::collector
+  C1["Sincroniza impressoras<br/>GET collector-impressoras"]:::collector
+  C2["Recebe IPs eleg?veis<br/>ie_situacao=A e nr_ip preenchido"]:::collector
+  C3["SNMP com pysnmp<br/>GET/WALK por OID"]:::collector
+  C4["Monta payload JSON<br/>telemetry_mapper.py"]:::collector
+  C5["Envia POST<br/>collector-telemetria"]:::collector
+
+  U1 --> F1 --> F2
+  F2 --> EDGE_CORE
+  F2 --> EDGE_PRINT
+  EDGE_CORE --> DB_INV
+  EDGE_CORE --> DB_MOV
+  EDGE_PRINT --> DB_PC
+  EDGE_PRINT --> DB_DIA
+  EDGE_PRINT --> DB_SUP
+  EDGE_PRINT --> DB_PEND
+  C0 --> C1 --> EDGE_LIST
+  EDGE_LIST --> DB_INV
+  DB_INV --> EDGE_LIST
+  EDGE_LIST --> C2
+  C2 --> C3 --> C4 --> C5 --> EDGE_TEL
+  EDGE_TEL --> EDGE_CMP
+  EDGE_CMP --> DB_INV
+  EDGE_CMP --> DEC_ID
+  DEC_ID -- "Sim" --> OK1["Telemetria aceita"]:::ok
+  OK1 --> DB_PC --> TRG_DIA --> DB_DIA
+  OK1 --> DB_SUP
+  DEC_ID -- "N?o" --> ALERTA["Diverg?ncia detectada<br/>troca f?sica ou cadastro errado"]:::danger
+  ALERTA --> DB_PEND
+  ALERTA --> DB_RET
+  DB_PEND --> F1
+  DB_RET --> F1
+  U1 -- "confirmar troca" --> F2 --> EDGE_CORE
+  U1 -- "corrigir cadastro" --> F2
+  U1 -- "descartar alerta" --> F2
+  EDGE_CORE -- "confirmar" --> DB_INV
+  EDGE_CORE -- "registrar hist?rico" --> DB_MOV
+  EDGE_CORE -- "reaplicar resumo retido" --> DB_DIA
+  EDGE_CORE -- "resolver pend?ncia" --> DB_PEND
+  EDGE_CORE -- "corrigir s?rie/MAC/patrim?nio" --> DB_INV
+  EDGE_CORE -- "descartar" --> DB_PEND
+  DB_DIA --> EDGE_PRINT --> F1
+  DB_SUP --> EDGE_PRINT
+  DB_PEND --> EDGE_PRINT
+```
+
+## Fluxograma Corrigido - Sistema Inteiro
+
+```mermaid
+flowchart LR
+  classDef user fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#000;
+  classDef frontend fill:#E8F5E9,stroke:#2E7D32,stroke-width:1px,color:#000;
+  classDef edge fill:#F3E5F5,stroke:#6A1B9A,stroke-width:1px,color:#000;
+  classDef collector fill:#FFF3E0,stroke:#EF6C00,stroke-width:1px,color:#000;
+  classDef db fill:#ECEFF1,stroke:#37474F,stroke-width:1px,color:#000;
+  classDef auth fill:#E0F7FA,stroke:#00838F,stroke-width:1px,color:#000;
+
+  USR["Usu?rio<br/>Administrador ou operador"]:::user
+  AUTH["Supabase Auth<br/>login e JWT"]:::auth
+  SHELL["Frontend Next.js<br/>BasicPageShell, menu, tema e notifica??es"]:::frontend
+  INV["Tela Invent?rio<br/>vis?o geral e pend?ncias"]:::frontend
+  DEV["Tela Devolu??o<br/>itens por empresa"]:::frontend
+  CONC["Tela Concilia??o<br/>apoio a confer?ncia"]:::frontend
+  IMP["Tela Impressoras<br/>opera??o e suprimentos"]:::frontend
+  PAINEL["Painel<br/>volume, custos e alertas"]:::frontend
+  USER["Tela Usu?rios<br/>perfis e permiss?es"]:::frontend
+  CAT["Categorias<br/>tipos/modelos"]:::frontend
+  IMPORT["Importa??es<br/>planilhas e cargas"]:::frontend
+  CORE["inventory-core<br/>regras de invent?rio"]:::edge
+  PRINT["inventory-print<br/>m?tricas de impressoras"]:::edge
+  ADMIN["inventory-admin<br/>administra??o"]:::edge
+  MATRIX["inventory-matrix<br/>cargas e concilia??o"]:::edge
+  COL_LIST["collector-impressoras<br/>lista IPs para coleta"]:::edge
+  COL_TEL["collector-telemetria<br/>ingest?o SNMP"]:::edge
+  COL["Coletor Python SNMP<br/>pysnmp + payload HTTP"]:::collector
+  PRN["Impressoras f?sicas<br/>respondem SNMP na rede"]:::collector
+  DB_USR["public.usuario<br/>public.perfil<br/>public.usuario_perfil"]:::db
+  DB_INV["public.inventario<br/>public.equipamento<br/>public.piso<br/>public.setor"]:::db
+  DB_MOV["public.movimentacao"]:::db
+  DB_EMP["public.empresa"]:::db
+  DB_TEL["telemetria_pagecount<br/>telemetria_pagecount_diaria<br/>suprimentos"]:::db
+  DB_SWAP["telemetria_substituicao_pendente<br/>telemetria_substituicao_evento_retido"]:::db
+
+  USR --> AUTH --> SHELL
+  SHELL --> INV
+  SHELL --> DEV
+  SHELL --> CONC
+  SHELL --> IMP
+  SHELL --> PAINEL
+  SHELL --> USER
+  SHELL --> CAT
+  SHELL --> IMPORT
+  INV --> CORE
+  DEV --> CORE
+  CONC --> CORE
+  CAT --> CORE
+  IMPORT --> MATRIX
+  USER --> ADMIN
+  IMP --> PRINT
+  PAINEL --> PRINT
+  CORE --> DB_INV
+  CORE --> DB_MOV
+  CORE --> DB_EMP
+  CORE --> DB_SWAP
+  ADMIN --> DB_USR
+  MATRIX --> DB_INV
+  MATRIX --> DB_EMP
+  PRINT --> DB_TEL
+  PRINT --> DB_SWAP
+  PRINT --> DB_INV
+  COL --> COL_LIST --> DB_INV
+  COL_LIST --> COL
+  COL --> PRN
+  PRN --> COL
+  COL --> COL_TEL
+  COL_TEL --> DB_INV
+  COL_TEL --> DB_TEL
+  COL_TEL --> DB_SWAP
+  DB_TEL --> PRINT
+  DB_SWAP --> CORE
+```
 
 ## Proteção Contra Explosão de Pagecount
 
