@@ -396,30 +396,93 @@ Arquivos importantes:
 coletor-snmp/utils/snmp_client.py
 coletor-snmp/utils/telemetry_mapper.py
 coletor-snmp/utils/cache_manager.py
-coletor-snmp/utils/printer_sync_service.py
-coletor-snmp/utils/supabase_client.py
+coletor-snmp/utils/api_client.py
+coletor-snmp/utils/file_manager.py
+coletor-snmp/utils/runtime_trace.py
 coletor-snmp/scripts/run_collector_loop.py
+coletor-snmp/scripts/collector_control_app.py
 ```
 
 ### snmp_client.py
 
 Responsável por consultar a impressora via SNMP. Recebe IP, comunidade, OID, timeout e tentativas. Devolve valor encontrado, erro, timeout ou informação de offline.
 
-### printer_sync_service.py
-
-Responsável por buscar no Supabase a lista de impressoras elegíveis. Ele não cria impressora. Ele sincroniza o cadastro vindo do inventário.
-
 ### cache_manager.py
 
-Responsável por manter cache local de impressoras e leituras. Isso reduz dependência da rede, acelera consultas locais e permite continuidade parcial se algum envio falhar.
+Responsável por coordenar a coleta de cada ciclo. Ele:
+
+- carrega configurações locais;
+- busca a lista de impressoras remota quando permitido;
+- salva `printers.json` com a última lista válida;
+- filtra IPs elegíveis;
+- chama SNMP para cada impressora;
+- monta snapshots com status, pagecount e suprimentos;
+- aciona o envio para a API;
+- usa fila local quando o envio falha.
+
+Esse arquivo é o "coração operacional" do coletor. O script de loop chama `atualizar_cache()`, e essa função decide o que será coletado naquele ciclo.
 
 ### telemetry_mapper.py
 
-Responsável por transformar dados brutos coletados em payload padronizado. Ele pega SNMP bruto, cadastro da impressora e suprimentos e monta um objeto pronto para envio.
+Responsável por transformar dados brutos coletados em payload padronizado. Ele pega SNMP bruto, cadastro da impressora e suprimentos e monta um objeto pronto para envio para `collector-telemetria`.
 
-### supabase_client.py
+Exemplo conceitual do payload:
 
-Responsável pelo envio HTTP para as Edge Functions do Supabase. Ele monta cabeçalhos, envia JSON e trata resposta.
+```json
+{
+  "coletor_id": "collector-hgg-01",
+  "eventos": [
+    {
+      "ingestao_id": "evt-172-18-132-191-...",
+      "status": "online",
+      "contador_total_paginas": 521600,
+      "impressora": {
+        "ip": "172.18.132.191",
+        "patrimonio": "293273",
+        "numero_serie": "460031742FCF1",
+        "endereco_mac": "788C774E3078"
+      },
+      "suprimentos": []
+    }
+  ]
+}
+```
+
+### api_client.py
+
+Responsável por falar com as APIs remotas. Ele:
+
+- lê `.env`;
+- busca lista de impressoras via `collector-impressoras`;
+- opcionalmente consulta `public.inventario` por REST quando configurado;
+- envia telemetria para `collector-telemetria`;
+- manda token no cabeçalho `Authorization`;
+- controla retry de envio;
+- grava payload pendente em `collector_pending.jsonl` quando a API não aceita ou está indisponível.
+
+Depois do incidente de sobrecarga, esse arquivo passou a ter proteção de "circuit breaker" no sync de impressoras: quando o Supabase começa a responder timeout, o coletor abre um intervalo de respiro e para de repetir sync remoto por alguns minutos.
+
+### file_manager.py
+
+Responsável por leitura e escrita de arquivos locais do coletor. Ele ajuda a manter dados persistidos como configurações, cache e arquivos JSON sem espalhar acesso a arquivo por todo o código.
+
+### runtime_trace.py
+
+Responsável por registrar rastros técnicos em JSONL. Esse arquivo é útil quando precisa auditar o que o coletor tentou fazer, qual URL chamou, qual status recebeu e onde ocorreu falha.
+
+### run_collector_loop.py
+
+Script que mantém o coletor rodando em ciclo. Ele:
+
+- inicia o loop;
+- chama `atualizar_cache()`;
+- espera o intervalo configurado;
+- registra erro quando um ciclo falha;
+- permite execução contínua sem depender do usuário clicar manualmente.
+
+### collector_control_app.py
+
+Aplicação local com interface. Ela facilita iniciar, parar e acompanhar o coletor sem depender só do terminal. Também ajuda na apresentação do TCC, porque mostra que o coletor é um componente separado do site.
 
 ## 18. Como o Coletor Escolhe Quais Impressoras Coletar
 
@@ -434,6 +497,27 @@ Fluxo:
 
 Isso significa que o coletor depende do inventário. Se uma impressora não tem IP ou está como backup, ela pode não ser coletada como produção.
 
+Configurações principais no `.env` do coletor:
+
+```text
+COLLECTOR_SYNC_PRINTERS_FROM_API=true
+COLLECTOR_PRINTERS_SOURCE=api
+COLLECTOR_REQUIRE_REMOTE_PRINTERS=false
+COLLECTOR_SYNC_TIMEOUT=20
+COLLECTOR_SYNC_RETRIES=2
+COLLECTOR_SYNC_FAILURE_COOLDOWN=900
+COLLECTOR_ALLOW_API_FALLBACK=false
+```
+
+O significado prático:
+
+- `COLLECTOR_SYNC_PRINTERS_FROM_API=true`: o coletor tenta atualizar a lista de impressoras pelo backend.
+- `COLLECTOR_PRINTERS_SOURCE=api`: a fonte normal é a Edge `collector-impressoras`, que consulta `public.inventario`.
+- `COLLECTOR_REQUIRE_REMOTE_PRINTERS=false`: se o backend estiver fora, o coletor pode usar o cache local quando for seguro.
+- `COLLECTOR_SYNC_RETRIES=2`: evita muitas tentativas seguidas.
+- `COLLECTOR_SYNC_FAILURE_COOLDOWN=900`: se o sync remoto falhar, espera 15 minutos antes de tentar de novo.
+- `COLLECTOR_ALLOW_API_FALLBACK=false`: evita dobrar a carga tentando outra rota quando o Supabase já está lento.
+
 ## 19. Como a Busca na Rede Acontece
 
 O coletor não adivinha equipamentos. Ele recebe uma lista de IPs e consulta cada um.
@@ -447,6 +531,30 @@ Para cada IP:
 5. coleta suprimentos;
 6. monta payload;
 7. envia para a Edge Function.
+
+## 19.1. Proteção Contra Sobrecarga no Coletor
+
+O coletor não deve se comportar como um "martelo" em cima do Supabase. Se o PostgREST, Auth ou Edge Functions começam a responder timeout, insistir várias vezes só piora a situação.
+
+Regra atual:
+
+1. O coletor tenta sincronizar a lista de impressoras.
+2. Se o Supabase responde timeout, ele registra o erro.
+3. Se as tentativas configuradas falham, abre um circuito de respiro.
+4. Durante esse respiro, o coletor não fica chamando o backend a cada ciclo.
+5. Depois do tempo configurado, ele tenta novamente.
+
+Isso protege o projeto free contra rajadas de requisições e ajuda o Supabase a se recuperar.
+
+Exemplo real de sintoma:
+
+```text
+Sync tentativa 1/3 falhou: The read operation timed out
+Sync tentativa 2/3 falhou: The read operation timed out
+Sync tentativa 3/3 falhou: The read operation timed out
+```
+
+Antes, o sistema ainda tentava outra rota de API depois desse erro. Agora, por padrão, ele não faz fallback automático para outra rota quando o problema parece ser timeout/conexão do Supabase.
 
 Exemplo conceitual:
 

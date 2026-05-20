@@ -29,7 +29,13 @@ Coletar telemetria de impressoras via SNMP em ciclos, com envio autenticado ao b
 ## Arquivos relevantes
 
 - coletor-snmp/scripts/run_collector_loop.py
+- coletor-snmp/scripts/collector_control_app.py
 - coletor-snmp/scripts/test_collector_push.py
+- coletor-snmp/utils/cache_manager.py
+- coletor-snmp/utils/snmp_client.py
+- coletor-snmp/utils/telemetry_mapper.py
+- coletor-snmp/utils/api_client.py
+- coletor-snmp/utils/runtime_trace.py
 - coletor-snmp/data/collector_pending.jsonl
 - coletor-snmp/data/collector_pending_invalid.jsonl
 
@@ -38,11 +44,21 @@ Coletar telemetria de impressoras via SNMP em ciclos, com envio autenticado ao b
 - Rodar em intervalo estavel (ex.: 300s).
 - Monitorar crescimento de fila pendente.
 - Validar token e conectividade periodicamente.
-- Em producao, preferir `COLLECTOR_PRINTERS_SOURCE=supabase` para reduzir dependencia/latencia do frontend (Vercel).
-- Se usar source `supabase`, configurar:
-  - `COLLECTOR_SUPABASE_URL`
-  - `COLLECTOR_SUPABASE_KEY`
-  - `COLLECTOR_SUPABASE_PRINTERS_TABLE` (`impressoras` ou `inventario`)
+- Em producao, preferir `COLLECTOR_PRINTERS_SOURCE=api`, chamando a Edge `collector-impressoras`.
+- A fonte oficial das impressoras e `public.inventario`; nao existe tabela operacional separada de impressoras no fluxo atual.
+- Manter `COLLECTOR_ALLOW_API_FALLBACK=false` para evitar dobrar chamadas quando o Supabase estiver lento.
+- Manter `COLLECTOR_SYNC_FAILURE_COOLDOWN=900` para abrir 15 minutos de respiro apos timeouts repetidos.
+
+## Protecao contra sobrecarga
+
+Quando o Supabase responde timeout, o coletor nao deve insistir sem parar. O comportamento seguro e:
+
+1. tentar o sync remoto poucas vezes;
+2. registrar erro claro no log;
+3. abrir circuito de cooldown;
+4. aguardar antes de chamar o backend novamente.
+
+Esse cuidado evita que uma falha temporaria do PostgREST vire uma cascata de requisições em cima do projeto.
 
 ## Atualizacao 2026-05-04
 

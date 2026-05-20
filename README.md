@@ -55,9 +55,11 @@ Arquivos principais:
 coletor-snmp/utils/snmp_client.py
 coletor-snmp/utils/telemetry_mapper.py
 coletor-snmp/utils/cache_manager.py
-coletor-snmp/utils/printer_sync_service.py
-coletor-snmp/utils/supabase_client.py
+coletor-snmp/utils/api_client.py
+coletor-snmp/utils/file_manager.py
+coletor-snmp/utils/runtime_trace.py
 coletor-snmp/scripts/run_collector_loop.py
+coletor-snmp/scripts/collector_control_app.py
 ```
 
 ### Edge Functions

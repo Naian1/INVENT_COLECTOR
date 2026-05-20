@@ -16,6 +16,8 @@ PENDING_QUEUE_FILE = os.path.join(DATA_DIR, "collector_pending.jsonl")
 INVALID_PENDING_QUEUE_FILE = os.path.join(DATA_DIR, "collector_pending_invalid.jsonl")
 
 _ENV_CACHE = None
+_PRINTER_SYNC_CIRCUIT_OPEN_UNTIL = 0.0
+_PRINTER_SYNC_CIRCUIT_REASON = ""
 
 
 # [DOC-FUNC] _load_env_file
@@ -231,6 +233,16 @@ def get_collector_config():
         min_value=0.0,
         max_value=30.0,
     )
+    sync_failure_cooldown_seconds = _parse_float_env(
+        _get_env("COLLECTOR_SYNC_FAILURE_COOLDOWN", "900"),
+        default_value=900.0,
+        min_value=0.0,
+        max_value=7200.0,
+    )
+    allow_api_fallback = _parse_bool_env(
+        _get_env("COLLECTOR_ALLOW_API_FALLBACK", "false"),
+        default_value=False,
+    )
     telemetry_retries = _parse_int_env(
         _get_env("COLLECTOR_API_RETRIES", "2"),
         default_value=2,
@@ -290,6 +302,8 @@ def get_collector_config():
         "sync_timeout_seconds": sync_timeout_seconds,
         "sync_retries": sync_retries,
         "sync_retry_backoff_seconds": sync_retry_backoff_seconds,
+        "sync_failure_cooldown_seconds": sync_failure_cooldown_seconds,
+        "allow_api_fallback": allow_api_fallback,
         "telemetry_retries": telemetry_retries,
         "telemetry_retry_backoff_seconds": telemetry_retry_backoff_seconds,
         "replay_pending": replay_pending,
@@ -306,6 +320,40 @@ def get_collector_config():
         "supabase_printers_filter_column": supabase_printers_filter_column,
         "supabase_printers_filter_value": supabase_printers_filter_value,
     }
+
+
+# [DOC-FUNC] _get_printer_sync_circuit_error
+# Objetivo: impedir que o coletor pressione Supabase/API em repetidas falhas de sync.
+# Como executa: guarda em memoria o horario ate o qual o circuito fica aberto; enquanto
+# esse tempo nao vence, o coletor nao faz nova requisicao remota de lista de impressoras.
+# Saida/Efeito: retorna mensagem de bloqueio temporario ou None quando a tentativa remota
+# esta liberada novamente.
+def _get_printer_sync_circuit_error():
+    now = time.time()
+    if _PRINTER_SYNC_CIRCUIT_OPEN_UNTIL <= now:
+        return None
+    remaining = int(_PRINTER_SYNC_CIRCUIT_OPEN_UNTIL - now)
+    reason = _PRINTER_SYNC_CIRCUIT_REASON or "falha remota recente"
+    return f"Circuito de sync remoto aberto por mais {remaining}s apos {reason}."
+
+
+# [DOC-FUNC] _open_printer_sync_circuit
+# Objetivo: abrir um periodo de respiro depois de timeout/erro remoto de impressoras.
+# Como executa: le o cooldown configurado e grava o horario futuro em variaveis de
+# processo; isso reduz rajadas de retry quando PostgREST/Edge/Auth estao degradados.
+# Saida/Efeito: registra aviso em log e evita novas chamadas remotas ate o cooldown vencer.
+def _open_printer_sync_circuit(config, reason):
+    global _PRINTER_SYNC_CIRCUIT_OPEN_UNTIL, _PRINTER_SYNC_CIRCUIT_REASON
+    cooldown = float(config.get("sync_failure_cooldown_seconds") or 0)
+    if cooldown <= 0:
+        return
+    _PRINTER_SYNC_CIRCUIT_OPEN_UNTIL = time.time() + cooldown
+    _PRINTER_SYNC_CIRCUIT_REASON = _shorten_text(reason, max_len=240)
+    logging.warning(
+        "[collector-printers-sync] Circuito de sync remoto aberto por %.0fs. Motivo: %s",
+        cooldown,
+        _PRINTER_SYNC_CIRCUIT_REASON,
+    )
 
 
 # [DOC-FUNC] _normalize_remote_printers
@@ -563,8 +611,8 @@ def _fetch_printers_via_supabase(config, log_prefix):
         "equipamento:cd_equipamento(cd_tipo_equipamento,nm_marca,nm_modelo,nm_equipamento),"
         "setor:cd_setor(nm_setor)"
     )
-    # Para schema Daniel/public: inventario guarda IP/patrimonio/serie,
-    # equipamento guarda tipo/modelo/marca, setor guarda localiza??o.
+    # Para o schema atual: inventario guarda IP/patrimonio/serie,
+    # equipamento guarda tipo/modelo/marca, setor guarda localizacao.
     url = (
         f"{supabase_url}/rest/v1/{table_encoded}"
         f"?select={select_fields}&nr_ip=not.is.null&ie_situacao=eq.A"
@@ -705,6 +753,15 @@ def _fetch_printers_via_supabase(config, log_prefix):
 def fetch_printers_from_api(log_prefix="[collector-api]"):
     config = get_collector_config()
     source = str(config.get("printers_source") or "api").strip().lower()
+    circuit_error = _get_printer_sync_circuit_error()
+    if circuit_error:
+        logging.warning("%s %s", log_prefix, circuit_error)
+        return {
+            "success": False,
+            "skipped": True,
+            "source": source,
+            "error": circuit_error,
+        }
 
     if source == "supabase":
         supabase_result = _fetch_printers_via_supabase(config=config, log_prefix=log_prefix)
@@ -712,10 +769,11 @@ def fetch_printers_from_api(log_prefix="[collector-api]"):
             return supabase_result
 
         status_code = supabase_result.get("status_code")
-        should_fallback = status_code in {401, 403} or not status_code
+        allow_api_fallback = bool(config.get("allow_api_fallback", False))
+        should_fallback = allow_api_fallback and status_code in {401, 403}
         if should_fallback:
             logging.warning(
-                "%s Falha no sync via Supabase (%s). Tentando fallback via API protegida.",
+                "%s Falha de autorizacao no sync via Supabase (%s). Tentando fallback via API protegida.",
                 log_prefix,
                 supabase_result.get("error"),
             )
@@ -723,19 +781,25 @@ def fetch_printers_from_api(log_prefix="[collector-api]"):
             if api_result.get("success"):
                 return api_result
 
+            combined_error = (
+                "Falha no sync de impressoras. "
+                f"Supabase: {supabase_result.get('error')} | "
+                f"API: {api_result.get('error')}"
+            )
+            _open_printer_sync_circuit(config, combined_error)
             return {
                 "success": False,
                 "source": "supabase->api",
                 "status_code": api_result.get("status_code") or status_code,
-                "error": (
-                    "Falha no sync de impressoras. "
-                    f"Supabase: {supabase_result.get('error')} | "
-                    f"API: {api_result.get('error')}"
-                ),
+                "error": combined_error,
             }
 
+        _open_printer_sync_circuit(config, supabase_result.get("error") or "falha no sync via Supabase")
         return supabase_result
-    return _fetch_printers_via_api(config=config, log_prefix=log_prefix)
+    api_result = _fetch_printers_via_api(config=config, log_prefix=log_prefix)
+    if not api_result.get("success"):
+        _open_printer_sync_circuit(config, api_result.get("error") or "falha no sync via API")
+    return api_result
 
 
 # [DOC-FUNC] _queue_pending_payload

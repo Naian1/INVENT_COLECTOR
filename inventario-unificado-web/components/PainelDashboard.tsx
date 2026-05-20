@@ -6,7 +6,7 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusFeedback } from "@/components/StatusFeedback";
-import { supabase } from "@/lib/supabase/client";
+import { EdgeUnauthorizedError, invokeAuthedEdgeFunction } from "@/lib/supabase/invokeEdge";
 
 type DashboardData = {
   gerado_em: string;
@@ -121,16 +121,11 @@ type BilhetagemBaseStorage = {
  * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
  */
 async function invokePrintFunction<T>(action: string, payload?: Record<string, unknown>) {
-  const { data, error } = await supabase.functions.invoke("inventory-print", {
-    body: { action, payload: payload ?? {} },
-  });
-
-  if (!error && data?.ok) {
-    return data.data as T;
-  }
-
-  const reason = error?.message || data?.error || `Falha ao executar ${action}.`;
-  throw new Error(reason);
+  return invokeAuthedEdgeFunction<T>(
+    "inventory-print",
+    { action, payload: payload ?? {} },
+    `Falha ao executar ${action}.`
+  );
 }
 
 /**
@@ -912,6 +907,11 @@ export function PainelDashboard() {
       setData(dados);
       setSucesso(`Dashboard atualizado em ${new Date(dados.gerado_em).toLocaleString("pt-BR")}.`);
     } catch (error) {
+      if (error instanceof EdgeUnauthorizedError) {
+        setErro("Sessão expirada. Faça login novamente antes de atualizar o painel.");
+        setData(null);
+        return;
+      }
       setErro(error instanceof Error ? error.message : "Falha ao carregar dashboard.");
       setData(null);
     } finally {

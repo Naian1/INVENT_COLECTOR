@@ -14,6 +14,33 @@ Acoes:
 1. Validar URL e project-ref.
 2. Conferir token/chave carregada no ambiente.
 3. Republicar function apos ajuste.
+4. Se aparecerem muitos `POST | 401 | /functions/v1/inventory-print` em poucos segundos, fechar as abas do site e publicar a versao com trava de sessao. A tela nao deve chamar `inventory-print` sem `access_token`.
+
+## Supabase Unhealthy apos rajada de requisicoes
+
+Possiveis causas:
+
+- `inventory-print` sendo chamado sem JWT valido e retornando `401` em massa.
+- PostgREST respondendo `522` ou `504` para consultas REST.
+- Auth respondendo `522` no login.
+- Postgres cancelando comandos por `statement timeout`.
+- Coletor insistindo em sync remoto quando o Supabase ja esta lento.
+
+Acoes:
+
+1. Parar o coletor temporariamente.
+2. Fechar abas do dashboard/inventario que possam estar recarregando.
+3. Aguardar PostgREST voltar para Healthy.
+4. Publicar frontend com bloqueio de chamada sem sessao.
+5. Usar `COLLECTOR_ALLOW_API_FALLBACK=false`.
+6. Usar `COLLECTOR_SYNC_FAILURE_COOLDOWN=900`.
+7. Religar o coletor somente depois do status estabilizar.
+
+SQL util para recarregar schema cache do PostgREST:
+
+```sql
+select pg_notify('pgrst', 'reload schema');
+```
 
 ## Matrix nao salva
 

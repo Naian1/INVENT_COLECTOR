@@ -8,7 +8,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { BasicPageShell } from "@/components/BasicPageShell";
 import { StatusFeedback } from "@/components/StatusFeedback";
 import { SuprimentosLista } from "@/components/SuprimentosLista";
-import { supabase } from "@/lib/supabase/client";
+import { EdgeUnauthorizedError, invokeAuthedEdgeFunction } from "@/lib/supabase/invokeEdge";
 
 type ImpressoraVisao = {
   id: string;
@@ -121,21 +121,13 @@ async function invokePrintFunction<T>(action: string, payload?: Record<string, u
       }, timeoutMs);
     });
 
-    const invokePromise = supabase.functions.invoke("inventory-print", {
-      body: { action, payload: payload ?? {} },
-    });
+    const invokePromise = invokeAuthedEdgeFunction<T>(
+      "inventory-print",
+      { action, payload: payload ?? {} },
+      `Falha ao executar ${action}.`
+    );
 
-    const { data, error } = (await Promise.race([invokePromise, timeoutPromise])) as {
-      data: { ok?: boolean; data?: T; error?: string } | null;
-      error: { message?: string } | null;
-    };
-
-    if (!error && data?.ok) {
-      return data.data as T;
-    }
-
-    const reason = error?.message || data?.error || `Falha ao executar ${action}.`;
-    throw new Error(reason);
+    return await Promise.race([invokePromise, timeoutPromise]);
   } finally {
     if (timeoutHandle !== undefined) {
       window.clearTimeout(timeoutHandle);
@@ -543,8 +535,13 @@ export default function ImpressorasPage() {
           `Impressoras operacionais carregadas: ${operacionais} | Não operacionais: sob demanda`
         );
       }
-    } catch {
-      setErro("Falha de conexão ao carregar impressoras.");
+    } catch (error) {
+      if (error instanceof EdgeUnauthorizedError) {
+        setErro("Sessão expirada. Faça login novamente antes de carregar impressoras.");
+        setRegistros([]);
+        return;
+      }
+      setErro(error instanceof Error ? error.message : "Falha de conexão ao carregar impressoras.");
       setRegistros([]);
     } finally {
       setLoading(false);
