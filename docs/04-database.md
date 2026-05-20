@@ -1,4 +1,5 @@
 # 04 - Database
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Banco principal
 
@@ -19,6 +20,7 @@
 - telemetria_pagecount
 - telemetria_pagecount_diaria
 - telemetria_substituicao_pendente
+- telemetria_substituicao_evento_retido
 - tarifas_bilhetagem
 
 ## Entidades Matrix
@@ -40,6 +42,7 @@
 - telemetria_pagecount -> inventario
 - telemetria_pagecount_diaria -> inventario
 - telemetria_substituicao_pendente -> inventario (referencia/substituto) e setor
+- telemetria_substituicao_evento_retido -> telemetria_substituicao_pendente e inventario
 - tarifas_bilhetagem -> tabela parametrica (sem FK obrigatoria)
 - inventario_consolidado_linha -> inventario_consolidado_carga
 
@@ -138,12 +141,58 @@ Detalhes: [16-telemetria-pagecount-modelo-diario](16-telemetria-pagecount-modelo
 3. Migration
 - `inventario-unificado-web/supabase/migrations/20260514_telemetria_substituicao_pendente.sql`
 
+## Atualizacao 2026-05-18 - Resolucao de pendencia (troca x correcao cadastral)
+
+1. Nova acao de resolucao
+- `resolver_substituicao_pendente` agora aceita:
+  - `CONFIRMAR_TROCA`
+  - `DESCARTAR_ALERTA`
+  - `CORRIGIR_DADOS`
+
+2. Quando usar `CORRIGIR_DADOS`
+- Caso de cadastro divergente com patrimonio igual e divergencia isolada em apenas um identificador:
+  - serie diferente com MAC igual, ou
+  - MAC diferente com serie igual.
+- Atualiza dados do item de referencia sem troca fisica de inventario.
+
+3. Melhoria no `CONFIRMAR_TROCA`
+- Busca de substituto por patrimonio/serie/mac nao depende mais de `ie_situacao = A`, permitindo achar item que estava em `BACKUP`.
+
+## Atualizacao 2026-05-19 - Fila de leituras retidas na substituicao
+
+1. `telemetria_substituicao_evento_retido`
+- Guarda um resumo diario SNMP bloqueado enquanto uma pendencia fica em aberto.
+- Campos principais:
+  - `id_pendencia`
+  - `dt_referencia`
+  - `nr_paginas_inicio_dia`
+  - `nr_paginas_fim_dia`
+  - `nr_paginas_dia`
+  - `nr_ciclos_coleta`
+  - `payload_ultimo_evento`
+  - `dt_replay`
+  - `nr_inventario_destino`
+- Unicidade: (`id_pendencia`, `dt_referencia`) para manter no maximo uma linha por pendencia/dia.
+
+2. Como a contagem nao duplica
+- O collector atualiza a mesma linha diaria via upsert/logica equivalente.
+- Quando a impressora substituta ja existe no inventario, a primeira coleta retida tenta usar o ultimo `telemetria_pagecount` dela como base.
+- Exemplo: ultimo contador conhecido 100, primeira coleta retida 150, coleta seguinte 170; o resumo diario fica 70 paginas, nao 150 nem 320.
+- Se nao existir base confiavel, a primeira coleta retida vira base e somente as proximas coletas somam delta.
+- Exemplo de seguranca: uma reserva nunca coletada com contador fisico 50000 grava `inicio=50000`, `fim=50000`, `nr_paginas_dia=0` na primeira leitura; portanto nao vira 50000 paginas no dashboard.
+- Na resolucao, o `inventory-core` soma o resumo diario no inventario correto.
+- Esse desenho evita perder impressao feita durante a espera e evita criar uma linha por ciclo de coleta no Supabase.
+
 ## Referencia de estudo (linhas de codigo)
 
-- Trigger diaria: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2918`
-- Funcao de consolidacao: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2833`
-- Tabela de tarifas: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2964`
-- Deteccao de divergencia na ingestao: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:1097`
-- Registro da pendencia: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:582`
-- Resolucao assistida da pendencia: `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2038`
+- Funcao de consolidacao diaria: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2920`
+- Trigger diaria: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3029`
+- Fila de coletas retidas: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3205`
+- Tabela de tarifas: `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3085`
+- Deteccao de divergencia na ingestao: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:1329`
+- Registro da pendencia: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:758`
+- Retencao diaria compactada: `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:870`
+- Resolucao assistida da pendencia: `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2554`
+- Correcao cadastral da pendencia: `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2655`
+- Replay do resumo diario retido: `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1002`
 - Mapa completo: `docs/18-mapa-codigo-linhas-tcc.md`

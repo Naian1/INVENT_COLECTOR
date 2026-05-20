@@ -1,4 +1,5 @@
 # API - inventory-print
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 Endpoint:
 
@@ -16,6 +17,13 @@ Acoes:
 - dashboard_analitico
 
 ## Action: visao_geral
+
+### Como a tela conta impressoras
+
+- No schema atual de produção, a fonte oficial é `inventario`, usando itens do tipo impressora.
+- A tela operacional e o coletor contam somente impressoras ativas e com IP. Por isso, se existem `116` impressoras no inventário mas `1` está em `BACKUP`, o total operacional/coletável fica `115`.
+- A Edge ainda tem compatibilidade defensiva para ambientes antigos que tinham tabela `impressoras`, mas quando essa tabela não existe ela segue direto pelo `inventario`.
+- Código principal: `inventario-unificado-web/supabase/functions/inventory-print/index.ts`, funções `loadVisaoGeral` e `loadOperacionaisViaInventario`.
 
 ### Request
 

@@ -78,6 +78,13 @@ type ConciliacaoResponse = {
   };
 };
 
+/**
+ * [DOC-FUNC] invokeInventoryCore
+ * Objetivo: controla uma tela administrativa do sistema web.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: carrega dados da API/Edge, mantem estado de filtros e formulario, e renderiza a resposta visual para o usuario; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function invokeInventoryCore<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke('inventory-core', {
     body: { action, payload: payload ?? {} },
@@ -91,6 +98,13 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
   throw new Error(reason);
 }
 
+/**
+ * [DOC-FUNC] InventarioConciliacaoPage
+ * Objetivo: controla uma tela administrativa do sistema web.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: carrega dados da API/Edge, mantem estado de filtros e formulario, e renderiza a resposta visual para o usuario; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default function InventarioConciliacaoPage() {
   const [carregando, setCarregando] = useState(false);
   const [erro, setErro] = useState<string | null>(null);

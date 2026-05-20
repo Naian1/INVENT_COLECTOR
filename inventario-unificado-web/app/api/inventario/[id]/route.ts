@@ -1,6 +1,6 @@
 ﻿/**
- * [DOC-CODEMAP] Arquivo: 
- * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web/app/api/inventario/[id]/route.ts
+ * [DOC-CODEMAP] Papel: Rota API para consultar, atualizar, mover e remover itens individuais do inventario.
  */
 import { NextRequest, NextResponse } from 'next/server';
 import { z } from 'zod';
@@ -134,4 +134,3 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     return NextResponse.json({ error: error.message }, { status: 500 });
   }
 }
-

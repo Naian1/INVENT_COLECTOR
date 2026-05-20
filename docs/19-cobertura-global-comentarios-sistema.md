@@ -1,6 +1,6 @@
-﻿# 19 - Cobertura global de comentarios (sistema inteiro)
+# 19 - Cobertura global de comentarios (sistema inteiro)
 
-## Atualizado em 2026-05-14
+## Atualizado em 2026-05-19
 
 ## Objetivo
 
@@ -14,10 +14,11 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 
 ## Escopo desta rodada
 
-- Arquivos de codigo no escopo: 130
+- Arquivos de codigo auditados no escopo: 129
 - Arquivos com cabecalho `DOC-CODEMAP`: 129
-- Linhas de codigo no escopo: 42956
-- Comentarios de funcao (`DOC-FUNC`) ativos: 779
+- Linhas de codigo auditadas no escopo: 40382
+- Comentarios de funcao/bloco (`DOC-FUNC`) ativos: 801
+- Arquivo gerado excluido da contagem: `inventario-unificado-web/next-env.d.ts` (gerado pelo Next, marcado como "do not edit").
 
 ## Como estudar
 
@@ -39,6 +40,7 @@ Padronizar a leitura didatica do projeto inteiro para estudo/TCC, incluindo cole
 - O texto descreve explicitamente passos de validacao, transformacao, consulta/escrita e tratamento de erro quando presentes.
 - Em funcoes com logica mais densa, foram mantidos comentarios inline para explicar trechos que costumam gerar duvida em leitura de primeira passagem.
 - A navegacao por linha foi atualizada em `docs/18-mapa-codigo-linhas-tcc.md` para bater com a versao atual do codigo.
+- Rodada de 2026-05-19 revisou tambem o fluxo de substituicao assistida, resumo diario de coletas retidas e comentarios dos arquivos de rota dinamica.
 
 ## Observacao importante
 

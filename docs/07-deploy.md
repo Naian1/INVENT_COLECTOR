@@ -1,4 +1,5 @@
 # 07 - Deploy
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Estrategia
 
@@ -63,3 +64,26 @@ npx vercel --prod --yes
 7. Validar no inventario:
 - item antigo ficou `BACKUP` e sem IP.
 - item substituto ficou `ATIVO` com o IP aplicado.
+
+## Checklist extra (correcao cadastral por telemetria - 2026-05-18)
+
+1. Reimplantar `inventory-core` e frontend (`/inventario`).
+2. Abrir uma pendencia onde patrimonio e serie confiram, mas MAC esteja divergente.
+3. Validar exibicao do botao `Corrigir dados`.
+4. Executar `resolver_substituicao_pendente` com `acao = CORRIGIR_DADOS`.
+5. Confirmar:
+- pendencia foi para `ie_status = CONFIRMADO`.
+- `inventario.nm_mac` foi corrigido no item de referencia.
+- `replay_pagecount` retornou aplicado quando havia coleta retida.
+
+## Checklist extra (resumo diario de coletas retidas - 2026-05-19)
+
+1. Aplicar no Supabase o bloco SQL da tabela `telemetria_substituicao_evento_retido` presente no `SQL Sistema.sql`.
+2. Reimplantar `collector-telemetria` e `inventory-core`.
+3. Gerar uma pendencia real ou de teste e deixar o coletor rodar mais de um ciclo no mesmo dia.
+4. Confirmar uma linha em `telemetria_substituicao_evento_retido` por `id_pendencia + dt_referencia`.
+5. Resolver a pendencia por `CONFIRMAR_TROCA` ou `CORRIGIR_DADOS`.
+6. Validar:
+- a linha retida recebeu `dt_replay`.
+- `replay_pagecount.fonte` voltou como `telemetria_substituicao_evento_retido_diario`.
+- `telemetria_pagecount_diaria.nr_paginas_dia` somou apenas deltas entre contadores.

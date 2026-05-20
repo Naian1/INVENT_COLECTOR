@@ -39,6 +39,11 @@ if not _USING_LEGACY_HLAPI:
     )
 
 
+# [DOC-FUNC] _stringify
+# Objetivo: encapsula acesso SNMP de baixo nivel usado pelo coletor.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _stringify(value: Any) -> str:
     if value is None:
         return ""
@@ -131,6 +136,11 @@ async def _snmp_walk_async(
     return rows
 
 
+# [DOC-FUNC] snmp_get
+# Objetivo: encapsula acesso SNMP de baixo nivel usado pelo coletor.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def snmp_get(
     oid: str,
     ip: str,
@@ -219,6 +229,11 @@ def snmp_get(
         return {"ok": False, "ip": ip, "oid": oid, "error": _stringify(exc)}
 
 
+# [DOC-FUNC] snmp_walk
+# Objetivo: encapsula acesso SNMP de baixo nivel usado pelo coletor.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def snmp_walk(
     ip: str,
     oid_base: str,
@@ -302,6 +317,11 @@ def snmp_walk(
         return []
 
 
+# [DOC-FUNC] snmp_get_value
+# Objetivo: encapsula acesso SNMP de baixo nivel usado pelo coletor.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def snmp_get_value(
     oid: str,
     ip: str,

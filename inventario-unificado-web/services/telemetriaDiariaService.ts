@@ -74,6 +74,7 @@ type DailyAggregate = {
   dt_referencia: string;
   nr_paginas_inicio_dia: number;
   nr_paginas_fim_dia: number;
+  nr_paginas_dia?: number;
   nr_paginas_total: number;
   dt_primeira_leitura: string | null;
   dt_leitura: string | null;
@@ -147,11 +148,13 @@ type TelemetriaResumo = {
     itens: Array<{
       nr_inventario: number;
       patrimonio: string;
+      ip: string;
       setor: string;
       modelo: string;
       suprimento: string;
       nivel_percentual: number | null;
       status: "critico" | "atencao" | "ok" | "desconhecido";
+      dt_ultima_leitura: string | null;
     }>;
   };
   top_impressoras_hoje: Array<{
@@ -290,6 +293,24 @@ function daysBetweenInclusive(dateFrom: string, dateTo: string) {
 }
 
 /**
+ * [DOC-FUNC] listDateKeysBetweenInclusive
+ * O que faz: Gera a lista completa de dias do período para manter série contínua no gráfico.
+ * Entradas: dateFrom, dateTo.
+ * Como executa: itera de dia em dia com base no timezone São Paulo e devolve chaves YYYY-MM-DD.
+ * Retorno/Efeitos: evita "buracos" no gráfico quando não há coleta em determinados dias.
+ */
+function listDateKeysBetweenInclusive(dateFrom: string, dateTo: string): string[] {
+  const totalDias = daysBetweenInclusive(dateFrom, dateTo);
+  if (!totalDias || totalDias <= 0) return [];
+  const dias: string[] = [];
+  const inicioMs = new Date(`${dateFrom}T00:00:00-03:00`).getTime();
+  for (let i = 0; i < totalDias; i += 1) {
+    dias.push(toDateKeySaoPaulo(new Date(inicioMs + i * 86400000)));
+  }
+  return dias;
+}
+
+/**
  * [DOC-FUNC] toIsoStartFromDateKey
  * O que faz: A funcao 'toIsoStartFromDateKey' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
  * Entradas: Recebe os parametros: dateKey. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -389,11 +410,22 @@ function isMissingColumnError(message: string) {
  * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
 function dailyPages(row: DailyAggregate) {
+  const consolidadoDia = toNumber((row as any).nr_paginas_dia, NaN);
+  if (Number.isFinite(consolidadoDia) && consolidadoDia >= 0) {
+    return Math.max(0, Math.round(consolidadoDia));
+  }
   const inicio = toNumber(row.nr_paginas_inicio_dia, 0);
   const fim = toNumber(row.nr_paginas_fim_dia, toNumber(row.nr_paginas_total, 0));
   return Math.max(0, fim - inicio);
 }
 
+/**
+ * [DOC-FUNC] classificarSuprimento
+ * Objetivo: calcula e exibe indicadores de impressao, custos e suprimentos para o painel.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: busca dados consolidados, aplica regras de delta diario/pagecount e entrega numeros prontos para graficos e cards; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 function classificarSuprimento(
   statusRaw: string | null | undefined,
   nivelRaw: number | null | undefined,
@@ -616,6 +648,10 @@ async function loadDailyRows(
       dt_referencia: row.dt_referencia,
       nr_paginas_inicio_dia: toNumber(row.nr_paginas_inicio_dia, 0),
       nr_paginas_fim_dia: toNumber(row.nr_paginas_fim_dia, toNumber(row.nr_paginas_inicio_dia, 0)),
+      nr_paginas_dia: toNumber(
+        row.nr_paginas_dia,
+        Math.max(0, toNumber(row.nr_paginas_fim_dia, 0) - toNumber(row.nr_paginas_inicio_dia, 0)),
+      ),
       nr_paginas_total: toNumber(row.nr_paginas_fim_dia, 0),
       dt_primeira_leitura: normalizeTimestamp(row.dt_primeira_leitura),
       dt_leitura: normalizeTimestamp(row.dt_ultima_leitura),
@@ -1072,6 +1108,7 @@ export async function buscarResumoTelemetriaDiaria(options?: {
     const suprimentosItens = suprimentosRows
       .map((item) => {
         const info = meta.get(toNumber(item.nr_inventario, 0));
+        const snapshot = latestSnapshot.get(toNumber(item.nr_inventario, 0));
         const nivel = Number.isFinite(Number(item.nr_quantidade)) ? Number(item.nr_quantidade) : null;
         const status = classificarSuprimento(item.ds_suprimento, nivel);
 
@@ -1082,11 +1119,13 @@ export async function buscarResumoTelemetriaDiaria(options?: {
         return {
           nr_inventario: toNumber(item.nr_inventario, 0),
           patrimonio: info?.patrimonio || `INV-${item.nr_inventario}`,
+          ip: info?.ip || "-",
           setor: info?.setor || "Sem setor",
           modelo: info?.modelo || "Sem modelo",
           suprimento: String(item.tp_suprimento || "Suprimento"),
           nivel_percentual: nivel === null ? null : Math.max(0, Math.min(100, Math.round(nivel))),
           status,
+          dt_ultima_leitura: snapshot?.dt_leitura ?? null,
         };
       })
       .sort((a, b) => {
@@ -1122,12 +1161,10 @@ export async function buscarResumoTelemetriaDiaria(options?: {
       .sort((a, b) => b.paginas_dia - a.paginas_dia)
       .slice(0, 80);
 
-    const seriePaginasDia = Array.from(serieMap.entries())
-      .sort((a, b) => a[0].localeCompare(b[0]))
-      .map(([data_ref, paginas]) => ({
-        data_ref,
-        paginas: Math.max(0, Math.round(paginas)),
-      }));
+    const seriePaginasDia = listDateKeysBetweenInclusive(dataDe, dataAte).map((data_ref) => ({
+      data_ref,
+      paginas: Math.max(0, Math.round(serieMap.get(data_ref) ?? 0)),
+    }));
 
     const rankingModelosPeriodo = Array.from(rankingModelosMap.entries())
       .map(([modelo, bucket]) => ({

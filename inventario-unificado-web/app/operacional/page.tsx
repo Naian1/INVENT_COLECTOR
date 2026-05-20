@@ -16,6 +16,13 @@ function formatSupplyLevel(level: number | null) {
   return `${level}%`;
 }
 
+/**
+ * [DOC-FUNC] OperacionalPage
+ * Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default async function OperacionalPage() {
   const overview = await listarVisaoGeralImpressoras();
 

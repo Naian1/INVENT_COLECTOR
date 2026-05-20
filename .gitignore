@@ -32,3 +32,8 @@ coletor-snmp/data/collector_pending_invalid.jsonl
 
 # Local archives
 *.zip
+
+# Generated one-off documentation dumps (the maintained docs live in README.md and docs/)
+COMPLETO_CODIGOS_E_BANCO.txt
+ENDPOINTS_E_COLETOR.txt
+PROJETO_COMPLETO.txt

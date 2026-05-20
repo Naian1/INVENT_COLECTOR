@@ -1,4 +1,5 @@
 # API - inventory-core
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 Endpoint:
 
@@ -145,9 +146,29 @@ Resolve uma pendencia detectada pela telemetria.
 - coloca o item detectado como `ATIVO` com o IP da pendencia;
 - opcionalmente move o item detectado para o setor da referencia;
 - move o item de referencia para `BACKUP` e limpa IP.
+- aceita identificar substituto por patrimonio/serie/mac mesmo quando o item detectado estiver em status `BACKUP` (nao exige `ie_situacao = A`).
+- reaplica o resumo diario retido da pendencia no item substituto confirmado (`replay_pagecount`).
 
 `DESCARTAR_ALERTA`:
 - marca a pendencia como descartada sem mexer no inventario.
+
+`CORRIGIR_DADOS`:
+- usado para divergencia cadastral quando o patrimonio confere e apenas um identificador diverge:
+  - serie diferente com MAC igual, ou
+  - MAC diferente com serie igual.
+- atualiza os dados do item de referencia com os identificadores detectados (principalmente `nm_mac`).
+- nao executa troca fisica de itens.
+- reaplica o resumo diario retido da pendencia no proprio item de referencia.
+
+### Como o replay evita duplicar paginas
+
+- O replay preferencial usa `telemetria_substituicao_evento_retido`, que guarda um resumo por pendencia/dia.
+- Durante a pendencia, varias coletas atualizam a mesma linha diaria.
+- Na resolucao, o resumo diario e somado ao `telemetria_pagecount_diaria` do inventario correto.
+- Exemplo: contador 200 vira base; depois contador 250 soma 50 em `nr_paginas_dia`, nao 450.
+- O `telemetria_pagecount` atual sera atualizado normalmente na proxima coleta confirmada, sem precisar gravar linha por ciclo.
+- Isso separa corretamente: producao antes da divergencia fica na impressora antiga; producao em quarentena vai para a impressora confirmada ou para a correcao cadastral.
+- Se a tabela de fila ainda nao existir, o backend usa fallback pelo ultimo `payload_evento` salvo na pendencia.
 
 ### Request (confirmar)
 
@@ -177,21 +198,44 @@ Resolve uma pendencia detectada pela telemetria.
 }
 ```
 
+### Request (corrigir dados)
+
+```json
+{
+  "action": "resolver_substituicao_pendente",
+  "payload": {
+    "id_pendencia": 12,
+    "acao": "CORRIGIR_DADOS",
+    "nr_chamado": "GLPI-999",
+    "observacao": "Cadastro corrigido: MAC divergente"
+  }
+}
+```
+
 ### Erros comuns
 
 - 400: `id_pendencia` invalido.
 - 400: `acao` invalida.
 - 400: pendencia ja resolvida.
 - 400: nao encontrou substituto por patrimonio/serie/mac no inventario.
+- 400: `CORRIGIR_DADOS` usado fora do criterio (patrimonio nao confere ou divergencia de serie/MAC nao e isolada).
 
 ## Mapa de codigo (linhas)
 
 - Listagem de pendencias:
-  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1928`
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2149`
 - Resolucao de pendencias:
-  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2038`
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2261`
+- Correcao cadastral (`CORRIGIR_DADOS`):
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2362`
+- Replay do resumo diario retido:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1002`
+- Aplicacao do resumo retido no diario oficial:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:763`
+- Fallback pelo ultimo payload da pendencia:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:960`
 - Atualizacao com fallback para ambientes sem `dt_atualizacao`:
-  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:617`
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1131`
 
 ## Action: update_inventario
 

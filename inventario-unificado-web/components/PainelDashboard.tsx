@@ -113,6 +113,13 @@ type BilhetagemBaseStorage = {
   tarifas_por_modelo?: Record<string, number>;
 };
 
+/**
+ * [DOC-FUNC] invokePrintFunction
+ * Objetivo: calcula e exibe indicadores de impressao, custos e suprimentos para o painel.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: busca dados consolidados, aplica regras de delta diario/pagecount e entrega numeros prontos para graficos e cards; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function invokePrintFunction<T>(action: string, payload?: Record<string, unknown>) {
   const { data, error } = await supabase.functions.invoke("inventory-print", {
     body: { action, payload: payload ?? {} },

@@ -1,4 +1,5 @@
 # 18 - Mapa de codigo por linhas (TCC)
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Objetivo
 
@@ -60,8 +61,31 @@ Guia rapido para localizar no codigo onde cada regra importante acontece.
 - Funcao de sincronizacao diaria:
   - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:2920`
 - Trigger de sincronizacao diaria:
-  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3005`
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3029`
 - Tabela de tarifas de bilhetagem:
-  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3061`
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3085`
 - Indice unico de competencia + empresa + tipo:
-  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3104`
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3128`
+
+## Substituicao assistida por telemetria
+
+- Tabela de pendencias de troca/correcao:
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3162`
+- Fila de ciclos retidos enquanto a pendencia esta aberta:
+  - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql:3205`
+- Comparacao entre esperado no inventario e detectado via SNMP:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:565` (`detectarAlertaSubstituicao`)
+- Registro/atualizacao da pendencia:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:758` (`registrarPendenciaSubstituicao`)
+- Retencao diaria compactada da pendencia:
+  - `inventario-unificado-web/supabase/functions/collector-telemetria/index.ts:870` (`registrarEventoRetidoSubstituicao`)
+- Aplicacao do resumo retido no diario oficial:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:763` (`aplicarResumoRetidoNoDiario`)
+- Replay do resumo retido ao resolver:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1002` (`reaplicarEventosRetidosDaPendencia`)
+- Decisao entre resumo novo e fallback legado:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:1106` (`reaplicarColetasRetidasDaPendencia`)
+- Resolucao manual da pendencia:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2261` (`resolver_substituicao_pendente`)
+- Correcao cadastral quando patrimonio confere:
+  - `inventario-unificado-web/supabase/functions/inventory-core/index.ts:2362` (`CORRIGIR_DADOS`)

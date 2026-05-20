@@ -1,4 +1,4 @@
-﻿/**
+/**
  * [DOC-CODEMAP] Arquivo: inventario-unificado-web\supabase\functions\inventory-print\index.ts
  * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
  */
@@ -622,6 +622,8 @@ async function loadOperacionaisViaInventario(supabase: ReturnType<typeof getAdmi
     .filter((item) => Number.isFinite(item.nr_inventario) && item.nr_inventario > 0)
     .filter((item) => item.ip)
     .filter((item) => item.ehImpressora)
+    // A página operacional e o coletor devem trabalhar só com impressoras em uso.
+    // Por isso BACKUP entra no inventário geral, mas não entra na coleta nem no total operacional.
     .filter((item) => item.tp_status === "ATIVO");
 
   if (!base.length) return [];
@@ -1067,8 +1069,42 @@ async function loadVisaoGeral(supabase: ReturnType<typeof getAdminClient>, inclu
     }
   }
 
+  const operacionaisInventario = await loadOperacionaisViaInventario(supabase);
   if (!operacionais.length) {
-    operacionais = await loadOperacionaisViaInventario(supabase);
+    operacionais = operacionaisInventario;
+  } else if (operacionaisInventario.length) {
+    const idsOperacionais = new Set(operacionais.map((item) => String(item.id)));
+    const patrimoniosOperacionais = new Set(
+      operacionais
+        .map((item) => normalizarTexto(item.patrimonio))
+        .filter((item) => item.length > 0),
+    );
+    const ipsOperacionais = new Set(
+      operacionais
+        .map((item) => normalizarTexto(normalizarIp(item.ip)))
+        .filter((item) => item.length > 0),
+    );
+
+    // A tela de impressoras usa a tabela operacional "impressoras" por ser historicamente mais rica.
+    // Mesmo assim, o inventario e a fonte oficial atual. Quando uma impressora existe no inventario
+    // mas ainda nao foi espelhada na tabela operacional, ela e adicionada aqui sem duplicar por ID,
+    // patrimonio ou IP. Isso explica e corrige casos como "116 no inventario, 115 em impressoras".
+    for (const item of operacionaisInventario) {
+      const id = String(item.id);
+      const patrimonio = normalizarTexto(item.patrimonio);
+      const ip = normalizarTexto(normalizarIp(item.ip));
+      const duplicada =
+        idsOperacionais.has(id) ||
+        (patrimonio.length > 0 && patrimoniosOperacionais.has(patrimonio)) ||
+        (ip.length > 0 && ipsOperacionais.has(ip));
+
+      if (duplicada) continue;
+
+      operacionais.push(item);
+      idsOperacionais.add(id);
+      if (patrimonio) patrimoniosOperacionais.add(patrimonio);
+      if (ip) ipsOperacionais.add(ip);
+    }
   }
 
   if (!incluirNaoOperacionais) {
@@ -2017,4 +2053,3 @@ Deno.serve(async (req) => {
     return jsonResponse({ ok: false, error: message }, 500);
   }
 });
-

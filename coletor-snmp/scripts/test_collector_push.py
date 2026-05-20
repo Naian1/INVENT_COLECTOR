@@ -59,10 +59,18 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
             source_tag="snmp_real_manual_test",
         )
 
+        payload_printer_info = dict(printer_info)
+        identity = snapshot.get("identity") if isinstance(snapshot, dict) else None
+        if isinstance(identity, dict):
+            for field in ("numero_serie", "endereco_mac", "hostname"):
+                value = identity.get(field)
+                if value is not None and str(value).strip():
+                    payload_printer_info[field] = str(value).strip()
+
         payload = build_collector_payload(
             coletor_id=get_collector_config().get("collector_id", "collector-hgg-01"),
             ip=target_ip,
-            printer_info=printer_info,
+            printer_info=payload_printer_info,
             status=snapshot.get("status", "unknown"),
             coletado_em=snapshot.get("collected_at"),
             contador_total_paginas=snapshot.get("page_count_total"),
@@ -70,6 +78,7 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
             payload_bruto={
                 "source": "flask-snmp",
                 "mode": "manual-real-read",
+                "identity": snapshot.get("identity"),
                 "page_counter": snapshot.get("page_counter"),
             },
         )
@@ -166,4 +175,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

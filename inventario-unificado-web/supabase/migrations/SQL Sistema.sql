@@ -2971,18 +2971,38 @@ BEGIN
       WHEN public.telemetria_pagecount_diaria.nr_ciclos_coleta <= 0 THEN EXCLUDED.nr_paginas_inicio_dia
       ELSE public.telemetria_pagecount_diaria.nr_paginas_inicio_dia
     END,
-    nr_paginas_fim_dia = GREATEST(
-      public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
-      EXCLUDED.nr_paginas_fim_dia
-    ),
-    nr_paginas_dia = GREATEST(
-      public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
-      EXCLUDED.nr_paginas_fim_dia
-    ) - CASE
-      WHEN public.telemetria_pagecount_diaria.nr_ciclos_coleta <= 0 THEN EXCLUDED.nr_paginas_inicio_dia
-      ELSE public.telemetria_pagecount_diaria.nr_paginas_inicio_dia
-    ),
-    nr_ciclos_coleta = public.telemetria_pagecount_diaria.nr_ciclos_coleta + 1,
+    nr_paginas_fim_dia = CASE
+      -- Ignora leituras fora de ordem temporal.
+      WHEN EXCLUDED.dt_ultima_leitura < COALESCE(public.telemetria_pagecount_diaria.dt_ultima_leitura, EXCLUDED.dt_ultima_leitura)
+        THEN public.telemetria_pagecount_diaria.nr_paginas_fim_dia
+      -- Queda de contador (reset/troca para equipamento com contador menor): não subtrai no dia.
+      WHEN (EXCLUDED.nr_paginas_fim_dia - public.telemetria_pagecount_diaria.nr_paginas_fim_dia) < 0
+        THEN EXCLUDED.nr_paginas_fim_dia
+      -- Salto suspeito (troca para equipamento com contador histórico muito maior): não soma no dia.
+      WHEN (EXCLUDED.nr_paginas_fim_dia - public.telemetria_pagecount_diaria.nr_paginas_fim_dia) > 10000
+        THEN EXCLUDED.nr_paginas_fim_dia
+      ELSE GREATEST(
+        public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
+        EXCLUDED.nr_paginas_fim_dia
+      )
+    END,
+    nr_paginas_dia = CASE
+      WHEN EXCLUDED.dt_ultima_leitura < COALESCE(public.telemetria_pagecount_diaria.dt_ultima_leitura, EXCLUDED.dt_ultima_leitura)
+        THEN public.telemetria_pagecount_diaria.nr_paginas_dia
+      WHEN (EXCLUDED.nr_paginas_fim_dia - public.telemetria_pagecount_diaria.nr_paginas_fim_dia) < 0
+        THEN public.telemetria_pagecount_diaria.nr_paginas_dia
+      WHEN (EXCLUDED.nr_paginas_fim_dia - public.telemetria_pagecount_diaria.nr_paginas_fim_dia) > 10000
+        THEN public.telemetria_pagecount_diaria.nr_paginas_dia
+      ELSE public.telemetria_pagecount_diaria.nr_paginas_dia + GREATEST(
+        EXCLUDED.nr_paginas_fim_dia - public.telemetria_pagecount_diaria.nr_paginas_fim_dia,
+        0
+      )
+    END,
+    nr_ciclos_coleta = CASE
+      WHEN EXCLUDED.dt_ultima_leitura < COALESCE(public.telemetria_pagecount_diaria.dt_ultima_leitura, EXCLUDED.dt_ultima_leitura)
+        THEN public.telemetria_pagecount_diaria.nr_ciclos_coleta
+      ELSE public.telemetria_pagecount_diaria.nr_ciclos_coleta + 1
+    END,
     dt_primeira_leitura = CASE
       WHEN public.telemetria_pagecount_diaria.dt_primeira_leitura IS NULL THEN EXCLUDED.dt_primeira_leitura
       WHEN EXCLUDED.dt_primeira_leitura < public.telemetria_pagecount_diaria.dt_primeira_leitura THEN EXCLUDED.dt_primeira_leitura
@@ -2993,7 +3013,11 @@ BEGIN
       WHEN EXCLUDED.dt_ultima_leitura > public.telemetria_pagecount_diaria.dt_ultima_leitura THEN EXCLUDED.dt_ultima_leitura
       ELSE public.telemetria_pagecount_diaria.dt_ultima_leitura
     END,
-    ds_status_ultima = EXCLUDED.ds_status_ultima,
+    ds_status_ultima = CASE
+      WHEN EXCLUDED.dt_ultima_leitura < COALESCE(public.telemetria_pagecount_diaria.dt_ultima_leitura, EXCLUDED.dt_ultima_leitura)
+        THEN public.telemetria_pagecount_diaria.ds_status_ultima
+      ELSE EXCLUDED.ds_status_ultima
+    END,
     dt_atualizacao = CURRENT_TIMESTAMP;
 
   RETURN NEW;
@@ -3166,3 +3190,51 @@ create index if not exists idx_telemetria_subs_status_dt
 
 create index if not exists idx_telemetria_subs_referencia
   on public.telemetria_substituicao_pendente (nr_inventario_referencia);
+
+-- ---------------------------------------------------------------------------
+-- Resumo diario de leituras retidas durante pendencia de substituicao
+-- ---------------------------------------------------------------------------
+-- [DOC-FUNC] telemetria_substituicao_evento_retido
+-- O que faz: guarda, por dia, a producao em quarentena enquanto uma troca/correcao
+-- aguarda decisao humana.
+-- Como executa: cada linha usa (id_pendencia + dt_referencia) como chave unica.
+-- A cada ciclo bloqueado, o collector atualiza inicio/fim/delta do dia em upsert,
+-- sem criar uma linha nova por coleta.
+-- Retorno/Efeitos: ao confirmar troca ou corrigir cadastro, o inventory-core reaplica
+-- o resumo diario no inventario correto, evitando flood de linhas no Supabase.
+create table if not exists public.telemetria_substituicao_evento_retido (
+  id bigserial primary key,
+  id_pendencia bigint not null references public.telemetria_substituicao_pendente(id) on delete cascade,
+  coletor_id text null,
+  nr_inventario_referencia integer not null references public.inventario(nr_inventario),
+  nr_ip_detectado text not null,
+  dt_referencia date not null,
+  nr_paginas_inicio_dia bigint not null default 0,
+  nr_paginas_fim_dia bigint not null default 0,
+  nr_paginas_dia bigint not null default 0,
+  nr_ciclos_coleta integer not null default 0,
+  dt_primeira_leitura timestamptz null,
+  dt_ultima_leitura timestamptz null,
+  ds_status_ultima text null,
+  payload_ultimo_evento jsonb null,
+  dt_retencao timestamptz not null default now(),
+  dt_atualizacao timestamptz not null default now(),
+  dt_replay timestamptz null,
+  nr_inventario_destino integer null references public.inventario(nr_inventario),
+  ds_resultado text null,
+  unique (id_pendencia, dt_referencia),
+  constraint ck_telemetria_subs_retido_min_max check (nr_paginas_fim_dia >= nr_paginas_inicio_dia),
+  constraint ck_telemetria_subs_retido_delta check (nr_paginas_dia >= 0)
+);
+
+create index if not exists idx_telemetria_subs_evento_pendencia_dt
+  on public.telemetria_substituicao_evento_retido (id_pendencia, dt_referencia asc);
+
+create index if not exists idx_telemetria_subs_evento_replay
+  on public.telemetria_substituicao_evento_retido (dt_replay, dt_retencao desc);
+
+comment on table public.telemetria_substituicao_evento_retido is
+  'Resumo diario de pagecount em quarentena enquanto uma substituicao assistida aguarda confirmacao/correcao.';
+
+comment on column public.telemetria_substituicao_evento_retido.nr_paginas_dia is
+  'Delta diario ja compactado durante a pendencia; evita uma linha por ciclo de coleta.';

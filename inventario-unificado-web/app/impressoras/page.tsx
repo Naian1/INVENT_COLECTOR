@@ -105,6 +105,13 @@ const BUSCA_DEBOUNCE_MS = 350;
 const COLETA_STALE_WARN_MINUTOS = 30;
 const COLETA_STALE_CRITICO_MINUTOS = 120;
 
+/**
+ * [DOC-FUNC] invokePrintFunction
+ * Objetivo: apoia a tela operacional de impressoras, filtros, ranking e exibicao de suprimentos.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta a Edge de impressoras, normaliza niveis, aplica filtros escolhidos pelo usuario e renderiza a tabela operacional; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function invokePrintFunction<T>(action: string, payload?: Record<string, unknown>, timeoutMs = 25000) {
   let timeoutHandle: number | undefined;
   try {
@@ -149,6 +156,13 @@ function toFiniteNullable(value: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
+/**
+ * [DOC-FUNC] resolverNivelPercentualSuprimento
+ * Objetivo: apoia a tela operacional de impressoras, filtros, ranking e exibicao de suprimentos.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta a Edge de impressoras, normaliza niveis, aplica filtros escolhidos pelo usuario e renderiza a tabela operacional; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 function resolverNivelPercentualSuprimento(item: {
   nivel_percentual: number | null;
   quantidade_atual: number | null;
@@ -285,6 +299,43 @@ function obterMenorSuprimentoInfo(
 }
 
 /**
+ * [DOC-FUNC] filtrarSuprimentosPorNome
+ * Objetivo: apoia a tela operacional de impressoras, filtros, ranking e exibicao de suprimentos.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta a Edge de impressoras, normaliza niveis, aplica filtros escolhidos pelo usuario e renderiza a tabela operacional; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
+function filtrarSuprimentosPorNome(
+  suprimentos: ImpressoraVisao["resumo_suprimentos"],
+  filtroNome: string
+) {
+  const filtro = String(filtroNome || "").trim().toLowerCase();
+  if (!filtro) return suprimentos;
+  return suprimentos.filter((item) =>
+    `${item.nome_suprimento} ${item.chave_suprimento}`.toLowerCase().includes(filtro)
+  );
+}
+
+/**
+ * [DOC-FUNC] obterMenorNivelParaOrdenacao
+ * Objetivo: apoia a tela operacional de impressoras, filtros, ranking e exibicao de suprimentos.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta a Edge de impressoras, normaliza niveis, aplica filtros escolhidos pelo usuario e renderiza a tabela operacional; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
+function obterMenorNivelParaOrdenacao(
+  row: ImpressoraVisao,
+  filtroNome: string
+) {
+  const suprimentosContexto = filtrarSuprimentosPorNome(row.resumo_suprimentos, filtroNome);
+  const menor = obterMenorSuprimentoInfo(suprimentosContexto);
+  if (!menor) return Number.POSITIVE_INFINITY;
+  if (Number.isFinite(menor.nivelNumero)) return menor.nivelNumero;
+  const quantidade = toFiniteNullable(menor.quantidadeNumero);
+  return quantidade ?? Number.POSITIVE_INFINITY;
+}
+
+/**
  * [DOC-FUNC] classePillStatus
  * O que faz: A funcao 'classePillStatus' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
  * Entradas: Recebe os parametros: status. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -403,6 +454,13 @@ function obterValorOrdenacao(row: ImpressoraVisao, coluna: ColunaOrdenacao): str
   }
 }
 
+/**
+ * [DOC-FUNC] ImpressorasPage
+ * Objetivo: apoia a tela operacional de impressoras, filtros, ranking e exibicao de suprimentos.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta a Edge de impressoras, normaliza niveis, aplica filtros escolhidos pelo usuario e renderiza a tabela operacional; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default function ImpressorasPage() {
   const [loading, setLoading] = useState(false);
   const [erro, setErro] = useState<string | null>(null);
@@ -731,10 +789,7 @@ export default function ImpressorasPage() {
       }
 
       if (filtroSup) {
-        const encontrou = item.resumo_suprimentos.some((s) =>
-          `${s.nome_suprimento} ${s.chave_suprimento}`.toLowerCase().includes(filtroSup)
-        );
-        if (!encontrou) return false;
+        if (!filtrarSuprimentosPorNome(item.resumo_suprimentos, filtroSup).length) return false;
       }
 
       if (!q) return true;
@@ -756,6 +811,12 @@ export default function ImpressorasPage() {
 
     const mult = direcaoOrdenacao === "asc" ? 1 : -1;
     return filtrados.sort((a, b) => {
+      if (colunaOrdenacao === "menor_nivel_suprimento") {
+        const va = obterMenorNivelParaOrdenacao(a, filtroSup);
+        const vb = obterMenorNivelParaOrdenacao(b, filtroSup);
+        return (va - vb) * mult;
+      }
+
       const va = obterValorOrdenacao(a, colunaOrdenacao);
       const vb = obterValorOrdenacao(b, colunaOrdenacao);
 
@@ -959,16 +1020,19 @@ export default function ImpressorasPage() {
       cursorY += linhasFiltro.length * 12 + 6;
 
       const body = registrosFiltrados.map((row) => {
-        const menorSup = obterMenorSuprimentoInfo(row.resumo_suprimentos);
+        const suprimentosContexto = filtrarSuprimentosPorNome(row.resumo_suprimentos, filtroSuprimento);
+        const menorSup = obterMenorSuprimentoInfo(suprimentosContexto);
         const menorSupTxt = menorSup
           ? `${menorSup.nome_suprimento} (${formatarIndicadorSuprimento(
               Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null
             )})`
           : "-";
-        const classif = classificarSuprimentos(row.menor_nivel_suprimento, row.resumo_suprimentos);
+        const menorNivelContexto =
+          menorSup && Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null;
+        const classif = classificarSuprimentos(menorNivelContexto, suprimentosContexto);
         const resumoSup =
-          row.resumo_suprimentos.length > 0
-            ? row.resumo_suprimentos
+          suprimentosContexto.length > 0
+            ? suprimentosContexto
                 .slice(0, 3)
                 .map((sup) => {
                   const nivel = resolverNivelPercentualSuprimento(sup);
@@ -1240,11 +1304,14 @@ export default function ImpressorasPage() {
             </thead>
             <tbody>
               {registrosPaginados.map((row) => {
-                const classif = classificarSuprimentos(row.menor_nivel_suprimento, row.resumo_suprimentos);
-                const menorSup = obterMenorSuprimentoInfo(row.resumo_suprimentos);
+                const suprimentosContexto = filtrarSuprimentosPorNome(row.resumo_suprimentos, filtroSuprimento);
+                const menorSup = obterMenorSuprimentoInfo(suprimentosContexto);
+                const menorNivelContexto =
+                  menorSup && Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null;
+                const classif = classificarSuprimentos(menorNivelContexto, suprimentosContexto);
                 const linhaCritica =
                   classif === "critico" ||
-                  (row.menor_nivel_suprimento !== null && row.menor_nivel_suprimento <= 10);
+                  (menorNivelContexto !== null && menorNivelContexto <= 10);
 
                 const classesLinha = [
                   "impressoras-row",
@@ -1309,8 +1376,13 @@ export default function ImpressorasPage() {
                     <td>
                       {row.operacional ? (
                         <SuprimentosLista
-                          suprimentos={row.resumo_suprimentos}
-                          filtroNome={filtroSuprimento}
+                          suprimentos={suprimentosContexto}
+                          onSelecionarNome={(nome) => {
+                            setFiltroSuprimento((atual) =>
+                              atual.trim().toLowerCase() === nome.trim().toLowerCase() ? "" : nome
+                            );
+                            setPaginaAtual(1);
+                          }}
                         />
                       ) : (
                         <span className="ui-kv" style={{ margin: 0 }}>
@@ -1363,4 +1435,3 @@ export default function ImpressorasPage() {
     </BasicPageShell>
   );
 }
-

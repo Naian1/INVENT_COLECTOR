@@ -1,6 +1,6 @@
 ﻿/**
- * [DOC-CODEMAP] Arquivo: 
- * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
+ * [DOC-CODEMAP] Arquivo: inventario-unificado-web/app/api/impressoras/[id]/metricas/route.ts
+ * [DOC-CODEMAP] Papel: Rota API que entrega metricas historicas de uma impressora especifica para o painel.
  */
 import { NextRequest, NextResponse } from "next/server";
 import { authenticateApiRequest } from "@/lib/security/apiAuth";
@@ -95,4 +95,3 @@ export async function GET(request: NextRequest, context: RouteContext) {
     dados: metricas.data
   });
 }
-

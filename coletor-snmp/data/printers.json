@@ -1,4 +1,43 @@
 {
+  "172.18.132.121": {
+    "local": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento",
+    "patrimonio": "293674",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "460031742FC22",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.132.121",
+    "setor": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento",
+    "localizacao": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento"
+  },
+  "172.18.132.185": {
+    "local": "Centro Obstétrico - Recepção",
+    "patrimonio": "352285",
+    "modelo": "XM3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "460031742FBW0",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.132.185",
+    "setor": "Centro Obstétrico - Recepção",
+    "localizacao": "Centro Obstétrico - Recepção"
+  },
+  "10.6.1.30": {
+    "local": "Diretoria",
+    "patrimonio": "292820",
+    "modelo": "CX622",
+    "fabricante": "Lexmark",
+    "numero_serie": "752923414P847",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "10.6.1.30",
+    "setor": "Diretoria",
+    "localizacao": "Diretoria"
+  },
   "172.18.132.254": {
     "local": "Ambulatório Especialidades Consultório 05",
     "patrimonio": "242080",
@@ -24,19 +63,6 @@
     "ip": "10.6.1.20",
     "setor": "Sala dos Coordenadores (NIR) - Medicamentos",
     "localizacao": "Sala dos Coordenadores (NIR) - Medicamentos"
-  },
-  "10.6.1.30": {
-    "local": "Diretoria",
-    "patrimonio": "292820",
-    "modelo": "CX622",
-    "fabricante": "Lexmark",
-    "numero_serie": "752923414P847",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "10.6.1.30",
-    "setor": "Diretoria",
-    "localizacao": "Diretoria"
   },
   "10.6.1.31": {
     "local": "Secretaria",
@@ -77,19 +103,6 @@
     "setor": "UI Clinica Cirurgica III",
     "localizacao": "UI Clinica Cirurgica III"
   },
-  "172.18.132.185": {
-    "local": "Centro Obstétrico - Recepção",
-    "patrimonio": "352285",
-    "modelo": "XM3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "460031742FBW0",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.132.185",
-    "setor": "Centro Obstétrico - Recepção",
-    "localizacao": "Centro Obstétrico - Recepção"
-  },
   "172.18.132.195": {
     "local": "Patrimônio",
     "patrimonio": "293994",
@@ -115,19 +128,6 @@
     "ip": "172.18.132.77",
     "setor": "SAME - Chefia Colorida",
     "localizacao": "SAME - Chefia Colorida"
-  },
-  "172.18.132.121": {
-    "local": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento",
-    "patrimonio": "293674",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "460031742FC22",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.132.121",
-    "setor": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento",
-    "localizacao": "Ambulatório Especialidades - Consultório Enfermagem - Agendamento"
   },
   "172.18.132.154": {
     "local": "SADT - Recepção",
@@ -298,45 +298,6 @@
     "setor": "Ambulatório Especialidades Consultório 02",
     "localizacao": "Ambulatório Especialidades Consultório 02"
   },
-  "172.18.132.7": {
-    "local": "Back Up",
-    "patrimonio": "330731",
-    "modelo": "XM1246",
-    "fabricante": "Lexmark",
-    "numero_serie": "701732940Z7PX",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.132.7",
-    "setor": "Back Up",
-    "localizacao": "Back Up"
-  },
-  "172.18.133.124": {
-    "local": "Contabilidade",
-    "patrimonio": "264471",
-    "modelo": "XM3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "701825140KG7M",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.133.124",
-    "setor": "Contabilidade",
-    "localizacao": "Contabilidade"
-  },
-  "172.18.133.14": {
-    "local": "SADT - Tomografia",
-    "patrimonio": "462350",
-    "modelo": "XM3350",
-    "fabricante": "Lexmark",
-    "numero_serie": "70204303077WD",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.133.14",
-    "setor": "SADT - Tomografia",
-    "localizacao": "SADT - Tomografia"
-  },
   "172.18.133.47": {
     "local": "Ambulatório Especialidades Consultório 03",
     "patrimonio": "293266",
@@ -454,19 +415,6 @@
     "setor": "Plantão Administrativo",
     "localizacao": "Plantão Administrativo"
   },
-  "172.18.132.59": {
-    "local": "Almoxarifado - Recebimento (ADM 01)",
-    "patrimonio": "294165",
-    "modelo": "XM3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "701830640KTL1",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.132.59",
-    "setor": "Almoxarifado - Recebimento (ADM 01)",
-    "localizacao": "Almoxarifado - Recebimento (ADM 01)"
-  },
   "172.18.133.220": {
     "local": "NIR - Central Regulação Interna",
     "patrimonio": "242084",
@@ -480,6 +428,19 @@
     "setor": "NIR - Central Regulação Interna",
     "localizacao": "NIR - Central Regulação Interna"
   },
+  "172.18.134.115": {
+    "local": "UI Maternidade",
+    "patrimonio": "330731",
+    "modelo": "XM1246",
+    "fabricante": "Lexmark",
+    "numero_serie": "701732940Z7PX",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.134.115",
+    "setor": "UI Maternidade",
+    "localizacao": "UI Maternidade"
+  },
   "172.18.133.91": {
     "local": "RH Colorido",
     "patrimonio": "292838",
@@ -492,6 +453,45 @@
     "ip": "172.18.133.91",
     "setor": "RH Colorido",
     "localizacao": "RH Colorido"
+  },
+  "172.18.133.14": {
+    "local": "SADT - Tomografia",
+    "patrimonio": "462350",
+    "modelo": "XM3350",
+    "fabricante": "Lexmark",
+    "numero_serie": "70204303077WD",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.133.14",
+    "setor": "SADT - Tomografia",
+    "localizacao": "SADT - Tomografia"
+  },
+  "172.18.133.124": {
+    "local": "Contabilidade",
+    "patrimonio": "264471",
+    "modelo": "XM3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "701825140KG7M",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.133.124",
+    "setor": "Contabilidade",
+    "localizacao": "Contabilidade"
+  },
+  "10.6.0.98": {
+    "local": "Almoxarifado - Recebimento (ADM 01)",
+    "patrimonio": "294165",
+    "modelo": "XM3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "701830640KTL1",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "10.6.0.98",
+    "setor": "Almoxarifado - Recebimento (ADM 01)",
+    "localizacao": "Almoxarifado - Recebimento (ADM 01)"
   },
   "172.18.132.158": {
     "local": "Serviço Social",
@@ -675,19 +675,6 @@
     "setor": "Farmácia - Central",
     "localizacao": "Farmácia - Central"
   },
-  "10.6.0.243": {
-    "local": "Central de Agendamento - Ambulatório",
-    "patrimonio": "283679",
-    "modelo": "CX930",
-    "fabricante": "Lexmark",
-    "numero_serie": "75800VK610484",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "10.6.0.243",
-    "setor": "Central de Agendamento - Ambulatório",
-    "localizacao": "Central de Agendamento - Ambulatório"
-  },
   "172.18.132.163": {
     "local": "Triagem PS - Classificação de Risco",
     "patrimonio": "264636",
@@ -740,18 +727,18 @@
     "setor": "RH Local",
     "localizacao": "RH Local"
   },
-  "172.18.132.19": {
-    "local": "SAME - Arquivo",
-    "patrimonio": "293667",
-    "modelo": "M5270",
+  "10.6.0.243": {
+    "local": "Central de Agendamento - Ambulatório",
+    "patrimonio": "283679",
+    "modelo": "CX930",
     "fabricante": "Lexmark",
-    "numero_serie": "460031742FCBT",
+    "numero_serie": "75800VK610484",
     "hostname": "",
     "comunidade": "public",
     "ativa": true,
-    "ip": "172.18.132.19",
-    "setor": "SAME - Arquivo",
-    "localizacao": "SAME - Arquivo"
+    "ip": "10.6.0.243",
+    "setor": "Central de Agendamento - Ambulatório",
+    "localizacao": "Central de Agendamento - Ambulatório"
   },
   "172.18.132.241": {
     "local": "Faturamento Auditoria",
@@ -896,19 +883,6 @@
     "setor": "Engenharia Clínica",
     "localizacao": "Engenharia Clínica"
   },
-  "10.6.0.11": {
-    "local": "Ambulatório Especialidades - Agendamento Oncologia",
-    "patrimonio": "293672",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "460031742FBZ1",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "10.6.0.11",
-    "setor": "Ambulatório Especialidades - Agendamento Oncologia",
-    "localizacao": "Ambulatório Especialidades - Agendamento Oncologia"
-  },
   "10.6.0.26": {
     "local": "UAN - Estoque",
     "patrimonio": "294008",
@@ -1000,18 +974,31 @@
     "setor": "UI Pediatria - UTI Pediátrica",
     "localizacao": "UI Pediatria - UTI Pediátrica"
   },
-  "172.18.132.21": {
-    "local": "SAME - Chefia P&B",
-    "patrimonio": "380900",
+  "10.6.0.11": {
+    "local": "Ambulatório Especialidades - Agendamento Oncologia",
+    "patrimonio": "293672",
     "modelo": "M3250",
     "fabricante": "Lexmark",
-    "numero_serie": "406431211Y3M2",
+    "numero_serie": "460031742FBZ1",
     "hostname": "",
     "comunidade": "public",
     "ativa": true,
-    "ip": "172.18.132.21",
-    "setor": "SAME - Chefia P&B",
-    "localizacao": "SAME - Chefia P&B"
+    "ip": "10.6.0.11",
+    "setor": "Ambulatório Especialidades - Agendamento Oncologia",
+    "localizacao": "Ambulatório Especialidades - Agendamento Oncologia"
+  },
+  "172.18.132.19": {
+    "local": "SAME - Arquivo",
+    "patrimonio": "293667",
+    "modelo": "M5270",
+    "fabricante": "Lexmark",
+    "numero_serie": "460031742FCBT",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.132.19",
+    "setor": "SAME - Arquivo",
+    "localizacao": "SAME - Arquivo"
   },
   "172.18.132.32": {
     "local": "SADT - Estatística",
@@ -1090,19 +1077,6 @@
     "ip": "172.18.134.76",
     "setor": "UTI Adulto - Recepção",
     "localizacao": "UTI Adulto - Recepção"
-  },
-  "172.18.134.115": {
-    "local": "UI Maternidade",
-    "patrimonio": "293273",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "460031742FCF1",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.134.115",
-    "setor": "UI Maternidade",
-    "localizacao": "UI Maternidade"
   },
   "172.18.132.162": {
     "local": "Ambulatório Oncologia - Farmácia",
@@ -1247,6 +1221,32 @@
     "setor": "Central de APACS",
     "localizacao": "Central de APACS"
   },
+  "172.18.132.191": {
+    "local": "Ambulatório Oncologia - Sala Administrativa",
+    "patrimonio": "293273",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "460031742FCF1",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.132.191",
+    "setor": "Ambulatório Oncologia - Sala Administrativa",
+    "localizacao": "Ambulatório Oncologia - Sala Administrativa"
+  },
+  "172.18.132.21": {
+    "local": "SAME - Chefia P&B",
+    "patrimonio": "380900",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "406431211Y3M2",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.132.21",
+    "setor": "SAME - Chefia P&B",
+    "localizacao": "SAME - Chefia P&B"
+  },
   "172.18.132.22": {
     "local": "Centro Obstétrico - Acolhimento",
     "patrimonio": "293267",
@@ -1324,71 +1324,6 @@
     "ip": "172.18.133.187",
     "setor": "Ambulatório Especialidades Consultório 08",
     "localizacao": "Ambulatório Especialidades Consultório 08"
-  },
-  "172.18.133.43": {
-    "local": "Banco de Sangue - Recepção",
-    "patrimonio": "293662",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "460031742FC7C",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.133.43",
-    "setor": "Banco de Sangue - Recepção",
-    "localizacao": "Banco de Sangue - Recepção"
-  },
-  "172.18.133.251": {
-    "local": "Sala N.E.P",
-    "patrimonio": "462349",
-    "modelo": "XM3350",
-    "fabricante": "Lexmark",
-    "numero_serie": "70204303077XC",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.133.251",
-    "setor": "Sala N.E.P",
-    "localizacao": "Sala N.E.P"
-  },
-  "10.6.5.10": {
-    "local": "UI Clínica Cirúrgica I",
-    "patrimonio": "264687",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "4600230427FX3",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "10.6.5.10",
-    "setor": "UI Clínica Cirúrgica I",
-    "localizacao": "UI Clínica Cirúrgica I"
-  },
-  "172.18.132.191": {
-    "local": "Ambulatório Oncologia - Sala Administrativa",
-    "patrimonio": "242077",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "4600217425RGK",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.132.191",
-    "setor": "Ambulatório Oncologia - Sala Administrativa",
-    "localizacao": "Ambulatório Oncologia - Sala Administrativa"
-  },
-  "172.18.133.193": {
-    "local": "Ambulatório Oncologia - Consultório 02",
-    "patrimonio": "242073",
-    "modelo": "M3250",
-    "fabricante": "Lexmark",
-    "numero_serie": "4600217425RK3",
-    "hostname": "",
-    "comunidade": "public",
-    "ativa": true,
-    "ip": "172.18.133.193",
-    "setor": "Ambulatório Oncologia - Consultório 02",
-    "localizacao": "Ambulatório Oncologia - Consultório 02"
   },
   "172.18.134.109": {
     "local": "SESMT - Segurança do Trabalho",
@@ -1494,12 +1429,64 @@
     "setor": "CME - Central de Material Esterelizado",
     "localizacao": "CME - Central de Material Esterelizado"
   },
+  "10.6.5.10": {
+    "local": "UI Clínica Cirúrgica I",
+    "patrimonio": "264687",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "4600230427FX3",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "10.6.5.10",
+    "setor": "UI Clínica Cirúrgica I",
+    "localizacao": "UI Clínica Cirúrgica I"
+  },
+  "172.18.133.193": {
+    "local": "Ambulatório Oncologia - Consultório 02",
+    "patrimonio": "242073",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "4600217425RK3",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.133.193",
+    "setor": "Ambulatório Oncologia - Consultório 02",
+    "localizacao": "Ambulatório Oncologia - Consultório 02"
+  },
+  "172.18.133.251": {
+    "local": "Sala N.E.P",
+    "patrimonio": "462349",
+    "modelo": "XM3350",
+    "fabricante": "Lexmark",
+    "numero_serie": "70204303077XC",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.133.251",
+    "setor": "Sala N.E.P",
+    "localizacao": "Sala N.E.P"
+  },
+  "172.18.133.43": {
+    "local": "Banco de Sangue - Recepção",
+    "patrimonio": "293662",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "460031742FC7C",
+    "hostname": "",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "172.18.133.43",
+    "setor": "Banco de Sangue - Recepção",
+    "localizacao": "Banco de Sangue - Recepção"
+  },
   "172.18.133.95": {
     "local": "Banco de Sangue - Triagem Enfermeira",
     "patrimonio": "242020",
-    "modelo": "M3250",
+    "modelo": "CX620",
     "fabricante": "Lexmark",
-    "numero_serie": "460031742FBZT",
+    "numero_serie": "4600217425RG3",
     "hostname": "",
     "comunidade": "public",
     "ativa": true,

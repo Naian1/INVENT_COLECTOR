@@ -55,6 +55,13 @@ type Equipamento = {
   ie_situacao: 'A' | 'I';
 };
 
+/**
+ * [DOC-FUNC] invokeInventoryAdmin
+ * Objetivo: controla uma tela administrativa do sistema web.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: carrega dados da API/Edge, mantem estado de filtros e formulario, e renderiza a resposta visual para o usuario; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke('inventory-admin', {
     body: { action, payload: payload ?? {} },
@@ -113,6 +120,13 @@ function formatPisoLabel(piso: Pick<Piso, 'nm_piso' | 'ds_piso'>): string {
   return descricao ? `${nome} (${descricao})` : nome;
 }
 
+/**
+ * [DOC-FUNC] GerenciarCategoriasPage
+ * Objetivo: controla uma tela administrativa do sistema web.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: carrega dados da API/Edge, mantem estado de filtros e formulario, e renderiza a resposta visual para o usuario; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default function GerenciarCategoriasPage() {
   const [authChecked, setAuthChecked] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);

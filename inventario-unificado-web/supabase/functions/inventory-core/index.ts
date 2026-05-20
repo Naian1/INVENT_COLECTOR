@@ -1,4 +1,4 @@
-﻿/**
+/**
  * [DOC-CODEMAP] Arquivo: inventario-unificado-web\supabase\functions\inventory-core\index.ts
  * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
  */
@@ -141,6 +141,13 @@ async function resolveAuthActor(req: Request, supabaseAdmin: ReturnType<typeof g
   };
 }
 
+/**
+ * [DOC-FUNC] fetchAllPaginated
+ * Objetivo: busca todos os registros de uma tabela paginada do Supabase sem depender do limite padrao da API.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: faz chamadas em blocos, concatena resultados enquanto houver pagina cheia e devolve uma lista completa para a regra de negocio; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function fetchAllPaginated<T>(
   fetchChunk: (from: number, to: number) => Promise<{ data: T[] | null; error: { message: string } | null }>,
   batchSize = 1000,
@@ -605,6 +612,520 @@ async function columnExists(
   if (isMissingColumnError(error)) return false;
   if (isMissingTableError(error)) return false;
   throw new Error(error.message || `Falha ao verificar coluna ${table}.${column}`);
+}
+
+/**
+ * [DOC-FUNC] dateKeySaoPauloFromIso
+ * O que faz: Converte a data/hora real da coleta para a chave diaria usada pelo banco em horario de Sao Paulo.
+ * Entradas: string ISO ou data parseavel pelo JavaScript.
+ * Como executa: usa `Intl.DateTimeFormat` com timezone `America/Sao_Paulo` e monta `YYYY-MM-DD`.
+ * Retorno/Efeitos: garante que replay manual e trigger SQL usem a mesma virada de dia operacional.
+ */
+function dateKeySaoPauloFromIso(value: string): string | null {
+  const data = new Date(value);
+  if (!Number.isFinite(data.getTime())) return null;
+
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(data);
+
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+  return year && month && day ? `${year}-${month}-${day}` : null;
+}
+
+/**
+ * [DOC-FUNC] aplicarPagecountRetidoNoDiario
+ * O que faz: Aplica uma leitura retida diretamente no consolidado diario quando ela ja ficou atras do estado atual.
+ * Entradas: supabase, inventario de destino, contador acumulado, data/status e observacao.
+ * Como executa: localiza a linha do dia, ajusta inicio/fim/delta com as mesmas blindagens de salto/reset e preserva o estado atual intacto.
+ * Retorno/Efeitos: recupera paginas em atraso sem fazer `telemetria_pagecount` voltar no tempo.
+ */
+async function aplicarPagecountRetidoNoDiario(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  nrInventarioDestino: number;
+  contador: number;
+  dtLeitura: string;
+  status: string;
+}) {
+  const hasDiaria = await tableExists(params.supabase, "telemetria_pagecount_diaria");
+  if (!hasDiaria) {
+    return { aplicado: false, motivo: "telemetria_pagecount_diaria ausente" };
+  }
+
+  const dtReferencia = dateKeySaoPauloFromIso(params.dtLeitura);
+  if (!dtReferencia) {
+    return { aplicado: false, motivo: "dt_leitura invalida para consolidado diario" };
+  }
+
+  const contador = Math.max(0, Math.trunc(params.contador));
+  const leituraMs = new Date(params.dtLeitura).getTime();
+  const { data: existente, error: erroExistente } = await params.supabase
+    .from("telemetria_pagecount_diaria")
+    .select("nr_telemetria_diaria,nr_paginas_inicio_dia,nr_paginas_fim_dia,nr_paginas_dia,nr_ciclos_coleta,dt_primeira_leitura,dt_ultima_leitura,ds_status_ultima")
+    .eq("nr_inventario", params.nrInventarioDestino)
+    .eq("dt_referencia", dtReferencia)
+    .maybeSingle();
+
+  if (erroExistente) {
+    if (isMissingTableError(erroExistente) || isMissingColumnError(erroExistente)) {
+      return { aplicado: false, motivo: "telemetria_pagecount_diaria incompatível" };
+    }
+    throw new Error(`Erro ao consultar diario retido: ${erroExistente.message}`);
+  }
+
+  if (!existente?.nr_telemetria_diaria) {
+    const { error: erroInsert } = await params.supabase.from("telemetria_pagecount_diaria").insert([
+      {
+        nr_inventario: params.nrInventarioDestino,
+        dt_referencia: dtReferencia,
+        nr_paginas_inicio_dia: contador,
+        nr_paginas_fim_dia: contador,
+        nr_paginas_dia: 0,
+        nr_ciclos_coleta: 1,
+        dt_primeira_leitura: params.dtLeitura,
+        dt_ultima_leitura: params.dtLeitura,
+        ds_status_ultima: params.status,
+        dt_atualizacao: new Date().toISOString(),
+      },
+    ]);
+    if (erroInsert) {
+      throw new Error(`Erro ao inserir diario retido: ${erroInsert.message}`);
+    }
+    return { aplicado: true, modo: "diario_direto_insert", contador, dt_referencia: dtReferencia };
+  }
+
+  const inicioAtual = Math.max(0, Number(existente.nr_paginas_inicio_dia || 0));
+  const fimAtual = Math.max(inicioAtual, Number(existente.nr_paginas_fim_dia || inicioAtual));
+  const diaAtual = Math.max(0, Number(existente.nr_paginas_dia || 0));
+  const ciclosAtual = Math.max(0, Number(existente.nr_ciclos_coleta || 0));
+  const primeiraMs = new Date(existente.dt_primeira_leitura || params.dtLeitura).getTime();
+  const ultimaMs = new Date(existente.dt_ultima_leitura || params.dtLeitura).getTime();
+
+  let novoInicio = inicioAtual;
+  let novoFim = fimAtual;
+  let novoDia = diaAtual;
+  let novaPrimeira = existente.dt_primeira_leitura || params.dtLeitura;
+  let novaUltima = existente.dt_ultima_leitura || params.dtLeitura;
+  let novoStatus = existente.ds_status_ultima || params.status;
+  let resultado = "APLICADO_DIARIO_DIRETO";
+
+  if (Number.isFinite(primeiraMs) && leituraMs < primeiraMs) {
+    novoInicio = contador;
+    novaPrimeira = params.dtLeitura;
+    const deltaAteFim = fimAtual - novoInicio;
+    if (deltaAteFim >= 0 && deltaAteFim <= 10000) {
+      novoDia = Math.max(diaAtual, deltaAteFim);
+    }
+    resultado = "APLICADO_COMO_PRIMEIRA_LEITURA_DO_DIA";
+  } else if (Number.isFinite(ultimaMs) && leituraMs < ultimaMs) {
+    resultado = "IGNORADO_DIARIO_FORA_DE_ORDEM";
+  } else {
+    const delta = contador - fimAtual;
+    novaUltima = params.dtLeitura;
+    novoStatus = params.status;
+    if (delta < 0) {
+      resultado = "APLICADO_SEM_DELTA_RESET_OU_TROCA_MENOR";
+    } else if (delta > 10000) {
+      novoFim = contador;
+      resultado = "APLICADO_SEM_DELTA_SALTO_SUSPEITO";
+    } else {
+      novoFim = Math.max(fimAtual, contador);
+      novoDia = diaAtual + Math.max(delta, 0);
+    }
+  }
+
+  const { error: erroUpdate } = await params.supabase
+    .from("telemetria_pagecount_diaria")
+    .update({
+      nr_paginas_inicio_dia: novoInicio,
+      nr_paginas_fim_dia: Math.max(novoInicio, novoFim),
+      nr_paginas_dia: Math.max(0, novoDia),
+      nr_ciclos_coleta: ciclosAtual + (resultado === "IGNORADO_DIARIO_FORA_DE_ORDEM" ? 0 : 1),
+      dt_primeira_leitura: novaPrimeira,
+      dt_ultima_leitura: novaUltima,
+      ds_status_ultima: novoStatus,
+      dt_atualizacao: new Date().toISOString(),
+    })
+    .eq("nr_telemetria_diaria", Number(existente.nr_telemetria_diaria));
+
+  if (erroUpdate) {
+    throw new Error(`Erro ao atualizar diario retido: ${erroUpdate.message}`);
+  }
+
+  return { aplicado: resultado !== "IGNORADO_DIARIO_FORA_DE_ORDEM", modo: resultado, contador, dt_referencia: dtReferencia };
+}
+
+/**
+ * [DOC-FUNC] aplicarResumoRetidoNoDiario
+ * O que faz: Move para o consolidado oficial um resumo diario que ficou em quarentena durante a pendencia.
+ * Entradas: supabase, inventario de destino e linha compactada da tabela de retencao.
+ * Como executa: insere a linha diaria quando nao existe; quando existe, soma `nr_paginas_dia` e mescla primeira/ultima leitura.
+ * Retorno/Efeitos: grava no maximo uma atualizacao por pendencia/dia, evitando flood de linhas e mantendo a bilhetagem compacta.
+ */
+async function aplicarResumoRetidoNoDiario(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  nrInventarioDestino: number;
+  resumo: any;
+}) {
+  const hasDiaria = await tableExists(params.supabase, "telemetria_pagecount_diaria");
+  if (!hasDiaria) {
+    return { aplicado: false, motivo: "telemetria_pagecount_diaria ausente" };
+  }
+
+  const dtReferencia = limparTexto(params.resumo?.dt_referencia);
+  if (!dtReferencia) {
+    return { aplicado: false, motivo: "dt_referencia ausente no resumo retido" };
+  }
+
+  const inicioRetido = Math.max(0, Number(params.resumo?.nr_paginas_inicio_dia || 0));
+  const fimRetido = Math.max(inicioRetido, Number(params.resumo?.nr_paginas_fim_dia || inicioRetido));
+  const paginasRetidas = Math.max(0, Number(params.resumo?.nr_paginas_dia || 0));
+  const ciclosRetidos = Math.max(0, Number(params.resumo?.nr_ciclos_coleta || 0));
+  const primeiraRetida = limparTexto(params.resumo?.dt_primeira_leitura) || limparTexto(params.resumo?.dt_ultima_leitura);
+  const ultimaRetida = limparTexto(params.resumo?.dt_ultima_leitura) || primeiraRetida;
+  const statusRetido = limparTexto(params.resumo?.ds_status_ultima) || "unknown";
+
+  const { data: existente, error: erroExistente } = await params.supabase
+    .from("telemetria_pagecount_diaria")
+    .select("nr_telemetria_diaria,nr_paginas_inicio_dia,nr_paginas_fim_dia,nr_paginas_dia,nr_ciclos_coleta,dt_primeira_leitura,dt_ultima_leitura,ds_status_ultima")
+    .eq("nr_inventario", params.nrInventarioDestino)
+    .eq("dt_referencia", dtReferencia)
+    .maybeSingle();
+
+  if (erroExistente) {
+    if (isMissingTableError(erroExistente) || isMissingColumnError(erroExistente)) {
+      return { aplicado: false, motivo: "telemetria_pagecount_diaria incompatível" };
+    }
+    throw new Error(`Erro ao consultar diario para resumo retido: ${erroExistente.message}`);
+  }
+
+  if (!existente?.nr_telemetria_diaria) {
+    const { error: erroInsert } = await params.supabase.from("telemetria_pagecount_diaria").insert([
+      {
+        nr_inventario: params.nrInventarioDestino,
+        dt_referencia: dtReferencia,
+        nr_paginas_inicio_dia: inicioRetido,
+        nr_paginas_fim_dia: fimRetido,
+        nr_paginas_dia: paginasRetidas,
+        nr_ciclos_coleta: Math.max(1, ciclosRetidos),
+        dt_primeira_leitura: primeiraRetida || new Date().toISOString(),
+        dt_ultima_leitura: ultimaRetida || primeiraRetida || new Date().toISOString(),
+        ds_status_ultima: statusRetido,
+        dt_atualizacao: new Date().toISOString(),
+      },
+    ]);
+    if (erroInsert) {
+      throw new Error(`Erro ao inserir resumo retido no diario: ${erroInsert.message}`);
+    }
+    return { aplicado: true, modo: "diario_resumo_insert", paginas_dia: paginasRetidas, dt_referencia: dtReferencia };
+  }
+
+  const primeiraExistente = limparTexto(existente.dt_primeira_leitura);
+  const ultimaExistente = limparTexto(existente.dt_ultima_leitura);
+  const primeiraFinal =
+    primeiraRetida && (!primeiraExistente || new Date(primeiraRetida).getTime() < new Date(primeiraExistente).getTime())
+      ? primeiraRetida
+      : primeiraExistente;
+  const ultimaFinal =
+    ultimaRetida && (!ultimaExistente || new Date(ultimaRetida).getTime() > new Date(ultimaExistente).getTime())
+      ? ultimaRetida
+      : ultimaExistente;
+
+  const inicioFinal = primeiraFinal === primeiraRetida
+    ? inicioRetido
+    : Math.max(0, Number(existente.nr_paginas_inicio_dia || inicioRetido));
+  const fimFinal = ultimaFinal === ultimaRetida
+    ? fimRetido
+    : Math.max(inicioFinal, Number(existente.nr_paginas_fim_dia || fimRetido));
+
+  const { error: erroUpdate } = await params.supabase
+    .from("telemetria_pagecount_diaria")
+    .update({
+      nr_paginas_inicio_dia: inicioFinal,
+      nr_paginas_fim_dia: Math.max(inicioFinal, fimFinal),
+      nr_paginas_dia: Math.max(0, Number(existente.nr_paginas_dia || 0)) + paginasRetidas,
+      nr_ciclos_coleta: Math.max(0, Number(existente.nr_ciclos_coleta || 0)) + Math.max(1, ciclosRetidos),
+      dt_primeira_leitura: primeiraFinal || primeiraRetida || primeiraExistente,
+      dt_ultima_leitura: ultimaFinal || ultimaRetida || ultimaExistente,
+      ds_status_ultima: ultimaFinal === ultimaRetida ? statusRetido : limparTexto(existente.ds_status_ultima) || statusRetido,
+      dt_atualizacao: new Date().toISOString(),
+    })
+    .eq("nr_telemetria_diaria", Number(existente.nr_telemetria_diaria));
+
+  if (erroUpdate) {
+    throw new Error(`Erro ao atualizar resumo retido no diario: ${erroUpdate.message}`);
+  }
+
+  return { aplicado: true, modo: "diario_resumo_update", paginas_dia: paginasRetidas, dt_referencia: dtReferencia };
+}
+
+/**
+ * [DOC-FUNC] gravarPagecountRetidoNoEstadoAtual
+ * O que faz: Escreve uma leitura retida na tabela de estado atual quando ela ainda e a leitura mais nova conhecida.
+ * Entradas: supabase, inventario de destino, contador acumulado, data/status da coleta e observacao de auditoria.
+ * Como executa: monta o payload de `telemetria_pagecount`, tenta upsert por `nr_inventario` e usa insert como fallback para bancos sem constraint.
+ * Retorno/Efeitos: dispara a trigger diaria do banco; a trigger calcula apenas o delta entre leituras, entao contador 200 seguido de 250 soma 50, nao 450.
+ */
+async function gravarPagecountRetidoNoEstadoAtual(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  nrInventarioDestino: number;
+  contador: number;
+  dtLeitura: string;
+  status: string;
+  observacao: string;
+}) {
+  const payloadPagecount = {
+    nr_inventario: params.nrInventarioDestino,
+    nr_paginas_total: Math.max(0, Math.trunc(params.contador)),
+    dt_leitura: params.dtLeitura,
+    ds_status_impressora: params.status,
+    ds_observacao: params.observacao,
+  };
+
+  const tentativaUpsert = await params.supabase
+    .from("telemetria_pagecount")
+    .upsert([payloadPagecount], { onConflict: "nr_inventario", ignoreDuplicates: false });
+
+  if (!tentativaUpsert.error) {
+    return { aplicado: true, contador: payloadPagecount.nr_paginas_total };
+  }
+
+  const mensagem = String(tentativaUpsert.error.message || "");
+  const conflitoSemConstraint =
+    /no unique or exclusion constraint matching the ON CONFLICT specification/i.test(mensagem) ||
+    /there is no unique or exclusion constraint/i.test(mensagem);
+
+  if (!conflitoSemConstraint) {
+    throw new Error(`Erro ao reaplicar pagecount retido: ${mensagem}`);
+  }
+
+  const { error: insertError } = await params.supabase.from("telemetria_pagecount").insert([payloadPagecount]);
+  if (insertError) {
+    throw new Error(`Erro ao reaplicar pagecount retido: ${insertError.message}`);
+  }
+
+  return { aplicado: true, contador: payloadPagecount.nr_paginas_total };
+}
+
+/**
+ * [DOC-FUNC] gravarPagecountRetido
+ * O que faz: Decide se a leitura retida deve passar pelo estado atual/trigger ou ir direto para o diario.
+ * Entradas: supabase, inventario de destino, contador, data/status e observacao.
+ * Como executa: consulta `telemetria_pagecount`; se a leitura retida for mais antiga que o estado atual, atualiza so o diario para nao retroceder o snapshot.
+ * Retorno/Efeitos: preserva o historico diario e evita que replay tardio substitua uma coleta mais recente.
+ */
+async function gravarPagecountRetido(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  nrInventarioDestino: number;
+  contador: number;
+  dtLeitura: string;
+  status: string;
+  observacao: string;
+}) {
+  const leituraMs = new Date(params.dtLeitura).getTime();
+  const { data: atual, error } = await params.supabase
+    .from("telemetria_pagecount")
+    .select("dt_leitura")
+    .eq("nr_inventario", params.nrInventarioDestino)
+    .maybeSingle();
+
+  if (error && !isMissingTableError(error) && !isMissingColumnError(error)) {
+    throw new Error(`Erro ao consultar pagecount atual: ${error.message}`);
+  }
+
+  const atualMs = atual?.dt_leitura ? new Date(atual.dt_leitura).getTime() : NaN;
+  if (Number.isFinite(atualMs) && Number.isFinite(leituraMs) && leituraMs < atualMs) {
+    const diario = await aplicarPagecountRetidoNoDiario(params);
+    return {
+      ...diario,
+      contador: Math.max(0, Math.trunc(params.contador)),
+      fonte_gravacao: "telemetria_pagecount_diaria",
+      estado_atual_preservado: true,
+    };
+  }
+
+  const estadoAtual = await gravarPagecountRetidoNoEstadoAtual(params);
+  return {
+    ...estadoAtual,
+    fonte_gravacao: "telemetria_pagecount",
+    estado_atual_preservado: false,
+  };
+}
+
+/**
+ * [DOC-FUNC] reaplicarPagecountDaPendencia
+ * O que faz: Reaplica no inventário substituto o último contador coletado que ficou retido na pendência de substituição.
+ * Entradas: supabase, pendencia, nrInventarioDestino.
+ * Como executa: lê `payload_evento`, valida contador/status/data e faz upsert em `telemetria_pagecount` com fallback para ambientes sem unique.
+ * Retorno/Efeitos: preserva a coleta retida sem poluir o inventário de referência durante a divergência.
+ */
+async function reaplicarPagecountDaPendencia(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  pendencia: any;
+  nrInventarioDestino: number;
+}) {
+  const hasPagecount = await tableExists(params.supabase, "telemetria_pagecount");
+  if (!hasPagecount) {
+    return { aplicado: false, motivo: "telemetria_pagecount ausente" };
+  }
+
+  const evento = (params.pendencia?.payload_evento ?? null) as any;
+  if (!evento || typeof evento !== "object") {
+    return { aplicado: false, motivo: "payload_evento ausente" };
+  }
+
+  const contador = Number(evento?.contador_total_paginas);
+  if (!Number.isFinite(contador) || contador < 0) {
+    return { aplicado: false, motivo: "contador_total_paginas inválido no payload_evento" };
+  }
+
+  const dtLeitura = limparTexto(evento?.coletado_em) || new Date().toISOString();
+  const status = limparTexto(evento?.status) || "unknown";
+
+  const gravacao = await gravarPagecountRetido({
+    supabase: params.supabase,
+    nrInventarioDestino: params.nrInventarioDestino,
+    contador,
+    dtLeitura,
+    status,
+    observacao: `REPLAY_PENDENCIA_SUBSTITUICAO:${Number(params.pendencia?.id || 0)}`,
+  });
+
+  return { aplicado: true, fonte: "payload_evento", contador: gravacao.contador };
+}
+
+/**
+ * [DOC-FUNC] reaplicarEventosRetidosDaPendencia
+ * O que faz: Reaplica os resumos diarios guardados enquanto a pendencia ficou aberta.
+ * Entradas: supabase, pendencia e inventario de destino escolhido na resolucao.
+ * Como executa: busca linhas sem replay, ordena por data, soma cada resumo no `telemetria_pagecount_diaria` e marca a linha como reprocessada.
+ * Retorno/Efeitos: recupera paginas impressas durante a espera com uma linha por dia, sem criar uma linha por ciclo de coleta.
+ */
+async function reaplicarEventosRetidosDaPendencia(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  pendencia: any;
+  nrInventarioDestino: number;
+}) {
+  const hasFila = await tableExists(params.supabase, "telemetria_substituicao_evento_retido");
+  if (!hasFila) {
+    return { usou_fila: false, aplicado: false, processados: 0, aplicados: 0, ignorados: 0, motivo: "fila ausente" };
+  }
+
+  const hasPagecount = await tableExists(params.supabase, "telemetria_pagecount");
+  if (!hasPagecount) {
+    return { usou_fila: true, aplicado: false, processados: 0, aplicados: 0, ignorados: 0, motivo: "telemetria_pagecount ausente" };
+  }
+
+  const idPendencia = Number(params.pendencia?.id || 0);
+  if (!Number.isFinite(idPendencia) || idPendencia <= 0) {
+    return { usou_fila: true, aplicado: false, processados: 0, aplicados: 0, ignorados: 0, motivo: "pendencia sem id valido" };
+  }
+
+  const { data: eventosRetidos, error } = await params.supabase
+    .from("telemetria_substituicao_evento_retido")
+    .select("id,dt_referencia,nr_paginas_inicio_dia,nr_paginas_fim_dia,nr_paginas_dia,nr_ciclos_coleta,dt_primeira_leitura,dt_ultima_leitura,ds_status_ultima,payload_ultimo_evento")
+    .eq("id_pendencia", idPendencia)
+    .is("dt_replay", null)
+    .order("dt_referencia", { ascending: true })
+    .order("id", { ascending: true });
+
+  if (error) {
+    if (isMissingTableError(error) || isMissingColumnError(error)) {
+      return { usou_fila: false, aplicado: false, processados: 0, aplicados: 0, ignorados: 0, motivo: "fila incompatível" };
+    }
+    throw new Error(`Erro ao listar eventos retidos: ${error.message}`);
+  }
+
+  const linhas = Array.isArray(eventosRetidos) ? eventosRetidos : [];
+  let aplicados = 0;
+  let ignorados = 0;
+  let paginasRetidasTotal = 0;
+
+  for (const linha of linhas) {
+    const paginasDia = Number(linha?.nr_paginas_dia);
+    const dtReferencia = limparTexto(linha?.dt_referencia);
+
+    if (!Number.isFinite(paginasDia) || paginasDia < 0 || !dtReferencia) {
+      ignorados += 1;
+      await params.supabase
+        .from("telemetria_substituicao_evento_retido")
+        .update({
+          dt_replay: new Date().toISOString(),
+          nr_inventario_destino: params.nrInventarioDestino,
+          ds_resultado: "IGNORADO: contador/data invalido",
+        })
+        .eq("id", Number(linha.id));
+      continue;
+    }
+
+    const gravacao = await aplicarResumoRetidoNoDiario({
+      supabase: params.supabase,
+      nrInventarioDestino: params.nrInventarioDestino,
+      resumo: linha,
+    });
+
+    if (gravacao.aplicado) {
+      aplicados += 1;
+      paginasRetidasTotal += Math.max(0, Number(gravacao.paginas_dia || 0));
+    } else {
+      ignorados += 1;
+    }
+
+    const { error: erroMarcarReplay } = await params.supabase
+      .from("telemetria_substituicao_evento_retido")
+      .update({
+        dt_replay: new Date().toISOString(),
+        nr_inventario_destino: params.nrInventarioDestino,
+        ds_resultado: gravacao.aplicado
+          ? `APLICADO_DIARIO: paginas=${Math.max(0, Number(gravacao.paginas_dia || 0))}`
+          : `IGNORADO: ${limparTexto(gravacao.motivo) || "sem aplicacao"}`,
+      })
+      .eq("id", Number(linha.id));
+
+    if (erroMarcarReplay) {
+      throw new Error(`Erro ao marcar evento retido como reaplicado: ${erroMarcarReplay.message}`);
+    }
+  }
+
+  return {
+    usou_fila: true,
+    aplicado: aplicados > 0,
+    fonte: "telemetria_substituicao_evento_retido_diario",
+    processados: linhas.length,
+    aplicados,
+    ignorados,
+    paginas_retidas_total: paginasRetidasTotal,
+  };
+}
+
+/**
+ * [DOC-FUNC] reaplicarColetasRetidasDaPendencia
+ * O que faz: Decide se a resolucao deve recuperar uma fila completa de ciclos retidos ou apenas o ultimo payload legado.
+ * Entradas: supabase, pendencia e inventario de destino.
+ * Como executa: tenta primeiro a tabela de fila; se ela ainda nao existir ou estiver vazia, usa `payload_evento` da pendencia como compatibilidade.
+ * Retorno/Efeitos: centraliza o replay para confirmar troca e corrigir cadastro seguirem a mesma regra de contagem.
+ */
+async function reaplicarColetasRetidasDaPendencia(params: {
+  supabase: ReturnType<typeof getAdminClient>;
+  pendencia: any;
+  nrInventarioDestino: number;
+}) {
+  const replayFila = await reaplicarEventosRetidosDaPendencia(params);
+  if (replayFila.usou_fila && Number(replayFila.processados || 0) > 0) {
+    return replayFila;
+  }
+
+  const replayLegado = await reaplicarPagecountDaPendencia(params);
+  return {
+    ...replayLegado,
+    fonte: "payload_evento_fallback",
+    fila: replayFila,
+  };
 }
 
 /**
@@ -1760,7 +2281,9 @@ Deno.serve(async (req) => {
         supabase.from("equipamento").select("*").eq("ie_situacao", "A").order("nm_modelo"),
         supabase.from("tipo_equipamento").select("*").eq("ie_situacao", "A").order("nm_tipo_equipamento"),
         hasEmpresa
-          ? supabase.from("empresa").select("cd_cgc,nm_empresa").eq("ie_situacao", "A").order("nm_empresa")
+          // A tela de devolucao usa esta lista como filtro geral. Por isso carregamos as empresas
+          // cadastradas mesmo quando nao existe item em devolucao no momento.
+          ? supabase.from("empresa").select("cd_cgc,nm_empresa").order("nm_empresa")
           : Promise.resolve({ data: [], error: null }),
       ]);
 
@@ -1964,7 +2487,7 @@ Deno.serve(async (req) => {
         inventarioRefIds.length
           ? supabase
             .from("inventario")
-            .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+            .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nm_mac,nr_ip,tp_status,ie_situacao")
             .in("nr_inventario", inventarioRefIds)
           : Promise.resolve({ data: [], error: null }),
         supabase
@@ -2022,7 +2545,9 @@ Deno.serve(async (req) => {
           esperado: {
             nr_patrimonio: limparTexto(item.nr_patrimonio_esperado),
             nr_serie: limparTexto(item.nr_serie_esperada),
-            nm_mac: normalizarMac(limparTexto(item.nr_mac_esperado)),
+            nm_mac: normalizarMac(
+              limparTexto(item.nr_mac_esperado) || limparTexto((inventarioRef as any)?.nm_mac),
+            ),
           },
           resolucao: {
             dt_resolucao: limparTexto(item.dt_resolucao),
@@ -2051,8 +2576,8 @@ Deno.serve(async (req) => {
         return badRequest("id_pendencia e obrigatorio.");
       }
 
-      if (!["CONFIRMAR_TROCA", "DESCARTAR_ALERTA"].includes(acao)) {
-        return badRequest("acao invalida. Use CONFIRMAR_TROCA ou DESCARTAR_ALERTA.");
+      if (!["CONFIRMAR_TROCA", "DESCARTAR_ALERTA", "CORRIGIR_DADOS"].includes(acao)) {
+        return badRequest("acao invalida. Use CONFIRMAR_TROCA, DESCARTAR_ALERTA ou CORRIGIR_DADOS.");
       }
 
       const { data: pendencia, error: erroPendencia } = await supabase
@@ -2123,17 +2648,148 @@ Deno.serve(async (req) => {
         return badRequest("Inventario de referencia nao encontrado.");
       }
 
+      const ipDetectado = normalizarIp(limparTexto(pendencia.nr_ip_detectado));
+      if (!ipDetectado) {
+        return badRequest("Pendencia sem IP detectado valido.");
+      }
+
+      const patrimonioEsperado = limparTexto(pendencia.nr_patrimonio_esperado) || limparTexto(referencia.nr_patrimonio);
+      const serieEsperada = limparTexto(pendencia.nr_serie_esperada) || limparTexto(referencia.nr_serie);
+      const macEsperado = normalizarMac(limparTexto(pendencia.nr_mac_esperado));
+      const patrimonioDetectado = limparTexto(pendencia.nr_patrimonio_detectado);
+      const serieDetectada = limparTexto(pendencia.nr_serie_detectada);
+      const hasNmMac = await columnExists(supabase, "inventario", "nm_mac");
+      const macDetectado = normalizarMac(limparTexto(pendencia.nr_mac_detectado));
+
+      if (acao === "CORRIGIR_DADOS") {
+        const patrimonioConfere =
+          Boolean(patrimonioEsperado) &&
+          Boolean(patrimonioDetectado) &&
+          String(patrimonioEsperado || "").trim().toUpperCase() === String(patrimonioDetectado || "").trim().toUpperCase();
+        const serieConfere =
+          Boolean(serieEsperada) &&
+          Boolean(serieDetectada) &&
+          String(serieEsperada || "").trim().toUpperCase() === String(serieDetectada || "").trim().toUpperCase();
+        const serieDivergente =
+          Boolean(serieEsperada) &&
+          Boolean(serieDetectada) &&
+          String(serieEsperada || "").trim().toUpperCase() !== String(serieDetectada || "").trim().toUpperCase();
+        const macConfere = Boolean(macEsperado) && Boolean(macDetectado) && macEsperado === macDetectado;
+        const macDivergente = Boolean(macEsperado) && Boolean(macDetectado) && macEsperado !== macDetectado;
+
+        const podeCorrigir =
+          patrimonioConfere &&
+          (
+            (serieConfere && macDivergente) ||
+            (macConfere && serieDivergente)
+          );
+
+        if (!podeCorrigir) {
+          return badRequest(
+            "Corrigir dados so pode ser usado quando o patrimonio confere e apenas um identificador diverge (serie ou MAC). Nos demais casos, use Confirmar troca.",
+          );
+        }
+
+        const patchCorrecao: Record<string, unknown> = {
+          dt_atualizacao: new Date().toISOString(),
+          nr_ip: ipDetectado,
+        };
+        const camposCorrigidos: string[] = ["nr_ip"];
+
+        if (patrimonioDetectado) {
+          patchCorrecao.nr_patrimonio = patrimonioDetectado;
+          camposCorrigidos.push("nr_patrimonio");
+        }
+        if (serieDetectada) {
+          patchCorrecao.nr_serie = serieDetectada;
+          camposCorrigidos.push("nr_serie");
+        }
+        if (hasNmMac && macDetectado) {
+          patchCorrecao.nm_mac = macDetectado;
+          camposCorrigidos.push("nm_mac");
+        }
+
+        const referenciaAtualizada = await atualizarInventarioComFallbackDt({
+          supabase,
+          nrInventario: nrInventarioReferencia,
+          patch: patchCorrecao,
+        });
+
+        const dsObsCorrecao = [
+          "CORRECAO CADASTRAL ASSISTIDA POR TELEMETRIA",
+          `PENDENCIA_ID: ${idPendencia}`,
+          `REF: ${limparTexto(referencia.nr_patrimonio) || nrInventarioReferencia}`,
+          `IP: ${ipDetectado}`,
+          `CAMPOS: ${camposCorrigidos.join(",")}`,
+          nrChamado ? `CHAMADO: ${nrChamado}` : null,
+          observacao ? `OBS: ${observacao}` : null,
+        ]
+          .filter(Boolean)
+          .join(" | ");
+
+        await registrarMovimentacaoSeNecessario({
+          supabase,
+          nr_inventario: nrInventarioReferencia,
+          cd_setor_origem: Number.isFinite(Number(referencia.cd_setor)) ? Number(referencia.cd_setor) : null,
+          cd_setor_destino: Number.isFinite(Number(referencia.cd_setor)) ? Number(referencia.cd_setor) : null,
+          cd_usuario: cdUsuario,
+          nm_usuario: nmUsuario,
+          ds_observacao: dsObsCorrecao,
+        });
+
+        const replayPagecount = await reaplicarColetasRetidasDaPendencia({
+          supabase,
+          pendencia,
+          nrInventarioDestino: nrInventarioReferencia,
+        });
+
+        const { data: pendenciaAtualizada, error: erroPendenciaAtualizada } = await supabase
+          .from("telemetria_substituicao_pendente")
+          .update({
+            ie_status: "CONFIRMADO",
+            nr_inventario_substituto: null,
+            dt_resolucao: new Date().toISOString(),
+            cd_usuario_resolucao: cdUsuario,
+            nm_usuario_resolucao: nmUsuario,
+            ds_resolucao: dsResolucaoBase || "CORRIGIR_DADOS",
+          })
+          .eq("id", idPendencia)
+          .select("*")
+          .single();
+
+        if (erroPendenciaAtualizada) {
+          throw new Error(`Erro ao concluir pendencia: ${erroPendenciaAtualizada.message}`);
+        }
+
+        return jsonResponse({
+          ok: true,
+          data: {
+            pendencia: pendenciaAtualizada,
+            referencia: referenciaAtualizada,
+            substituto: null,
+            resumo: {
+              id_pendencia: idPendencia,
+              acao,
+              nr_inventario_referencia: nrInventarioReferencia,
+              nr_inventario_substituto: null,
+              ip_aplicado: ipDetectado,
+              identificador_usado: "correcao_cadastral",
+              replay_pagecount: replayPagecount,
+              campos_corrigidos: camposCorrigidos,
+            },
+          },
+        });
+      }
+
       const candidatoEncontradoPor: string[] = [];
       let substituto: any = null;
 
-      const patrimonioDetectado = limparTexto(pendencia.nr_patrimonio_detectado);
       if (patrimonioDetectado) {
         const { data } = await supabase
           .from("inventario")
           .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
           .ilike("nr_patrimonio", patrimonioDetectado)
           .neq("nr_inventario", nrInventarioReferencia)
-          .eq("ie_situacao", "A")
           .limit(1)
           .maybeSingle();
         if (data?.nr_inventario) {
@@ -2142,14 +2798,12 @@ Deno.serve(async (req) => {
         }
       }
 
-      const serieDetectada = limparTexto(pendencia.nr_serie_detectada);
       if (!substituto && serieDetectada) {
         const { data } = await supabase
           .from("inventario")
           .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
           .ilike("nr_serie", serieDetectada)
           .neq("nr_inventario", nrInventarioReferencia)
-          .eq("ie_situacao", "A")
           .limit(1)
           .maybeSingle();
         if (data?.nr_inventario) {
@@ -2158,15 +2812,12 @@ Deno.serve(async (req) => {
         }
       }
 
-      const hasNmMac = await columnExists(supabase, "inventario", "nm_mac");
-      const macDetectado = normalizarMac(limparTexto(pendencia.nr_mac_detectado));
       if (!substituto && hasNmMac && macDetectado) {
         const { data } = await supabase
           .from("inventario")
           .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
           .eq("nm_mac", macDetectado)
           .neq("nr_inventario", nrInventarioReferencia)
-          .eq("ie_situacao", "A")
           .limit(1)
           .maybeSingle();
         if (data?.nr_inventario) {
@@ -2188,11 +2839,6 @@ Deno.serve(async (req) => {
       const cdSetorDestinoSubstituto = moverSubstitutoParaSetorReferencia && Number.isFinite(cdSetorReferencia) && cdSetorReferencia > 0
         ? cdSetorReferencia
         : Number(substituto.cd_setor || 0);
-
-      const ipDetectado = normalizarIp(limparTexto(pendencia.nr_ip_detectado));
-      if (!ipDetectado) {
-        return badRequest("Pendencia sem IP detectado valido.");
-      }
 
       const patchSubstituto: Record<string, unknown> = {
         nr_ip: ipDetectado,
@@ -2259,6 +2905,13 @@ Deno.serve(async (req) => {
         }),
       ]);
 
+      // Se a coleta ficou retida enquanto a divergência estava pendente, reaplicamos agora no substituto confirmado.
+      const replayPagecount = await reaplicarColetasRetidasDaPendencia({
+        supabase,
+        pendencia,
+        nrInventarioDestino: nrInventarioSubstituto,
+      });
+
       const { data: pendenciaAtualizada, error: erroPendenciaAtualizada } = await supabase
         .from("telemetria_substituicao_pendente")
         .update({
@@ -2290,6 +2943,7 @@ Deno.serve(async (req) => {
             nr_inventario_substituto: nrInventarioSubstituto,
             ip_aplicado: ipDetectado,
             identificador_usado: candidatoEncontradoPor.join("+") || null,
+            replay_pagecount: replayPagecount,
           },
         },
       });
@@ -2675,244 +3329,6 @@ Deno.serve(async (req) => {
             nr_ip_final: ajustarIpDestino ? nrIpDestino : limparTexto(atualizado?.nr_ip),
             filhos_acompanharam_destino: filhosAcompanhando,
             filhos_movidos_estoque: filhosParaEstoque,
-          },
-        },
-      });
-    }
-
-    if (action === "substituir_manutencao") {
-      const nrInventarioManutencao = Number(payload?.nr_inventario_manutencao);
-      const nrInventarioSubstituto = Number(payload?.nr_inventario_substituto);
-      const cdSetorDestinoPayload = payload?.cd_setor_destino;
-      const cdSetorDestinoInformado =
-        cdSetorDestinoPayload !== null && cdSetorDestinoPayload !== undefined && String(cdSetorDestinoPayload).trim() !== ""
-          ? Number(cdSetorDestinoPayload)
-          : null;
-      const observacao = limparTexto(payload?.observacao);
-      const nrChamadoInformado = limparTexto(payload?.nr_chamado);
-      const filhosAcoesPayload = Array.isArray(payload?.filhos_acoes) ? payload.filhos_acoes : [];
-      const acoesFilhos = new Map<
-        number,
-        "ACOMPANHAR_NOVO_PAI" | "PERMANECER_ANTIGO_PENDENTE" | "MOVER_ESTOQUE"
-      >();
-
-      for (const entrada of filhosAcoesPayload) {
-        const filhoId = Number((entrada as any)?.nr_inventario_filho);
-        const acaoRaw = String((entrada as any)?.acao || "").trim().toUpperCase();
-        if (!Number.isFinite(filhoId) || filhoId <= 0) continue;
-        if (["ACOMPANHAR_NOVO_PAI", "PERMANECER_ANTIGO_PENDENTE", "MOVER_ESTOQUE"].includes(acaoRaw)) {
-          acoesFilhos.set(filhoId, acaoRaw as "ACOMPANHAR_NOVO_PAI" | "PERMANECER_ANTIGO_PENDENTE" | "MOVER_ESTOQUE");
-        }
-      }
-
-      if (!Number.isFinite(nrInventarioManutencao) || nrInventarioManutencao <= 0) {
-        return badRequest("nr_inventario_manutencao e obrigatorio.");
-      }
-
-      if (!Number.isFinite(nrInventarioSubstituto) || nrInventarioSubstituto <= 0) {
-        return badRequest("nr_inventario_substituto e obrigatorio.");
-      }
-
-      if (nrInventarioManutencao === nrInventarioSubstituto) {
-        return badRequest("O item substituto deve ser diferente do item em manutencao.");
-      }
-
-      const { data: itemManutencao, error: itemManutencaoError } = await supabase
-        .from("inventario")
-        .select("nr_inventario, cd_equipamento, cd_setor, tp_status, nr_patrimonio")
-        .eq("nr_inventario", nrInventarioManutencao)
-        .maybeSingle();
-
-      if (itemManutencaoError) throw new Error(itemManutencaoError.message);
-      if (!itemManutencao) {
-        return badRequest("Item em manutencao nao encontrado.");
-      }
-
-      if (parseTpStatus(itemManutencao.tp_status) !== "MANUTENCAO") {
-        return badRequest("A substituicao exige um item atualmente em MANUTENCAO.");
-      }
-
-      const { data: itemSubstituto, error: itemSubstitutoError } = await supabase
-        .from("inventario")
-        .select("nr_inventario, cd_equipamento, cd_setor, nr_invent_sup, tp_status, nr_patrimonio")
-        .eq("nr_inventario", nrInventarioSubstituto)
-        .maybeSingle();
-
-      if (itemSubstitutoError) throw new Error(itemSubstitutoError.message);
-      if (!itemSubstituto) {
-        return badRequest("Item substituto nao encontrado.");
-      }
-
-      if (parseTpStatus(itemSubstituto.tp_status) !== "BACKUP") {
-        return badRequest("O item substituto deve estar em BACKUP/ESTOQUE.");
-      }
-
-      if (Number.isFinite(Number(itemSubstituto.nr_invent_sup)) && Number(itemSubstituto.nr_invent_sup) > 0) {
-        return badRequest("O item substituto nao pode estar vinculado como filho de outro equipamento.");
-      }
-
-      let cdSetorDestino = Number.isFinite(cdSetorDestinoInformado) && Number(cdSetorDestinoInformado) > 0
-        ? Number(cdSetorDestinoInformado)
-        : null;
-
-      if (!cdSetorDestino) {
-        cdSetorDestino = await buscarSetorOrigemDaUltimaManutencao({
-          supabase,
-          nr_inventario: nrInventarioManutencao,
-          cd_setor_manutencao: Number(itemManutencao.cd_setor || 0),
-        });
-      }
-
-      if (!cdSetorDestino) {
-        return badRequest("Nao foi possivel identificar setor de destino. Informe cd_setor_destino.");
-      }
-
-      await validarHierarquiaInventario({
-        supabase,
-        cd_equipamento: Number(itemSubstituto.cd_equipamento),
-        cd_setor: cdSetorDestino,
-        nr_invent_sup: null,
-        tp_status: "ATIVO",
-      });
-
-      const { data: filhosDiretos, error: filhosError } = await supabase
-        .from("inventario")
-        .select("nr_inventario, cd_setor")
-        .eq("nr_invent_sup", nrInventarioManutencao);
-
-      if (filhosError) {
-        throw new Error(`Erro ao listar filhos do item em manutencao: ${filhosError.message}`);
-      }
-
-      const nrChamado = nrChamadoInformado;
-
-      const partesObs: string[] = [
-        `SUBSTITUICAO: ${itemManutencao.nr_patrimonio || nrInventarioManutencao} -> ${itemSubstituto.nr_patrimonio || nrInventarioSubstituto}`,
-      ];
-      if (nrChamado) partesObs.push(`CHAMADO: ${nrChamado}`);
-      if (observacao) partesObs.push(`OBS: ${observacao}`);
-      const observacaoSubstituicao = partesObs.join(" | ");
-
-      const cdSetorSubstitutoOrigem = Number.isFinite(Number(itemSubstituto.cd_setor))
-        ? Number(itemSubstituto.cd_setor)
-        : null;
-
-      const { data: substitutoAtualizado, error: substitutoUpdateError } = await supabase
-        .from("inventario")
-        .update({
-          cd_setor: cdSetorDestino,
-          nr_invent_sup: null,
-          tp_status: "ATIVO",
-          ie_situacao: "A",
-        })
-        .eq("nr_inventario", nrInventarioSubstituto)
-        .select("*")
-        .single();
-
-      if (substitutoUpdateError) throw new Error(substitutoUpdateError.message);
-
-      await registrarMovimentacaoSeNecessario({
-        supabase,
-        nm_usuario: nmUsuario,
-        cd_usuario: cdUsuario,
-        nr_inventario: nrInventarioSubstituto,
-        cd_setor_origem: cdSetorSubstitutoOrigem,
-        cd_setor_destino: cdSetorDestino,
-        ds_observacao: observacaoSubstituicao,
-      });
-
-      let filhosAcompanharam = 0;
-      let filhosPendentes = 0;
-      let filhosEstoque = 0;
-      let setorEstoque: number | null = null;
-
-      for (const filho of filhosDiretos || []) {
-        const filhoId = Number(filho.nr_inventario);
-        if (!Number.isFinite(filhoId) || filhoId <= 0) continue;
-
-        const acao = acoesFilhos.get(filhoId) || "PERMANECER_ANTIGO_PENDENTE";
-        const setorFilhoOrigem = Number.isFinite(Number(filho.cd_setor)) ? Number(filho.cd_setor) : null;
-
-        if (acao === "ACOMPANHAR_NOVO_PAI") {
-          const { error: filhoUpdateError } = await supabase
-            .from("inventario")
-            .update({
-              nr_invent_sup: nrInventarioSubstituto,
-              cd_setor: cdSetorDestino,
-              tp_status: "ATIVO",
-              ie_situacao: "A",
-            })
-            .eq("nr_inventario", filhoId);
-
-          if (filhoUpdateError) {
-            throw new Error(`Erro ao transferir filho ${filhoId} para o novo pai: ${filhoUpdateError.message}`);
-          }
-
-          await registrarMovimentacaoSeNecessario({
-            supabase,
-            nm_usuario: nmUsuario,
-            cd_usuario: cdUsuario,
-            nr_inventario: filhoId,
-            cd_setor_origem: setorFilhoOrigem,
-            cd_setor_destino: cdSetorDestino,
-            ds_observacao: `${observacaoSubstituicao} | Filho vinculado ao novo pai`,
-          });
-          filhosAcompanharam += 1;
-          continue;
-        }
-
-        if (acao === "MOVER_ESTOQUE") {
-          if (!setorEstoque) {
-            setorEstoque = await resolverSetorEstoque(supabase);
-          }
-
-          if (!setorEstoque) {
-            throw new Error("Nao foi possivel resolver o setor de estoque para mover filhos remanescentes.");
-          }
-
-          const { error: filhoUpdateError } = await supabase
-            .from("inventario")
-            .update({
-              nr_invent_sup: null,
-              cd_setor: setorEstoque,
-              tp_status: "BACKUP",
-              ie_situacao: "I",
-            })
-            .eq("nr_inventario", filhoId);
-
-          if (filhoUpdateError) {
-            throw new Error(`Erro ao mover filho ${filhoId} para estoque: ${filhoUpdateError.message}`);
-          }
-
-          await registrarMovimentacaoSeNecessario({
-            supabase,
-            nm_usuario: nmUsuario,
-            cd_usuario: cdUsuario,
-            nr_inventario: filhoId,
-            cd_setor_origem: setorFilhoOrigem,
-            cd_setor_destino: setorEstoque,
-            ds_observacao: `${observacaoSubstituicao} | Filho movido para estoque`,
-          });
-          filhosEstoque += 1;
-          continue;
-        }
-
-        filhosPendentes += 1;
-      }
-
-      return jsonResponse({
-        ok: true,
-        data: {
-          item_manutencao: itemManutencao,
-          item_substituto: substitutoAtualizado,
-          resumo: {
-            nr_inventario_manutencao: nrInventarioManutencao,
-            nr_inventario_substituto: nrInventarioSubstituto,
-            cd_setor_destino: cdSetorDestino,
-            nr_chamado: nrChamado,
-            filhos_acompanharam_novo_pai: filhosAcompanharam,
-            filhos_permaneceram_pendentes: filhosPendentes,
-            filhos_movidos_estoque: filhosEstoque,
           },
         },
       });

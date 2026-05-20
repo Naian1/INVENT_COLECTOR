@@ -13,6 +13,7 @@ type SuprimentoItem = {
 type SuprimentosListaProps = {
   suprimentos: SuprimentoItem[];
   filtroNome?: string;
+  onSelecionarNome?: (nome: string) => void;
 };
 
 /**
@@ -122,7 +123,7 @@ function classePillPorStatus(status: string) {
  * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
  * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
  */
-export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaProps) {
+export function SuprimentosLista({ suprimentos, filtroNome, onSelecionarNome }: SuprimentosListaProps) {
   const filtro = String(filtroNome ?? "")
     .trim()
     .toLowerCase();
@@ -146,9 +147,20 @@ export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaPr
 
         return (
           <div className="ui-supply-item" key={`${s.chave_suprimento}-${s.nome_suprimento}`}>
-            <span className="ui-supply-name" title={s.nome_suprimento}>
-              {s.nome_suprimento}
-            </span>
+            {onSelecionarNome ? (
+              <button
+                type="button"
+                className="ui-supply-name-button"
+                title={`Filtrar por ${s.nome_suprimento}`}
+                onClick={() => onSelecionarNome(s.nome_suprimento)}
+              >
+                <span className="ui-supply-name">{s.nome_suprimento}</span>
+              </button>
+            ) : (
+              <span className="ui-supply-name" title={s.nome_suprimento}>
+                {s.nome_suprimento}
+              </span>
+            )}
             <div
               className="ui-supply-track"
               role="img"
@@ -166,4 +178,3 @@ export function SuprimentosLista({ suprimentos, filtroNome }: SuprimentosListaPr
     </div>
   );
 }
-

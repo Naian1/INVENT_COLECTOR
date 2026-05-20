@@ -183,6 +183,9 @@ async function listarViaInventario(supabase: ReturnType<typeof getAdminClient>) 
     .select(
       "nr_inventario,nr_ip,nr_patrimonio,nr_serie,ie_situacao,equipamento:cd_equipamento(nm_modelo,nm_marca,nm_equipamento),setor:cd_setor(nm_setor)"
     )
+    // O coletor varre somente itens ativos e com IP.
+    // Backup/devolucao normalmente ficam com ie_situacao = I, entao aparecem no inventario geral,
+    // mas nao entram na coleta SNMP nem no total operacional.
     .eq("ie_situacao", "A")
     .not("nr_ip", "is", null);
 
@@ -277,4 +280,3 @@ Deno.serve(async (req) => {
     return jsonResponse({ sucesso: false, erro: message }, 500);
   }
 });
-

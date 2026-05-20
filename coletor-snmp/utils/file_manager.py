@@ -15,6 +15,11 @@ CHAMADOS_FILE = os.path.join(DATA_DIR, "chamados.json")
 HISTORY_DIR = os.path.join(DATA_DIR, "history")
 
 
+# [DOC-FUNC] _env_flag
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _env_flag(name: str, default: bool = False) -> bool:
     raw = str(os.getenv(name, "1" if default else "0")).strip().lower()
     return raw in {"1", "true", "yes", "sim", "on"}

@@ -104,6 +104,7 @@ type TelemetriaResumoPayload = {
 };
 
 type ChartPoint = {
+  dateKey: string;
   label: string;
   value: number;
   x: number;
@@ -251,6 +252,7 @@ function defaultDateRange() {
  */
 function buildChart(pointsRaw: Array<{ data_ref: string; paginas: number }>) {
   const points = pointsRaw.map((item) => ({
+    dateKey: item.data_ref,
     label: formatDateBr(item.data_ref),
     value: Math.max(0, Number(item.paginas) || 0),
   }));
@@ -350,6 +352,7 @@ export function ResumoTelemetriaDiaria() {
   const [showFilters, setShowFilters] = useState(false);
   const [showAllSupplies, setShowAllSupplies] = useState(false);
   const [showAllTopPrinters, setShowAllTopPrinters] = useState(false);
+  const [filtroRapidoLabel, setFiltroRapidoLabel] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [payload, setPayload] = useState<TelemetriaResumoPayload | null>(null);
@@ -363,7 +366,7 @@ export function ResumoTelemetriaDiaria() {
       const token = data.session?.access_token;
       if (!token) {
         setPayload(null);
-        setError("Sessao invalida. Faca login novamente.");
+        setError("Sessão inválida. Faça login novamente.");
         return;
       }
 
@@ -392,6 +395,20 @@ export function ResumoTelemetriaDiaria() {
   useEffect(() => {
     void carregar();
   }, [carregar]);
+
+  const aplicarPeriodoRapido = useCallback((novoDe: string, novoAte: string, label: string) => {
+    setDe(novoDe);
+    setAte(novoAte);
+    setFiltroRapidoLabel(label);
+  }, []);
+
+  const limparFiltroRapido = useCallback(() => {
+    setDe(initialRange.de);
+    setAte(initialRange.ate);
+    setModelo("");
+    setSetor("");
+    setFiltroRapidoLabel(null);
+  }, [initialRange.ate, initialRange.de]);
 
   const chart = useMemo(() => buildChart(payload?.serie_paginas_dia || []), [payload?.serie_paginas_dia]);
 
@@ -483,18 +500,19 @@ export function ResumoTelemetriaDiaria() {
     <section className="opsdash-shell">
       <header className="opsdash-header">
         <div>
-          <h2 className="opsdash-title">Operacao de Impressoras</h2>
-          <p className="opsdash-subtitle">Visao geral de impressao, suprimentos SNMP e bilhetagem por modelo.</p>
+          <h2 className="opsdash-title">Operação de Impressoras</h2>
+          <p className="opsdash-subtitle">Visão geral de impressão, suprimentos SNMP e bilhetagem por modelo.</p>
           <div className="opsdash-header-meta">
             <span className={online > 0 ? "opsdash-pill opsdash-pill-ok" : "opsdash-pill opsdash-pill-warn"}>
               {online > 0 ? "Sistema online" : "Sem coleta"}
             </span>
+            {filtroRapidoLabel ? <span className="opsdash-pill">Filtro rápido: {filtroRapidoLabel}</span> : null}
           </div>
         </div>
         <div className="opsdash-header-actions">
           <div className="opsdash-date-row">
             <input className="opsdash-input" type="date" value={de} onChange={(e) => setDe(e.target.value)} />
-            <span className="opsdash-sep">ate</span>
+            <span className="opsdash-sep">até</span>
             <input className="opsdash-input" type="date" value={ate} onChange={(e) => setAte(e.target.value)} />
           </div>
           <button className="opsdash-btn" type="button" onClick={() => setShowFilters((v) => !v)}>
@@ -503,6 +521,11 @@ export function ResumoTelemetriaDiaria() {
           <button className="opsdash-btn opsdash-btn-primary" type="button" onClick={() => void carregar()} disabled={loading}>
             {loading ? "Atualizando..." : "Atualizar"}
           </button>
+          {filtroRapidoLabel ? (
+            <button className="opsdash-btn" type="button" onClick={limparFiltroRapido}>
+              Limpar
+            </button>
+          ) : null}
         </div>
       </header>
 
@@ -531,11 +554,11 @@ export function ResumoTelemetriaDiaria() {
             </select>
           </label>
           <label className="opsdash-field">
-            <span>Tarifa P&amp;B (competencia)</span>
+            <span>Tarifa P&amp;B (competência)</span>
             <input className="opsdash-input" type="text" value={formatCurrency(tarifaPb)} readOnly />
           </label>
           <label className="opsdash-field">
-            <span>Tarifa Colorida (competencia)</span>
+            <span>Tarifa colorida (competência)</span>
             <input className="opsdash-input" type="text" value={formatCurrency(tarifaColor)} readOnly />
           </label>
           <div className="opsdash-status">
@@ -543,10 +566,10 @@ export function ResumoTelemetriaDiaria() {
               {online > 0 ? "Sistema online" : "Sem coleta"}
             </span>
             <small>
-              Ultima leitura: <strong>{formatDateTime(payload?.totais.ultima_leitura_geral)}</strong>
+              Última leitura: <strong>{formatDateTime(payload?.totais.ultima_leitura_geral)}</strong>
             </small>
             <small>
-              Competencia:{" "}
+              Competência:{" "}
               <strong>
                 {String(payload?.bilhetagem.tarifas.competencia_mes || 0).padStart(2, "0")}/
                 {payload?.bilhetagem.tarifas.competencia_ano || "-"}
@@ -559,12 +582,29 @@ export function ResumoTelemetriaDiaria() {
       {error ? <div className="opsdash-error">{error}</div> : null}
 
       <section className="opsdash-kpi-grid">
-        <article className="opsdash-kpi-card">
+        <article
+          className="opsdash-kpi-card opsdash-kpi-card-clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            const diaFinal = payload?.periodo.ate;
+            if (!diaFinal) return;
+            aplicarPeriodoRapido(diaFinal, diaFinal, `Dia ${formatDateBr(diaFinal)}`);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              const diaFinal = payload?.periodo.ate;
+              if (!diaFinal) return;
+              aplicarPeriodoRapido(diaFinal, diaFinal, `Dia ${formatDateBr(diaFinal)}`);
+            }
+          }}
+        >
           <div className="opsdash-kpi-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-blue">
               <FileText size={18} />
             </span>
-            <p>PAGINAS HOJE</p>
+            <p>PÁGINAS HOJE</p>
           </div>
           <h3>{formatNumber(paginasHoje)}</h3>
           <small className="opsdash-trend-row">
@@ -576,16 +616,35 @@ export function ResumoTelemetriaDiaria() {
             </span>
           </small>
         </article>
-        <article className="opsdash-kpi-card">
+        <article
+          className="opsdash-kpi-card opsdash-kpi-card-clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            const diaFinal = payload?.periodo.ate;
+            if (!diaFinal) return;
+            const refMes = diaFinal.slice(0, 7);
+            aplicarPeriodoRapido(`${refMes}-01`, diaFinal, `Mês ${refMes}`);
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              const diaFinal = payload?.periodo.ate;
+              if (!diaFinal) return;
+              const refMes = diaFinal.slice(0, 7);
+              aplicarPeriodoRapido(`${refMes}-01`, diaFinal, `Mês ${refMes}`);
+            }
+          }}
+        >
           <div className="opsdash-kpi-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-purple">
               <CalendarDays size={18} />
             </span>
-            <p>PAGINAS ESTE MES</p>
+            <p>PÁGINAS ESTE MÊS</p>
           </div>
           <h3>{formatNumber(paginasMes)}</h3>
           <small className="opsdash-trend-row">
-            <span>vs mes anterior</span>
+            <span>vs mês anterior</span>
             <span className={`opsdash-trend opsdash-trend-${trendPaginasMes.direction}`}>
               {trendPaginasMes.direction === "up" ? <ArrowUpRight size={14} /> : null}
               {trendPaginasMes.direction === "down" ? <ArrowDownRight size={14} /> : null}
@@ -615,12 +674,27 @@ export function ResumoTelemetriaDiaria() {
             <span className="opsdash-kpi-icon opsdash-kpi-icon-amber">
               <Tag size={18} />
             </span>
-            <p>CUSTO POR PAGINA</p>
+            <p>CUSTO POR PÁGINA</p>
           </div>
           <h3>{formatCurrency(tarifaPb)}</h3>
           <small>P&amp;B {formatCurrency(tarifaPb)} | Colorida {formatCurrency(tarifaColor)}</small>
         </article>
-        <article className="opsdash-kpi-card">
+        <article
+          className="opsdash-kpi-card opsdash-kpi-card-clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            setShowFilters(true);
+            setFiltroRapidoLabel("Equipamentos monitorados");
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setShowFilters(true);
+              setFiltroRapidoLabel("Equipamentos monitorados");
+            }
+          }}
+        >
           <div className="opsdash-kpi-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-cyan">
               <Printer size={18} />
@@ -629,11 +703,26 @@ export function ResumoTelemetriaDiaria() {
           </div>
           <h3>{formatNumber(equipamentos)}</h3>
           <small className="opsdash-kpi-split">
-            <span className="opsdash-ok-text">{formatNumber(online)} com producao</span>
-            <span className="opsdash-danger-text">{formatNumber(semColeta)} sem producao</span>
+            <span className="opsdash-ok-text">{formatNumber(online)} com produção</span>
+            <span className="opsdash-danger-text">{formatNumber(semColeta)} sem produção</span>
           </small>
         </article>
-        <article className="opsdash-kpi-card">
+        <article
+          className="opsdash-kpi-card opsdash-kpi-card-clickable"
+          role="button"
+          tabIndex={0}
+          onClick={() => {
+            setShowAllSupplies(true);
+            setFiltroRapidoLabel("Alertas de suprimentos");
+          }}
+          onKeyDown={(event) => {
+            if (event.key === "Enter" || event.key === " ") {
+              event.preventDefault();
+              setShowAllSupplies(true);
+              setFiltroRapidoLabel("Alertas de suprimentos");
+            }
+          }}
+        >
           <div className="opsdash-kpi-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-red">
               <Bell size={18} />
@@ -642,8 +731,8 @@ export function ResumoTelemetriaDiaria() {
           </div>
           <h3>{formatNumber(alertas)}</h3>
           <small className="opsdash-kpi-split">
-            <span className="opsdash-danger-text">{formatNumber(payload?.suprimentos_alertas.criticos ?? 0)} critico</span>
-            <span className="opsdash-warn-text">{formatNumber(payload?.suprimentos_alertas.atencao ?? 0)} atencao</span>
+            <span className="opsdash-danger-text">{formatNumber(payload?.suprimentos_alertas.criticos ?? 0)} crítico</span>
+            <span className="opsdash-warn-text">{formatNumber(payload?.suprimentos_alertas.atencao ?? 0)} atenção</span>
           </small>
         </article>
       </section>
@@ -651,14 +740,14 @@ export function ResumoTelemetriaDiaria() {
       <section className="opsdash-main-grid">
         <article className="opsdash-panel opsdash-panel-chart">
           <header className="opsdash-panel-header">
-            <h3>Volume de impressao (paginas)</h3>
+            <h3>Volume de impressão (páginas)</h3>
             <span className="opsdash-pill">{payload?.periodo.dias || 0} dias</span>
           </header>
           {!chart.points.length ? (
-            <p className="opsdash-empty">Sem dados para o periodo.</p>
+            <p className="opsdash-empty">Sem dados para o período.</p>
           ) : (
             <div className="opsdash-chart-wrap">
-              <svg className="opsdash-chart" viewBox={`0 0 ${CHART_W} ${CHART_H}`} role="img" aria-label="Paginas por dia">
+              <svg className="opsdash-chart" viewBox={`0 0 ${CHART_W} ${CHART_H}`} role="img" aria-label="Páginas por dia">
                 <defs>
                   <linearGradient id="opsdashArea" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="rgba(56,189,248,0.35)" />
@@ -676,8 +765,25 @@ export function ResumoTelemetriaDiaria() {
                 {chart.areaPath ? <path d={chart.areaPath} fill="url(#opsdashArea)" /> : null}
                 {chart.linePath ? <path d={chart.linePath} className="opsdash-line" /> : null}
                 {chart.points.map((point) => (
-                  <g key={`${point.label}-${point.x}`}>
-                    <circle cx={point.x} cy={point.y} r={4} className="opsdash-dot" />
+                  <g
+                    key={`${point.label}-${point.x}`}
+                    className="opsdash-point-clickable"
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => aplicarPeriodoRapido(point.dateKey, point.dateKey, `Dia ${point.label}`)}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        aplicarPeriodoRapido(point.dateKey, point.dateKey, `Dia ${point.label}`);
+                      }
+                    }}
+                  >
+                    <circle
+                      cx={point.x}
+                      cy={point.y}
+                      r={4}
+                      className={`opsdash-dot ${de === point.dateKey && ate === point.dateKey ? "opsdash-dot-active" : ""}`}
+                    />
                     <text x={point.x} y={CHART_H - 12} textAnchor="middle" className="opsdash-axislabel">
                       {point.label}
                     </text>
@@ -706,7 +812,7 @@ export function ResumoTelemetriaDiaria() {
               <thead>
                 <tr>
                   <th>Categoria (modelo)</th>
-                  <th>Paginas</th>
+                  <th>Páginas</th>
                   <th>Tarifa atual</th>
                   <th>Valor atual</th>
                 </tr>
@@ -714,7 +820,15 @@ export function ResumoTelemetriaDiaria() {
               <tbody>
                 {custoPorCategoriaModelo.length ? (
                   custoPorCategoriaModelo.map((item) => (
-                    <tr key={item.modelo}>
+                    <tr
+                      key={item.modelo}
+                      className="opsdash-row-clickable"
+                      onClick={() => {
+                        setModelo(item.modelo);
+                        setShowFilters(true);
+                        setFiltroRapidoLabel(`Modelo ${item.modelo}`);
+                      }}
+                    >
                       <td>
                         <strong>{item.modelo}</strong>
                       </td>
@@ -727,7 +841,7 @@ export function ResumoTelemetriaDiaria() {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={4}>Sem dados por modelo no periodo.</td>
+                    <td colSpan={4}>Sem dados por modelo no período.</td>
                   </tr>
                 )}
               </tbody>
@@ -743,7 +857,7 @@ export function ResumoTelemetriaDiaria() {
               <span className="opsdash-panel-icon opsdash-kpi-icon-amber">
                 <Tag size={16} />
               </span>
-              <h3>Custo por pagina (bilhetagem)</h3>
+              <h3>Custo por página (bilhetagem)</h3>
             </div>
           </header>
           <div className="opsdash-bill-duo">
@@ -752,10 +866,10 @@ export function ResumoTelemetriaDiaria() {
                 <span className="opsdash-mini-icon opsdash-kpi-icon-blue">
                   <FileText size={13} />
                 </span>
-                <p>Paginas preto e branco</p>
+                <p>Páginas preto e branco</p>
               </div>
               <strong>{formatNumber(pagesPb)}</strong>
-              <small>{formatCurrency(tarifaPb)} por pagina</small>
+              <small>{formatCurrency(tarifaPb)} por página</small>
               <small>Custo: {formatCurrency(custoPb)}</small>
             </div>
             <div className="opsdash-bill-card">
@@ -763,10 +877,10 @@ export function ResumoTelemetriaDiaria() {
                 <span className="opsdash-mini-icon opsdash-kpi-icon-purple">
                   <Palette size={13} />
                 </span>
-                <p>Paginas coloridas</p>
+                <p>Páginas coloridas</p>
               </div>
               <strong>{formatNumber(pagesColor)}</strong>
-              <small>{formatCurrency(tarifaColor)} por pagina</small>
+              <small>{formatCurrency(tarifaColor)} por página</small>
               <small>Custo: {formatCurrency(custoColor)}</small>
             </div>
           </div>
@@ -779,34 +893,34 @@ export function ResumoTelemetriaDiaria() {
             <p>Total de gastos previstos</p>
           </div>
           <strong>{formatCurrency(custoTotalPeriodo)}</strong>
-          <small>Periodo selecionado</small>
+          <small>Período selecionado</small>
         </article>
         <article className="opsdash-panel opsdash-metric-card">
           <div className="opsdash-metric-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-blue">
               <FileText size={13} />
             </span>
-            <p>Paginas totais</p>
+            <p>Páginas totais</p>
           </div>
           <strong>{formatNumber(paginasPeriodo)}</strong>
-          <small>Paginas impressas</small>
+          <small>Páginas impressas</small>
         </article>
         <article className="opsdash-panel opsdash-metric-card">
           <div className="opsdash-metric-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-cyan">
               <Layers size={13} />
             </span>
-            <p>Historico geral de impressao</p>
+            <p>Histórico geral de impressão</p>
           </div>
           <strong>{formatNumber(paginasContadasTotal)}</strong>
-          <small>Somatoria atual de contadores</small>
+          <small>Somatória atual de contadores</small>
         </article>
         <article className="opsdash-panel opsdash-metric-card">
           <div className="opsdash-metric-head">
             <span className="opsdash-kpi-icon opsdash-kpi-icon-amber">
               <Tag size={13} />
             </span>
-            <p>Custo medio por pagina</p>
+            <p>Custo médio por página</p>
           </div>
           <strong>{formatCurrency(custoMedioPagina)}</strong>
           <small>Considerando P&amp;B e color</small>
@@ -816,7 +930,7 @@ export function ResumoTelemetriaDiaria() {
             <span className="opsdash-kpi-icon opsdash-kpi-icon-green">
               <Gauge size={13} />
             </span>
-            <p>Taxa de utilizacao</p>
+            <p>Taxa de utilização</p>
           </div>
           <strong>{Number.isFinite(taxaUtilizacao) ? `${taxaUtilizacao.toFixed(1).replace(".", ",")}%` : "0,0%"}</strong>
           <small>{formatNumber(online)} de {formatNumber(equipamentos)} equipamentos</small>
@@ -828,8 +942,8 @@ export function ResumoTelemetriaDiaria() {
           <header className="opsdash-panel-header">
             <h3>Suprimentos (SNMP)</h3>
             <div className="opsdash-inline-counters">
-              <span className="opsdash-pill opsdash-pill-danger">{payload?.suprimentos_alertas.criticos ?? 0} critico</span>
-              <span className="opsdash-pill opsdash-pill-warn">{payload?.suprimentos_alertas.atencao ?? 0} atencao</span>
+              <span className="opsdash-pill opsdash-pill-danger">{payload?.suprimentos_alertas.criticos ?? 0} crítico</span>
+              <span className="opsdash-pill opsdash-pill-warn">{payload?.suprimentos_alertas.atencao ?? 0} atenção</span>
               <span className="opsdash-pill opsdash-pill-ok">{payload?.suprimentos_alertas.ok ?? 0} ok</span>
             </div>
           </header>
@@ -837,7 +951,7 @@ export function ResumoTelemetriaDiaria() {
             <table className="opsdash-table">
               <thead>
                 <tr>
-                  <th>Patrimonio</th>
+                  <th>Patrimônio</th>
                   <th>Modelo / Local</th>
                   <th>Suprimento</th>
                   <th>Nivel</th>
@@ -878,7 +992,7 @@ export function ResumoTelemetriaDiaria() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={5}>Sem alertas de suprimentos no periodo.</td>
+                    <td colSpan={5}>Sem alertas de suprimentos no período.</td>
                   </tr>
                 )}
               </tbody>
@@ -895,7 +1009,7 @@ export function ResumoTelemetriaDiaria() {
 
         <article className="opsdash-panel">
           <header className="opsdash-panel-header">
-            <h3>Top impressoras (paginas no dia final)</h3>
+            <h3>Top impressoras (páginas no dia final)</h3>
             <span className="opsdash-pill">{formatDateBr(payload?.periodo.ate || "-")}</span>
           </header>
           <div className="opsdash-top-list">
@@ -911,7 +1025,7 @@ export function ResumoTelemetriaDiaria() {
                     <div className="opsdash-top-text">
                       <strong>{item.modelo}</strong> - {item.setor}
                       <small className="opsdash-top-meta">
-                        Inicio: {formatDateTime(item.dt_primeira_leitura_dia)} | Ultima: {formatDateTime(item.dt_ultima_leitura)}
+                        Início: {formatDateTime(item.dt_primeira_leitura_dia)} | Última: {formatDateTime(item.dt_ultima_leitura)}
                       </small>
                     </div>
                     <div className="opsdash-top-bar">
@@ -922,7 +1036,7 @@ export function ResumoTelemetriaDiaria() {
                 );
               })
             ) : (
-              <p className="opsdash-empty">Sem leituras no dia final do periodo.</p>
+              <p className="opsdash-empty">Sem leituras no dia final do período.</p>
             )}
           </div>
           {(payload?.top_impressoras_hoje.length || 0) > 5 ? (
@@ -933,7 +1047,7 @@ export function ResumoTelemetriaDiaria() {
             </div>
           ) : null}
           <div className="opsdash-footnote">
-            Alertas de suprimentos: <strong>{alertas}</strong> | Ultima leitura geral:{" "}
+            Alertas de suprimentos: <strong>{alertas}</strong> | Última leitura geral:{" "}
             <strong>{formatDateTime(payload?.totais.ultima_leitura_geral)}</strong>
           </div>
           <div className="opsdash-footnote">
@@ -944,4 +1058,3 @@ export function ResumoTelemetriaDiaria() {
     </section>
   );
 }
-

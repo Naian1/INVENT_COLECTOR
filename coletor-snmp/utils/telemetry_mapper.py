@@ -112,6 +112,11 @@ def _normalize_model(raw_model):
     return clean_model
 
 
+# [DOC-FUNC] infer_supply_status
+# Objetivo: monta ou classifica dados enviados pelo coletor para a API de telemetria.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: recebe snapshot bruto da impressora, normaliza campos obrigatorios e organiza impressora, pagecount e suprimentos em um payload unico; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def infer_supply_status(
     level_percent,
     printer_status,
@@ -257,6 +262,11 @@ def _montar_impressora_pt(ip, printer_info):
     return impressora
 
 
+# [DOC-FUNC] build_collector_payload
+# Objetivo: monta ou classifica dados enviados pelo coletor para a API de telemetria.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: recebe snapshot bruto da impressora, normaliza campos obrigatorios e organiza impressora, pagecount e suprimentos em um payload unico; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def build_collector_payload(
     coletor_id,
     ip,

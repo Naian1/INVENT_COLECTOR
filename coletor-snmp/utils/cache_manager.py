@@ -4,6 +4,7 @@ import json
 import ipaddress
 import logging
 import os
+import re
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from datetime import datetime, timezone
@@ -40,11 +41,24 @@ OID_LEXMARK_MONO_SIDES_PRINTED_ALT = "1.3.6.1.4.1.641.6.4.2.1.1.4.1.23"
 OID_LEXMARK_SELECTED_SIDES = "1.3.6.1.4.1.641.6.4.2.1.1.4.1.1"
 OID_LEXMARK_MEDIA_COUNT = "1.3.6.1.4.1.641.6.4.2.1.1.4.1.5"
 
+# OIDs SNMP - identity (serial/mac/hostname)
+OID_PRINTER_SERIAL_STANDARD = "1.3.6.1.2.1.43.5.1.1.17.1"
+OID_PRINTER_SERIAL_ALT = "1.3.6.1.2.1.43.5.1.1.17.2"
+OID_PRINTER_NAME_STANDARD = "1.3.6.1.2.1.43.5.1.1.16.1"
+OID_SYS_NAME = "1.3.6.1.2.1.1.5.0"
+OID_IF_PHYS_ADDRESS_BASE = "1.3.6.1.2.1.2.2.1.6"
+OID_ENT_PHYSICAL_SERIAL_BASE = "1.3.6.1.2.1.47.1.1.1.1.11"
+
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 CACHE_FILE = os.path.join(BASE_DIR, "dados_cache.json")
 SUPPLY_SPECIAL_VALUES = {-1, -2, -3}
 
 
+# [DOC-FUNC] _utc_iso_now
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _utc_iso_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 def _ip_passes_filter(ip: str, rule: str) -> bool:
@@ -61,6 +75,11 @@ def _ip_passes_filter(ip: str, rule: str) -> bool:
         except ValueError:
             return False
     return candidate_ip.startswith(candidate_rule)
+# [DOC-FUNC] _filter_printers_by_ip
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> Dict[str, Any]:
     if not ip_filters:
         return printers
@@ -77,6 +96,11 @@ def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> D
     return filtered
 
 
+# [DOC-FUNC] _safe_int
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _safe_int(value: Any) -> Optional[int]:
     if value is None:
         return None
@@ -89,12 +113,195 @@ def _safe_int(value: Any) -> Optional[int]:
         return None
 
 
+# [DOC-FUNC] _normalize_text
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _normalize_text(value: Any) -> str:
     if value is None:
         return ""
     return str(value).strip().lower()
 
 
+# [DOC-FUNC] _clean_identity_text
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _clean_identity_text(value: Any) -> Optional[str]:
+    if value is None:
+        return None
+    text = str(value).replace("\x00", "").strip().strip('"').strip("'")
+    if not text:
+        return None
+    if text.lower() in {"unknown", "n/a", "na", "null", "none", "-", "desconhecido"}:
+        return None
+    return text
+
+
+# [DOC-FUNC] _looks_like_serial
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _looks_like_serial(value: Optional[str]) -> bool:
+    if not value:
+        return False
+    compact = re.sub(r"[^A-Za-z0-9]", "", value)
+    return len(compact) >= 6
+
+
+# [DOC-FUNC] _format_mac_from_bytes
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _format_mac_from_bytes(raw_bytes: bytes) -> Optional[str]:
+    if not raw_bytes:
+        return None
+    if len(raw_bytes) > 6:
+        raw_bytes = raw_bytes[:6]
+    if len(raw_bytes) != 6:
+        return None
+    if all(byte == 0 for byte in raw_bytes):
+        return None
+    return ":".join(f"{byte:02X}" for byte in raw_bytes)
+
+
+# [DOC-FUNC] _extract_mac_from_snmp_value
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _extract_mac_from_snmp_value(raw_value: Any) -> Optional[str]:
+    text = _clean_identity_text(raw_value)
+    if not text:
+        return None
+
+    upper = text.upper()
+    if upper.startswith("0X"):
+        upper = upper[2:]
+
+    hex_candidate = re.sub(r"[^0-9A-F]", "", upper)
+    if len(hex_candidate) == 12:
+        return ":".join(hex_candidate[i : i + 2] for i in range(0, 12, 2))
+
+    raw_bytes = text.encode("latin-1", errors="ignore")
+    mac_from_bytes = _format_mac_from_bytes(raw_bytes)
+    if mac_from_bytes:
+        return mac_from_bytes
+
+    return None
+
+
+# [DOC-FUNC] _resolve_serial_via_snmp
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _resolve_serial_via_snmp(ip: str, community_str: str) -> Optional[str]:
+    for oid in (OID_PRINTER_SERIAL_STANDARD, OID_PRINTER_SERIAL_ALT):
+        response = snmp_get(oid, ip, community_str)
+        if not response.get("ok"):
+            continue
+        serial = _clean_identity_text(response.get("value"))
+        if _looks_like_serial(serial):
+            return serial
+
+    serial_rows = snmp_walk(
+        ip,
+        OID_ENT_PHYSICAL_SERIAL_BASE,
+        community_str=community_str,
+        timeout=2,
+        retries=1,
+        limit=40,
+    )
+    for row in serial_rows:
+        serial = _clean_identity_text(row.get("value"))
+        if _looks_like_serial(serial):
+            return serial
+    return None
+
+
+# [DOC-FUNC] _resolve_hostname_via_snmp
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _resolve_hostname_via_snmp(ip: str, community_str: str) -> Optional[str]:
+    for oid in (OID_SYS_NAME, OID_PRINTER_NAME_STANDARD):
+        response = snmp_get(oid, ip, community_str)
+        if not response.get("ok"):
+            continue
+        hostname = _clean_identity_text(response.get("value"))
+        if hostname:
+            return hostname
+    return None
+
+
+# [DOC-FUNC] _resolve_mac_via_snmp
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _resolve_mac_via_snmp(ip: str, community_str: str) -> Optional[str]:
+    mac_rows = snmp_walk(
+        ip,
+        OID_IF_PHYS_ADDRESS_BASE,
+        community_str=community_str,
+        timeout=2,
+        retries=1,
+        limit=30,
+    )
+    for row in mac_rows:
+        mac = _extract_mac_from_snmp_value(row.get("value"))
+        if mac and mac != "00:00:00:00:00:00":
+            return mac
+    return None
+
+
+# [DOC-FUNC] _resolve_printer_identity
+# Objetivo: coleta e normaliza a identidade fisica da impressora para comparar inventario versus equipamento real.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+def _resolve_printer_identity(ip: str, info: Dict[str, Any], community_str: str) -> Dict[str, Optional[str]]:
+    serial_snmp = _resolve_serial_via_snmp(ip, community_str)
+    mac_snmp = _resolve_mac_via_snmp(ip, community_str)
+    hostname_snmp = _resolve_hostname_via_snmp(ip, community_str)
+
+    serial_cache = _clean_identity_text(info.get("numero_serie"))
+    mac_cache = _clean_identity_text(info.get("endereco_mac"))
+
+    if serial_snmp and serial_cache and serial_snmp.strip().upper() != serial_cache.strip().upper():
+        logging.info(
+            "[identity-swap] IP %s com serie diferente da base local: cache=%s snmp=%s",
+            ip,
+            serial_cache,
+            serial_snmp,
+        )
+
+    if mac_snmp and mac_cache and mac_snmp.strip().upper() != mac_cache.strip().upper():
+        logging.info(
+            "[identity-swap] IP %s com MAC diferente da base local: cache=%s snmp=%s",
+            ip,
+            mac_cache,
+            mac_snmp,
+        )
+
+    return {
+        "numero_serie": serial_snmp,
+        "endereco_mac": mac_snmp,
+        "hostname": hostname_snmp,
+    }
+
+
+# [DOC-FUNC] _detect_printer_family
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _detect_printer_family(info: Dict[str, Any]) -> str:
     model = _normalize_text(info.get("modelo") or info.get("model"))
     manufacturer = _normalize_text(info.get("fabricante") or info.get("manufacturer"))
@@ -111,6 +318,11 @@ def _detect_printer_family(info: Dict[str, Any]) -> str:
     return "default"
 
 
+# [DOC-FUNC] _oid_suffix
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _oid_suffix(oid_base: str, full_oid: str) -> str:
     prefix = f"{oid_base}."
     if full_oid.startswith(prefix):
@@ -133,6 +345,11 @@ def _index_sort_key(index: str):
     return parts
 
 
+# [DOC-FUNC] _build_oid_map
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Dict[str, Any]]:
     mapping: Dict[str, Dict[str, Any]] = {}
     for entry in entries:
@@ -147,6 +364,11 @@ def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Di
     return mapping
 
 
+# [DOC-FUNC] traduz_suprimento
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def traduz_suprimento(nome: str) -> str:
     traducao = {
         "Black Toner": "Toner Preto",
@@ -172,6 +394,11 @@ def traduz_suprimento(nome: str) -> str:
     return nome_str or "Desconhecido"
 
 
+# [DOC-FUNC] _interpret_supply_level
+# Objetivo: transforma leituras SNMP de suprimentos em linhas compreensiveis para o site.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: percorre OIDs de descricao/nivel/capacidade, calcula percentual quando possivel e classifica toner, kit e unidade de imagem; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) -> Dict[str, Any]:
     if raw_current is None:
         return {
@@ -224,6 +451,11 @@ def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) 
     }
 
 
+# [DOC-FUNC] _resolve_page_counter
+# Objetivo: resolve o contador total de paginas via SNMP escolhendo o OID mais confiavel para a familia da impressora.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: testa OIDs candidatos, normaliza valores numericos, registra metadados de diagnostico e devolve contador/oid/confianca para o payload; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> Dict[str, Any]:
     family = _detect_printer_family(info)
 
@@ -339,6 +571,11 @@ def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> 
     return result
 
 
+# [DOC-FUNC] _collect_supply_rows
+# Objetivo: transforma leituras SNMP de suprimentos em linhas compreensiveis para o site.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: percorre OIDs de descricao/nivel/capacidade, calcula percentual quando possivel e classifica toner, kit e unidade de imagem; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _collect_supply_rows(
     ip: str,
     local: str,
@@ -486,6 +723,11 @@ def _collect_supply_rows(
     }
 
 
+# [DOC-FUNC] collect_printer_snapshot
+# Objetivo: executa o ciclo principal de coleta/envio de uma impressora.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def collect_printer_snapshot(
     ip: str,
     info: Dict[str, Any],
@@ -532,6 +774,7 @@ def collect_printer_snapshot(
 
     max_entries = snmp_walk(ip, OID_SUPPLY_MAX_BASE, community_str)
     curr_entries = snmp_walk(ip, OID_SUPPLY_CURRENT_BASE, community_str)
+    identity = _resolve_printer_identity(ip, info, community_str)
 
     page_counter = _resolve_page_counter(ip, info, community_str)
     total_prints = page_counter.get("page_count_total")
@@ -559,6 +802,7 @@ def collect_printer_snapshot(
             "source": "flask-snmp",
             "mode": "cache_update",
             "supplies_count": len(supplies_result["payload_supplies"]),
+            "identity": identity,
             "page_counter": {
                 "family": page_counter.get("family"),
                 "counter_name": page_counter.get("counter_name"),
@@ -566,10 +810,16 @@ def collect_printer_snapshot(
                 "counter_confidence": page_counter.get("counter_confidence"),
             },
         },
+        "identity": identity,
         "page_counter": page_counter,
     }
 
 
+# [DOC-FUNC] _push_to_new_api
+# Objetivo: executa o ciclo principal de coleta/envio de uma impressora.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _push_to_new_api(
     collector_id: str,
     ip: str,
@@ -593,6 +843,11 @@ def _push_to_new_api(
     send_telemetry_payload(payload, log_prefix=f"[collector:{ip}]")
 
 
+# [DOC-FUNC] _coletar_e_enviar_impressora
+# Objetivo: executa o ciclo principal de coleta/envio de uma impressora.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _coletar_e_enviar_impressora(
     ip: str,
     info: Dict[str, Any],
@@ -618,10 +873,18 @@ def _coletar_e_enviar_impressora(
             info.get("local", "Desconhecido"),
         )
 
+    payload_info = dict(info)
+    identity = snapshot.get("identity") if isinstance(snapshot, dict) else None
+    if isinstance(identity, dict):
+        for field in ("numero_serie", "endereco_mac", "hostname"):
+            value = _clean_identity_text(identity.get(field))
+            if value:
+                payload_info[field] = value
+
     _push_to_new_api(
         collector_id=collector_id,
         ip=ip,
-        info=info,
+        info=payload_info,
         status=snapshot["status"],
         collected_at_utc=snapshot["collected_at"],
         page_count_total=snapshot["page_count_total"],
@@ -767,4 +1030,3 @@ def atualizar_cache():
 
     logging.info("Atualizacao do cache concluida.")
     return dados
-

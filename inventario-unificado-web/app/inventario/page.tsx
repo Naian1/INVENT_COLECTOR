@@ -4,7 +4,7 @@
  */
 'use client';
 
-import { FormEvent, useEffect, useMemo, useRef, useState } from 'react';
+import { FormEvent, useDeferredValue, useEffect, useMemo, useRef, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
 import {
   Dialog,
@@ -58,6 +58,44 @@ type ConsolidadoLookupItem = {
 type EmpresaResumo = {
   cd_cgc: string;
   nm_empresa: string;
+};
+
+type PendenciaSubstituicao = {
+  id: number;
+  ie_status: 'PENDENTE' | 'CONFIRMADO' | 'DESCARTADO' | string;
+  dt_detectado: string | null;
+  dt_ultima_detecao: string | null;
+  nr_ocorrencias: number;
+  ds_motivo: string | null;
+  coletor_id: string | null;
+  nr_inventario_referencia: number;
+  nr_inventario_substituto: number | null;
+  cd_setor_referencia: number | null;
+  setor_referencia_label: string | null;
+  referencia: {
+    nr_inventario: number;
+    nr_patrimonio: string | null;
+    nr_serie: string | null;
+    nr_ip: string | null;
+    tp_status: string | null;
+    ie_situacao: string | null;
+  } | null;
+  detectado: {
+    nr_ip: string | null;
+    nr_patrimonio: string | null;
+    nr_serie: string | null;
+    nm_mac: string | null;
+  };
+  esperado: {
+    nr_patrimonio: string | null;
+    nr_serie: string | null;
+    nm_mac: string | null;
+  };
+  resolucao: {
+    dt_resolucao: string | null;
+    nm_usuario_resolucao: string | null;
+    ds_resolucao: string | null;
+  };
 };
 
 type FormInventarioState = {
@@ -194,6 +232,39 @@ function normalizarMacSemMascara(mac: string | null | undefined): string | null 
 }
 
 /**
+ * [DOC-FUNC] podeCorrigirDadosPendencia
+ * O que faz: Identifica quando a pendencia representa divergencia cadastral sem troca fisica (patrimonio confere e so serie ou MAC diverge).
+ * Entradas: pendencia.
+ * Como executa: compara esperado x detectado normalizando caixa e removendo separadores do MAC.
+ * Retorno/Efeitos: retorna true apenas para habilitar o botao "Corrigir dados" em casos seguros.
+ */
+function podeCorrigirDadosPendencia(pendencia: PendenciaSubstituicao): boolean {
+  const patrimonioEsperado = (pendencia.esperado?.nr_patrimonio || '').trim().toUpperCase();
+  const patrimonioDetectado = (pendencia.detectado?.nr_patrimonio || '').trim().toUpperCase();
+  const serieEsperada = (pendencia.esperado?.nr_serie || '').trim().toUpperCase();
+  const serieDetectada = (pendencia.detectado?.nr_serie || '').trim().toUpperCase();
+  const macEsperado = (normalizarMacSemMascara(pendencia.esperado?.nm_mac || null) || '')
+    .replace(/[^0-9A-F]/g, '');
+  const macDetectado = (normalizarMacSemMascara(pendencia.detectado?.nm_mac || null) || '')
+    .replace(/[^0-9A-F]/g, '');
+
+  if (!patrimonioEsperado || !patrimonioDetectado) return false;
+  if (!serieEsperada || !serieDetectada) return false;
+  if (!macEsperado || !macDetectado) return false;
+
+  const patrimonioConfere = patrimonioEsperado === patrimonioDetectado;
+  const serieConfere = serieEsperada === serieDetectada;
+  const serieDiverge = serieEsperada !== serieDetectada;
+  const macConfere = macEsperado === macDetectado;
+  const macDiverge = macEsperado !== macDetectado;
+
+  return patrimonioConfere && (
+    (serieConfere && macDiverge) ||
+    (macConfere && serieDiverge)
+  );
+}
+
+/**
  * [DOC-FUNC] labelInventario
  * O que faz: A funcao 'labelInventario' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
  * Entradas: Recebe os parametros: item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -232,6 +303,38 @@ function formatSetorLabel(setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_local
     .map((value) => value.trim())
     .filter(Boolean)
     .join(' > ');
+}
+
+/**
+ * [DOC-FUNC] SetorLocationPath
+ * Objetivo: apoia a tela principal de inventario unificado.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta contexto do inventario, organiza filtros, pendencias de telemetria e agrupamentos por piso/setor/localizacao; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
+function SetorLocationPath({ setor }: { setor?: Pick<Setor, 'nm_piso' | 'nm_setor' | 'nm_localizacao'> | null }) {
+  const piso = String(setor?.nm_piso || '').trim();
+  const setorNome = String(setor?.nm_setor || '').trim();
+  const localizacao = String(setor?.nm_localizacao || '').trim();
+  const partes = [
+    { label: 'Piso', value: piso || 'Não definido', icon: 'fi-rr-floor-alt' },
+    { label: 'Setor', value: setorNome || 'Sem setor', icon: 'fi-rr-building' },
+    { label: 'Localização', value: localizacao || 'Não definida', icon: 'fi-rr-map-marker' },
+  ];
+
+  return (
+    <div className="inv-location-path" aria-label={formatSetorLabel(setor)}>
+      {partes.map((parte) => (
+        <span className="inv-location-chip" key={parte.label}>
+          <i className={`fi ${parte.icon}`} aria-hidden />
+          <span>
+            <strong>{parte.label}</strong>
+            <em>{parte.value}</em>
+          </span>
+        </span>
+      ))}
+    </div>
+  );
 }
 
 /**
@@ -344,6 +447,13 @@ async function invokeInventoryCore<T>(
   throw new Error(`Falha ao executar inventory-core: ${reason}`);
 }
 
+/**
+ * [DOC-FUNC] InventarioPage
+ * Objetivo: apoia a tela principal de inventario unificado.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: consulta contexto do inventario, organiza filtros, pendencias de telemetria e agrupamentos por piso/setor/localizacao; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default function InventarioPage() {
   const [items, setItems] = useState<InventarioComDetalhes[]>([]);
   const [pisos, setPisos] = useState<Piso[]>([]);
@@ -376,6 +486,10 @@ export default function InventarioPage() {
   const [substituicaoLoading, setSubstituicaoLoading] = useState(false);
   const [substituicaoForm, setSubstituicaoForm] = useState<SubstituicaoFormState>(INITIAL_SUBSTITUICAO_FORM);
   const [substituicaoFilhosAcoes, setSubstituicaoFilhosAcoes] = useState<Record<number, AcaoFilhoSubstituicao>>({});
+  const [pendenciasSubstituicao, setPendenciasSubstituicao] = useState<PendenciaSubstituicao[]>([]);
+  const [pendenciasSubstituicaoLoading, setPendenciasSubstituicaoLoading] = useState(false);
+  const [resolvendoPendenciaId, setResolvendoPendenciaId] = useState<number | null>(null);
+  const [pendenciaObservacaoById, setPendenciaObservacaoById] = useState<Record<number, string>>({});
 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -391,6 +505,7 @@ export default function InventarioPage() {
   const [selectedRelacao, setSelectedRelacao] = useState<RelacaoFiltro>('todos');
   const [selectedStatus, setSelectedStatus] = useState<StatusFiltro>('todos');
   const [searchTerm, setSearchTerm] = useState('');
+  const deferredSearchTerm = useDeferredValue(searchTerm);
 
   const [formPisoSelecionado, setFormPisoSelecionado] = useState<number | null>(null);
   const [formTipoEquipamento, setFormTipoEquipamento] = useState<number | null>(null);
@@ -499,8 +614,89 @@ export default function InventarioPage() {
     }
   };
 
+  /**
+   * [DOC-FUNC] carregarPendenciasSubstituicao
+   * O que faz: Carrega as pendencias de substituicao detectadas pela telemetria para exibicao e acao manual.
+   * Entradas: Recebe os parametros: showLoading. Quando false, evita spinner global para recargas silenciosas.
+   * Como executa: Chama action `list_substituicao_pendente` no inventory-core e normaliza retorno para lista local.
+   * Retorno/Efeitos: Atualiza `pendenciasSubstituicao` com os alertas pendentes para aprovacao/descartar.
+   */
+  const carregarPendenciasSubstituicao = async (showLoading = true) => {
+    if (showLoading) {
+      setPendenciasSubstituicaoLoading(true);
+    }
+    try {
+      const response = await invokeInventoryCore<PendenciaSubstituicao[]>(
+        'list_substituicao_pendente',
+        { somente_pendentes: true, limite: 200 },
+        usuarioSessao,
+      );
+      setPendenciasSubstituicao(Array.isArray(response) ? response : []);
+    } catch (error: any) {
+      console.error('Erro ao carregar pendencias de substituicao:', error);
+      setPendenciasSubstituicao([]);
+      setErrorMessage(error?.message || 'Nao foi possivel carregar pendencias de substituicao.');
+    } finally {
+      if (showLoading) {
+        setPendenciasSubstituicaoLoading(false);
+      }
+    }
+  };
+
+  /**
+   * [DOC-FUNC] resolverPendenciaSubstituicao
+   * O que faz: Resolve uma pendencia de substituicao da telemetria, confirmando troca ou descartando alerta.
+   * Entradas: pendenciaId, acao.
+   * Como executa: Envia action `resolver_substituicao_pendente` ao inventory-core com observacao opcional.
+   * Retorno/Efeitos: Recarrega inventario e painel de pendencias para refletir o estado atualizado.
+   */
+  const resolverPendenciaSubstituicao = async (
+    pendenciaId: number,
+    acao: 'CONFIRMAR_TROCA' | 'DESCARTAR_ALERTA' | 'CORRIGIR_DADOS',
+  ) => {
+    if (!canEditInventario) {
+      setErrorMessage('Perfil VIEWER possui acesso somente leitura ao inventario.');
+      return;
+    }
+    setResolvendoPendenciaId(pendenciaId);
+    setErrorMessage(null);
+    try {
+      await invokeInventoryCore(
+        'resolver_substituicao_pendente',
+        {
+          id_pendencia: pendenciaId,
+          acao,
+          mover_substituto_para_setor_referencia: true,
+          observacao: pendenciaObservacaoById[pendenciaId]?.trim() || null,
+        },
+        usuarioSessao,
+      );
+
+      setSuccessMessage(
+        acao === 'CONFIRMAR_TROCA'
+          ? `Pendencia ${pendenciaId} confirmada com sucesso.`
+          : acao === 'CORRIGIR_DADOS'
+            ? `Pendencia ${pendenciaId} corrigida com sucesso.`
+            : `Pendencia ${pendenciaId} descartada com sucesso.`,
+      );
+
+      await Promise.all([
+        loadData(),
+        carregarPendenciasSubstituicao(false),
+      ]);
+    } catch (error: any) {
+      setErrorMessage(error?.message || `Falha ao resolver pendencia ${pendenciaId}.`);
+    } finally {
+      setResolvendoPendenciaId(null);
+    }
+  };
+
   useEffect(() => {
     void loadData();
+  }, []);
+
+  useEffect(() => {
+    void carregarPendenciasSubstituicao();
   }, []);
 
   useEffect(() => {
@@ -682,7 +878,7 @@ export default function InventarioPage() {
   }, [localizacoesFiltradas, selectedLocalizacao]);
 
   const paintedItems = useMemo(() => {
-    const termoBusca = normalizarTexto(searchTerm.trim());
+    const termoBusca = normalizarTexto(deferredSearchTerm.trim());
 
     return items.filter((item) => {
       if (selectedPiso !== null && item.setor?.cd_piso !== selectedPiso) return false;
@@ -730,7 +926,7 @@ export default function InventarioPage() {
 
       return conteudoBusca.includes(termoBusca);
     });
-  }, [items, searchTerm, selectedPiso, selectedRelacao, selectedSetor, selectedLocalizacao, selectedStatus, selectedTipo]);
+  }, [items, deferredSearchTerm, selectedPiso, selectedRelacao, selectedSetor, selectedLocalizacao, selectedStatus, selectedTipo]);
 
   const itensRaizDaVisao = useMemo(
     () => paintedItems.filter((item) => !item.nr_invent_sup && (selectedSetor === null || item.cd_setor === selectedSetor)),
@@ -1674,24 +1870,28 @@ export default function InventarioPage() {
             href="/inventario/importacoes"
             className="ui-btn"
           >
+            <i className="fi fi-rr-file-upload" aria-hidden />
             Importações
           </a>
           <a
             href="/inventario/consolidado"
             className="ui-btn"
           >
+            <i className="fi fi-rr-table-list" aria-hidden />
             Matrix
           </a>
           <a
             href="/inventario/conciliacao"
             className="ui-btn"
           >
+            <i className="fi fi-rr-search-alt" aria-hidden />
             Conciliação
           </a>
           <a
             href="/inventario/devolucao"
             className="ui-btn"
           >
+            <i className="fi fi-rr-undo-alt" aria-hidden />
             Devolução
           </a>
           <button
@@ -1707,12 +1907,25 @@ export default function InventarioPage() {
             className="ui-btn ui-btn-primary"
             disabled={!canEditInventario}
           >
+            <i className="fi fi-rr-add" aria-hidden />
             Adicionar equipamento
           </button>
         </div>
       }
     >
-      <StatusFeedback loading={loading || saving || resolucaoLoading || movimentacaoLoading || substituicaoLoading} error={errorMessage} success={successMessage} />
+      <StatusFeedback
+        loading={
+          loading
+          || saving
+          || resolucaoLoading
+          || movimentacaoLoading
+          || substituicaoLoading
+          || pendenciasSubstituicaoLoading
+          || resolvendoPendenciaId !== null
+        }
+        error={errorMessage}
+        success={successMessage}
+      />
       {!canEditInventario ? (
         <div className="ui-card text-sm text-slate-600">
           Perfil VIEWER: leitura habilitada. Edicoes, movimentacoes e substituicoes estao bloqueadas.
@@ -2535,6 +2748,131 @@ export default function InventarioPage() {
 
       <div className="inv-page space-y-6">
         <div className="rounded-xl border bg-white p-4 shadow-sm space-y-3">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div>
+              <h2 className="text-lg font-semibold text-slate-900">Pendências de substituição (telemetria)</h2>
+              <p className="text-sm text-slate-600">
+                Alertas detectados quando o IP respondeu com patrimônio/série/MAC diferente do esperado.
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={() => void carregarPendenciasSubstituicao()}
+              className="ui-btn"
+              disabled={pendenciasSubstituicaoLoading || resolvendoPendenciaId !== null}
+            >
+              Atualizar pendências
+            </button>
+          </div>
+
+          {pendenciasSubstituicao.length === 0 ? (
+            <div className="rounded-lg border border-slate-200 bg-slate-50 px-3 py-3 text-sm text-slate-600">
+              Nenhuma pendência pendente no momento.
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {pendenciasSubstituicao.map((pendencia) => {
+                const emProcessamento = resolvendoPendenciaId === pendencia.id;
+                const canCorrigirDados = podeCorrigirDadosPendencia(pendencia);
+                return (
+                  <div key={pendencia.id} className="rounded-lg border border-slate-200 p-3 space-y-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="text-sm">
+                        <p className="font-semibold text-slate-900">
+                          Pendência #{pendencia.id} · Ocorrências: {pendencia.nr_ocorrencias}
+                        </p>
+                        <p className="text-slate-600">
+                          Setor: {pendencia.setor_referencia_label || '-'} · Inventário referência: {pendencia.nr_inventario_referencia}
+                        </p>
+                        <p className="text-slate-600">
+                          Última detecção: {formatarDataHora(pendencia.dt_ultima_detecao)}
+                        </p>
+                      </div>
+                      <span className="rounded-full bg-amber-100 px-3 py-1 text-xs font-medium text-amber-800">
+                        {pendencia.ie_status}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-2 text-xs text-slate-700 md:grid-cols-2">
+                      <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
+                        <p className="font-medium text-slate-800">Esperado (inventário)</p>
+                        <p>IP: {pendencia.referencia?.nr_ip || '-'}</p>
+                        <p>Patrimônio: {pendencia.esperado?.nr_patrimonio || '-'}</p>
+                        <p>Série: {pendencia.esperado?.nr_serie || '-'}</p>
+                        <p>MAC: {pendencia.esperado?.nm_mac || '-'}</p>
+                      </div>
+                      <div className="rounded-md border border-blue-200 bg-blue-50 p-2">
+                        <p className="font-medium text-blue-900">Detectado (telemetria)</p>
+                        <p>IP: {pendencia.detectado?.nr_ip || '-'}</p>
+                        <p>Patrimônio: {pendencia.detectado?.nr_patrimonio || '-'}</p>
+                        <p>Série: {pendencia.detectado?.nr_serie || '-'}</p>
+                        <p>MAC: {pendencia.detectado?.nm_mac || '-'}</p>
+                      </div>
+                    </div>
+
+                    <p className="text-xs text-slate-600">
+                      Motivo: {pendencia.ds_motivo || 'Divergência de identificação detectada.'}
+                    </p>
+
+                    <label className="flex flex-col gap-1 text-sm">
+                      <span className="font-medium text-slate-700">Observação da resolução (opcional)</span>
+                      <input
+                        value={pendenciaObservacaoById[pendencia.id] || ''}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setPendenciaObservacaoById((prev) => ({ ...prev, [pendencia.id]: value }));
+                        }}
+                        className="rounded-md border border-slate-300 px-3 py-2"
+                        placeholder="Ex: troca validada em campo"
+                        disabled={emProcessamento}
+                      />
+                    </label>
+
+                    <div className="flex flex-wrap gap-2">
+                      {canCorrigirDados ? (
+                        <button
+                          type="button"
+                          className="ui-btn ui-btn-primary"
+                          disabled={emProcessamento || !canEditInventario}
+                          onClick={() => {
+                            if (!window.confirm(`Corrigir dados da pendência #${pendencia.id}?`)) return;
+                            void resolverPendenciaSubstituicao(pendencia.id, 'CORRIGIR_DADOS');
+                          }}
+                        >
+                          {emProcessamento ? 'Processando...' : 'Corrigir dados'}
+                        </button>
+                      ) : null}
+                      <button
+                        type="button"
+                        className="ui-btn ui-btn-primary"
+                        disabled={emProcessamento || !canEditInventario}
+                        onClick={() => {
+                          if (!window.confirm(`Confirmar troca da pendência #${pendencia.id}?`)) return;
+                          void resolverPendenciaSubstituicao(pendencia.id, 'CONFIRMAR_TROCA');
+                        }}
+                      >
+                        {emProcessamento ? 'Processando...' : 'Confirmar troca'}
+                      </button>
+                      <button
+                        type="button"
+                        className="ui-btn"
+                        disabled={emProcessamento || !canEditInventario}
+                        onClick={() => {
+                          if (!window.confirm(`Descartar alerta da pendência #${pendencia.id}?`)) return;
+                          void resolverPendenciaSubstituicao(pendencia.id, 'DESCARTAR_ALERTA');
+                        }}
+                      >
+                        {emProcessamento ? 'Processando...' : 'Descartar alerta'}
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-xl border bg-white p-4 shadow-sm space-y-3">
           <div>
             <h2 className="text-lg font-semibold text-slate-900">Filtros</h2>
             <p className="text-sm text-slate-600">
@@ -2681,7 +3019,7 @@ export default function InventarioPage() {
               return (
                 <div key={setorId} className="overflow-x-auto rounded-lg border bg-white">
                   <div className="border-b bg-gray-100 px-4 py-3">
-                    <h2 className="text-lg font-bold">{formatSetorLabel(setor)}</h2>
+                    <SetorLocationPath setor={setor} />
                     <p className="text-sm text-gray-600">{setor?.ds_setor}</p>
                   </div>
                   <table className="w-full">

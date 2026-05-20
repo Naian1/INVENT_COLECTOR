@@ -51,6 +51,7 @@ type Capacidades = {
   telemetria_pagecount: boolean;
   suprimentos: boolean;
   telemetria_substituicao_pendente: boolean;
+  telemetria_substituicao_evento_retido: boolean;
 };
 
 type InventarioIpSlot = {
@@ -58,6 +59,7 @@ type InventarioIpSlot = {
   cd_setor: number | null;
   nr_patrimonio: string | null;
   nr_serie: string | null;
+  nm_mac: string | null;
   nr_ip: string | null;
   tp_status: string | null;
   ie_situacao: string | null;
@@ -65,6 +67,7 @@ type InventarioIpSlot = {
 
 type AlertaSubstituicaoDetectado = {
   nr_inventario_referencia: number;
+  nr_inventario_substituto: number | null;
   cd_setor_referencia: number | null;
   nr_ip_detectado: string;
   nr_patrimonio_esperado: string | null;
@@ -74,6 +77,15 @@ type AlertaSubstituicaoDetectado = {
   nr_mac_esperado: string | null;
   nr_mac_detectado: string | null;
   ds_motivo: string;
+};
+
+type InventarioIdentidadeDetectada = {
+  nr_inventario: number;
+  nr_patrimonio: string | null;
+  nr_serie: string | null;
+  nm_mac: string | null;
+  ie_situacao: string | null;
+  tp_status: string | null;
 };
 
 const corsHeaders = {
@@ -441,6 +453,7 @@ async function carregarCapacidades(supabase: ReturnType<typeof getAdminClient>):
     telemetria_pagecount: await tableExists(supabase, "telemetria_pagecount"),
     suprimentos: await tableExists(supabase, "suprimentos"),
     telemetria_substituicao_pendente: await tableExists(supabase, "telemetria_substituicao_pendente"),
+    telemetria_substituicao_evento_retido: await tableExists(supabase, "telemetria_substituicao_evento_retido"),
   };
 }
 
@@ -458,12 +471,35 @@ async function buscarInventarioAtivoPorIp(
   const ipNormalizado = normalizeIp(ip);
   if (!ipNormalizado) return null;
 
-  const { data, error } = await supabase
+  let data: any[] | null = null;
+  let error: any = null;
+
+  const tentativaComMac = await supabase
     .from("inventario")
-    .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+    .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nm_mac,nr_ip,tp_status,ie_situacao")
     .eq("nr_ip", ipNormalizado)
     .eq("ie_situacao", "A")
     .limit(20);
+
+  if (!tentativaComMac.error) {
+    data = tentativaComMac.data as any[] | null;
+  } else {
+    const mensagemErro = String(tentativaComMac.error.message || "");
+    // Compatibilidade: ambientes antigos podem não ter inventario.nm_mac.
+    if (!isMissingColumnError(mensagemErro)) {
+      throw new Error(`inventario (ip-slot): ${mensagemErro}`);
+    }
+
+    const tentativaSemMac = await supabase
+      .from("inventario")
+      .select("nr_inventario,cd_setor,nr_patrimonio,nr_serie,nr_ip,tp_status,ie_situacao")
+      .eq("nr_ip", ipNormalizado)
+      .eq("ie_situacao", "A")
+      .limit(20);
+
+    data = tentativaSemMac.data as any[] | null;
+    error = tentativaSemMac.error;
+  }
 
   if (error) throw new Error(`inventario (ip-slot): ${error.message}`);
 
@@ -480,6 +516,7 @@ async function buscarInventarioAtivoPorIp(
     cd_setor: Number.isFinite(Number(escolhido.cd_setor)) ? Number(escolhido.cd_setor) : null,
     nr_patrimonio: cleanText(escolhido.nr_patrimonio),
     nr_serie: cleanText(escolhido.nr_serie),
+    nm_mac: cleanText(escolhido.nm_mac),
     nr_ip: cleanText(escolhido.nr_ip),
     tp_status: cleanText(escolhido.tp_status),
     ie_situacao: cleanText(escolhido.ie_situacao),
@@ -536,7 +573,7 @@ function detectarAlertaSubstituicao(
 
   const patrimonioEsperado = normalizeComparableText(slotInventario.nr_patrimonio ?? esperadoLegado?.patrimonio);
   const serieEsperada = normalizeComparableText(slotInventario.nr_serie ?? esperadoLegado?.numero_serie);
-  const macEsperado = normalizeMac(esperadoLegado?.endereco_mac);
+  const macEsperado = normalizeMac(slotInventario.nm_mac ?? esperadoLegado?.endereco_mac);
 
   const patrimonioDetectado = normalizeComparableText(evento.impressora.patrimonio);
   const serieDetectada = normalizeComparableText(evento.impressora.numero_serie);
@@ -560,6 +597,7 @@ function detectarAlertaSubstituicao(
 
   return {
     nr_inventario_referencia: slotInventario.nr_inventario,
+    nr_inventario_substituto: null,
     cd_setor_referencia: slotInventario.cd_setor,
     nr_ip_detectado: ipDetectado,
     nr_patrimonio_esperado: patrimonioEsperado,
@@ -569,6 +607,147 @@ function detectarAlertaSubstituicao(
     nr_mac_esperado: macEsperado,
     nr_mac_detectado: macDetectado,
     ds_motivo: motivos.join(" | "),
+  };
+}
+
+/**
+ * [DOC-FUNC] buscarInventarioPorIdentidadeDetectada
+ * O que faz: Tenta descobrir qual item do inventario corresponde a identidade real detectada (serie/MAC) durante uma troca.
+ * Entradas: supabase, nrInventarioReferencia, serieDetectada, macDetectado.
+ * Como executa: consulta candidatos por serie e por MAC, deduplica por inventario e ranqueia priorizando item diferente do slot de IP.
+ * Retorno/Efeitos: retorna o candidato mais provavel para enriquecer a pendencia com patrimonio real detectado.
+ */
+async function buscarInventarioPorIdentidadeDetectada(
+  supabase: ReturnType<typeof getAdminClient>,
+  nrInventarioReferencia: number,
+  serieDetectada: string | null,
+  macDetectado: string | null,
+): Promise<InventarioIdentidadeDetectada | null> {
+  const candidatos: InventarioIdentidadeDetectada[] = [];
+  const serieNormalizada = normalizeComparableText(serieDetectada);
+  const macNormalizado = normalizeMac(macDetectado);
+
+  if (serieNormalizada) {
+    const tentativaComMac = await supabase
+      .from("inventario")
+      .select("nr_inventario,nr_patrimonio,nr_serie,nm_mac,ie_situacao,tp_status")
+      .ilike("nr_serie", serieNormalizada)
+      .limit(20);
+
+    if (!tentativaComMac.error) {
+      for (const item of (tentativaComMac.data as any[]) || []) {
+        candidatos.push({
+          nr_inventario: Number(item.nr_inventario),
+          nr_patrimonio: cleanText(item.nr_patrimonio),
+          nr_serie: cleanText(item.nr_serie),
+          nm_mac: cleanText(item.nm_mac),
+          ie_situacao: cleanText(item.ie_situacao),
+          tp_status: cleanText(item.tp_status),
+        });
+      }
+    } else {
+      const msg = String(tentativaComMac.error.message || "");
+      if (!isMissingColumnError(msg)) {
+        throw new Error(`inventario (identidade-serie): ${msg}`);
+      }
+      const tentativaSemMac = await supabase
+        .from("inventario")
+        .select("nr_inventario,nr_patrimonio,nr_serie,ie_situacao,tp_status")
+        .ilike("nr_serie", serieNormalizada)
+        .limit(20);
+      if (tentativaSemMac.error) {
+        throw new Error(`inventario (identidade-serie): ${tentativaSemMac.error.message}`);
+      }
+      for (const item of (tentativaSemMac.data as any[]) || []) {
+        candidatos.push({
+          nr_inventario: Number(item.nr_inventario),
+          nr_patrimonio: cleanText(item.nr_patrimonio),
+          nr_serie: cleanText(item.nr_serie),
+          nm_mac: null,
+          ie_situacao: cleanText(item.ie_situacao),
+          tp_status: cleanText(item.tp_status),
+        });
+      }
+    }
+  }
+
+  if (macNormalizado) {
+    const tentativaMac = await supabase
+      .from("inventario")
+      .select("nr_inventario,nr_patrimonio,nr_serie,nm_mac,ie_situacao,tp_status")
+      .eq("nm_mac", macNormalizado)
+      .limit(20);
+
+    if (!tentativaMac.error) {
+      for (const item of (tentativaMac.data as any[]) || []) {
+        candidatos.push({
+          nr_inventario: Number(item.nr_inventario),
+          nr_patrimonio: cleanText(item.nr_patrimonio),
+          nr_serie: cleanText(item.nr_serie),
+          nm_mac: cleanText(item.nm_mac),
+          ie_situacao: cleanText(item.ie_situacao),
+          tp_status: cleanText(item.tp_status),
+        });
+      }
+    } else {
+      const msg = String(tentativaMac.error.message || "");
+      if (!isMissingColumnError(msg)) {
+        throw new Error(`inventario (identidade-mac): ${msg}`);
+      }
+    }
+  }
+
+  if (!candidatos.length) return null;
+
+  const unicos = new Map<number, InventarioIdentidadeDetectada>();
+  for (const candidato of candidatos) {
+    if (!Number.isFinite(candidato.nr_inventario)) continue;
+    if (!unicos.has(candidato.nr_inventario)) {
+      unicos.set(candidato.nr_inventario, candidato);
+    }
+  }
+
+  const ranqueados = Array.from(unicos.values()).map((candidato) => {
+    const serieCand = normalizeComparableText(candidato.nr_serie);
+    const macCand = normalizeMac(candidato.nm_mac);
+    let score = 0;
+    if (candidato.nr_inventario !== nrInventarioReferencia) score += 100;
+    if (serieNormalizada && serieCand === serieNormalizada) score += 40;
+    if (macNormalizado && macCand === macNormalizado) score += 40;
+    if ((candidato.ie_situacao || "").toUpperCase() === "A") score += 5;
+    return { candidato, score };
+  });
+
+  ranqueados.sort((a, b) => b.score - a.score);
+  return ranqueados[0]?.candidato || null;
+}
+
+/**
+ * [DOC-FUNC] enriquecerAlertaSubstituicaoComInventario
+ * O que faz: Ajusta os dados detectados da pendencia para refletir o patrimonio real da impressora identificada por serie/MAC.
+ * Entradas: supabase, alerta.
+ * Como executa: busca candidato no inventario por identidade detectada e sobrescreve patrimonio detectado quando encontrar match confiavel.
+ * Retorno/Efeitos: melhora rastreabilidade da troca no painel, evitando mostrar patrimonio herdado do slot de IP.
+ */
+async function enriquecerAlertaSubstituicaoComInventario(
+  supabase: ReturnType<typeof getAdminClient>,
+  alerta: AlertaSubstituicaoDetectado,
+): Promise<AlertaSubstituicaoDetectado> {
+  const candidato = await buscarInventarioPorIdentidadeDetectada(
+    supabase,
+    alerta.nr_inventario_referencia,
+    alerta.nr_serie_detectada,
+    alerta.nr_mac_detectado,
+  );
+  if (!candidato) return alerta;
+
+  const patrimonioDetectadoReal = normalizeComparableText(candidato.nr_patrimonio);
+  if (!patrimonioDetectadoReal) return alerta;
+
+  return {
+    ...alerta,
+    nr_inventario_substituto: candidato.nr_inventario,
+    nr_patrimonio_detectado: patrimonioDetectadoReal,
   };
 }
 
@@ -584,7 +763,7 @@ async function registrarPendenciaSubstituicao(
   coletorId: string,
   evento: EventoNormalizado,
   alerta: AlertaSubstituicaoDetectado,
-): Promise<void> {
+): Promise<number | null> {
   const { data: existente, error: erroExistente } = await supabase
     .from("telemetria_substituicao_pendente")
     .select("id,nr_ocorrencias")
@@ -594,18 +773,19 @@ async function registrarPendenciaSubstituicao(
 
   if (erroExistente) {
     const msg = String(erroExistente.message || "");
-    if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return;
+    if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return null;
     throw new Error(`telemetria_substituicao_pendente (select): ${msg}`);
   }
 
   if (existente?.id) {
     const novoTotalOcorrencias = Math.max(1, Number(existente.nr_ocorrencias || 0) + 1);
-    const { error: erroUpdate } = await supabase
+    const { data: atualizado, error: erroUpdate } = await supabase
       .from("telemetria_substituicao_pendente")
       .update({
         dt_ultima_detecao: evento.coletado_em,
         ie_status: "PENDENTE",
         nr_ocorrencias: novoTotalOcorrencias,
+        nr_inventario_substituto: alerta.nr_inventario_substituto,
         nr_patrimonio_esperado: alerta.nr_patrimonio_esperado,
         nr_patrimonio_detectado: alerta.nr_patrimonio_detectado,
         nr_serie_esperada: alerta.nr_serie_esperada,
@@ -620,38 +800,215 @@ async function registrarPendenciaSubstituicao(
         ds_resolucao: null,
         dt_resolucao: null,
       })
-      .eq("id", Number(existente.id));
+      .eq("id", Number(existente.id))
+      .select("id")
+      .single();
 
     if (erroUpdate) {
       throw new Error(`telemetria_substituicao_pendente (update): ${erroUpdate.message}`);
     }
-    return;
+    return Number(atualizado?.id || existente.id);
   }
 
-  const { error: erroInsert } = await supabase.from("telemetria_substituicao_pendente").insert([
-    {
-      dt_detectado: evento.coletado_em,
-      dt_ultima_detecao: evento.coletado_em,
-      ie_status: "PENDENTE",
-      nr_ocorrencias: 1,
-      nr_inventario_referencia: alerta.nr_inventario_referencia,
-      cd_setor_referencia: alerta.cd_setor_referencia,
-      nr_ip_detectado: alerta.nr_ip_detectado,
-      nr_patrimonio_esperado: alerta.nr_patrimonio_esperado,
-      nr_patrimonio_detectado: alerta.nr_patrimonio_detectado,
-      nr_serie_esperada: alerta.nr_serie_esperada,
-      nr_serie_detectada: alerta.nr_serie_detectada,
-      nr_mac_esperado: alerta.nr_mac_esperado,
-      nr_mac_detectado: alerta.nr_mac_detectado,
-      ds_motivo: alerta.ds_motivo,
-      coletor_id: coletorId,
-      payload_evento: evento as unknown as JsonRecord,
-    },
-  ]);
+  const { data: inserido, error: erroInsert } = await supabase
+    .from("telemetria_substituicao_pendente")
+    .insert([
+      {
+        dt_detectado: evento.coletado_em,
+        dt_ultima_detecao: evento.coletado_em,
+        ie_status: "PENDENTE",
+        nr_ocorrencias: 1,
+        nr_inventario_referencia: alerta.nr_inventario_referencia,
+        nr_inventario_substituto: alerta.nr_inventario_substituto,
+        cd_setor_referencia: alerta.cd_setor_referencia,
+        nr_ip_detectado: alerta.nr_ip_detectado,
+        nr_patrimonio_esperado: alerta.nr_patrimonio_esperado,
+        nr_patrimonio_detectado: alerta.nr_patrimonio_detectado,
+        nr_serie_esperada: alerta.nr_serie_esperada,
+        nr_serie_detectada: alerta.nr_serie_detectada,
+        nr_mac_esperado: alerta.nr_mac_esperado,
+        nr_mac_detectado: alerta.nr_mac_detectado,
+        ds_motivo: alerta.ds_motivo,
+        coletor_id: coletorId,
+        payload_evento: evento as unknown as JsonRecord,
+      },
+    ])
+    .select("id")
+    .single();
 
   if (erroInsert) {
     throw new Error(`telemetria_substituicao_pendente (insert): ${erroInsert.message}`);
   }
+
+  return Number(inserido?.id || 0) || null;
+}
+
+/**
+ * [DOC-FUNC] dateKeySaoPauloFromIso
+ * O que faz: Converte a data/hora da coleta para a data operacional usada no consolidado diario.
+ * Entradas: data ISO/string parseavel.
+ * Como executa: usa timezone `America/Sao_Paulo` para montar `YYYY-MM-DD`, igual ao SQL de pagecount diario.
+ * Retorno/Efeitos: permite compactar varias coletas bloqueadas em uma unica linha por pendencia/dia.
+ */
+function dateKeySaoPauloFromIso(value: string): string | null {
+  const data = new Date(value);
+  if (!Number.isFinite(data.getTime())) return null;
+  const parts = new Intl.DateTimeFormat("en-CA", {
+    timeZone: "America/Sao_Paulo",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(data);
+  const year = parts.find((part) => part.type === "year")?.value;
+  const month = parts.find((part) => part.type === "month")?.value;
+  const day = parts.find((part) => part.type === "day")?.value;
+  return year && month && day ? `${year}-${month}-${day}` : null;
+}
+
+/**
+ * [DOC-FUNC] buscarUltimoContadorPagecount
+ * O que faz: Busca o ultimo contador oficial conhecido de uma impressora ja cadastrada no inventario.
+ * Entradas: supabase e nrInventario.
+ * Como executa: consulta `telemetria_pagecount` ordenando pela leitura mais recente e valida se o total e numerico.
+ * Retorno/Efeitos: devolve um contador-base seguro para a primeira leitura retida de uma troca, reduzindo perda entre a troca fisica e a primeira coleta divergente.
+ */
+async function buscarUltimoContadorPagecount(
+  supabase: ReturnType<typeof getAdminClient>,
+  nrInventario: number | null | undefined,
+): Promise<number | null> {
+  const id = Number(nrInventario);
+  if (!Number.isFinite(id) || id <= 0) return null;
+
+  const { data, error } = await supabase
+    .from("telemetria_pagecount")
+    .select("nr_paginas_total,dt_leitura")
+    .eq("nr_inventario", id)
+    .order("dt_leitura", { ascending: false })
+    .limit(1)
+    .maybeSingle();
+
+  if (error) {
+    const msg = String(error.message || "");
+    if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return null;
+    throw new Error(`telemetria_pagecount (baseline-substituto): ${msg}`);
+  }
+
+  const contador = Number(data?.nr_paginas_total);
+  return Number.isFinite(contador) && contador >= 0 ? Math.trunc(contador) : null;
+}
+
+/**
+ * [DOC-FUNC] registrarEventoRetidoSubstituicao
+ * O que faz: Compacta as leituras SNMP bloqueadas por divergencia em um resumo diario para reaplicar depois da decisao humana.
+ * Entradas: supabase, idPendencia, coletorId, evento e alerta ja calculado.
+ * Como executa: busca a linha do dia da pendencia, calcula delta seguro entre contador anterior e atual e faz insert/update por `id_pendencia + dt_referencia`. Na primeira linha, quando a impressora real ja existe no inventario, usa o ultimo pagecount dela como base para nao perder a impressao feita antes da primeira coleta divergente.
+ * Retorno/Efeitos: preserva paginas em quarentena sem criar uma linha por ciclo de coleta.
+ */
+async function registrarEventoRetidoSubstituicao(
+  supabase: ReturnType<typeof getAdminClient>,
+  idPendencia: number | null,
+  coletorId: string,
+  evento: EventoNormalizado,
+  alerta: AlertaSubstituicaoDetectado,
+): Promise<void> {
+  if (!idPendencia || !Number.isFinite(idPendencia) || idPendencia <= 0) return;
+  if (evento.contador_total_paginas === null) return;
+
+  const dtReferencia = dateKeySaoPauloFromIso(evento.coletado_em);
+  if (!dtReferencia) return;
+  const contador = Math.max(0, Math.trunc(Number(evento.contador_total_paginas)));
+
+  const { data: existente, error: erroExistente } = await supabase
+    .from("telemetria_substituicao_evento_retido")
+    .select("id,nr_paginas_inicio_dia,nr_paginas_fim_dia,nr_paginas_dia,nr_ciclos_coleta,dt_primeira_leitura,dt_ultima_leitura")
+    .eq("id_pendencia", idPendencia)
+    .eq("dt_referencia", dtReferencia)
+    .maybeSingle();
+
+  if (erroExistente) {
+    const msg = String(erroExistente.message || "");
+    if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return;
+    throw new Error(`telemetria_substituicao_evento_retido (select): ${msg}`);
+  }
+
+  if (!existente?.id) {
+    let inicioDia = contador;
+    let paginasDiaInicial = 0;
+    const idSubstituto = Number(alerta.nr_inventario_substituto || 0);
+    if (Number.isFinite(idSubstituto) && idSubstituto > 0 && idSubstituto !== alerta.nr_inventario_referencia) {
+      const contadorBaseSubstituto = await buscarUltimoContadorPagecount(supabase, idSubstituto);
+      if (contadorBaseSubstituto !== null) {
+        const deltaInicial = contador - contadorBaseSubstituto;
+        if (deltaInicial >= 0 && deltaInicial <= 10000) {
+          inicioDia = contadorBaseSubstituto;
+          paginasDiaInicial = deltaInicial;
+        }
+      }
+    }
+    // Sem contador-base confiavel, a primeira leitura vira baseline do dia.
+    // Ex.: impressora reserva nunca coletada chega com contador fisico 50000;
+    // guardamos inicio=50000, fim=50000, paginas_dia=0 para nao inventar 50000 paginas no setor.
+
+    const { error: erroInsert } = await supabase.from("telemetria_substituicao_evento_retido").insert([
+      {
+        id_pendencia: idPendencia,
+        coletor_id: coletorId,
+        nr_inventario_referencia: alerta.nr_inventario_referencia,
+        nr_ip_detectado: alerta.nr_ip_detectado,
+        dt_referencia: dtReferencia,
+        nr_paginas_inicio_dia: inicioDia,
+        nr_paginas_fim_dia: contador,
+        nr_paginas_dia: paginasDiaInicial,
+        nr_ciclos_coleta: 1,
+        dt_primeira_leitura: evento.coletado_em,
+        dt_ultima_leitura: evento.coletado_em,
+        ds_status_ultima: evento.status,
+        payload_ultimo_evento: evento as unknown as JsonRecord,
+      },
+    ]);
+    if (erroInsert) {
+      const msg = String(erroInsert.message || "");
+      if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return;
+      throw new Error(`telemetria_substituicao_evento_retido (insert): ${msg}`);
+    }
+    return;
+  }
+
+  const ultimaMs = new Date(String(existente.dt_ultima_leitura || "")).getTime();
+  const leituraMs = new Date(evento.coletado_em).getTime();
+  if (Number.isFinite(ultimaMs) && Number.isFinite(leituraMs) && leituraMs < ultimaMs) return;
+
+  const fimAtual = Math.max(0, Number(existente.nr_paginas_fim_dia || 0));
+  const delta = contador - fimAtual;
+  const paginasDiaAtual = Math.max(0, Number(existente.nr_paginas_dia || 0));
+  // Se o contador voltou ou saltou demais, a leitura entra como "ultimo payload",
+  // mas nao soma paginas. Mantemos o fim anterior para nao quebrar o resumo diario.
+  const deltaSeguro = delta >= 0 && delta <= 10000;
+  const novoFim = deltaSeguro ? Math.max(fimAtual, contador) : fimAtual;
+  const novoDia = deltaSeguro ? paginasDiaAtual + Math.max(delta, 0) : paginasDiaAtual;
+
+  const { error } = await supabase
+    .from("telemetria_substituicao_evento_retido")
+    .update({
+      coletor_id: coletorId,
+      nr_paginas_fim_dia: novoFim,
+      nr_paginas_dia: novoDia,
+      nr_ciclos_coleta: Math.max(0, Number(existente.nr_ciclos_coleta || 0)) + 1,
+      dt_ultima_leitura: evento.coletado_em,
+      ds_status_ultima: evento.status,
+      payload_ultimo_evento: evento as unknown as JsonRecord,
+      dt_atualizacao: new Date().toISOString(),
+      dt_replay: null,
+      nr_inventario_destino: null,
+      ds_resultado: null,
+    })
+    .eq("id", Number(existente.id));
+
+  if (!error) return;
+
+  const msg = String(error.message || "");
+  if (isMissingTableErrorMessage(msg) || isMissingColumnError(msg)) return;
+  throw new Error(`telemetria_substituicao_evento_retido: ${msg}`);
 }
 
 /**
@@ -1065,6 +1422,7 @@ Deno.serve(async (req) => {
       eventos_processados: 0,
       gravacoes_telemetria: 0,
       gravacoes_leituras_paginas: 0,
+      gravacoes_pagecount_bloqueadas_substituicao: 0,
       gravacoes_suprimentos: 0,
       alertas_substituicao_detectados: 0,
       erros: [] as Array<{ ingestao_id: string; erro: string }>,
@@ -1075,6 +1433,7 @@ Deno.serve(async (req) => {
       try {
         let impressoraIdLegacy: string | null = null;
         let inventarioId: number | null = null;
+        let bloquearPagecountPorSubstituicao = false;
 
         // 1) Resolver IDs-alvo nas estruturas disponíveis no banco atual.
         if (caps.impressoras) {
@@ -1100,10 +1459,16 @@ Deno.serve(async (req) => {
             const esperadoLegado = caps.impressoras
               ? await buscarImpressoraLegadaPorIp(supabase, evento.impressora.ip)
               : null;
-            const alerta = detectarAlertaSubstituicao(slotInventario, esperadoLegado, evento);
-            if (alerta) {
-              await registrarPendenciaSubstituicao(supabase, lote.coletor_id, evento, alerta);
+            const alertaBase = detectarAlertaSubstituicao(slotInventario, esperadoLegado, evento);
+            if (alertaBase) {
+              const alerta = await enriquecerAlertaSubstituicaoComInventario(supabase, alertaBase);
+              const idPendencia = await registrarPendenciaSubstituicao(supabase, lote.coletor_id, evento, alerta);
+              if (caps.telemetria_substituicao_evento_retido) {
+                await registrarEventoRetidoSubstituicao(supabase, idPendencia, lote.coletor_id, evento, alerta);
+              }
               result.alertas_substituicao_detectados += 1;
+              // A leitura fica retida para replay posterior; neste momento, gravar pagecount poluiria o inventario errado.
+              bloquearPagecountPorSubstituicao = true;
             }
           }
         }
@@ -1126,8 +1491,12 @@ Deno.serve(async (req) => {
 
         // 3) Gravar nos destinos novos (inventário + pagecount + suprimentos novos).
         if (caps.telemetria_pagecount && inventarioId !== null && evento.contador_total_paginas !== null) {
-          await gravarTelemetriaPagecount(supabase, evento, inventarioId);
-          result.gravacoes_leituras_paginas += 1;
+          if (bloquearPagecountPorSubstituicao) {
+            result.gravacoes_pagecount_bloqueadas_substituicao += 1;
+          } else {
+            await gravarTelemetriaPagecount(supabase, evento, inventarioId);
+            result.gravacoes_leituras_paginas += 1;
+          }
         }
 
         if (caps.suprimentos && inventarioId !== null && evento.suprimentos.length) {

@@ -345,6 +345,13 @@ async function buscarIdsPorChave(
   return { success: true, data: ids };
 }
 
+/**
+ * [DOC-FUNC] detectarMatching
+ * Objetivo: apoia importacao e conciliacao de planilhas legadas do inventario.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: normaliza linhas, cruza identificadores como patrimonio/serie/IP e sugere correspondencias antes da gravacao; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function detectarMatching(
   dados: Record<string, unknown>,
   estrategia: ChaveMatching[]

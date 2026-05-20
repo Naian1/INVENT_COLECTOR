@@ -343,6 +343,11 @@ def _normalize_remote_printers(records, default_community):
     return printers
 
 
+# [DOC-FUNC] _normalize_remote_printers_from_inventario
+# Objetivo: normaliza impressoras vindas do inventario remoto para o formato usado pelo coletor.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: l? campos do Supabase, aplica filtros de ativo/IP e monta o dicionario local consumido pelo cache/coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _normalize_remote_printers_from_inventario(
     records,
     default_community,

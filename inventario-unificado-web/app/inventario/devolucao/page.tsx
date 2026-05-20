@@ -1,4 +1,4 @@
-﻿/**
+/**
  * [DOC-CODEMAP] Arquivo: inventario-unificado-web\app\inventario\devolucao\page.tsx
  * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
  */
@@ -25,6 +25,16 @@ type DevolucaoItem = {
   dt_atualizacao: string | null;
   ie_situacao: string | null;
   tp_status: string | null;
+};
+
+type EmpresaOption = {
+  cd_cgc?: string | null;
+  nm_empresa?: string | null;
+  empresa?: string | null;
+};
+
+type ListContextResponse = {
+  empresas?: EmpresaOption[];
 };
 
 /**
@@ -71,6 +81,13 @@ function escapeCsvCell(value: unknown): string {
   return `"${normalized.replace(/"/g, '""')}"`;
 }
 
+/**
+ * [DOC-FUNC] invokeInventoryCore
+ * Objetivo: apoia a tela de devolucao de equipamentos por empresa.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: busca itens em status DEVOLUCAO, carrega empresas para filtro, agrupa resultados e permite exportacao para estudo/operacao; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 async function invokeInventoryCore<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
   const { data, error } = await supabase.functions.invoke('inventory-core', {
     body: { action, payload: payload ?? {} },
@@ -84,8 +101,16 @@ async function invokeInventoryCore<T>(action: string, payload?: Record<string, u
   throw new Error(`Falha ao executar inventory-core: ${reason}`);
 }
 
+/**
+ * [DOC-FUNC] InventarioDevolucaoPage
+ * Objetivo: apoia a tela de devolucao de equipamentos por empresa.
+ * Entradas: usa os parametros da assinatura e/ou estado ja carregado pela tela/servico.
+ * Como executa: busca itens em status DEVOLUCAO, carrega empresas para filtro, agrupa resultados e permite exportacao para estudo/operacao; quando algo falha, propaga mensagem contextualizada para facilitar suporte e apresentacao.
+ * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
+ */
 export default function InventarioDevolucaoPage() {
   const [items, setItems] = useState<DevolucaoItem[]>([]);
+  const [empresas, setEmpresas] = useState<EmpresaOption[]>([]);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -98,10 +123,15 @@ export default function InventarioDevolucaoPage() {
     setSuccessMessage(null);
 
     try {
-      const data = await invokeInventoryCore<DevolucaoItem[]>('list_devolucao');
+      const [data, contexto] = await Promise.all([
+        invokeInventoryCore<DevolucaoItem[]>('list_devolucao'),
+        invokeInventoryCore<ListContextResponse>('list_context').catch(() => ({ empresas: [] })),
+      ]);
       const lista = Array.isArray(data) ? data : [];
+      const empresasContexto = Array.isArray(contexto.empresas) ? contexto.empresas : [];
       setItems(lista);
-      setSuccessMessage(`Itens em devolução carregados: ${lista.length}.`);
+      setEmpresas(empresasContexto);
+      setSuccessMessage(`Itens em devolução carregados: ${lista.length}. Empresas disponíveis: ${empresasContexto.length}.`);
     } catch (error: any) {
       setErrorMessage(error.message || 'Falha ao carregar devolução.');
       setItems([]);
@@ -114,14 +144,18 @@ export default function InventarioDevolucaoPage() {
     void carregar();
   }, [carregar]);
 
-  const empresas = useMemo(() => {
-    const bag = new Set<string>();
+  const empresasFiltroOptions = useMemo(() => {
+    const bag = new Map<string, string>();
+    for (const empresa of empresas) {
+      const nome = String(empresa.nm_empresa || empresa.empresa || empresa.cd_cgc || '').trim();
+      if (nome) bag.set(nome, nome);
+    }
     for (const item of items) {
       const nome = String(item.empresa || 'Sem empresa').trim();
-      if (nome) bag.add(nome);
+      if (nome && nome !== 'Sem empresa' && !bag.has(nome)) bag.set(nome, nome);
     }
-    return Array.from(bag).sort((a, b) => a.localeCompare(b));
-  }, [items]);
+    return Array.from(bag.values()).sort((a, b) => a.localeCompare(b));
+  }, [empresas, items]);
 
   const filtrados = useMemo(() => {
     const empresaNorm = normalizarTexto(empresaFiltro);
@@ -418,7 +452,7 @@ export default function InventarioDevolucaoPage() {
               onChange={(event) => setEmpresaFiltro(event.target.value)}
             >
               <option value="">Todas</option>
-              {empresas.map((empresa) => (
+              {empresasFiltroOptions.map((empresa) => (
                 <option key={empresa} value={empresa}>
                   {empresa}
                 </option>
@@ -460,7 +494,11 @@ export default function InventarioDevolucaoPage() {
 
       <section style={{ display: 'grid', gap: 16 }}>
         {!gruposEmpresa.length ? (
-          <div className="ui-card">Nenhum item de devolução encontrado para os filtros atuais.</div>
+          <div className="ui-card">
+            Nenhum item de devolução encontrado para os filtros atuais. A tela lista somente itens com
+            <strong> status DEVOLUCAO</strong>; se o contador do inventário também estiver em zero,
+            isso indica que ainda não existe item marcado para devolução no banco.
+          </div>
         ) : null}
 
         {gruposEmpresa.map((grupo) => (
@@ -502,4 +540,3 @@ export default function InventarioDevolucaoPage() {
     </BasicPageShell>
   );
 }
-

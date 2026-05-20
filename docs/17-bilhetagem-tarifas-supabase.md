@@ -1,4 +1,5 @@
 # 17 - Bilhetagem com tarifas por competencia (Supabase)
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Objetivo
 

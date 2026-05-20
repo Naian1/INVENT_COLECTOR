@@ -23,12 +23,22 @@ except Exception:
     ImageDraw = None
 
 
+# [DOC-FUNC] _runtime_dir
+# Objetivo: apoia o aplicativo/rotina de controle do coletor local.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _runtime_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
     return Path(__file__).resolve().parent
 
 
+# [DOC-FUNC] _resolve_base_dir
+# Objetivo: apoia o aplicativo/rotina de controle do coletor local.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _resolve_base_dir() -> Path:
     runtime_dir = _runtime_dir()
     candidates = [runtime_dir, runtime_dir.parent, runtime_dir.parent.parent, Path.cwd()]
@@ -193,6 +203,11 @@ def release_single_instance_mutex(handle):
         pass
 
 
+# [DOC-FUNC] is_pid_running
+# Objetivo: apoia o aplicativo/rotina de controle do coletor local.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def is_pid_running(pid: int) -> bool:
     if pid <= 0:
         return False
@@ -254,6 +269,11 @@ def clear_pid():
         pass
 
 
+# [DOC-FUNC] mask_secret
+# Objetivo: apoia o aplicativo/rotina de controle do coletor local.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def mask_secret(secret: str, keep: int = 4) -> str:
     value = str(secret or "").strip()
     if not value:

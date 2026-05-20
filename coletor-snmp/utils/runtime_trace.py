@@ -11,6 +11,11 @@ LOG_DIR = os.path.join(BASE_DIR, "logs")
 TRACE_FILE = os.path.join(LOG_DIR, "collector_backend_trace.jsonl")
 
 
+# [DOC-FUNC] _utc_now_iso
+# Objetivo: organiza uma etapa funcional do sistema para manter o fluxo previsivel e estudavel.
+# Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
+# Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 

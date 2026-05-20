@@ -1,4 +1,5 @@
 # 09 - Tests
+> **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Estado atual
 
@@ -67,4 +68,7 @@ Adicionar teste SQL rapido apos deploy:
 
 1. Atualizar `telemetria_pagecount` para um `nr_inventario` de teste.
 2. Verificar se a trigger atualiza `telemetria_pagecount_diaria`.
-3. Confirmar regra `nr_paginas_dia = nr_paginas_fim_dia - nr_paginas_inicio_dia`.
+3. Confirmar regra de incremento diario:
+   - deltas normais incrementam `nr_paginas_dia`;
+   - queda brusca (reset/troca para contador menor) nao subtrai;
+   - salto brusco (troca para contador historico alto) nao soma historico inteiro no dia.
