@@ -114,7 +114,7 @@ public.suprimentos
 
 A fonte oficial das impressoras é `public.inventario`. Não existe tabela separada de impressoras no fluxo atual.
 
-O coletor Python não sai inventando IP. Ele pede ao backend uma lista oficial de itens ativos do inventário que possuem IP preenchido. Essa lista vem da Edge Function `collector-impressoras`, que consulta `public.inventario` e retorna somente os equipamentos elegíveis para coleta.
+O coletor Python nao sai inventando IP. Em producao, ele consulta diretamente o Supabase/PostgREST usando `COLLECTOR_PRINTERS_SOURCE=supabase` e a tabela `public.inventario`. A lista oficial retorna somente itens ativos do inventario que possuem IP preenchido e que podem ser consultados por SNMP.
 
 Critérios principais da lista do coletor:
 
@@ -180,6 +180,68 @@ zod
 
 Next.js e React constroem as telas. Supabase JS chama autenticação e Edge Functions. As bibliotecas de exportação geram planilhas e PDFs. As bibliotecas de ícones melhoram a leitura visual. `zod` ajuda a validar dados quando necessário.
 
+
+## Fluxograma - Aplicativo Python do Coletor
+
+Este fluxo mostra os arquivos Python locais do coletor e como eles trabalham juntos. Ele complementa o fluxograma geral de impressoras, focando no aplicativo que inicia/para o coletor e no loop que executa a coleta.
+
+```mermaid
+flowchart TD
+  classDef app fill:#E3F2FD,stroke:#1565C0,stroke-width:1px,color:#000;
+  classDef loop fill:#FFF3E0,stroke:#EF6C00,stroke-width:1px,color:#000;
+  classDef util fill:#E8F5E9,stroke:#2E7D32,stroke-width:1px,color:#000;
+  classDef db fill:#ECEFF1,stroke:#37474F,stroke-width:1px,color:#000;
+  classDef net fill:#F3E5F5,stroke:#6A1B9A,stroke-width:1px,color:#000;
+  classDef danger fill:#FFEBEE,stroke:#C62828,stroke-width:2px,color:#000;
+
+  A[Usuario abre<br/>collector_control_app.py]:::app
+  B[App carrega .env<br/>load_env]:::app
+  C{Coletor ja esta<br/>rodando?}:::app
+  D[Mostra PID, status<br/>logs e painel tecnico]:::app
+  E[Usuario clica<br/>Iniciar coletor]:::app
+  F[save_env grava<br/>configuracoes]:::app
+  G[resolve_python_command<br/>acha Python da .venv]:::app
+  H[subprocess inicia<br/>run_collector_loop.py]:::loop
+
+  I[run_collector_loop.py<br/>configura logs e intervalo]:::loop
+  J[run_loop inicia ciclo]:::loop
+  K[cache_manager.py<br/>atualizar_cache]:::loop
+  L[api_client.py<br/>le .env e consulta Supabase REST]:::util
+  M[Supabase PostgREST<br/>public.inventario]:::db
+  N[file_manager.py<br/>salva/usa printers.json]:::util
+  O[cache_manager.py<br/>filtra IPs elegiveis]:::loop
+  P[snmp_client.py<br/>SNMP GET/WALK]:::net
+  Q[Impressoras fisicas<br/>respondem OIDs]:::net
+  R[cache_manager.py<br/>interpreta identidade, pagecount e suprimentos]:::loop
+  S[telemetry_mapper.py<br/>monta payload JSON]:::util
+  T[api_client.py<br/>envia para collector-telemetria]:::util
+  U[Edge collector-telemetria<br/>valida e grava]:::net
+  V[Supabase<br/>telemetria e suprimentos]:::db
+  W[runtime_trace.py<br/>registra eventos tecnicos]:::util
+  X[collector_pending.jsonl<br/>fila local se envio falhar]:::danger
+  Y[Circuit breaker<br/>cooldown em timeout]:::danger
+
+  A --> B --> C
+  C -- Sim --> D
+  C -- Nao --> E --> F --> G --> H
+  H --> I --> J --> K
+  K --> L --> M --> L
+  L --> N --> O
+  O --> P --> Q --> P
+  P --> R --> S --> T --> U --> V
+  T --> W
+  P --> W
+  L -- timeout repetido --> Y
+  T -- falha temporaria --> X
+  X --> T
+```
+
+Resumo curto do fluxo Python:
+
+```text
+collector_control_app.py -> run_collector_loop.py -> cache_manager.py -> snmp_client.py -> telemetry_mapper.py -> api_client.py -> Supabase
+```
+
 ## Fluxograma - Impressoras e Telemetria
 
 Este fluxograma mostra somente a parte de impressoras. A fonte oficial das impressoras coletadas é `public.inventario`. A interface web não grava regra crítica direto no banco; ela chama Edge Functions, e as Edge Functions aplicam validações, permissões e regras de negócio antes de escrever no Supabase.
@@ -200,9 +262,8 @@ flowchart TD
   WEB_CALL["supabase.functions.invoke<br/>chama inventory-print ou inventory-core"]:::frontend
 
   COL_LOOP["Coletor Python<br/>run_collector_loop.py"]:::collector
-  COL_LIST_REQ["Solicita lista de coleta<br/>GET collector-impressoras"]:::collector
-  COL_LIST_EDGE["Edge collector-impressoras<br/>valida COLLECTOR_API_TOKEN"]:::edge
-  COL_LIST_QUERY["Consulta public.inventario<br/>somente ativos com IP"]:::edge
+  COL_LIST_REQ["api_client.py<br/>consulta Supabase REST"]:::collector
+  COL_LIST_QUERY["PostgREST<br/>select em public.inventario"]:::db
   DB_INV["public.inventario<br/>fonte oficial dos equipamentos"]:::db
 
   COL_SNMP["Coletor consulta IPs<br/>via SNMP com pysnmp"]:::collector
@@ -227,7 +288,7 @@ flowchart TD
   WEB_CALL --> PRINT_EDGE
   WEB_CALL --> CORE
 
-  COL_LOOP --> COL_LIST_REQ --> COL_LIST_EDGE --> COL_LIST_QUERY --> DB_INV
+  COL_LOOP --> COL_LIST_REQ --> COL_LIST_QUERY --> DB_INV
   DB_INV --> COL_LIST_QUERY --> COL_LOOP
   COL_LOOP --> COL_SNMP --> PRINTER --> COL_SNMP
   COL_SNMP --> COL_PAYLOAD --> TEL_EDGE --> TEL_COMPARE --> DB_INV
@@ -285,7 +346,7 @@ flowchart LR
   PRINT["inventory-print<br/>métricas de impressoras"]:::edge
   ADMIN["inventory-admin<br/>usuários e administração"]:::edge
   MATRIX["inventory-matrix<br/>cargas e conciliação"]:::edge
-  COL_LIST["collector-impressoras<br/>lista IPs de public.inventario"]:::edge
+  COL_LIST["api_client.py<br/>consulta Supabase REST<br/>public.inventario"]:::collector
   COL_TEL["collector-telemetria<br/>ingestão SNMP"]:::edge
 
   COL["Coletor Python SNMP<br/>pysnmp + HTTP"]:::collector
