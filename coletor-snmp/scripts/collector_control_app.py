@@ -28,6 +28,9 @@ except Exception:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _runtime_dir
+# Explicacao didatica: Localiza a pasta onde o app de controle esta rodando, tanto em modo script quanto empacotado. Isso permite encontrar .env, logs e scripts sem depender do diretorio aberto no terminal.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _runtime_dir() -> Path:
     if getattr(sys, "frozen", False):
         return Path(sys.executable).resolve().parent
@@ -39,6 +42,9 @@ def _runtime_dir() -> Path:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_base_dir
+# Explicacao didatica: Procura a raiz real do coletor avaliando candidatos com scripts, .env e data. Essa escolha evita que o app salve configuracao no lugar errado.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_base_dir() -> Path:
     runtime_dir = _runtime_dir()
     candidates = [runtime_dir, runtime_dir.parent, runtime_dir.parent.parent, Path.cwd()]
@@ -101,6 +107,9 @@ DEFAULTS = {
 # Entradas: Recebe os parametros: path. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] load_env
+# Explicacao didatica: Le o arquivo .env linha por linha e devolve um dicionario simples de chave/valor. Ignora comentarios e linhas vazias para a tela carregar apenas configuracoes validas.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def load_env(path: Path):
     values = {}
     if not path.exists():
@@ -119,6 +128,9 @@ def load_env(path: Path):
 # Entradas: Recebe os parametros: path, values. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
+# [DOC-DETAIL] save_env
+# Explicacao didatica: Mescla os valores editados na interface com o .env existente e grava tudo ordenado. Assim o usuario altera configuracoes sem apagar campos que a tela nao mostra.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def save_env(path: Path, values):
     existing = load_env(path)
     existing.update(values)
@@ -131,6 +143,9 @@ def save_env(path: Path, values):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] resolve_python_command
+# Explicacao didatica: Escolhe qual executavel Python sera usado para iniciar o loop: primeiro tenta a .venv do projeto, depois python/pythonw do PATH e por fim o launcher py.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def resolve_python_command():
     candidates = [
         BASE_DIR / ".venv" / "Scripts" / "pythonw.exe",
@@ -156,6 +171,9 @@ def resolve_python_command():
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] acquire_single_instance_lock
+# Explicacao didatica: Cria um lock de arquivo para impedir duas janelas do app abertas ao mesmo tempo. Isso evita dois botoes Iniciar controlando o mesmo coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def acquire_single_instance_lock():
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     lock_file = open(APP_LOCK_PATH, "a+")
@@ -177,6 +195,9 @@ def acquire_single_instance_lock():
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] acquire_single_instance_mutex
+# Explicacao didatica: No Windows, cria um mutex global para reforcar que so existe uma instancia do app. E uma segunda camada de seguranca alem do lock de arquivo.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def acquire_single_instance_mutex():
     if os.name != "nt":
         return object()
@@ -194,6 +215,9 @@ def acquire_single_instance_mutex():
 # Entradas: Recebe os parametros: handle. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] release_single_instance_mutex
+# Explicacao didatica: Fecha o handle do mutex quando o app encerra. Isso libera o Windows para permitir nova abertura no futuro.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def release_single_instance_mutex(handle):
     if os.name != "nt" or not handle:
         return
@@ -208,6 +232,9 @@ def release_single_instance_mutex(handle):
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] is_pid_running
+# Explicacao didatica: Verifica se o PID salvo ainda pertence a um processo vivo. No Windows usa API do sistema; em outros ambientes usa sinal zero.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def is_pid_running(pid: int) -> bool:
     if pid <= 0:
         return False
@@ -235,6 +262,9 @@ def is_pid_running(pid: int) -> bool:
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] read_pid
+# Explicacao didatica: Le o arquivo collector.pid para descobrir qual processo do loop esta rodando. Se o arquivo estiver vazio ou invalido, retorna None.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def read_pid():
     try:
         if not PID_PATH.exists():
@@ -252,6 +282,9 @@ def read_pid():
 # Entradas: Recebe os parametros: pid. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] write_pid
+# Explicacao didatica: Grava o PID do processo iniciado pelo app. Esse numero permite parar o coletor depois sem procurar manualmente no Gerenciador de Tarefas.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def write_pid(pid: int):
     LOG_DIR.mkdir(parents=True, exist_ok=True)
     PID_PATH.write_text(str(pid), encoding="utf-8")
@@ -262,6 +295,9 @@ def write_pid(pid: int):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] clear_pid
+# Explicacao didatica: Remove o arquivo de PID quando o processo para. Isso evita a tela mostrar coletor rodando quando ele ja foi encerrado.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def clear_pid():
     try:
         PID_PATH.unlink(missing_ok=True)
@@ -274,6 +310,9 @@ def clear_pid():
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: resolve caminhos de runtime, mascara segredos, verifica processo ativo e organiza execucao segura do loop de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] mask_secret
+# Explicacao didatica: Mascara token e chaves antes de mostrar na interface/log. Mantem apenas os ultimos caracteres para conferencia visual sem expor segredo inteiro.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def mask_secret(secret: str, keep: int = 4) -> str:
     value = str(secret or "").strip()
     if not value:
@@ -288,6 +327,9 @@ def mask_secret(secret: str, keep: int = 4) -> str:
 # Entradas: Recebe os parametros: path, max_lines. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] tail_lines
+# Explicacao didatica: Le apenas as ultimas linhas de um arquivo de log. Isso deixa a tela leve mesmo quando o log completo esta grande.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def tail_lines(path: Path, max_lines: int = 80):
     try:
         if not path.exists():
@@ -303,6 +345,9 @@ def tail_lines(path: Path, max_lines: int = 80):
 # Entradas: Recebe os parametros: path, max_lines. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] tail_jsonl
+# Explicacao didatica: Le eventos JSONL recentes e converte cada linha em objeto. Eventos invalidos sao ignorados para nao quebrar a interface.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def tail_jsonl(path: Path, max_lines: int = 120):
     events = []
     try:
@@ -329,6 +374,9 @@ def tail_jsonl(path: Path, max_lines: int = 120):
 # Entradas: Recebe os parametros: value, max_len. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] shorten_text
+# Explicacao didatica: Reduz textos longos para caber no painel. Remove quebras de linha e coloca reticencias quando ultrapassa o limite.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def shorten_text(value, max_len: int = 140):
     text = str(value or "").replace("\r", " ").replace("\n", " ").strip()
     if len(text) <= max_len:
@@ -341,6 +389,9 @@ def shorten_text(value, max_len: int = 140):
 # Entradas: Recebe os parametros: pid. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] stop_pid
+# Explicacao didatica: Encerra o processo do coletor pelo PID. No Windows usa taskkill com arvore de processos para evitar deixar subprocessos presos.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def stop_pid(pid: int):
     if pid <= 0:
         return
@@ -360,12 +411,18 @@ def stop_pid(pid: int):
             pass
 
 
+# [DOC-DETAIL] CollectorControlApp
+# Explicacao didatica: Classe principal da janela Tkinter. Ela concentra interface, botoes, status, logs, configuracao e controle de iniciar/parar o loop.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 class CollectorControlApp:
     # [DOC-FUNC] __init__
     # O que faz: A funcao '__init__' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
     # Entradas: Recebe os parametros: root. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] __init__
+    # Explicacao didatica: Inicializa estado da tela, carrega variaveis, cria widgets e prepara verificacao periodica. Nao inicia coleta automaticamente.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def __init__(self, root: tk.Tk):
         self.root = root
         self.root.title("Collector Control - Inventario")
@@ -395,6 +452,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _build_ui
+    # Explicacao didatica: Monta visualmente a tela: campos do .env, botoes de iniciar/parar, status e painel de diagnostico. Cada widget fica ligado ao estado da classe.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _build_ui(self):
         outer = ttk.Frame(self.root, padding=12)
         outer.pack(fill="both", expand=True)
@@ -478,6 +538,9 @@ class CollectorControlApp:
     # Entradas: Recebe os parametros: busy. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _set_busy
+    # Explicacao didatica: Ativa/desativa estado ocupado nos botoes durante operacoes demoradas. Isso evita duplo clique em iniciar/parar enquanto uma thread trabalha.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _set_busy(self, busy: bool):
         state = "disabled" if busy else "normal"
         for btn in [self.btn_save, self.btn_start, self.btn_stop, self.btn_refresh, self.btn_logs, self.btn_tray]:
@@ -491,6 +554,9 @@ class CollectorControlApp:
     # Entradas: Recebe os parametros: silent. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] save_config
+    # Explicacao didatica: Pega valores digitados na tela e grava no .env. Pode rodar silenciosamente antes de iniciar o coletor.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def save_config(self, silent: bool = False):
         try:
             payload = {k: v.get().strip() for k, v in self.vars.items()}
@@ -508,6 +574,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] start_collector
+    # Explicacao didatica: Dispara a rotina de inicio em thread separada para nao travar a interface. Ela valida processo existente, salva config e abre o loop Python.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def start_collector(self):
         if self.starting:
             return
@@ -520,6 +589,9 @@ class CollectorControlApp:
         # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] worker
+        # Explicacao didatica: Executa trabalho pesado em background dentro de botoes do app. Mantem a janela responsiva enquanto inicia ou para processos.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def worker():
             err = None
             started_pid = None
@@ -582,6 +654,9 @@ class CollectorControlApp:
             # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
             # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
             # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+            # [DOC-DETAIL] done
+            # Explicacao didatica: Participa do fluxo do coletor Python. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+            # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
             def done():
                 self.starting = False
                 self._set_busy(False)
@@ -600,6 +675,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] stop_collector
+    # Explicacao didatica: Dispara a parada do coletor em thread separada. Usa o PID salvo para encerrar o processo certo e depois atualiza a tela.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def stop_collector(self):
         if self.starting:
             return
@@ -611,6 +689,9 @@ class CollectorControlApp:
         # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] worker
+        # Explicacao didatica: Executa trabalho pesado em background dentro de botoes do app. Mantem a janela responsiva enquanto inicia ou para processos.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def worker():
             err = None
             try:
@@ -627,6 +708,9 @@ class CollectorControlApp:
             # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
             # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
             # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+            # [DOC-DETAIL] done
+            # Explicacao didatica: Participa do fluxo do coletor Python. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+            # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
             def done():
                 self._set_busy(False)
                 self.refresh_status()
@@ -642,6 +726,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] refresh_status
+    # Explicacao didatica: Atualiza indicadores da janela: se o coletor esta rodando, PID atual, ultimas linhas de log e painel tecnico.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def refresh_status(self):
         pid = read_pid()
         running = bool(pid and is_pid_running(pid))
@@ -662,6 +749,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] open_logs
+    # Explicacao didatica: Abre a pasta de logs no explorador do Windows para facilitar suporte e auditoria manual.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def open_logs(self):
         LOG_DIR.mkdir(parents=True, exist_ok=True)
         if os.name == "nt":
@@ -674,6 +764,9 @@ class CollectorControlApp:
     # Entradas: Recebe os parametros: ts. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _compact_ts
+    # Explicacao didatica: Formata timestamps longos para caberem no painel de eventos. Mantem o horario mais importante para leitura rapida.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _compact_ts(self, ts):
         text = str(ts or "").strip()
         if "T" in text and "." in text:
@@ -691,6 +784,9 @@ class CollectorControlApp:
     # Entradas: Recebe os parametros: raw_payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _format_payload_for_panel
+    # Explicacao didatica: Transforma o ultimo payload JSON em resumo legivel: coletor, IP, status, pagecount e suprimentos. Tambem mostra JSON completo reduzido.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _format_payload_for_panel(self, raw_payload):
         if not raw_payload:
             return "(ainda nao houve POST de telemetria nesta sessao)"
@@ -744,6 +840,9 @@ class CollectorControlApp:
     # Entradas: Recebe os parametros: event. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _event_line
+    # Explicacao didatica: Converte eventos tecnicos do runtime_trace em linhas humanas. Ajuda a entender GET SNMP, POST de telemetria e erros sem abrir JSON bruto.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _event_line(self, event):
         ts = self._compact_ts(event.get("ts"))
         ev = str(event.get("event") or "").strip().lower()
@@ -773,6 +872,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] build_backend_panel_snapshot
+    # Explicacao didatica: Monta um relatorio textual completo da situacao do coletor: status, endpoints, comandos SNMP equivalentes, payload e logs.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def build_backend_panel_snapshot(self):
         payload = {k: v.get().strip() for k, v in self.vars.items()}
         trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=300)
@@ -839,6 +941,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
     # Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
+    # [DOC-DETAIL] refresh_backend_panel
+    # Explicacao didatica: Recarrega o painel tecnico da interface com o snapshot atual. Mantem o texto somente leitura para evitar edicao acidental.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def refresh_backend_panel(self):
         if self.backend_panel_text is None or not self.backend_panel_text.winfo_exists():
             return
@@ -852,6 +957,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] _build_tray_image
+    # Explicacao didatica: Gera um icone simples para a bandeja do sistema quando pystray esta disponivel.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _build_tray_image(self):
         if Image is None:
             return None
@@ -866,6 +974,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] minimize_to_tray
+    # Explicacao didatica: Esconde a janela e cria menu na bandeja com Mostrar, Iniciar, Parar e Sair. Se pystray nao existir, apenas minimiza.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def minimize_to_tray(self):
         if self.tray_icon is not None:
             self.root.withdraw()
@@ -882,6 +993,9 @@ class CollectorControlApp:
         # Entradas: Recebe os parametros: icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] on_show
+        # Explicacao didatica: Callback da bandeja para reabrir a janela principal.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def on_show(icon, _item):
             try:
                 icon.stop()
@@ -895,9 +1009,15 @@ class CollectorControlApp:
         # Entradas: Recebe os parametros: _icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] on_start
+        # Explicacao didatica: Callback da bandeja para iniciar o coletor pela mesma regra do botao da interface.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def on_start(_icon, _item):
             self.root.after(0, self.start_collector)
 
+        # [DOC-DETAIL] on_stop
+        # Explicacao didatica: Callback da bandeja para parar o coletor pela mesma regra do botao da interface.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def on_stop(_icon, _item):
             self.root.after(0, self.stop_collector)
 
@@ -906,6 +1026,9 @@ class CollectorControlApp:
         # Entradas: Recebe os parametros: icon, _item. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] on_quit
+        # Explicacao didatica: Callback da bandeja para encerrar icone e fechar a aplicacao.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def on_quit(icon, _item):
             try:
                 icon.stop()
@@ -929,6 +1052,9 @@ class CollectorControlApp:
         # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
         # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
         # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+        # [DOC-DETAIL] run_icon
+        # Explicacao didatica: Executa o loop do icone da bandeja em thread separada para nao bloquear a janela Tkinter.
+        # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
         def run_icon():
             icon.run()
 
@@ -940,6 +1066,9 @@ class CollectorControlApp:
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] on_close
+    # Explicacao didatica: Ao fechar, registra estado final e encerra icone de bandeja. Nao altera dados do banco; apenas fecha o app local.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def on_close(self):
         try:
             state = {"last_closed_at": int(time.time()), "was_running": self.running}
@@ -961,6 +1090,9 @@ class CollectorControlApp:
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] main
+# Explicacao didatica: Ponto de entrada do app visual. Garante instancia unica, cria janela, agenda refresh e entra no loop Tkinter.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def main():
     mutex_handle = acquire_single_instance_mutex()
     if mutex_handle is None:
@@ -988,6 +1120,9 @@ def main():
     # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
     # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
     # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+    # [DOC-DETAIL] periodic_refresh
+    # Explicacao didatica: Agenda atualizacao automatica de status a cada poucos segundos para a tela refletir o processo real.
+    # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def periodic_refresh():
         app.refresh_status()
         root.after(5000, periodic_refresh)

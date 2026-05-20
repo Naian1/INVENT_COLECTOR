@@ -25,6 +25,9 @@ _PRINTER_SYNC_CIRCUIT_REASON = ""
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _load_env_file
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _load_env_file():
     global _ENV_CACHE
     if _ENV_CACHE is not None:
@@ -52,6 +55,9 @@ def _load_env_file():
 # Entradas: Recebe os parametros: name, default_value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _get_env
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _get_env(name, default_value=None):
     file_env = _load_env_file()
     return os.getenv(name) or file_env.get(name, default_value)
@@ -62,6 +68,9 @@ def _get_env(name, default_value=None):
 # Entradas: Recebe os parametros: raw_value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _parse_list_env
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, interpreta valor textual vindo do .env e converte para o tipo correto, aplicando limite e valor padrao para evitar configuracao perigosa.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _parse_list_env(raw_value):
     raw = str(raw_value or "").strip()
     if not raw:
@@ -74,6 +83,9 @@ def _parse_list_env(raw_value):
 # Entradas: Recebe os parametros: raw_value, default_value, min_value, max_value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _parse_int_env
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, interpreta valor textual vindo do .env e converte para o tipo correto, aplicando limite e valor padrao para evitar configuracao perigosa.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
     try:
         parsed = int(str(raw_value).strip())
@@ -87,6 +99,9 @@ def _parse_int_env(raw_value, default_value=1, min_value=1, max_value=64):
 # Entradas: Recebe os parametros: raw_value, default_value, min_value, max_value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _parse_float_env
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, interpreta valor textual vindo do .env e converte para o tipo correto, aplicando limite e valor padrao para evitar configuracao perigosa.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.0):
     try:
         parsed = float(str(raw_value).strip())
@@ -100,6 +115,9 @@ def _parse_float_env(raw_value, default_value=1.0, min_value=0.0, max_value=300.
 # Entradas: Recebe os parametros: raw_value, default_value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _parse_bool_env
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, interpreta valor textual vindo do .env e converte para o tipo correto, aplicando limite e valor padrao para evitar configuracao perigosa.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _parse_bool_env(raw_value, default_value=False):
     if raw_value is None:
         return default_value
@@ -116,6 +134,9 @@ def _parse_bool_env(raw_value, default_value=False):
 # Entradas: Recebe os parametros: exc. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _compact_error_message
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _compact_error_message(exc):
     reason = getattr(exc, "reason", None)
     base = reason if reason is not None else exc
@@ -130,6 +151,9 @@ def _compact_error_message(exc):
 # Entradas: Recebe os parametros: text, max_len. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _shorten_text
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _shorten_text(text, max_len=180):
     clean = str(text or "").replace("\r", " ").replace("\n", " ").strip()
     if len(clean) <= max_len:
@@ -142,6 +166,9 @@ def _shorten_text(text, max_len=180):
 # Entradas: Recebe os parametros: raw_body. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _extract_http_error_hint
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _extract_http_error_hint(raw_body):
     try:
         parsed = json.loads(raw_body)
@@ -182,6 +209,9 @@ def _extract_http_error_hint(raw_body):
 # Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _clean_text_value
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, remove sujeira de texto/valor vindo de fonte externa para evitar enviar espacos, nulos falsos ou caracteres ambiguos.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _clean_text_value(value):
     if value is None:
         return None
@@ -194,6 +224,9 @@ def _clean_text_value(value):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] get_collector_config
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, executa parte da coleta de uma impressora, reunindo dados tecnicos que depois serao transformados em payload.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def get_collector_config():
     base_url = (_get_env("COLLECTOR_API_BASE_URL", "") or "").strip().rstrip("/")
     if base_url:
@@ -328,6 +361,9 @@ def get_collector_config():
 # esse tempo nao vence, o coletor nao faz nova requisicao remota de lista de impressoras.
 # Saida/Efeito: retorna mensagem de bloqueio temporario ou None quando a tentativa remota
 # esta liberada novamente.
+# [DOC-DETAIL] _get_printer_sync_circuit_error
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _get_printer_sync_circuit_error():
     now = time.time()
     if _PRINTER_SYNC_CIRCUIT_OPEN_UNTIL <= now:
@@ -342,6 +378,9 @@ def _get_printer_sync_circuit_error():
 # Como executa: le o cooldown configurado e grava o horario futuro em variaveis de
 # processo; isso reduz rajadas de retry quando PostgREST/Edge/Auth estao degradados.
 # Saida/Efeito: registra aviso em log e evita novas chamadas remotas ate o cooldown vencer.
+# [DOC-DETAIL] _open_printer_sync_circuit
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _open_printer_sync_circuit(config, reason):
     global _PRINTER_SYNC_CIRCUIT_OPEN_UNTIL, _PRINTER_SYNC_CIRCUIT_REASON
     cooldown = float(config.get("sync_failure_cooldown_seconds") or 0)
@@ -361,6 +400,9 @@ def _open_printer_sync_circuit(config, reason):
 # Entradas: Recebe os parametros: records, default_community. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _normalize_remote_printers
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, padroniza texto, estrutura ou valores para que comparacoes e gravacoes usem formato consistente.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalize_remote_printers(records, default_community):
     printers = {}
     for item in records:
@@ -396,6 +438,9 @@ def _normalize_remote_printers(records, default_community):
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: l? campos do Supabase, aplica filtros de ativo/IP e monta o dicionario local consumido pelo cache/coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _normalize_remote_printers_from_inventario
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, padroniza texto, estrutura ou valores para que comparacoes e gravacoes usem formato consistente.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalize_remote_printers_from_inventario(
     records,
     default_community,
@@ -465,6 +510,9 @@ def _normalize_remote_printers_from_inventario(
 # Entradas: Recebe os parametros: config, log_prefix. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _fetch_printers_via_api
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, busca dados em fonte remota, aplica autenticacao, timeout e normalizacao antes de entregar ao ciclo de coleta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _fetch_printers_via_api(config, log_prefix):
     if not config["token"]:
         msg = "COLLECTOR_API_TOKEN nao configurado. Sync de impressoras desativado."
@@ -583,6 +631,9 @@ def _fetch_printers_via_api(config, log_prefix):
 # Entradas: Recebe os parametros: config, log_prefix. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _fetch_printers_via_supabase
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, busca dados em fonte remota, aplica autenticacao, timeout e normalizacao antes de entregar ao ciclo de coleta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _fetch_printers_via_supabase(config, log_prefix):
     supabase_url = str(config.get("supabase_url") or "").strip().rstrip("/")
     supabase_key = str(config.get("supabase_key") or "").strip()
@@ -750,6 +801,9 @@ def _fetch_printers_via_supabase(config, log_prefix):
 # Entradas: Recebe os parametros: log_prefix. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] fetch_printers_from_api
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, busca dados em fonte remota, aplica autenticacao, timeout e normalizacao antes de entregar ao ciclo de coleta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def fetch_printers_from_api(log_prefix="[collector-api]"):
     config = get_collector_config()
     source = str(config.get("printers_source") or "api").strip().lower()
@@ -807,6 +861,9 @@ def fetch_printers_from_api(log_prefix="[collector-api]"):
 # Entradas: Recebe os parametros: payload, reason. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _queue_pending_payload
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _queue_pending_payload(payload, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -826,6 +883,9 @@ def _queue_pending_payload(payload, reason):
 # Entradas: Recebe os parametros: record, reason. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _archive_invalid_pending_record
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, move registro problem?tico para area de invalidos, preservando auditoria sem tentar reenviar algo irrecuperavel.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _archive_invalid_pending_record(record, reason):
     try:
         os.makedirs(DATA_DIR, exist_ok=True)
@@ -845,6 +905,9 @@ def _archive_invalid_pending_record(record, reason):
 # Entradas: Recebe os parametros: payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _extract_ingestao_id
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _extract_ingestao_id(payload):
     ingestao_id = None
     if isinstance(payload, dict):
@@ -863,6 +926,9 @@ def _extract_ingestao_id(payload):
 # Entradas: Recebe os parametros: payload, log_prefix, queue_on_failure. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] send_telemetry_payload
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failure=True):
     config = get_collector_config()
 
@@ -1049,6 +1115,9 @@ def send_telemetry_payload(payload, log_prefix="[collector-api]", queue_on_failu
 # Entradas: Recebe os parametros: max_items, log_prefix. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] replay_pending_payloads
+# Explicacao didatica: Faz parte da camada HTTP do coletor: le ambiente, conversa com Supabase/Edge, trata timeout/retry e protege payloads pendentes. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def replay_pending_payloads(max_items=None, log_prefix="[collector-replay]"):
     if not os.path.exists(PENDING_QUEUE_FILE):
         return {"success": True, "processed": 0, "sent": 0, "remaining": 0}

@@ -59,8 +59,14 @@ SUPPLY_SPECIAL_VALUES = {-1, -2, -3}
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _utc_iso_now
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _utc_iso_now() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+# [DOC-DETAIL] _ip_passes_filter
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _ip_passes_filter(ip: str, rule: str) -> bool:
     candidate_ip = str(ip or "").strip()
     candidate_rule = str(rule or "").strip()
@@ -80,6 +86,9 @@ def _ip_passes_filter(ip: str, rule: str) -> bool:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _filter_printers_by_ip
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> Dict[str, Any]:
     if not ip_filters:
         return printers
@@ -101,6 +110,9 @@ def _filter_printers_by_ip(printers: Dict[str, Any], ip_filters: List[str]) -> D
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _safe_int
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _safe_int(value: Any) -> Optional[int]:
     if value is None:
         return None
@@ -118,6 +130,9 @@ def _safe_int(value: Any) -> Optional[int]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _normalize_text
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, padroniza texto, estrutura ou valores para que comparacoes e gravacoes usem formato consistente.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalize_text(value: Any) -> str:
     if value is None:
         return ""
@@ -129,6 +144,9 @@ def _normalize_text(value: Any) -> str:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _clean_identity_text
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, remove sujeira de texto/valor vindo de fonte externa para evitar enviar espacos, nulos falsos ou caracteres ambiguos.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _clean_identity_text(value: Any) -> Optional[str]:
     if value is None:
         return None
@@ -145,6 +163,9 @@ def _clean_identity_text(value: Any) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _looks_like_serial
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _looks_like_serial(value: Optional[str]) -> bool:
     if not value:
         return False
@@ -157,6 +178,9 @@ def _looks_like_serial(value: Optional[str]) -> bool:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _format_mac_from_bytes
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _format_mac_from_bytes(raw_bytes: bytes) -> Optional[str]:
     if not raw_bytes:
         return None
@@ -174,6 +198,9 @@ def _format_mac_from_bytes(raw_bytes: bytes) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _extract_mac_from_snmp_value
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _extract_mac_from_snmp_value(raw_value: Any) -> Optional[str]:
     text = _clean_identity_text(raw_value)
     if not text:
@@ -200,6 +227,9 @@ def _extract_mac_from_snmp_value(raw_value: Any) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_serial_via_snmp
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, descobre o melhor valor real a partir de cadastro, SNMP ou configuracao, usando fallback seguro quando algo falta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_serial_via_snmp(ip: str, community_str: str) -> Optional[str]:
     for oid in (OID_PRINTER_SERIAL_STANDARD, OID_PRINTER_SERIAL_ALT):
         response = snmp_get(oid, ip, community_str)
@@ -229,6 +259,9 @@ def _resolve_serial_via_snmp(ip: str, community_str: str) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_hostname_via_snmp
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, descobre o melhor valor real a partir de cadastro, SNMP ou configuracao, usando fallback seguro quando algo falta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_hostname_via_snmp(ip: str, community_str: str) -> Optional[str]:
     for oid in (OID_SYS_NAME, OID_PRINTER_NAME_STANDARD):
         response = snmp_get(oid, ip, community_str)
@@ -245,6 +278,9 @@ def _resolve_hostname_via_snmp(ip: str, community_str: str) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_mac_via_snmp
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, descobre o melhor valor real a partir de cadastro, SNMP ou configuracao, usando fallback seguro quando algo falta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_mac_via_snmp(ip: str, community_str: str) -> Optional[str]:
     mac_rows = snmp_walk(
         ip,
@@ -266,6 +302,9 @@ def _resolve_mac_via_snmp(ip: str, community_str: str) -> Optional[str]:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: consulta OIDs SNMP, limpa textos/bytes, aplica validacoes simples e devolve serie, MAC ou hostname em formato consistente; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_printer_identity
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, descobre o melhor valor real a partir de cadastro, SNMP ou configuracao, usando fallback seguro quando algo falta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_printer_identity(ip: str, info: Dict[str, Any], community_str: str) -> Dict[str, Optional[str]]:
     serial_snmp = _resolve_serial_via_snmp(ip, community_str)
     mac_snmp = _resolve_mac_via_snmp(ip, community_str)
@@ -302,6 +341,9 @@ def _resolve_printer_identity(ip: str, info: Dict[str, Any], community_str: str)
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _detect_printer_family
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _detect_printer_family(info: Dict[str, Any]) -> str:
     model = _normalize_text(info.get("modelo") or info.get("model"))
     manufacturer = _normalize_text(info.get("fabricante") or info.get("manufacturer"))
@@ -323,6 +365,9 @@ def _detect_printer_family(info: Dict[str, Any]) -> str:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _oid_suffix
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _oid_suffix(oid_base: str, full_oid: str) -> str:
     prefix = f"{oid_base}."
     if full_oid.startswith(prefix):
@@ -335,6 +380,9 @@ def _oid_suffix(oid_base: str, full_oid: str) -> str:
 # Entradas: Recebe os parametros: index. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _index_sort_key
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _index_sort_key(index: str):
     parts = []
     for chunk in index.split("."):
@@ -350,6 +398,9 @@ def _index_sort_key(index: str):
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _build_oid_map
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, monta uma estrutura final a partir de partes menores, deixando o formato pronto para tela, log ou API.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Dict[str, Any]]:
     mapping: Dict[str, Dict[str, Any]] = {}
     for entry in entries:
@@ -369,6 +420,9 @@ def _build_oid_map(entries: List[Dict[str, Any]], oid_base: str) -> Dict[str, Di
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] traduz_suprimento
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def traduz_suprimento(nome: str) -> str:
     traducao = {
         "Black Toner": "Toner Preto",
@@ -399,6 +453,9 @@ def traduz_suprimento(nome: str) -> str:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: percorre OIDs de descricao/nivel/capacidade, calcula percentual quando possivel e classifica toner, kit e unidade de imagem; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _interpret_supply_level
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) -> Dict[str, Any]:
     if raw_current is None:
         return {
@@ -456,6 +513,9 @@ def _interpret_supply_level(raw_current: Optional[int], raw_max: Optional[int]) 
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: testa OIDs candidatos, normaliza valores numericos, registra metadados de diagnostico e devolve contador/oid/confianca para o payload; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _resolve_page_counter
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, descobre o melhor valor real a partir de cadastro, SNMP ou configuracao, usando fallback seguro quando algo falta.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> Dict[str, Any]:
     family = _detect_printer_family(info)
 
@@ -576,6 +636,9 @@ def _resolve_page_counter(ip: str, info: Dict[str, Any], community_str: str) -> 
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: percorre OIDs de descricao/nivel/capacidade, calcula percentual quando possivel e classifica toner, kit e unidade de imagem; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _collect_supply_rows
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, executa parte da coleta de uma impressora, reunindo dados tecnicos que depois serao transformados em payload.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _collect_supply_rows(
     ip: str,
     local: str,
@@ -728,6 +791,9 @@ def _collect_supply_rows(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: le dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] collect_printer_snapshot
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, executa parte da coleta de uma impressora, reunindo dados tecnicos que depois serao transformados em payload.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def collect_printer_snapshot(
     ip: str,
     info: Dict[str, Any],
@@ -820,6 +886,9 @@ def collect_printer_snapshot(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _push_to_new_api
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _push_to_new_api(
     collector_id: str,
     ip: str,
@@ -848,6 +917,9 @@ def _push_to_new_api(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _coletar_e_enviar_impressora
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _coletar_e_enviar_impressora(
     ip: str,
     info: Dict[str, Any],
@@ -900,6 +972,9 @@ def _coletar_e_enviar_impressora(
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] atualizar_cache
+# Explicacao didatica: Faz parte do ciclo principal de coleta: recebe impressoras, consulta SNMP, interpreta dados e aciona envio da telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def atualizar_cache():
     """Atualiza o cache local e envia 1 payload por impressora para a API nova."""
     logging.info("Iniciando atualizacao do cache.")

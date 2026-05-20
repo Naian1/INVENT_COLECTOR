@@ -44,6 +44,9 @@ if not _USING_LEGACY_HLAPI:
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _stringify
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _stringify(value: Any) -> str:
     if value is None:
         return ""
@@ -55,6 +58,9 @@ def _stringify(value: Any) -> str:
 # Entradas: Recebe os parametros: coro. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) percorre colecoes quando necessario para consolidar ou transformar resultados; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _run_async
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _run_async(coro):
     try:
         return asyncio.run(coro)
@@ -67,6 +73,9 @@ def _run_async(coro):
             loop.close()
 
 
+# [DOC-DETAIL] _snmp_get_async
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 async def _snmp_get_async(
     ip: str,
     oid: str,
@@ -94,6 +103,9 @@ async def _snmp_get_async(
     }
 
 
+# [DOC-DETAIL] _snmp_walk_async
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 async def _snmp_walk_async(
     ip: str,
     oid_base: str,
@@ -141,6 +153,9 @@ async def _snmp_walk_async(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] snmp_get
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def snmp_get(
     oid: str,
     ip: str,
@@ -234,6 +249,9 @@ def snmp_get(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] snmp_walk
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def snmp_walk(
     ip: str,
     oid_base: str,
@@ -322,6 +340,9 @@ def snmp_walk(
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: executa GET/WALK, converte respostas para texto ou valor bruto e retorna resultado padronizado para as camadas de coleta; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] snmp_get_value
+# Explicacao didatica: Faz parte da camada SNMP: monta GET/WALK, controla timeout/retry e transforma resposta de rede em valor utilizavel. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def snmp_get_value(
     oid: str,
     ip: str,

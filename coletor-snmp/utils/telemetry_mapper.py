@@ -13,6 +13,9 @@ _UNKNOWN_VALUES = {"", "desconhecido", "unknown", "n/a", "na", "none", "null", "
 # Entradas: Recebe os parametros: dt. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _to_utc_iso
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _to_utc_iso(dt=None):
     base = dt or datetime.now(timezone.utc)
     if base.tzinfo is None:
@@ -25,6 +28,9 @@ def _to_utc_iso(dt=None):
 # Entradas: Recebe os parametros: text. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _normalize_text
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, padroniza texto, estrutura ou valores para que comparacoes e gravacoes usem formato consistente.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalize_text(text):
     if text is None:
         return ""
@@ -38,6 +44,9 @@ def _normalize_text(text):
 # Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _clean_value
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, remove sujeira de texto/valor vindo de fonte externa para evitar enviar espacos, nulos falsos ou caracteres ambiguos.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _clean_value(value):
     if value is None:
         return None
@@ -54,6 +63,9 @@ def _clean_value(value):
 # Entradas: Recebe os parametros: info, keys. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _pick_first
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _pick_first(info, keys):
     if not isinstance(info, dict):
         return None
@@ -71,6 +83,9 @@ def _pick_first(info, keys):
 # Entradas: Recebe os parametros: supply_name. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] make_supply_key
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def make_supply_key(supply_name):
     clean = _normalize_text(supply_name).lower().strip()
     clean = re.sub(r"[^a-z0-9]+", "_", clean).strip("_")
@@ -82,6 +97,9 @@ def make_supply_key(supply_name):
 # Entradas: Recebe os parametros: model. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] infer_manufacturer
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, deduz uma classificacao a partir de dados existentes, sem inventar valor quando a informacao nao e confiavel.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def infer_manufacturer(model):
     model_lower = (model or "").lower()
     if "lexmark" in model_lower or model_lower.startswith(("m", "xm", "cx")):
@@ -102,6 +120,9 @@ def infer_manufacturer(model):
 # Entradas: Recebe os parametros: raw_model. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _normalize_model
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, padroniza texto, estrutura ou valores para que comparacoes e gravacoes usem formato consistente.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalize_model(raw_model):
     clean_model = _clean_value(raw_model)
     if not clean_model:
@@ -117,6 +138,9 @@ def _normalize_model(raw_model):
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: recebe snapshot bruto da impressora, normaliza campos obrigatorios e organiza impressora, pagecount e suprimentos em um payload unico; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] infer_supply_status
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, deduz uma classificacao a partir de dados existentes, sem inventar valor quando a informacao nao e confiavel.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def infer_supply_status(
     level_percent,
     printer_status,
@@ -152,6 +176,9 @@ def infer_supply_status(
 # Entradas: Recebe os parametros: ip. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] generate_ingestao_id
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, gera identificador ou valor derivado para rastrear a coleta sem depender de digitacao manual.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def generate_ingestao_id(ip):
     timestamp = datetime.now(timezone.utc).strftime("%Y%m%d%H%M%S%f")
     safe_ip = (ip or "unknown").replace(".", "-")
@@ -163,6 +190,9 @@ def generate_ingestao_id(ip):
 # Entradas: Recebe os parametros: suprimentos, status_evento. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _normalizar_suprimentos_para_pt
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
     result = []
     for item in (suprimentos or []):
@@ -216,6 +246,9 @@ def _normalizar_suprimentos_para_pt(suprimentos, status_evento):
 # Entradas: Recebe os parametros: ip, printer_info. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _montar_impressora_pt
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _montar_impressora_pt(ip, printer_info):
     info = printer_info or {}
 
@@ -267,6 +300,9 @@ def _montar_impressora_pt(ip, printer_info):
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: recebe snapshot bruto da impressora, normaliza campos obrigatorios e organiza impressora, pagecount e suprimentos em um payload unico; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] build_collector_payload
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def build_collector_payload(
     coletor_id,
     ip,
@@ -309,6 +345,9 @@ def build_collector_payload(
 # Entradas: Recebe os parametros: coletor_id, ip, printer_info, cache_entries. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] build_payload_from_cache_entries
+# Explicacao didatica: Faz parte da traducao de dados: recebe snapshot bruto e monta o payload padrao aceito pela Edge collector-telemetria. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def build_payload_from_cache_entries(coletor_id, ip, printer_info, cache_entries):
     entries = cache_entries or []
     online_entries = [item for item in entries if item.get("status") != "offline"]

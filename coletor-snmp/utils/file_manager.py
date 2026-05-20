@@ -20,11 +20,17 @@ HISTORY_DIR = os.path.join(DATA_DIR, "history")
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _env_flag
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _env_flag(name: str, default: bool = False) -> bool:
     raw = str(os.getenv(name, "1" if default else "0")).strip().lower()
     return raw in {"1", "true", "yes", "sim", "on"}
 
 
+# [DOC-DETAIL] is_history_enabled
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def is_history_enabled() -> bool:
     # Historico local diario agora e opcional (desligado por padrao).
     return _env_flag("COLLECTOR_SAVE_HISTORY", default=False)
@@ -40,6 +46,9 @@ if is_history_enabled():
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] load_printers
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def load_printers():
     if os.path.exists(PRINTERS_FILE):
         with open(PRINTERS_FILE, "r", encoding="utf-8") as f:
@@ -52,6 +61,9 @@ def load_printers():
 # Entradas: Recebe os parametros: printers. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] save_printers
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, persiste dados em arquivo local de forma centralizada, mantendo o restante do codigo sem acesso direto espalhado a disco.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def save_printers(printers):
     with open(PRINTERS_FILE, "w", encoding="utf-8") as f:
         json.dump(printers, f, ensure_ascii=False, indent=2)
@@ -62,6 +74,9 @@ def save_printers(printers):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] load_settings
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def load_settings():
     if os.path.exists(SETTINGS_FILE):
         with open(SETTINGS_FILE, "r", encoding="utf-8") as f:
@@ -74,6 +89,9 @@ def load_settings():
 # Entradas: Recebe os parametros: settings. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] save_settings
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, persiste dados em arquivo local de forma centralizada, mantendo o restante do codigo sem acesso direto espalhado a disco.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def save_settings(settings):
     with open(SETTINGS_FILE, "w", encoding="utf-8") as f:
         json.dump(settings, f, ensure_ascii=False, indent=2)
@@ -84,6 +102,9 @@ def save_settings(settings):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] load_chamados
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, carrega dados locais/remotos e devolve estrutura pronta para a proxima etapa, tratando ausencia de arquivo ou valor invalido sem derrubar o coletor.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def load_chamados():
     if os.path.exists(CHAMADOS_FILE):
         with open(CHAMADOS_FILE, "r", encoding="utf-8") as f:
@@ -96,6 +117,9 @@ def load_chamados():
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] init_chamados
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def init_chamados():
     if not os.path.exists(CHAMADOS_FILE):
         save_chamados({})
@@ -106,6 +130,9 @@ def init_chamados():
 # Entradas: Recebe os parametros: chamados. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] save_chamados
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, persiste dados em arquivo local de forma centralizada, mantendo o restante do codigo sem acesso direto espalhado a disco.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def save_chamados(chamados):
     with open(CHAMADOS_FILE, "w", encoding="utf-8") as f:
         json.dump(chamados, f, ensure_ascii=False, indent=2)
@@ -116,6 +143,9 @@ def save_chamados(chamados):
 # Entradas: Recebe os parametros: ip, data. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] save_history
+# Explicacao didatica: Faz parte da persistencia local: centraliza leitura e escrita de JSONs do coletor para cache, settings, chamados e historico. Nesta funcao, persiste dados em arquivo local de forma centralizada, mantendo o restante do codigo sem acesso direto espalhado a disco.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def save_history(ip, data):
     if not is_history_enabled():
         return

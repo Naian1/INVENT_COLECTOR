@@ -16,6 +16,9 @@ TRACE_FILE = os.path.join(LOG_DIR, "collector_backend_trace.jsonl")
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
 # Como executa: valida entradas, chama dependencias necessarias, transforma dados e devolve uma resposta padronizada para a camada seguinte; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
+# [DOC-DETAIL] _utc_now_iso
+# Explicacao didatica: Faz parte da auditoria local: registra eventos tecnicos em JSONL para explicar o que o coletor tentou fazer. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _utc_now_iso() -> str:
     return datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
 
@@ -25,6 +28,9 @@ def _utc_now_iso() -> str:
 # Entradas: Recebe os parametros: value, max_len. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _sanitize
+# Explicacao didatica: Faz parte da auditoria local: registra eventos tecnicos em JSONL para explicar o que o coletor tentou fazer. Nesta funcao, isola uma etapa pequena para deixar o fluxo principal mais legivel e facil de testar.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _sanitize(value: Any, max_len: int = 2400):
     if value is None:
         return None
@@ -51,6 +57,9 @@ def _sanitize(value: Any, max_len: int = 2400):
 # Entradas: Recebe os parametros: event, **payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) persiste alteracoes somente quando as regras de negocio permitem; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] append_backend_trace
+# Explicacao didatica: Faz parte da auditoria local: registra eventos tecnicos em JSONL para explicar o que o coletor tentou fazer. Nesta funcao, adiciona evento de diagnostico ao log estruturado, sanitizando dados grandes ou sensiveis.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)

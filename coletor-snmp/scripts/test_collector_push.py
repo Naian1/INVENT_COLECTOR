@@ -1,4 +1,4 @@
-﻿# [DOC-CODEMAP] Arquivo: coletor-snmp\scripts\test_collector_push.py
+# [DOC-CODEMAP] Arquivo: coletor-snmp\scripts\test_collector_push.py
 # [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
 import argparse
 import json
@@ -20,6 +20,9 @@ from utils.telemetry_mapper import build_collector_payload, build_payload_from_c
 # Entradas: Recebe os parametros: cache_rows. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] _group_cache_by_ip
+# Explicacao didatica: Agrupa linhas do cache local por IP para montar um payload de teste de uma impressora especifica.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def _group_cache_by_ip(cache_rows):
     grouped = {}
     for row in cache_rows:
@@ -35,6 +38,9 @@ def _group_cache_by_ip(cache_rows):
 # Entradas: Recebe os parametros: ip, refresh_cache, dry_run, real_read. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) persiste alteracoes somente quando as regras de negocio permitem; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] run_test
+# Explicacao didatica: Executa teste controlado do coletor: pode atualizar cache, escolher IP, montar payload e enviar ou simular em dry-run.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
     printers = load_printers()
     remote = fetch_printers_from_api(log_prefix="[test-printers-sync]")
@@ -143,6 +149,9 @@ def run_test(ip=None, refresh_cache=True, dry_run=False, real_read=False):
 # Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
 # Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
 # Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+# [DOC-DETAIL] main
+# Explicacao didatica: Le argumentos de terminal do teste e chama run_test. Serve para diagnostico manual sem iniciar o loop continuo.
+# Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
 def main():
     parser = argparse.ArgumentParser(
         description="Teste manual de envio da telemetria do PjIMPRESS para a API nova."
