@@ -726,7 +726,7 @@ def _collect_supply_rows(
 # [DOC-FUNC] collect_printer_snapshot
 # Objetivo: executa o ciclo principal de coleta/envio de uma impressora.
 # Entradas: usa parametros da assinatura e/ou variaveis de ambiente ja carregadas pelo modulo.
-# Como executa: l? dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
+# Como executa: le dados SNMP, monta snapshot com identidade/pagecount/suprimentos, gera payload de telemetria e envia para a Edge Function com tratamento de falha; em caso de erro, preserva diagnostico em log ou excecao contextualizada.
 # Saida/Efeito: devolve dados normalizados ou executa a acao esperada sem mudar regras de negocio fora desta funcao.
 def collect_printer_snapshot(
     ip: str,
