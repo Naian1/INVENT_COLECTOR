@@ -1,39 +1,39 @@
-# 14) MigraÃ§Ã£o Auth + Login + Coletor (2026-04-29)
+# 14) Migração Auth + Login + Coletor (2026-04-29)
 > **Leitura guiada para estudo:** este documento foi organizado para explicar o papel do módulo, o fluxo prático que ele executa e onde conferir o comportamento no código. Para estudar, leia primeiro o objetivo, depois acompanhe os arquivos/comandos citados e compare a entrada, o processamento e a saída descritos.
 
 ## Objetivo
-Migrar autenticaÃ§Ã£o legada para Supabase Auth com vÃ­nculo em `public.usuario`, mantendo RBAC e operaÃ§Ã£o do coletor SNMP.
+Migrar autenticação legada para Supabase Auth com vínculo em `public.usuario`, mantendo RBAC e operação do coletor SNMP.
 
 ## Resumo Executivo
 - Login via Supabase Auth habilitado.
-- VÃ­nculo `public.usuario.auth_user_id -> auth.users.id` implementado.
-- APIs de sessÃ£o/usuÃ¡rio adaptadas para JWT Bearer.
-- Edge Functions crÃ­ticas protegidas por validaÃ§Ã£o de usuÃ¡rio/perfil.
-- Coletor validado para leitura de impressoras via Supabase (`inventario`), com ajuste pendente em funÃ§Ã£o de telemetria (JWT gateway).
+- Vínculo `public.usuario.auth_user_id -> auth.users.id` implementado.
+- APIs de sessão/usuário adaptadas para JWT Bearer.
+- Edge Functions críticas protegidas por validação de usuário/perfil.
+- Coletor validado para leitura de impressoras via Supabase (`inventario`), com ajuste pendente em função de telemetria (JWT gateway).
 
-## AlteraÃ§Ãµes Aplicadas
+## Alterações Aplicadas
 
 ### Banco de dados (SQL)
 - `public.usuario.auth_user_id UUID` adicionado.
 - FK `fk_usuario_auth_user` para `auth.users(id)` adicionada.
-- Ãndice Ãºnico parcial `uq_usuario_auth_user_id` adicionado.
-- Estrutura `usuario_perfil` e rotinas de auditoria em inventÃ¡rio presentes.
+- ndice único parcial `uq_usuario_auth_user_id` adicionado.
+- Estrutura `usuario_perfil` e rotinas de auditoria em inventário presentes.
 
 Arquivo:
 - `inventario-unificado-web/supabase/migrations/SQL Sistema.sql`
 
-VerificaÃ§Ã£o (ok):
+Verificação (ok):
 - `auth_user_id`
 - `fk_usuario_auth_user`
 - `uq_usuario_auth_user_id`
 - `cd_usuario_criacao` / `cd_usuario_ultima_alteracao` em `inventario`
-- trigger/funÃ§Ã£o de auditoria de inventÃ¡rio
+- trigger/função de auditoria de inventário
 
 ### Frontend (Next.js)
 - Tela de login usando `supabase.auth.signInWithPassword`.
 - `/usuarios` corrigido para evitar erro de hooks (client-side exception).
 - `/inventario/categorias` corrigido para evitar erro de hooks.
-- `BasicPageShell` com validaÃ§Ã£o de sessÃ£o e redirecionamento para `/login` quando nÃ£o autenticado.
+- `BasicPageShell` com validação de sessão e redirecionamento para `/login` quando não autenticado.
 
 Arquivos:
 - `inventario-unificado-web/app/login/page.tsx`
@@ -42,10 +42,10 @@ Arquivos:
 - `inventario-unificado-web/components/BasicPageShell.tsx`
 
 ### APIs (App Router)
-- `/api/auth/me` validando Bearer JWT e resolvendo usuÃ¡rio por `auth_user_id`.
-- `/api/usuarios` com autenticaÃ§Ã£o Bearer + checagem ADMIN.
-- `/api/inventario/auditoria` migrado de sessÃ£o cookie para Bearer JWT.
-- `/api/auth/login` legado mantido como descontinuado (410), conforme migraÃ§Ã£o.
+- `/api/auth/me` validando Bearer JWT e resolvendo usuário por `auth_user_id`.
+- `/api/usuarios` com autenticação Bearer + checagem ADMIN.
+- `/api/inventario/auditoria` migrado de sessão cookie para Bearer JWT.
+- `/api/auth/login` legado mantido como descontinuado (410), conforme migração.
 
 Arquivos:
 - `inventario-unificado-web/app/api/auth/me/route.ts`
@@ -55,22 +55,22 @@ Arquivos:
 
 ### Edge Functions
 - `inventory-admin`: valida token, resolve ator e exige perfil ADMIN.
-- `inventory-core`: resolve usuÃ¡rio autenticado e usa ator real nas operaÃ§Ãµes/auditoria.
+- `inventory-core`: resolve usuário autenticado e usa ator real nas operações/auditoria.
 
 Arquivos:
 - `inventario-unificado-web/supabase/functions/inventory-admin/index.ts`
 - `inventario-unificado-web/supabase/functions/inventory-core/index.ts`
 
-## ValidaÃ§Ãµes executadas
+## Validações executadas
 - `npm run typecheck` -> OK
 - `npm run build` -> OK
 
 ## Coletor SNMP (status)
 
 ### Resultado dos testes
-1. Fonte `supabase` com tabela `impressoras`: falhou (tabela nÃ£o existente no projeto atual).
+1. Fonte `supabase` com tabela `impressoras`: falhou (tabela não existente no projeto atual).
 2. Fonte `supabase` com tabela `inventario`: sucesso (4 impressoras encontradas).
-3. Ciclo de coleta (`--once`): coleta SNMP ok, telemetria bloqueada por `401 UNAUTHORIZED_INVALID_JWT_FORMAT` na funÃ§Ã£o `collector-telemetria`.
+3. Ciclo de coleta (`--once`): coleta SNMP ok, telemetria bloqueada por `401 UNAUTHORIZED_INVALID_JWT_FORMAT` na função `collector-telemetria`.
 
 ### Ajuste recomendado no `.env` do coletor
 ```env
@@ -78,29 +78,29 @@ COLLECTOR_PRINTERS_SOURCE=supabase
 COLLECTOR_SUPABASE_PRINTERS_TABLE=inventario
 ```
 
-### Deploy recomendado para funÃ§Ãµes do coletor
-Se mantido modelo token-a-token (sem JWT de usuÃ¡rio):
+### Deploy recomendado para funções do coletor
+Se mantido modelo token-a-token (sem JWT de usuário):
 ```bash
 npx supabase functions deploy collector-telemetria --project-ref tcxaktsleilbdgxcstqo --no-verify-jwt
 npx supabase functions deploy collector-impressoras --project-ref tcxaktsleilbdgxcstqo --no-verify-jwt
 ```
 
-ObservaÃ§Ã£o:
-- Nesse modo, a proteÃ§Ã£o fica por `COLLECTOR_API_TOKEN` validado dentro das funÃ§Ãµes.
+Observação:
+- Nesse modo, a proteção fica por `COLLECTOR_API_TOKEN` validado dentro das funções.
 
-## SituaÃ§Ã£o da etapa de login
-**ConcluÃ­da tecnicamente**, com estes pontos finais operacionais:
-1. Publicar frontend com as correÃ§Ãµes mais recentes (hooks + bloqueio sem sessÃ£o).
-2. Revalidar `/usuarios` e `/inventario/categorias` em produÃ§Ã£o.
-3. Garantir fluxo do coletor apÃ³s ajuste de tabela e deploy das functions do coletor.
+## Situação da etapa de login
+**Concluída tecnicamente**, com estes pontos finais operacionais:
+1. Publicar frontend com as correções mais recentes (hooks + bloqueio sem sessão).
+2. Revalidar `/usuarios` e `/inventario/categorias` em produção.
+3. Garantir fluxo do coletor após ajuste de tabela e deploy das functions do coletor.
 
-## PrÃ³ximos passos (curto prazo)
+## Próximos passos (curto prazo)
 1. Deploy web:
 ```bash
 cd inventario-unificado-web
 npx vercel --prod --force
 ```
-2. Deploy collector functions (conforme seÃ§Ã£o acima).
+2. Deploy collector functions (conforme seção acima).
 3. Executar:
 ```bash
 python scripts/run_collector_loop.py --check-connection --log-level INFO
@@ -109,10 +109,10 @@ python scripts/run_collector_loop.py --once --log-level INFO
 4. Validar telas protegidas sem login (deve redirecionar para `/login`).
 
 
-## Atualizacao complementar (2026-05-04)
+## Atualização complementar (2026-05-04)
 
-- Telemetria de paginas evoluiu para modelo em duas tabelas com trigger SQL diaria.
-- Fonte oficial para bilhetagem diaria:
+- Telemetria de páginas evoluiu para modelo em duas tabelas com trigger SQL diária.
+- Fonte oficial para bilhetagem diária:
   - `telemetria_pagecount_diaria`
 - Estado atual da impressora:
   - `telemetria_pagecount`
