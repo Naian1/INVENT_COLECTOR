@@ -22,7 +22,7 @@ Acoes:
 
 - No schema atual de produção, a fonte oficial é `inventario`, usando itens do tipo impressora.
 - A tela operacional e o coletor contam somente impressoras ativas e com IP. Por isso, se existem `116` impressoras no inventário mas `1` está em `BACKUP`, o total operacional/coletável fica `115`.
-- A Edge ainda tem compatibilidade defensiva para ambientes antigos que tinham tabela `impressoras`, mas quando essa tabela não existe ela segue direto pelo `inventario`.
+- A Edge usa `public.inventario` como fonte oficial da vis?o operacional atual.
 - Código principal: `inventario-unificado-web/supabase/functions/inventory-print/index.ts`, funções `loadVisaoGeral` e `loadOperacionaisViaInventario`.
 
 ### Request
@@ -114,7 +114,7 @@ Acoes:
 
 - 400: linha_id e obrigatorio
 - 500: Linha sem patrimonio/IP de impressora para sincronizar
-- 500: Tabela impressoras nao existe no schema atual
+- 500: erro interno ao consultar `public.inventario` ou tabelas atuais de telemetria
 
 ## Action: dashboard_analitico
 

@@ -68,14 +68,12 @@ Arquivos:
 ## Coletor SNMP (status)
 
 ### Resultado dos testes
-1. Fonte `supabase` com tabela `impressoras`: falhou (tabela não existente no projeto atual).
-2. Fonte `supabase` com tabela `inventario`: sucesso (4 impressoras encontradas).
-3. Ciclo de coleta (`--once`): coleta SNMP ok, telemetria bloqueada por `401 UNAUTHORIZED_INVALID_JWT_FORMAT` na função `collector-telemetria`.
+1. Fonte `supabase` apontada para `public.inventario`: sucesso na leitura das impressoras elegíveis.
+2. Ciclo de coleta (`--once`): coleta SNMP ok; a etapa de envio depende do deploy da função `collector-telemetria` com token do coletor.
 
 ### Ajuste recomendado no `.env` do coletor
 ```env
-COLLECTOR_PRINTERS_SOURCE=supabase
-COLLECTOR_SUPABASE_PRINTERS_TABLE=inventario
+COLLECTOR_PRINTERS_SOURCE=api
 ```
 
 ### Deploy recomendado para funções do coletor

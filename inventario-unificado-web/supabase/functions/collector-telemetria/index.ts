@@ -43,10 +43,6 @@ type LoteNormalizado = {
 };
 
 type Capacidades = {
-  impressoras: boolean;
-  telemetria_impressoras: boolean;
-  leituras_paginas_impressoras: boolean;
-  suprimentos_impressoras: boolean;
   inventario: boolean;
   telemetria_pagecount: boolean;
   suprimentos: boolean;
@@ -445,10 +441,6 @@ async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: s
  */
 async function carregarCapacidades(supabase: ReturnType<typeof getAdminClient>): Promise<Capacidades> {
   return {
-    impressoras: await tableExists(supabase, "impressoras"),
-    telemetria_impressoras: await tableExists(supabase, "telemetria_impressoras"),
-    leituras_paginas_impressoras: await tableExists(supabase, "leituras_paginas_impressoras"),
-    suprimentos_impressoras: await tableExists(supabase, "suprimentos_impressoras"),
     inventario: await tableExists(supabase, "inventario"),
     telemetria_pagecount: await tableExists(supabase, "telemetria_pagecount"),
     suprimentos: await tableExists(supabase, "suprimentos"),
@@ -524,56 +516,22 @@ async function buscarInventarioAtivoPorIp(
 }
 
 /**
- * [DOC-FUNC] buscarImpressoraLegadaPorIp
- * O que faz: Consulta a tabela legada `impressoras` para obter MAC/serie/patrimonio esperados no mesmo IP.
- * Entradas: supabase, ip.
- * Como executa: busca por IP exato e retorna um registro unico quando existir.
- * Retorno/Efeitos: dados legados da impressora esperada no IP ou null.
- */
-async function buscarImpressoraLegadaPorIp(
-  supabase: ReturnType<typeof getAdminClient>,
-  ip: string | null,
-): Promise<{ patrimonio: string | null; numero_serie: string | null; endereco_mac: string | null } | null> {
-  const ipNormalizado = normalizeIp(ip);
-  if (!ipNormalizado) return null;
-
-  const { data, error } = await supabase
-    .from("impressoras")
-    .select("patrimonio,numero_serie,endereco_mac")
-    .eq("ip", ipNormalizado)
-    .maybeSingle();
-
-  if (error) {
-    if (isMissingTableErrorMessage(String(error.message || ""))) return null;
-    throw new Error(`impressoras (ip-slot): ${error.message}`);
-  }
-
-  if (!data) return null;
-  return {
-    patrimonio: cleanText((data as any).patrimonio),
-    numero_serie: cleanText((data as any).numero_serie),
-    endereco_mac: cleanText((data as any).endereco_mac),
-  };
-}
-
-/**
  * [DOC-FUNC] detectarAlertaSubstituicao
  * O que faz: Compara o equipamento coletado no IP com os identificadores esperados da vaga no inventario.
- * Entradas: slotInventario, esperadoLegado, evento.
- * Como executa: compara patrimonio/serie/mac normalizados e monta lista de motivos em caso de divergencia.
+ * Entradas: slotInventario e evento.
+ * Como executa: compara patrimonio/serie/mac normalizados usando somente a identidade esperada em public.inventario.
  * Retorno/Efeitos: retorna o alerta pronto para persistir ou null quando nao houver indicio de troca.
  */
 function detectarAlertaSubstituicao(
   slotInventario: InventarioIpSlot,
-  esperadoLegado: { patrimonio: string | null; numero_serie: string | null; endereco_mac: string | null } | null,
   evento: EventoNormalizado,
 ): AlertaSubstituicaoDetectado | null {
   const ipDetectado = normalizeIp(evento.impressora.ip);
   if (!ipDetectado) return null;
 
-  const patrimonioEsperado = normalizeComparableText(slotInventario.nr_patrimonio ?? esperadoLegado?.patrimonio);
-  const serieEsperada = normalizeComparableText(slotInventario.nr_serie ?? esperadoLegado?.numero_serie);
-  const macEsperado = normalizeMac(slotInventario.nm_mac ?? esperadoLegado?.endereco_mac);
+  const patrimonioEsperado = normalizeComparableText(slotInventario.nr_patrimonio);
+  const serieEsperada = normalizeComparableText(slotInventario.nr_serie);
+  const macEsperado = normalizeMac(slotInventario.nm_mac);
 
   const patrimonioDetectado = normalizeComparableText(evento.impressora.patrimonio);
   const serieDetectada = normalizeComparableText(evento.impressora.numero_serie);
@@ -1012,110 +970,6 @@ async function registrarEventoRetidoSubstituicao(
 }
 
 /**
- * [DOC-FUNC] encontrarImpressoraPorIdentificador
- * O que faz: A funcao 'encontrarImpressoraPorIdentificador' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-async function encontrarImpressoraPorIdentificador(
-  supabase: ReturnType<typeof getAdminClient>,
-  impressora: EventoNormalizado["impressora"],
-) {
-  if (impressora.patrimonio) {
-    const { data } = await supabase
-      .from("impressoras")
-      .select("id,ultima_coleta_em")
-      .ilike("patrimonio", impressora.patrimonio)
-      .maybeSingle();
-    if (data?.id) return data;
-  }
-
-  if (impressora.numero_serie) {
-    const { data } = await supabase
-      .from("impressoras")
-      .select("id,ultima_coleta_em")
-      .ilike("numero_serie", impressora.numero_serie)
-      .maybeSingle();
-    if (data?.id) return data;
-  }
-
-  if (impressora.ip) {
-    const { data } = await supabase
-      .from("impressoras")
-      .select("id,ultima_coleta_em")
-      .eq("ip", impressora.ip)
-      .maybeSingle();
-    if (data?.id) return data;
-  }
-
-  return null;
-}
-
-/**
- * [DOC-FUNC] resolveImpressoraIdLegacy
- * O que faz: A funcao 'resolveImpressoraIdLegacy' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
- */
-async function resolveImpressoraIdLegacy(
-  supabase: ReturnType<typeof getAdminClient>,
-  evento: EventoNormalizado,
-): Promise<string> {
-  const impressora = evento.impressora;
-  const existente = await encontrarImpressoraPorIdentificador(supabase, impressora);
-
-  const payloadComum = {
-    ip: impressora.ip,
-    patrimonio: impressora.patrimonio,
-    setor: impressora.setor ?? "Desconhecido",
-    localizacao: impressora.localizacao,
-    modelo: impressora.modelo ?? "Desconhecido",
-    fabricante: impressora.fabricante,
-    numero_serie: impressora.numero_serie,
-    hostname: impressora.hostname,
-    endereco_mac: impressora.endereco_mac,
-    ativo: impressora.ativo,
-    ultima_coleta_em: evento.coletado_em,
-  };
-
-  if (existente?.id) {
-    await supabase.from("impressoras").update(payloadComum).eq("id", existente.id);
-    return String(existente.id);
-  }
-
-  const patrimonioAuto =
-    impressora.patrimonio ??
-    `AUTO-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
-
-  const insertPayload = {
-    ...payloadComum,
-    ip: impressora.ip ?? "0.0.0.0",
-    patrimonio: patrimonioAuto,
-  };
-
-  const { data, error } = await supabase
-    .from("impressoras")
-    .insert([insertPayload])
-    .select("id")
-    .single();
-
-  if (!error && data?.id) {
-    return String(data.id);
-  }
-
-  const retry = await encontrarImpressoraPorIdentificador(supabase, {
-    ...impressora,
-    patrimonio: patrimonioAuto,
-  });
-
-  if (retry?.id) return String(retry.id);
-
-  throw new Error(`Could not resolve printer in table impressoras: ${String(error?.message ?? "unknown")}`);
-}
-
-/**
  * [DOC-FUNC] resolveInventarioId
  * O que faz: A funcao 'resolveInventarioId' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
  * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
@@ -1159,112 +1013,6 @@ async function resolveInventarioId(
   }
 
   return null;
-}
-
-/**
- * [DOC-FUNC] gravarTelemetriaLegacy
- * O que faz: A funcao 'gravarTelemetriaLegacy' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
- */
-async function gravarTelemetriaLegacy(
-  supabase: ReturnType<typeof getAdminClient>,
-  evento: EventoNormalizado,
-  coletorId: string,
-  impressoraId: string,
-) {
-  const payload = {
-    impressora_id: impressoraId,
-    patrimonio: evento.impressora.patrimonio,
-    ip: evento.impressora.ip,
-    coletor_id: coletorId,
-    ingestao_id: evento.ingestao_id,
-    coletado_em: evento.coletado_em,
-    status: evento.status,
-    tempo_resposta_ms: evento.tempo_resposta_ms,
-    payload_bruto: evento.payload_bruto,
-  };
-
-  const { error } = await supabase
-    .from("telemetria_impressoras")
-    .upsert([payload], { onConflict: "coletor_id,ingestao_id", ignoreDuplicates: false });
-
-  if (error) throw new Error(`telemetria_impressoras: ${error.message}`);
-}
-
-/**
- * [DOC-FUNC] gravarLeituraLegacy
- * O que faz: A funcao 'gravarLeituraLegacy' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) persiste alteracoes somente quando as regras de negocio permitem; 5) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
- */
-async function gravarLeituraLegacy(
-  supabase: ReturnType<typeof getAdminClient>,
-  evento: EventoNormalizado,
-  coletorId: string,
-  impressoraId: string,
-) {
-  if (evento.contador_total_paginas === null) return;
-
-  const payload = {
-    impressora_id: impressoraId,
-    patrimonio: evento.impressora.patrimonio,
-    ip: evento.impressora.ip,
-    coletor_id: coletorId,
-    ingestao_id: evento.ingestao_id,
-    coletado_em: evento.coletado_em,
-    contador_total_paginas: Math.max(0, evento.contador_total_paginas),
-    valido: true,
-    motivo_invalido: null,
-    reset_detectado: false,
-    payload_bruto: evento.payload_bruto,
-  };
-
-  const { error } = await supabase
-    .from("leituras_paginas_impressoras")
-    .upsert([payload], { onConflict: "coletor_id,ingestao_id", ignoreDuplicates: false });
-
-  if (error) throw new Error(`leituras_paginas_impressoras: ${error.message}`);
-}
-
-/**
- * [DOC-FUNC] gravarSuprimentosLegacy
- * O que faz: A funcao 'gravarSuprimentosLegacy' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) persiste alteracoes somente quando as regras de negocio permitem.
- * Retorno/Efeitos: Retorna o resultado da persistencia (dados gravados/atualizados ou erro contextualizado), permitindo auditoria e tratamento adequado na camada chamadora.
- */
-async function gravarSuprimentosLegacy(
-  supabase: ReturnType<typeof getAdminClient>,
-  evento: EventoNormalizado,
-  coletorId: string,
-  impressoraId: string,
-) {
-  if (!evento.suprimentos.length) return;
-
-  const rows = evento.suprimentos.map((sup) => ({
-    impressora_id: impressoraId,
-    patrimonio: evento.impressora.patrimonio,
-    ip: evento.impressora.ip,
-    coletor_id: coletorId,
-    ingestao_id: evento.ingestao_id,
-    coletado_em: evento.coletado_em,
-    chave_suprimento: sup.chave_suprimento,
-    nome_suprimento: sup.nome_suprimento,
-    nivel_percentual: sup.nivel_percentual,
-    paginas_restantes: sup.paginas_restantes,
-    status_suprimento: sup.status_suprimento,
-    valido: true,
-    payload_bruto: sup.payload_bruto,
-  }));
-
-  const { error } = await supabase
-    .from("suprimentos_impressoras")
-    .upsert(rows, { onConflict: "impressora_id,chave_suprimento", ignoreDuplicates: false });
-
-  if (error) throw new Error(`suprimentos_impressoras: ${error.message}`);
 }
 
 /**
@@ -1431,23 +1179,10 @@ Deno.serve(async (req) => {
 
     for (const evento of lote.eventos) {
       try {
-        let impressoraIdLegacy: string | null = null;
         let inventarioId: number | null = null;
         let bloquearPagecountPorSubstituicao = false;
 
-        // 1) Resolver IDs-alvo nas estruturas disponíveis no banco atual.
-        if (caps.impressoras) {
-          try {
-            impressoraIdLegacy = await resolveImpressoraIdLegacy(supabase, evento);
-          } catch (legacyError) {
-            const message = legacyError instanceof Error ? legacyError.message : String(legacyError);
-            if (!isMissingTableErrorMessage(message)) {
-              throw legacyError;
-            }
-            impressoraIdLegacy = null;
-          }
-        }
-
+        // 1) Resolve o item oficial do inventario. No fluxo atual, public.inventario e a unica fonte de identidade.
         if (caps.inventario) {
           inventarioId = await resolveInventarioId(supabase, evento);
         }
@@ -1456,10 +1191,7 @@ Deno.serve(async (req) => {
         if (caps.telemetria_substituicao_pendente && caps.inventario) {
           const slotInventario = await buscarInventarioAtivoPorIp(supabase, evento.impressora.ip);
           if (slotInventario) {
-            const esperadoLegado = caps.impressoras
-              ? await buscarImpressoraLegadaPorIp(supabase, evento.impressora.ip)
-              : null;
-            const alertaBase = detectarAlertaSubstituicao(slotInventario, esperadoLegado, evento);
+            const alertaBase = detectarAlertaSubstituicao(slotInventario, evento);
             if (alertaBase) {
               const alerta = await enriquecerAlertaSubstituicaoComInventario(supabase, alertaBase);
               const idPendencia = await registrarPendenciaSubstituicao(supabase, lote.coletor_id, evento, alerta);
@@ -1473,23 +1205,7 @@ Deno.serve(async (req) => {
           }
         }
 
-        // 2) Gravar nos destinos legados quando as tabelas existirem.
-        if (caps.telemetria_impressoras && impressoraIdLegacy) {
-          await gravarTelemetriaLegacy(supabase, evento, lote.coletor_id, impressoraIdLegacy);
-          result.gravacoes_telemetria += 1;
-        }
-
-        if (caps.leituras_paginas_impressoras && impressoraIdLegacy && evento.contador_total_paginas !== null) {
-          await gravarLeituraLegacy(supabase, evento, lote.coletor_id, impressoraIdLegacy);
-          result.gravacoes_leituras_paginas += 1;
-        }
-
-        if (caps.suprimentos_impressoras && impressoraIdLegacy && evento.suprimentos.length) {
-          await gravarSuprimentosLegacy(supabase, evento, lote.coletor_id, impressoraIdLegacy);
-          result.gravacoes_suprimentos += evento.suprimentos.length;
-        }
-
-        // 3) Gravar nos destinos novos (inventário + pagecount + suprimentos novos).
+        // 2) Gravar nos destinos atuais (inventario + pagecount + suprimentos).
         if (caps.telemetria_pagecount && inventarioId !== null && evento.contador_total_paginas !== null) {
           if (bloquearPagecountPorSubstituicao) {
             result.gravacoes_pagecount_bloqueadas_substituicao += 1;
@@ -1504,8 +1220,8 @@ Deno.serve(async (req) => {
           result.gravacoes_suprimentos += evento.suprimentos.length;
         }
 
-        if (!caps.telemetria_impressoras && !caps.telemetria_pagecount) {
-          throw new Error("No telemetry table available (telemetria_impressoras or telemetria_pagecount)");
+        if (!caps.telemetria_pagecount) {
+          throw new Error("Tabela atual telemetria_pagecount indisponivel para gravacao.");
         }
 
         result.eventos_processados += 1;

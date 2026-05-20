@@ -13,10 +13,10 @@ const corsHeaders = {
 
 /**
  * [DOC-FUNC] jsonResponse
- * O que faz: A funcao 'jsonResponse' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Recebe os parametros: body, status. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: cria uma resposta HTTP em JSON no padrão usado pelas Edge Functions do projeto.
+ * Entradas: recebe `body`, que é o objeto a ser serializado, e `status`, que é o código HTTP de retorno.
+ * Como executa: converte o corpo para JSON, aplica cabeçalhos CORS para permitir chamada pelo coletor e pelo ambiente web, e define `Content-Type: application/json`.
+ * Retorno/Efeitos: devolve um `Response` pronto para o Supabase Edge Runtime enviar ao cliente chamador.
  */
 function jsonResponse(body: unknown, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -30,10 +30,10 @@ function jsonResponse(body: unknown, status = 200) {
 
 /**
  * [DOC-FUNC] getAdminClient
- * O que faz: A funcao 'getAdminClient' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: cria o cliente Supabase administrativo usado pela Edge para consultar `public.inventario`.
+ * Entradas: não recebe parâmetros diretos; lê `SUPABASE_URL` e `SUPABASE_SERVICE_ROLE_KEY` das variáveis de ambiente da função.
+ * Como executa: valida se as variáveis existem e cria um cliente sem sessão persistente, porque Edge Function roda por requisição e não precisa guardar login de usuário.
+ * Retorno/Efeitos: retorna um client Supabase com permissão de service role; se faltar configuração, interrompe a requisição com erro claro.
  */
 function getAdminClient() {
   const supabaseUrl = Deno.env.get("SUPABASE_URL");
@@ -50,10 +50,10 @@ function getAdminClient() {
 
 /**
  * [DOC-FUNC] cleanText
- * O que faz: A funcao 'cleanText' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: transforma qualquer valor simples em texto limpo ou `null`.
+ * Entradas: recebe `value`, que pode vir do banco, de variável de ambiente ou de algum campo opcional.
+ * Como executa: trata `null`/`undefined`, converte o valor para string, remove espaços nas pontas e descarta string vazia.
+ * Retorno/Efeitos: devolve texto consistente para comparação, resposta JSON e montagem da lista de impressoras.
  */
 function cleanText(value: unknown): string | null {
   if (value === null || value === undefined) return null;
@@ -63,10 +63,10 @@ function cleanText(value: unknown): string | null {
 
 /**
  * [DOC-FUNC] normalizeIp
- * O que faz: A funcao 'normalizeIp' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: ip. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: padroniza o IP vindo do inventário antes de entregar ao coletor.
+ * Entradas: recebe `ip`, normalmente vindo de `public.inventario.nr_ip`.
+ * Como executa: aceita apenas string, remove espaços, descarta valor vazio e remove sufixo `/32` quando o IP foi cadastrado em formato CIDR.
+ * Retorno/Efeitos: devolve o IP pronto para o coletor SNMP usar ou `null` quando o valor não é coletável.
  */
 function normalizeIp(ip: unknown): string | null {
   if (typeof ip !== "string") return null;
@@ -77,10 +77,10 @@ function normalizeIp(ip: unknown): string | null {
 
 /**
  * [DOC-FUNC] tokenFromAuthHeader
- * O que faz: A funcao 'tokenFromAuthHeader' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: header. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: extrai o token do cabeçalho HTTP `Authorization`.
+ * Entradas: recebe o valor bruto do header, por exemplo `Bearer abc123`.
+ * Como executa: verifica se existe header e se começa com `Bearer `; depois remove esse prefixo e limpa espaços.
+ * Retorno/Efeitos: devolve somente o token para comparação com `COLLECTOR_API_TOKEN`; se o formato estiver errado, devolve `null`.
  */
 function tokenFromAuthHeader(header: string | null): string | null {
   if (!header || !header.startsWith("Bearer ")) return null;
@@ -89,10 +89,10 @@ function tokenFromAuthHeader(header: string | null): string | null {
 
 /**
  * [DOC-FUNC] validateCollectorAuth
- * O que faz: A funcao 'validateCollectorAuth' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: req. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: protege a lista de impressoras para que somente o coletor autorizado consiga baixá-la.
+ * Entradas: recebe a requisição HTTP completa para ler o header `Authorization`.
+ * Como executa: lê o token esperado em `COLLECTOR_API_TOKEN`, extrai o token recebido e compara os dois valores.
+ * Retorno/Efeitos: retorna `null` quando está autorizado; caso contrário retorna uma mensagem de erro usada para responder HTTP 401.
  */
 function validateCollectorAuth(req: Request): string | null {
   const expectedToken = cleanText(Deno.env.get("COLLECTOR_API_TOKEN"));
@@ -106,76 +106,11 @@ function validateCollectorAuth(req: Request): string | null {
 }
 
 /**
- * [DOC-FUNC] isMissingTableErrorMessage
- * O que faz: A funcao 'isMissingTableErrorMessage' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: message. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
- */
-function isMissingTableErrorMessage(message: string): boolean {
-  return /relation .* does not exist/i.test(message) || /Could not find the table/i.test(message);
-}
-
-/**
- * [DOC-FUNC] tableExists
- * O que faz: A funcao 'tableExists' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Recebe os parametros: supabase, table. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-async function tableExists(supabase: ReturnType<typeof getAdminClient>, table: string): Promise<boolean> {
-  const { error } = await supabase.from(table).select("*", { head: true, count: "exact" }).limit(1);
-  if (!error) return true;
-  const message = String((error as { message?: string }).message ?? "");
-  if (/relation .* does not exist/i.test(message) || /Could not find the table/i.test(message)) {
-    return false;
-  }
-  throw new Error(`Failed to check table '${table}': ${message}`);
-}
-
-/**
- * [DOC-FUNC] listarViaTabelaImpressoras
- * O que faz: A funcao 'listarViaTabelaImpressoras' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Recebe os parametros: supabase. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-async function listarViaTabelaImpressoras(supabase: ReturnType<typeof getAdminClient>) {
-  const { data, error } = await supabase
-    .from("impressoras")
-    .select("id,ip,patrimonio,modelo,fabricante,numero_serie,hostname,setor,localizacao,ativo")
-    .eq("ativo", true)
-    .order("setor", { ascending: true });
-
-  if (error) throw new Error(error.message);
-
-  const community = cleanText(Deno.env.get("COLLECTOR_DEFAULT_SNMP_COMMUNITY")) ?? "public";
-
-  const impressoras = (data || [])
-    .map((item) => ({
-      id: String(item.id),
-      ip: normalizeIp(item.ip),
-      patrimonio: cleanText(item.patrimonio),
-      modelo: cleanText(item.modelo) ?? "Desconhecido",
-      fabricante: cleanText(item.fabricante),
-      numero_serie: cleanText(item.numero_serie),
-      hostname: cleanText(item.hostname),
-      setor: cleanText(item.setor) ?? "Desconhecido",
-      localizacao: cleanText(item.localizacao),
-      ativa: Boolean(item.ativo),
-      comunidade: community,
-    }))
-    .filter((item) => item.ip);
-
-  return impressoras;
-}
-
-/**
  * [DOC-FUNC] listarViaInventario
- * O que faz: A funcao 'listarViaInventario' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
- * Entradas: Recebe os parametros: supabase. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) consulta as fontes de dados necessarias e aplica os filtros do contexto; 3) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 4) percorre colecoes quando necessario para consolidar ou transformar resultados; 5) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: monta a lista oficial de impressoras que o coletor Python deve varrer na rede.
+ * Entradas: recebe o cliente Supabase com service role, já autenticado pela Edge Function.
+ * Como executa: consulta exclusivamente `public.inventario`, junta modelo/marca em `equipamento` e setor em `setor`, filtra somente itens ativos (`ie_situacao = A`) e com `nr_ip` preenchido, normaliza IP/textos e adiciona a comunidade SNMP padrão.
+ * Retorno/Efeitos: devolve uma lista enxuta com id do inventário, IP, patrimônio, série, modelo, fabricante, setor, localização e comunidade SNMP; essa lista é a base oficial do ciclo de coleta.
  */
 async function listarViaInventario(supabase: ReturnType<typeof getAdminClient>) {
   const { data, error } = await supabase
@@ -184,8 +119,8 @@ async function listarViaInventario(supabase: ReturnType<typeof getAdminClient>) 
       "nr_inventario,nr_ip,nr_patrimonio,nr_serie,ie_situacao,equipamento:cd_equipamento(nm_modelo,nm_marca,nm_equipamento),setor:cd_setor(nm_setor)"
     )
     // O coletor varre somente itens ativos e com IP.
-    // Backup/devolucao normalmente ficam com ie_situacao = I, entao aparecem no inventario geral,
-    // mas nao entram na coleta SNMP nem no total operacional.
+    // Backup/devolução normalmente ficam com ie_situacao = I, então aparecem no inventário geral,
+    // mas não entram na coleta SNMP nem no total operacional.
     .eq("ie_situacao", "A")
     .not("nr_ip", "is", null);
 
@@ -232,38 +167,7 @@ Deno.serve(async (req) => {
 
   try {
     const supabase = getAdminClient();
-
-    let impressoras: Array<Record<string, unknown>> = [];
-    let carregouFonte = false;
-
-    try {
-      if (await tableExists(supabase, "impressoras")) {
-        impressoras = await listarViaTabelaImpressoras(supabase);
-        carregouFonte = true;
-      }
-    } catch (error) {
-      const message = error instanceof Error ? error.message : String(error);
-      if (!isMissingTableErrorMessage(message)) {
-        throw error;
-      }
-    }
-
-    if (!carregouFonte) {
-      if (await tableExists(supabase, "inventario")) {
-        impressoras = await listarViaInventario(supabase);
-        carregouFonte = true;
-      }
-    }
-
-    if (!carregouFonte) {
-      return jsonResponse(
-        {
-          sucesso: false,
-          erro: "No source table available (impressoras or inventario)",
-        },
-        422,
-      );
-    }
+    const impressoras = await listarViaInventario(supabase);
 
     return jsonResponse(
       {

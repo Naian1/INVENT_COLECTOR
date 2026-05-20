@@ -263,10 +263,10 @@ def get_collector_config():
     supabase_url = (_get_env("COLLECTOR_SUPABASE_URL", "") or "").strip().rstrip("/")
     supabase_key = (_get_env("COLLECTOR_SUPABASE_KEY", "") or "").strip()
     supabase_printers_table = (
-        _get_env("COLLECTOR_SUPABASE_PRINTERS_TABLE", "impressoras") or "impressoras"
+        _get_env("COLLECTOR_SUPABASE_PRINTERS_TABLE", "inventario") or "inventario"
     ).strip()
     if not supabase_printers_table:
-        supabase_printers_table = "impressoras"
+        supabase_printers_table = "inventario"
 
     # Filtro opcional para schema baseado em inventario (ex.: cd_tipo_equipamento=2)
     supabase_printers_filter_column = (_get_env("COLLECTOR_SUPABASE_PRINTERS_FILTER_COLUMN", "") or "").strip()
@@ -538,7 +538,9 @@ def _fetch_printers_via_api(config, log_prefix):
 def _fetch_printers_via_supabase(config, log_prefix):
     supabase_url = str(config.get("supabase_url") or "").strip().rstrip("/")
     supabase_key = str(config.get("supabase_key") or "").strip()
-    table_name = str(config.get("supabase_printers_table") or "impressoras").strip()
+    # O fluxo atual usa public.inventario como fonte oficial.
+    # Variaveis antigas nao devem redirecionar o coletor para tabelas desativadas.
+    table_name = "inventario"
     filter_column = str(config.get("supabase_printers_filter_column") or "").strip()
     filter_value = str(config.get("supabase_printers_filter_value") or "").strip()
 
@@ -556,25 +558,17 @@ def _fetch_printers_via_supabase(config, log_prefix):
         }
 
     table_encoded = parse.quote(table_name, safe="")
-    inventory_mode = table_name.lower() == "inventario"
-
-    if inventory_mode:
-        select_fields = parse.quote(
-            "nr_inventario,nr_ip,nr_patrimonio,nr_serie,ie_situacao,cd_setor,"
-            "equipamento:cd_equipamento(cd_tipo_equipamento,nm_marca,nm_modelo,nm_equipamento),"
-            "setor:cd_setor(nm_setor)"
-        )
-        # Para schema Daniel/public: inventario guarda IP/patrimonio/serie,
-        # equipamento guarda tipo/modelo/marca, setor guarda localização.
-        url = (
-            f"{supabase_url}/rest/v1/{table_encoded}"
-            f"?select={select_fields}&nr_ip=not.is.null&ie_situacao=eq.A"
-        )
-    else:
-        select_fields = parse.quote(
-            "id,ip,patrimonio,modelo,fabricante,numero_serie,hostname,setor,localizacao,ativo"
-        )
-        url = f"{supabase_url}/rest/v1/{table_encoded}?select={select_fields}&ativo=eq.true"
+    select_fields = parse.quote(
+        "nr_inventario,nr_ip,nr_patrimonio,nr_serie,ie_situacao,cd_setor,"
+        "equipamento:cd_equipamento(cd_tipo_equipamento,nm_marca,nm_modelo,nm_equipamento),"
+        "setor:cd_setor(nm_setor)"
+    )
+    # Para schema Daniel/public: inventario guarda IP/patrimonio/serie,
+    # equipamento guarda tipo/modelo/marca, setor guarda localiza??o.
+    url = (
+        f"{supabase_url}/rest/v1/{table_encoded}"
+        f"?select={select_fields}&nr_ip=not.is.null&ie_situacao=eq.A"
+    )
     headers = {
         "apikey": supabase_key,
         "Authorization": f"Bearer {supabase_key}",
@@ -607,18 +601,12 @@ def _fetch_printers_via_supabase(config, log_prefix):
                     last_error = "Resposta invalida do Supabase (esperado array)."
                     raise ValueError(last_error)
 
-                if inventory_mode:
-                    printers = _normalize_remote_printers_from_inventario(
-                        parsed,
-                        default_community=config.get("default_snmp_community", "public"),
-                        filter_column=filter_column,
-                        filter_value=filter_value,
-                    )
-                else:
-                    printers = _normalize_remote_printers(
-                        parsed,
-                        default_community=config.get("default_snmp_community", "public"),
-                    )
+                printers = _normalize_remote_printers_from_inventario(
+                    parsed,
+                    default_community=config.get("default_snmp_community", "public"),
+                    filter_column=filter_column,
+                    filter_value=filter_value,
+                )
                 if attempt > 1:
                     logging.info("%s Sync recuperado na tentativa %s/%s.", log_prefix, attempt, retries)
                 logging.info(
