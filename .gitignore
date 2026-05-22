@@ -37,3 +37,8 @@ coletor-snmp/data/collector_pending_invalid.jsonl
 COMPLETO_CODIGOS_E_BANCO.txt
 ENDPOINTS_E_COLETOR.txt
 PROJETO_COMPLETO.txt
+
+# Relatorios locais de auditoria/sanitizacao
+MAPA_TABELAS_LEGADAS.md
+MAPA_USO_ROTAS_SERVICES_LEGADOS.md
+RELATORIO_SANITIZACAO.md
