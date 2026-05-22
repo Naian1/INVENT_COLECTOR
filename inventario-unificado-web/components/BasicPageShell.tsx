@@ -11,6 +11,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
 import { supabase } from "@/lib/supabase/client";
+import { invokeAuthedEdgeAction } from "@/lib/supabase/invokeEdge";
 
 type BasicPageShellProps = {
   title: string;
@@ -309,12 +310,12 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
         fetch("/api/telemetria/resumo-diario?dias=2", {
           headers: { Authorization: `Bearer ${token}` },
         }),
-        supabase.functions.invoke("inventory-core", {
-          body: {
-            action: "list_substituicao_pendente",
-            payload: { somente_pendentes: true, limite: 30 },
-          },
-        }),
+        invokeAuthedEdgeAction<PendenciaTroca[]>(
+          "inventory-core",
+          "list_substituicao_pendente",
+          { somente_pendentes: true, limite: 30 },
+          "Falha ao carregar notificacoes de troca.",
+        ).catch(() => []),
       ]);
 
       const itensNotificacao: NotificationItem[] = [];
@@ -358,11 +359,7 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
         });
       }
 
-      const trocasPayload = (resTrocas.data && (resTrocas.data as any).ok)
-        ? ((resTrocas.data as any).data as PendenciaTroca[])
-        : [];
-
-      for (const item of trocasPayload || []) {
+      for (const item of resTrocas || []) {
         const dataRef = formatarDataCurta(item.dt_ultima_detecao || null);
         const patrimonioRef = String(item.referencia?.nr_patrimonio || `INV-${item.id}`);
         const detectadoResumo = [

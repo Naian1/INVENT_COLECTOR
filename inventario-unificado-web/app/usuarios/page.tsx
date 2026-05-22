@@ -9,6 +9,7 @@ import { BasicPageShell } from '@/components/BasicPageShell';
 import { StatusFeedback } from '@/components/StatusFeedback';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabase/client';
+import { formatarDataHoraPtBr as formatarDataHora } from '@/lib/utils/date';
 
 type Perfil = {
   cd_perfil: number;
@@ -59,23 +60,6 @@ const INITIAL_FORM: UsuarioFormState = {
   ie_situacao: 'A',
   perfis: [],
 };
-
-/**
- * [DOC-FUNC] formatarDataHora
- * O que faz: A funcao 'formatarDataHora' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) interage com servicos externos/rede com controle de falha e retentativa quando aplicavel; 4) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatarDataHora(value: string | null | undefined): string {
-  if (!value) return '-';
-  const data = new Date(value);
-  if (Number.isNaN(data.getTime())) return '-';
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(data);
-}
 
 /**
  * [DOC-FUNC] requestUsuariosApi

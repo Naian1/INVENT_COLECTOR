@@ -6,7 +6,8 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { StatusFeedback } from "@/components/StatusFeedback";
-import { EdgeUnauthorizedError, invokeAuthedEdgeFunction } from "@/lib/supabase/invokeEdge";
+import { EdgeUnauthorizedError, invokeAuthedEdgeAction } from "@/lib/supabase/invokeEdge";
+import { formatarMoedaBrl as formatCurrency, formatarNumeroPtBr as formatNumber } from "@/lib/utils/number";
 
 type DashboardData = {
   gerado_em: string;
@@ -121,37 +122,12 @@ type BilhetagemBaseStorage = {
  * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
  */
 async function invokePrintFunction<T>(action: string, payload?: Record<string, unknown>) {
-  return invokeAuthedEdgeFunction<T>(
+  return invokeAuthedEdgeAction<T>(
     "inventory-print",
-    { action, payload: payload ?? {} },
+    action,
+    payload,
     `Falha ao executar ${action}.`
   );
-}
-
-/**
- * [DOC-FUNC] formatNumber
- * O que faz: A funcao 'formatNumber' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatNumber(value: number) {
-  return new Intl.NumberFormat("pt-BR").format(value);
-}
-
-/**
- * [DOC-FUNC] formatCurrency
- * O que faz: A funcao 'formatCurrency' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatCurrency(value: number) {
-  return new Intl.NumberFormat("pt-BR", {
-    style: "currency",
-    currency: "BRL",
-    maximumFractionDigits: 2,
-  }).format(value);
 }
 
 /**

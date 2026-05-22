@@ -5,6 +5,8 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { authenticateApiRequest } from '@/lib/security/apiAuth';
 import { getSupabaseServerClient } from '@/lib/supabase/server';
+import { validarCompetenciaMesAno as validarCompetencia } from '@/lib/utils/competencia';
+import { limparTextoOuNulo as limparTexto } from '@/lib/utils/text';
 
 type CargaConsolidado = {
   nr_carga: number;
@@ -31,30 +33,6 @@ type ConsolidadoItem = {
   nm_tipo: string | null;
   ds_produto: string | null;
 };
-
-/**
- * [DOC-FUNC] validarCompetencia
- * O que faz: A funcao 'validarCompetencia' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: competencia. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
- */
-function validarCompetencia(competencia: string): boolean {
-  return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(competencia);
-}
-
-/**
- * [DOC-FUNC] limparTexto
- * O que faz: A funcao 'limparTexto' remove ou inativa registros conforme as regras do sistema. O foco e preservar integridade e rastreabilidade durante a operacao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function limparTexto(value: string | null): string | null {
-  if (!value) return null;
-  const text = value.trim();
-  return text ? text : null;
-}
 
 /**
  * [DOC-FUNC] normalizarPatrimonio
@@ -263,4 +241,3 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: error.message || 'Falha ao executar conciliacao.' }, { status: 500 });
   }
 }
-

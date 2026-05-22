@@ -3,6 +3,7 @@
  * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
  */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { limparTextoDesconhecidoOuNulo as normalizarTexto } from "@/lib/utils/text";
 import { sincronizarCategoriaCompletaNaPlanilha } from "@/services/googleSheetsSyncService";
 
 export type ResultadoServico<T> =
@@ -149,23 +150,6 @@ const campoSemanticoPorChave: Array<{ hint: string; semantico: TipoSemantico; ti
   { hint: "fabricante", semantico: "fabricante", tipo: "texto" },
   { hint: "numero_serie", semantico: "numero_serie", tipo: "texto" }
 ];
-
-/**
- * [DOC-FUNC] normalizarTexto
- * O que faz: A funcao 'normalizarTexto' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function normalizarTexto(value: unknown): string | null {
-  if (value === null || value === undefined) return null;
-  const text = String(value).trim();
-  if (!text) return null;
-  if (["null", "none", "n/a", "na", "-", "desconhecido", "unknown"].includes(text.toLowerCase())) {
-    return null;
-  }
-  return text;
-}
 
 /**
  * [DOC-FUNC] normalizarChave
@@ -952,4 +936,3 @@ export async function executarImportacaoDinamica(
 
   return { success: true, data: resumo };
 }
-

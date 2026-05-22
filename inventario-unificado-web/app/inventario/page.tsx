@@ -15,11 +15,14 @@ import {
 } from '@/components/ui/dialog';
 import { StatusFeedback } from '@/components/StatusFeedback';
 import { supabase } from '@/lib/supabase/client';
+import { invokeAuthedEdgeAction } from '@/lib/supabase/invokeEdge';
 import { Inventario } from '@/types/inventario';
 import { Setor } from '@/types/setor';
 import { Equipamento } from '@/types/equipamento';
 import { TipoEquipamento } from '@/types/tipoEquipamento';
 import { Piso } from '@/types/piso';
+import { normalizarTextoBusca as normalizarTexto } from '@/lib/utils/text';
+import { formatarDataHoraPtBr as formatarDataHora } from '@/lib/utils/date';
 
 interface InventarioComDetalhes extends Inventario {
   equipamento?: Equipamento;
@@ -186,20 +189,6 @@ type CriacaoInventario = {
 };
 
 /**
- * [DOC-FUNC] normalizarTexto
- * O que faz: A funcao 'normalizarTexto' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: texto. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function normalizarTexto(texto: string): string {
-  return texto
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-}
-
-/**
  * [DOC-FUNC] normalizarIpSemMascara
  * O que faz: A funcao 'normalizarIpSemMascara' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
  * Entradas: Recebe os parametros: ip. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -351,23 +340,6 @@ function statusFromLegacy(situacao?: string | null): TpStatus {
 }
 
 /**
- * [DOC-FUNC] formatarDataHora
- * O que faz: A funcao 'formatarDataHora' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatarDataHora(value: string | null): string {
-  if (!value) return '-';
-  const data = new Date(value);
-  if (Number.isNaN(data.getTime())) return '-';
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(data);
-}
-
-/**
  * [DOC-FUNC] getLabelTpStatus
  * O que faz: A funcao 'getLabelTpStatus' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
  * Entradas: Recebe os parametros: tpStatus. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -411,40 +383,16 @@ async function invokeInventoryCore<T>(
   payload?: Record<string, unknown>,
   actor?: { nm_usuario?: string | null; cd_usuario?: number | null } | null,
 ): Promise<T> {
-  const { data, error } = await supabase.functions.invoke('inventory-core', {
-    body: {
-      action,
-      payload: {
-        ...(payload ?? {}),
-        nm_usuario: actor?.nm_usuario ?? null,
-        cd_usuario: actor?.cd_usuario ?? null,
-      },
+  return invokeAuthedEdgeAction<T>(
+    'inventory-core',
+    action,
+    {
+      ...(payload ?? {}),
+      nm_usuario: actor?.nm_usuario ?? null,
+      cd_usuario: actor?.cd_usuario ?? null,
     },
-  });
-
-  if (!error && data?.ok) {
-    return data.data as T;
-  }
-
-  let reason = data?.error || error?.message || 'inventory-core indisponivel';
-
-  // Supabase invoke wraps non-2xx errors in a generic message; try to read response payload for real cause.
-  const responseContext = (error as any)?.context;
-  if (responseContext && typeof responseContext.text === 'function') {
-    try {
-      const rawText = await responseContext.text();
-      if (rawText) {
-        const parsed = JSON.parse(rawText);
-        if (parsed?.error) {
-          reason = String(parsed.error);
-        }
-      }
-    } catch {
-      // Keep fallback reason when context cannot be parsed.
-    }
-  }
-
-  throw new Error(`Falha ao executar inventory-core: ${reason}`);
+    'inventory-core indisponivel',
+  );
 }
 
 /**

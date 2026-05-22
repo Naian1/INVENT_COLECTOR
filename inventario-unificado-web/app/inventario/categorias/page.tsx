@@ -9,6 +9,7 @@ import { BasicPageShell } from '@/components/BasicPageShell';
 import { StatusFeedback } from '@/components/StatusFeedback';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { supabase } from '@/lib/supabase/client';
+import { invokeAuthedEdgeAction } from '@/lib/supabase/invokeEdge';
 
 type Empresa = {
   cd_cgc: string;
@@ -63,33 +64,12 @@ type Equipamento = {
  * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
  */
 async function invokeInventoryAdmin<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke('inventory-admin', {
-    body: { action, payload: payload ?? {} },
-  });
-
-  if (!error && data?.ok) {
-    return data.data as T;
-  }
-
-  let fnError = data?.error || error?.message || 'inventory-admin indisponivel';
-
-  // Supabase wraps non-2xx into a generic message; try to parse response body for the root cause.
-  const responseContext = (error as any)?.context;
-  if (responseContext && typeof responseContext.text === 'function') {
-    try {
-      const rawText = await responseContext.text();
-      if (rawText) {
-        const parsed = JSON.parse(rawText);
-        if (parsed?.error) {
-          fnError = String(parsed.error);
-        }
-      }
-    } catch {
-      // Keep fallback message.
-    }
-  }
-
-  throw new Error(`Falha ao executar inventory-admin: ${fnError}`);
+  return invokeAuthedEdgeAction<T>(
+    'inventory-admin',
+    action,
+    payload,
+    'inventory-admin indisponivel',
+  );
 }
 
 /**

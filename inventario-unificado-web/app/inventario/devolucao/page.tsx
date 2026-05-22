@@ -7,7 +7,9 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
 import { StatusFeedback } from '@/components/StatusFeedback';
-import { supabase } from '@/lib/supabase/client';
+import { invokeAuthedEdgeAction } from '@/lib/supabase/invokeEdge';
+import { normalizarTextoBusca as normalizarTexto } from '@/lib/utils/text';
+import { formatarDataHoraPtBr as formatarDataHora } from '@/lib/utils/date';
 
 type DevolucaoItem = {
   nr_inventario: number;
@@ -38,37 +40,6 @@ type ListContextResponse = {
 };
 
 /**
- * [DOC-FUNC] normalizarTexto
- * O que faz: A funcao 'normalizarTexto' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function normalizarTexto(value: unknown): string {
-  return String(value ?? '')
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '')
-    .toLowerCase();
-}
-
-/**
- * [DOC-FUNC] formatarDataHora
- * O que faz: A funcao 'formatarDataHora' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatarDataHora(value: string | null): string {
-  if (!value) return '-';
-  const dt = new Date(value);
-  if (Number.isNaN(dt.getTime())) return '-';
-  return new Intl.DateTimeFormat('pt-BR', {
-    dateStyle: 'short',
-    timeStyle: 'short',
-  }).format(dt);
-}
-
-/**
  * [DOC-FUNC] escapeCsvCell
  * O que faz: A funcao 'escapeCsvCell' realiza uma leitura de dados. Ela localiza a fonte correta, aplica filtros/normalizacoes necessarios e entrega um resultado pronto para consumo pela proxima etapa.
  * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -89,16 +60,12 @@ function escapeCsvCell(value: unknown): string {
  * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
  */
 async function invokeInventoryCore<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke('inventory-core', {
-    body: { action, payload: payload ?? {} },
-  });
-
-  if (!error && data?.ok) {
-    return data.data as T;
-  }
-
-  const reason = error?.message || data?.error || 'inventory-core indisponivel';
-  throw new Error(`Falha ao executar inventory-core: ${reason}`);
+  return invokeAuthedEdgeAction<T>(
+    'inventory-core',
+    action,
+    payload,
+    'inventory-core indisponivel',
+  );
 }
 
 /**

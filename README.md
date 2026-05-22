@@ -4,8 +4,38 @@ Sistema de inventário unificado e operação de impressoras para ambiente hospi
 
 A parte central para apresentação do TCC é o módulo de impressoras e telemetria, porque ele conecta hardware real na rede, coletor Python, Edge Functions, banco PostgreSQL/Supabase, triggers SQL e interface web.
 
-## Objetivo
+# Fluxo de Impressoras e Telemetria
 
+O foco técnico da apresentação do TCC é o fluxo de impressoras: coleta SNMP, coletor Python, telemetria, pagecount, suprimentos, troca assistida e dashboard operacional.
+
+A fonte oficial das impressoras é `public.inventario`. A telemetria coletada pela rede é gravada nas tabelas atuais de impressoras: `public.telemetria_pagecount`, `public.telemetria_pagecount_diaria`, `public.suprimentos`, `public.telemetria_substituicao_pendente`, `public.telemetria_substituicao_evento_retido` e `public.tarifas_bilhetagem`.
+
+Documento completo de estudo para o TCC:
+
+- [Mapa de Estudo TCC - Impressoras e Telemetria](docs/MAPA_ESTUDO_IMPRESSORAS_TCC.md)
+
+```mermaid
+flowchart TD
+  A["Impressora física"] --> B["Coletor Python"]
+  B --> C["SNMP / OIDs"]
+  C --> D["Payload JSON de telemetria"]
+  D --> E["Edge collector-telemetria"]
+  E --> F["Validação do token"]
+  F --> G["Comparação com public.inventario"]
+  G --> H{"Identidade confere?"}
+  H -- "Sim" --> I["telemetria_pagecount"]
+  H -- "Sim" --> J["suprimentos"]
+  I --> K["Trigger de consolidação diária"]
+  K --> L["telemetria_pagecount_diaria"]
+  H -- "Não" --> M["telemetria_substituicao_pendente"]
+  M --> N["telemetria_substituicao_evento_retido"]
+  L --> O["Edge inventory-print"]
+  J --> O
+  N --> P["Troca assistida no frontend"]
+  O --> Q["Dashboard /impressoras"]
+```
+
+## Objetivo
 O sistema foi criado para responder perguntas práticas da operação de TI:
 
 - Onde cada equipamento está?

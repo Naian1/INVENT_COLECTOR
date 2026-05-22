@@ -7,6 +7,8 @@
 import { useEffect, useMemo, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
 import { supabase } from '@/lib/supabase/client';
+import { invokeAuthedEdgeFunction } from '@/lib/supabase/invokeEdge';
+import { validarCompetenciaMesAno as validarCompetencia } from '@/lib/utils/competencia';
 
 type EmpresaOption = {
   cd_cgc: string;
@@ -189,17 +191,6 @@ function competenciaAtual() {
   const mes = String(now.getMonth() + 1).padStart(2, '0');
   const ano = String(now.getFullYear());
   return `${mes}/${ano}`;
-}
-
-/**
- * [DOC-FUNC] validarCompetencia
- * O que faz: A funcao 'validarCompetencia' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: valor. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function validarCompetencia(valor: string) {
-  return /^(0[1-9]|1[0-2])\/[0-9]{4}$/.test(valor.trim());
 }
 
 /**
@@ -474,25 +465,23 @@ export default function ImportacoesInventarioPage() {
     try {
       const competenciaTrim = competencia.trim();
 
-      const { data: startData, error: startError } = await supabase.functions.invoke('inventory-matrix', {
-        body: {
+      const startData = await invokeAuthedEdgeFunction<{ nr_carga: number | string }>(
+        'inventory-matrix',
+        {
           action: 'start',
           competencia: competenciaTrim,
           cd_cgc: empresaEscolhida.cd_cgc,
           arquivo_nome: arquivoNome || 'consolidado.xlsx',
           total_linhas: linhasBrutas.length,
         },
-      });
+        'Falha ao iniciar carga Matrix via Edge Function.',
+      );
 
-      if (startError) {
-        throw new Error(`Falha ao iniciar carga Matrix via Edge Function: ${startError.message}`);
+      if (!startData?.nr_carga) {
+        throw new Error('Edge Function não retornou nr_carga.');
       }
 
-      if (!startData?.ok || !startData?.data?.nr_carga) {
-        throw new Error(startData?.error || 'Edge Function não retornou nr_carga.');
-      }
-
-      const nrCarga = Number(startData.data.nr_carga);
+      const nrCarga = Number(startData.nr_carga);
       const payload = linhasBrutas.map((row, index) => ({
         nr_linha: index + 2,
         ...mapearLinhaMatrixParaBanco(row),
@@ -501,36 +490,28 @@ export default function ImportacoesInventarioPage() {
       const chunkSize = 150;
       for (let start = 0; start < payload.length; start += chunkSize) {
         const chunk = payload.slice(start, start + chunkSize);
-        const { data: appendData, error: appendError } = await supabase.functions.invoke('inventory-matrix', {
-          body: {
+        await invokeAuthedEdgeFunction<unknown>(
+          'inventory-matrix',
+          {
             action: 'append',
             nr_carga: nrCarga,
             rows: chunk,
           },
-        });
-
-        if (appendError) {
-          throw new Error(`Erro no lote ${start + 1}-${start + chunk.length}: ${appendError.message}`);
-        }
-
-        if (!appendData?.ok) {
-          throw new Error(appendData?.error || `Erro no lote ${start + 1}-${start + chunk.length}`);
-        }
+          `Erro no lote ${start + 1}-${start + chunk.length}`,
+        );
 
         const pct = Math.round(((start + chunk.length) / payload.length) * 100);
         setProgressoConsolidado(Math.min(100, pct));
       }
 
-      const { data: finishData, error: finishError } = await supabase.functions.invoke('inventory-matrix', {
-        body: {
+      await invokeAuthedEdgeFunction<unknown>(
+        'inventory-matrix',
+        {
           action: 'finish',
           nr_carga: nrCarga,
         },
-      });
-
-      if (finishError || !finishData?.ok) {
-        throw new Error(finishData?.error || finishError?.message || 'Falha ao finalizar carga Matrix.');
-      }
+        'Falha ao finalizar carga Matrix.',
+      );
 
       setOk(
         `Matrix ${competenciaTrim} (${empresaEscolhida.nm_empresa}) salva com sucesso pela Edge Function. Linhas: ${linhasBrutas.length}.`,

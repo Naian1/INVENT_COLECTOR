@@ -21,6 +21,10 @@ import {
 } from "lucide-react";
 
 import { supabase } from "@/lib/supabase/client";
+import {
+  formatarInteiroNaoNegativoPtBr as formatNumber,
+  formatarMoedaBrlNaoNegativa as formatCurrency,
+} from "@/lib/utils/number";
 
 type TelemetriaResumoPayload = {
   periodo: {
@@ -117,41 +121,11 @@ const PAD_X = 36;
 const PAD_TOP = 24;
 const PAD_BOTTOM = 38;
 
-const numberFormatter = new Intl.NumberFormat("pt-BR");
-const currencyFormatter = new Intl.NumberFormat("pt-BR", {
-  style: "currency",
-  currency: "BRL",
-});
 const dateTimeFormatter = new Intl.DateTimeFormat("pt-BR", {
   dateStyle: "short",
   timeStyle: "short",
   timeZone: "America/Sao_Paulo",
 });
-
-/**
- * [DOC-FUNC] formatNumber
- * O que faz: A funcao 'formatNumber' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatNumber(value: number | null | undefined) {
-  const n = Number(value ?? 0);
-  if (!Number.isFinite(n)) return "0";
-  return numberFormatter.format(Math.max(0, Math.round(n)));
-}
-
-/**
- * [DOC-FUNC] formatCurrency
- * O que faz: A funcao 'formatCurrency' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function formatCurrency(value: number) {
-  if (!Number.isFinite(value)) return currencyFormatter.format(0);
-  return currencyFormatter.format(Math.max(0, value));
-}
 
 /**
  * [DOC-FUNC] formatDateTime

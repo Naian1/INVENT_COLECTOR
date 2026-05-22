@@ -3,6 +3,7 @@
  * [DOC-CODEMAP] Papel: Arquivo de suporte da aplicacao: participa do fluxo funcional do sistema.
  */
 import { getSupabaseServerClient } from "@/lib/supabase/server";
+import { limparTextoInventarioOuIndefinido as normalizarTexto } from "@/lib/utils/text";
 import type {
   AtualizarImpressoraInput,
   CriarImpressoraInput,
@@ -16,38 +17,11 @@ export type ResultadoServico<T> =
   | { success: true; data: T }
   | { success: false; error: string; status?: number };
 
-const VALORES_DESCONHECIDOS = new Set([
-  "",
-  "desconhecido",
-  "unknown",
-  "n/a",
-  "na",
-  "none",
-  "null",
-  "-",
-  "sem setor"
-]);
-
 type ImpressoraComSuprimentos = {
   inventario: Inventario & { setor_nome?: string };
   equipamento: any;
   suprimentos: Suprimentos[];
 };
-
-/**
- * [DOC-FUNC] normalizarTexto
- * O que faz: A funcao 'normalizarTexto' padroniza dados de entrada para evitar ambiguidade. Ela limpa formato, converte tipos e devolve valores consistentes para comparacao, armazenamento ou exibicao.
- * Entradas: Recebe os parametros: value. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
- */
-function normalizarTexto(value: string | null | undefined): string | undefined {
-  if (value === null || value === undefined) return undefined;
-  const normalizado = value.trim();
-  if (!normalizado) return undefined;
-  if (VALORES_DESCONHECIDOS.has(normalizado.toLowerCase())) return undefined;
-  return normalizado;
-}
 
 /**
  * [DOC-FUNC] calcularNivelPercentual
@@ -332,4 +306,3 @@ export async function upsertImpressoraPorColetor(input: any): Promise<ResultadoS
   };
 }
 */
-

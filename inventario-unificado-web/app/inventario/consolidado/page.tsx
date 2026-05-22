@@ -6,7 +6,7 @@
 
 import { FormEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { BasicPageShell } from '@/components/BasicPageShell';
-import { supabase } from '@/lib/supabase/client';
+import { invokeAuthedEdgeAction } from '@/lib/supabase/invokeEdge';
 
 const DEFAULT_PAGE_SIZE = 200;
 
@@ -72,16 +72,12 @@ type ConsolidadoResponse = {
  * Saida/Efeito: devolve dados prontos para a proxima etapa ou renderiza/atualiza a interface sem alterar a regra de negocio principal.
  */
 async function invokeInventoryCore<T>(action: string, payload?: Record<string, unknown>): Promise<T> {
-  const { data, error } = await supabase.functions.invoke('inventory-core', {
-    body: { action, payload: payload ?? {} },
-  });
-
-  if (!error && data?.ok) {
-    return data.data as T;
-  }
-
-  const reason = error?.message || data?.error || 'inventory-core indisponivel';
-  throw new Error(reason);
+  return invokeAuthedEdgeAction<T>(
+    'inventory-core',
+    action,
+    payload,
+    'inventory-core indisponivel',
+  );
 }
 
 /**
