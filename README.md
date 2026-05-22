@@ -110,6 +110,66 @@ public.telemetria_substituicao_evento_retido
 public.suprimentos
 ```
 
+
+## Estrutura de Pastas
+
+O projeto esta organizado para separar claramente sistema web, coletor Python e documentacao.
+
+```text
+INVENT_COLECTOR/
+?? inventario-unificado-web/   Frontend Next.js, services TypeScript, Edge Functions e SQL Supabase
+?? coletor-snmp/               Aplicativo Python local que coleta impressoras via SNMP
+?? docs/                       Documentacao tecnica, TCC, deploy, banco e troubleshooting
+?? .venv/                      Ambiente virtual Python local
+?? .vscode/                    Configuracoes locais do editor
+?? README.md                   Entrada principal do projeto no GitHub
+```
+
+Resumo das pastas principais:
+
+| Pasta | Papel no sistema |
+| --- | --- |
+| `inventario-unificado-web/app` | Paginas Next.js, rotas internas e CSS global. |
+| `inventario-unificado-web/components` | Componentes reutilizaveis de interface. |
+| `inventario-unificado-web/services` | Camada TypeScript de acesso a dados e regras auxiliares. |
+| `inventario-unificado-web/lib` | Helpers compartilhados, Supabase, seguranca e validacoes. |
+| `inventario-unificado-web/supabase/functions` | Edge Functions que aplicam regras de negocio no backend. |
+| `inventario-unificado-web/supabase/migrations` | SQL do banco, tabelas, triggers e funcoes. |
+| `coletor-snmp/scripts` | Scripts executaveis do coletor, incluindo app visual e loop. |
+| `coletor-snmp/utils` | Modulos Python de SNMP, cache, API, mapper e arquivos locais. |
+| `coletor-snmp/data` | Cache local, fila pendente e dados de apoio do coletor. |
+| `coletor-snmp/logs` | Logs de execucao e rastros tecnicos do coletor. |
+| `docs` | Documentacao de arquitetura, banco, coletor, TCC e operacao. |
+
+Documentacao detalhada da estrutura e CSS:
+
+```text
+docs/21-estrutura-pastas-css.md
+```
+
+## Organizacao de CSS
+
+O CSS principal fica em:
+
+```text
+inventario-unificado-web/app/globals.css
+```
+
+A estrategia recomendada nao e jogar tudo sem criterio no global. O ideal e:
+
+- `globals.css` para tokens de tema, layout, componentes reutilizaveis e classes por pagina bem separadas por comentarios;
+- classes `ui-*` para componentes globais;
+- classes `inventory-*`, `printers-*` e `dashboard-*` para estilos especificos de pagina;
+- CSS inline apenas quando o valor e dinamico, como largura de barra percentual ou variavel calculada por dado.
+
+Exemplo:
+
+```tsx
+<span className="ui-supply-fill" style={{ width: `${percentual}%` }} />
+```
+
+Nesse caso, o inline faz sentido porque `percentual` vem do dado da impressora. Ja `marginBottom`, `padding`, cor fixa e grid repetido devem virar classe CSS.
+
 ## Como a Coleta de Impressoras Funciona
 
 A fonte oficial das impressoras é `public.inventario`. Não existe tabela separada de impressoras no fluxo atual.
