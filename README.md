@@ -83,6 +83,23 @@ inventory-admin
 inventory-matrix
 ```
 
+Resumo rapido do papel de cada uma:
+
+| Edge Function | O que faz no sistema |
+| --- | --- |
+| `collector-impressoras` | Entrega ao coletor a lista de impressoras oficiais vindas de `public.inventario`. |
+| `collector-telemetria` | Recebe payload SNMP do coletor, compara identidade, grava pagecount/suprimentos ou cria pendencia de troca. |
+| `inventory-core` | Nucleo do inventario: lista contexto, cria/edita/movimenta itens, resolve pendencias, manutencao e devolucao. |
+| `inventory-print` | Monta visao operacional de impressoras, dashboard, suprimentos, status e ranking de impressao. |
+| `inventory-admin` | Administra cadastros base: piso, empresa, tipo, setor, equipamento e validacao de perfil ADMIN. |
+| `inventory-matrix` | Controla importacao Matrix: inicia carga, insere linhas e finaliza conferencia da carga. |
+
+O passo a passo completo de quem chama, como autentica, quais actions existem, quais tabelas usa e como cada uma executa esta em:
+
+```text
+docs/05-api/overview.md
+```
+
 ### Camadas de API do Sistema
 
 No projeto, a palavra "API" aparece em duas camadas diferentes. As duas recebem requisicoes HTTP, mas elas nao tem o mesmo papel.
