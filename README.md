@@ -117,12 +117,12 @@ O projeto esta organizado para separar claramente sistema web, coletor Python e 
 
 ```text
 INVENT_COLECTOR/
-?? inventario-unificado-web/   Frontend Next.js, services TypeScript, Edge Functions e SQL Supabase
-?? coletor-snmp/               Aplicativo Python local que coleta impressoras via SNMP
-?? docs/                       Documentacao tecnica, TCC, deploy, banco e troubleshooting
-?? .venv/                      Ambiente virtual Python local
-?? .vscode/                    Configuracoes locais do editor
-?? README.md                   Entrada principal do projeto no GitHub
+|- inventario-unificado-web/   Frontend Next.js, services TypeScript, Edge Functions e SQL Supabase
+|- coletor-snmp/               Aplicativo Python local que coleta impressoras via SNMP
+|- docs/                       Documentacao tecnica, TCC, deploy, banco e troubleshooting
+|- .venv/                      Ambiente virtual Python local
+|- .vscode/                    Configuracoes locais do editor
+`- README.md                   Entrada principal do projeto no GitHub
 ```
 
 Resumo das pastas principais:
@@ -145,7 +145,10 @@ Documentacao detalhada da estrutura e CSS:
 
 ```text
 docs/21-estrutura-pastas-css.md
+docs/22-mapa-completo-arquivos.md
 ```
+
+O arquivo `docs/22-mapa-completo-arquivos.md` e o catalogo mais detalhado: ele lista cada arquivo versionado no Git, agrupado por pasta, e explica o papel de cada um no sistema.
 
 ## Organizacao de CSS
 
@@ -169,6 +172,8 @@ Exemplo:
 ```
 
 Nesse caso, o inline faz sentido porque `percentual` vem do dado da impressora. Ja `marginBottom`, `padding`, cor fixa e grid repetido devem virar classe CSS.
+
+Primeira limpeza real aplicada: a tela `app/operacional/page.tsx` deixou de usar estilos inline fixos e passou a usar classes dedicadas em `app/globals.css` (`operacional-page`, `operacional-error` e `operacional-table`). As telas maiores ainda devem ser migradas por etapas para reduzir risco visual antes do TCC.
 
 ## Como a Coleta de Impressoras Funciona
 

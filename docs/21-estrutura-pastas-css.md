@@ -2,6 +2,14 @@
 
 Este documento explica a estrutura do repositorio e orienta como manter o frontend mais limpo, principalmente em relacao a CSS inline, `globals.css` e classes reutilizaveis.
 
+Para uma lista arquivo por arquivo, use tambem:
+
+```text
+docs/22-mapa-completo-arquivos.md
+```
+
+Esse outro documento e o catalogo completo dos arquivos versionados: ele agrupa por pasta e descreve individualmente o papel de cada arquivo.
+
 ## 1. Visao Geral do Repositorio
 
 O projeto e dividido em tres blocos grandes:
@@ -302,6 +310,14 @@ app/inventario/devolucao/page.tsx
 ```
 
 Isso nao e automaticamente errado, mas pode atrapalhar manutencao quando vira estilo fixo repetido.
+
+Primeira limpeza real ja aplicada:
+
+```text
+app/operacional/page.tsx
+```
+
+Essa tela saiu de `style={{ ... }}` fixo para classes CSS (`operacional-page`, `operacional-error` e `operacional-table`) declaradas em `app/globals.css`. As proximas telas devem seguir o mesmo criterio, uma por vez, para nao quebrar tema claro/escuro nem layout antes da apresentacao.
 
 ## 6. Inline CSS: Quando Pode e Quando Evitar
 
