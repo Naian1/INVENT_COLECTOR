@@ -83,6 +83,75 @@ inventory-admin
 inventory-matrix
 ```
 
+### Camadas de API do Sistema
+
+No projeto, a palavra "API" aparece em duas camadas diferentes. As duas recebem requisicoes HTTP, mas elas nao tem o mesmo papel.
+
+#### 1. Supabase Edge Functions
+
+As Edge Functions sao APIs backend serverless executadas no Supabase. Elas ficam em:
+
+```text
+inventario-unificado-web/supabase/functions/
+```
+
+Funcoes atuais:
+
+```text
+collector-impressoras
+collector-telemetria
+inventory-core
+inventory-print
+inventory-admin
+inventory-matrix
+```
+
+Papel delas:
+
+- concentrar regras criticas de negocio;
+- validar permissao, token ou sessao antes de alterar dados;
+- receber telemetria do coletor Python;
+- gravar e consultar dados no PostgreSQL/Supabase;
+- reduzir risco de o frontend gravar algo errado direto no banco.
+
+Resumo para apresentar:
+
+```text
+Edge Function = API backend principal do Supabase.
+```
+
+#### 2. Rotas API do Next.js
+
+As rotas API do Next.js tambem sao APIs HTTP, mas rodam dentro do projeto web. Elas ficam em:
+
+```text
+inventario-unificado-web/app/api/
+```
+
+Exemplos:
+
+```text
+/api/auth/me
+/api/inventario
+/api/impressoras
+/api/telemetria/resumo-diario
+```
+
+Papel delas:
+
+- apoiar telas do proprio site;
+- encapsular consultas auxiliares;
+- integrar services TypeScript usados pelo frontend;
+- manter compatibilidade com fluxos internos do Next.js.
+
+Resumo para apresentar:
+
+```text
+Rotas app/api = APIs internas do site Next.js.
+```
+
+Portanto, as Edge Functions sao APIs, mas nao sao as unicas APIs do projeto. A diferenca principal e que as regras mais sensiveis e operacionais ficam nas Edge Functions, enquanto as rotas `app/api` ajudam o site a organizar chamadas internas.
+
 ### Banco Supabase
 
 Arquivo principal de referência:
