@@ -749,7 +749,7 @@ export default function GerenciarCategoriasPage() {
 
   return (
     <BasicPageShell title="Gerenciar Inventário (Admin)" subtitle="Cadastre empresas, tipos, setores e equipamentos">
-      <div style={{ display: 'grid', gap: 12 }}>
+      <div className="ui-stack">
         <StatusFeedback loading={loading} error={erro} success={ok} />
 
         <div className="ui-grid-4">
@@ -760,29 +760,29 @@ export default function GerenciarCategoriasPage() {
           <div className="ui-card">Modelos: <strong>{resumo.equipamentos}</strong></div>
         </div>
 
-        <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
+        <div className="ui-card ui-muted-note">
           Configure primeiro empresa, tipo e setor. Depois cadastre o modelo com tp_hierarquia para controlar o
           vínculo CPU/monitor/nobreak no inventário.
         </div>
 
         <div className="ui-grid-3">
-          <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
+          <div className="ui-card ui-muted-note">
             <strong>Piso + Setor:</strong> cada setor/localização pertence a um piso cadastrado (ex.: 1º Andar &gt; SAME &gt; Sala de Equipamentos).
           </div>
-          <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
+          <div className="ui-card ui-muted-note">
             <strong>Tipo:</strong> classe do equipamento (CPU, MONITOR, NOBREAK, TABLET, IMPRESSORA).
           </div>
-          <div className="ui-card" style={{ color: '#475569', fontSize: 14 }}>
+          <div className="ui-card ui-muted-note">
             <strong>Modelo:</strong> catálogo técnico usado no inventário oficial para criar cada item físico.
           </div>
         </div>
 
-        <div className="ui-card" style={{ display: 'grid', gap: 12 }}>
-          <h2 style={{ margin: 0 }}>Fluxos de cadastro</h2>
-          <p style={{ margin: 0, color: '#64748b', fontSize: 14 }}>
+        <div className="ui-card ui-stack">
+          <h2 className="ui-title-reset">Fluxos de cadastro</h2>
+          <p className="ui-muted-note ui-kv-flat">
             Escolha o fluxo para abrir no modal: novo cadastro ou edição de cadastros existentes.
           </p>
-          <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+          <div className="ui-inline-actions">
             <button className="ui-btn ui-btn-primary" onClick={() => setNovoCadastroModalOpen(true)}>
               NOVO CADASTRO
             </button>
@@ -800,10 +800,10 @@ export default function GerenciarCategoriasPage() {
                 Cadastre piso, empresa, tipo, setor (vinculado ao piso) e modelos de equipamento.
               </DialogDescription>
             </DialogHeader>
-            <div style={{ padding: 18, display: 'grid', gap: 12 }}>
+            <div className="ui-modal-body">
               <div className="ui-grid-2">
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h2 style={{ margin: 0 }}>Nova Empresa</h2>
+                <div className="ui-card ui-form-card">
+                  <h2 className="ui-title-reset">Nova Empresa</h2>
                   <input className="ui-field" placeholder="CNPJ/CGC" value={novaEmpresa.cd_cgc} onChange={(e) => setNovaEmpresa(v => ({ ...v, cd_cgc: e.target.value }))} />
                   <input className="ui-field" placeholder="Nome" value={novaEmpresa.nm_empresa} onChange={(e) => setNovaEmpresa(v => ({ ...v, nm_empresa: e.target.value }))} />
                   <input className="ui-field" placeholder="Fantasia" value={novaEmpresa.nm_fantasia} onChange={(e) => setNovaEmpresa(v => ({ ...v, nm_fantasia: e.target.value }))} />
@@ -812,22 +812,22 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={criarEmpresa}>Salvar Empresa</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h2 style={{ margin: 0 }}>Novo Tipo de Equipamento</h2>
+                <div className="ui-card ui-form-card">
+                  <h2 className="ui-title-reset">Novo Tipo de Equipamento</h2>
                   <input className="ui-field" placeholder="Nome do tipo" value={novoTipo.nm_tipo_equipamento} onChange={(e) => setNovoTipo(v => ({ ...v, nm_tipo_equipamento: e.target.value }))} />
                   <input className="ui-field" placeholder="Descrição" value={novoTipo.ds_tipo_equipamento} onChange={(e) => setNovoTipo(v => ({ ...v, ds_tipo_equipamento: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarTipo}>Salvar Tipo</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h2 style={{ margin: 0 }}>Novo Piso</h2>
+                <div className="ui-card ui-form-card">
+                  <h2 className="ui-title-reset">Novo Piso</h2>
                   <input className="ui-field" placeholder="Nome do piso (ex.: 1º Andar, Térreo, Anexo A)" value={novoPiso.nm_piso} onChange={(e) => setNovoPiso(v => ({ ...v, nm_piso: e.target.value }))} />
                   <input className="ui-field" placeholder="Descrição do piso (opcional)" value={novoPiso.ds_piso} onChange={(e) => setNovoPiso(v => ({ ...v, ds_piso: e.target.value }))} />
                   <button className="ui-btn ui-btn-primary" onClick={criarPiso}>Salvar Piso</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h2 style={{ margin: 0 }}>Novo Setor</h2>
+                <div className="ui-card ui-form-card">
+                  <h2 className="ui-title-reset">Novo Setor</h2>
                   <select className="ui-select" value={novoSetor.cd_piso} onChange={(e) => setNovoSetor(v => ({ ...v, cd_piso: e.target.value }))}>
                     <option value="">Selecione piso</option>
                     {pisos.map((p) => <option key={p.cd_piso} value={p.cd_piso}>{formatPisoLabel(p)}</option>)}
@@ -838,8 +838,8 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={criarSetor}>Salvar Setor</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h2 style={{ margin: 0 }}>Novo Equipamento (Modelo)</h2>
+                <div className="ui-card ui-form-card">
+                  <h2 className="ui-title-reset">Novo Equipamento (Modelo)</h2>
                   <select className="ui-select" value={novoEquipamento.cd_cgc} onChange={(e) => setNovoEquipamento(v => ({ ...v, cd_cgc: e.target.value }))}>
                     <option value="">Selecione empresa</option>
                     {empresas.map((e) => <option key={e.cd_cgc} value={e.cd_cgc}>{e.nm_empresa}</option>)}
@@ -876,10 +876,10 @@ export default function GerenciarCategoriasPage() {
                 Selecione um registro para carregar os campos e salvar alterações.
               </DialogDescription>
             </DialogHeader>
-            <div style={{ padding: 18, display: 'grid', gap: 12 }}>
+            <div className="ui-modal-body">
               <div className="ui-grid-2">
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h3 style={{ margin: 0 }}>Editar Empresa</h3>
+                <div className="ui-card ui-form-card">
+                  <h3 className="ui-title-reset">Editar Empresa</h3>
                   <select className="ui-select" value={empresaSelecionada} onChange={(e) => setEmpresaSelecionada(e.target.value)}>
                     <option value="">Selecione empresa</option>
                     {empresas.map((item) => (
@@ -894,8 +894,8 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={atualizarEmpresa}>Salvar Empresa</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h3 style={{ margin: 0 }}>Editar Tipo de Equipamento</h3>
+                <div className="ui-card ui-form-card">
+                  <h3 className="ui-title-reset">Editar Tipo de Equipamento</h3>
                   <select className="ui-select" value={tipoSelecionado} onChange={(e) => setTipoSelecionado(e.target.value)}>
                     <option value="">Selecione tipo</option>
                     {tipos.map((item) => (
@@ -907,8 +907,8 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={atualizarTipo}>Salvar Tipo</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h3 style={{ margin: 0 }}>Editar Piso</h3>
+                <div className="ui-card ui-form-card">
+                  <h3 className="ui-title-reset">Editar Piso</h3>
                   <select className="ui-select" value={pisoSelecionado} onChange={(e) => setPisoSelecionado(e.target.value)}>
                     <option value="">Selecione piso</option>
                     {pisos.map((item) => (
@@ -920,8 +920,8 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={atualizarPiso}>Salvar Piso</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h3 style={{ margin: 0 }}>Editar Setor</h3>
+                <div className="ui-card ui-form-card">
+                  <h3 className="ui-title-reset">Editar Setor</h3>
                   <select className="ui-select" value={setorSelecionado} onChange={(e) => setSetorSelecionado(e.target.value)}>
                     <option value="">Selecione setor</option>
                     {setores.map((item) => (
@@ -940,8 +940,8 @@ export default function GerenciarCategoriasPage() {
                   <button className="ui-btn ui-btn-primary" onClick={atualizarSetor}>Salvar Setor</button>
                 </div>
 
-                <div className="ui-card" style={{ display: 'grid', gap: 8 }}>
-                  <h3 style={{ margin: 0 }}>Editar Equipamento (Modelo)</h3>
+                <div className="ui-card ui-form-card">
+                  <h3 className="ui-title-reset">Editar Equipamento (Modelo)</h3>
                   <select className="ui-select" value={equipamentoSelecionado} onChange={(e) => setEquipamentoSelecionado(e.target.value)}>
                     <option value="">Selecione equipamento</option>
                     {equipamentos.map((item) => (

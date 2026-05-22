@@ -442,7 +442,7 @@ export default function InventarioDevolucaoPage() {
     >
       <StatusFeedback loading={loading} error={errorMessage} success={successMessage} />
 
-      <section className="ui-card" style={{ display: 'grid', gap: 12 }}>
+      <section className="ui-card ui-stack">
         <div className="ui-grid-3">
           <label>
             <span className="ui-kv">Empresa</span>
@@ -470,7 +470,7 @@ export default function InventarioDevolucaoPage() {
             />
           </label>
 
-          <div className="ui-row" style={{ alignItems: 'end' }}>
+          <div className="ui-row ui-row-end">
             <button
               type="button"
               className="ui-btn"
@@ -492,7 +492,7 @@ export default function InventarioDevolucaoPage() {
         </div>
       </section>
 
-      <section style={{ display: 'grid', gap: 16 }}>
+      <section className="ui-stack-lg">
         {!gruposEmpresa.length ? (
           <div className="ui-card">
             Nenhum item de devolução encontrado para os filtros atuais. A tela lista somente itens com
@@ -502,8 +502,8 @@ export default function InventarioDevolucaoPage() {
         ) : null}
 
         {gruposEmpresa.map((grupo) => (
-          <div key={grupo.empresa} className="ui-card" style={{ overflowX: 'auto' }}>
-            <h2 style={{ marginTop: 0 }}>{grupo.empresa}</h2>
+          <div key={grupo.empresa} className="ui-card ui-card-scroll">
+            <h2 className="ui-title-reset-top">{grupo.empresa}</h2>
             <table className="ui-table">
               <thead>
                 <tr>

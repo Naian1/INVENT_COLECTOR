@@ -12,10 +12,14 @@ interface DialogProps {
 
 /**
  * [DOC-FUNC] Dialog
- * O que faz: A funcao 'Dialog' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Recebe os parametros: { open, onOpenChange, children }. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: renderiza um modal centralizado somente quando `open` for verdadeiro.
+ * Entradas: `open` controla se o modal aparece, `onOpenChange` avisa a tela pai quando deve fechar
+ * e `children` carrega o conteudo real do modal.
+ * Como executa: quando abre, registra um listener de teclado para fechar com ESC; renderiza um
+ * fundo escuro clicavel e um painel central; o clique dentro do painel usa `stopPropagation` para
+ * nao fechar o modal sem querer.
+ * Retorno/Efeitos: retorna `null` quando fechado; quando aberto, cria a camada visual do modal e
+ * remove o listener de teclado automaticamente ao desmontar.
  */
 export function Dialog({ open, onOpenChange, children }: DialogProps) {
   useEffect(() => {
@@ -23,10 +27,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
     /**
      * [DOC-FUNC] handleKeyDown
-     * O que faz: A funcao 'handleKeyDown' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
-     * Entradas: Recebe os parametros: event. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
-     * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes.
-     * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+     * O que faz: escuta teclas pressionadas enquanto o modal esta aberto.
+     * Entradas: recebe o evento nativo do teclado disparado pelo navegador.
+     * Como executa: se a tecla for ESC, cancela o comportamento padrao e chama `onOpenChange(false)`.
+     * Retorno/Efeitos: nao retorna dados; apenas fecha o modal de forma previsivel para o usuario.
      */
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.key === 'Escape') {
@@ -46,37 +50,14 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
   return (
     <>
       <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          background: 'rgba(15, 23, 42, 0.55)',
-          zIndex: 40,
-        }}
+        className="ui-dialog-backdrop"
         onClick={() => onOpenChange(false)}
       />
       <div
-        style={{
-          position: 'fixed',
-          inset: 0,
-          zIndex: 50,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: 16,
-        }}
+        className="ui-dialog-shell"
       >
         <div
-          style={{
-            background: 'var(--panel)',
-            color: 'var(--text)',
-            borderRadius: 14,
-            boxShadow: '0 20px 40px rgba(2, 6, 23, 0.22)',
-            maxWidth: 1160,
-            width: '100%',
-            border: '1px solid var(--border)',
-            maxHeight: '90vh',
-            overflow: 'auto',
-          }}
+          className="ui-dialog-panel"
           onClick={(e) => e.stopPropagation()}
         >
           {children}
@@ -88,10 +69,10 @@ export function Dialog({ open, onOpenChange, children }: DialogProps) {
 
 /**
  * [DOC-FUNC] DialogContent
- * O que faz: A funcao 'DialogContent' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: mantem compatibilidade com o padrao de composicao de modais.
+ * Entradas: recebe `children` e aceita `className`, mesmo que hoje o componente nao use a classe.
+ * Como executa: devolve os filhos em um `div` simples; a estrutura visual fica no componente `Dialog`.
+ * Retorno/Efeitos: nao altera estado, apenas organiza o JSX da tela chamadora.
  */
 export function DialogContent({
   children,
@@ -105,10 +86,10 @@ export function DialogContent({
 
 /**
  * [DOC-FUNC] DialogHeader
- * O que faz: A funcao 'DialogHeader' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: cria o cabecalho padrao do modal, separando titulo/descricao do corpo.
+ * Entradas: recebe qualquer conteudo React como `children`.
+ * Como executa: aplica padding, borda inferior e fundo suave por CSS global.
+ * Retorno/Efeitos: padroniza visualmente todos os modais que usam este componente.
  */
 export function DialogHeader({
   children,
@@ -118,13 +99,7 @@ export function DialogHeader({
   className?: string;
 }) {
   return (
-    <div
-      style={{
-        padding: '18px 22px',
-        borderBottom: '1px solid var(--border)',
-        background: 'var(--panel-soft)',
-      }}
-    >
+    <div className="ui-dialog-header">
       {children}
     </div>
   );
@@ -132,10 +107,10 @@ export function DialogHeader({
 
 /**
  * [DOC-FUNC] DialogTitle
- * O que faz: A funcao 'DialogTitle' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: renderiza o titulo principal do modal com hierarquia visual consistente.
+ * Entradas: recebe o texto ou JSX do titulo.
+ * Como executa: usa uma classe global para manter margem zerada, tamanho e cor padronizados.
+ * Retorno/Efeitos: melhora leitura e acessibilidade visual do modal.
  */
 export function DialogTitle({
   children,
@@ -144,15 +119,15 @@ export function DialogTitle({
   children: ReactNode;
   className?: string;
 }) {
-  return <h2 style={{ margin: 0, fontSize: 26, lineHeight: 1.1, color: 'var(--text)' }}>{children}</h2>;
+  return <h2 className="ui-dialog-title">{children}</h2>;
 }
 
 /**
  * [DOC-FUNC] DialogDescription
- * O que faz: A funcao 'DialogDescription' encapsula uma etapa de processamento interno. Ela organiza as entradas, aplica regras do modulo e gera uma saida previsivel para a camada chamadora.
- * Entradas: Nao recebe parametros diretos; usa contexto do modulo (estado em memoria, constantes, ambiente ou dependencias ja carregadas).
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada.
- * Retorno/Efeitos: Retorna dados tratados e prontos para uso, reduzindo retrabalho e interpretacoes ambiguas nas etapas seguintes.
+ * O que faz: exibe um texto auxiliar abaixo do titulo do modal.
+ * Entradas: recebe a descricao em texto ou JSX.
+ * Como executa: aplica margem superior pequena, cor secundaria e fonte menor.
+ * Retorno/Efeitos: ajuda o usuario a entender o objetivo do modal antes de preencher os campos.
  */
 export function DialogDescription({
   children,
@@ -162,15 +137,8 @@ export function DialogDescription({
   className?: string;
 }) {
   return (
-    <p
-      style={{
-        margin: '8px 0 0',
-        color: 'var(--muted)',
-        fontSize: 14,
-      }}
-    >
+    <p className="ui-dialog-description">
       {children}
     </p>
   );
 }
-

@@ -1139,8 +1139,8 @@ export default function ImpressorasPage() {
     >
       <StatusFeedback loading={loading} error={erro} success={sucesso} />
 
-      <section className="ui-card" style={{ padding: 0 }}>
-        <div className="ui-table-wrap impressoras-table-wrap" style={{ border: 0, borderRadius: 14 }}>
+      <section className="ui-card ui-card-flush">
+        <div className="ui-table-wrap impressoras-table-wrap">
           <div className="ui-table-toolbar">
             <div className="ui-kpi-grid">
               {cardsPainel.map((card) => (
@@ -1216,8 +1216,8 @@ export default function ImpressorasPage() {
               </label>
             </div>
 
-            <div className="ui-row" style={{ justifyContent: "space-between", alignItems: "center" }}>
-              <span className="ui-kv" style={{ margin: 0 }}>
+            <div className="ui-row ui-row-between">
+              <span className="ui-kv ui-kv-flat">
                 Filtros ativos: <strong>{filtrosAtivos}</strong>
                 {buscaDigitada.trim() ? " | buscando..." : ""}
               </span>
@@ -1225,10 +1225,9 @@ export default function ImpressorasPage() {
                 <label>
                 <span className="ui-kv">Linhas por página</span>
                   <select
-                    className="ui-select"
+                    className="ui-select ui-minw-120"
                     value={linhasPorPagina}
                     onChange={(e) => setLinhasPorPagina(Number(e.target.value))}
-                    style={{ minWidth: 120 }}
                   >
                     <option value={25}>25</option>
                     <option value={50}>50</option>
@@ -1245,17 +1244,17 @@ export default function ImpressorasPage() {
           <table className="ui-table impressoras-table">
             <thead>
               <tr>
-                <th className="sticky-col sticky-operacional">
+                <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("operacional")}>
                     Operacional <span>{colunaOrdenacao === "operacional" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
-                <th className="sticky-col sticky-patrimonio">
+                <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("patrimonio")}>
                     Patrimônio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
                 </th>
-                <th className="sticky-col sticky-ip">
+                <th>
                   <button className="ui-th-btn" onClick={() => alternarOrdenacao("ip")}>
                     IP <span>{colunaOrdenacao === "ip" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
                   </button>
@@ -1319,13 +1318,13 @@ export default function ImpressorasPage() {
 
                 return (
                   <tr key={row.id} className={classesLinha}>
-                    <td className="sticky-col sticky-operacional">
+                    <td>
                       <span className={`ui-pill ${row.operacional ? "ok" : "warn"}`}>
                         {row.operacional ? "operacional" : "não operacional"}
                       </span>
                     </td>
-                    <td className="sticky-col sticky-patrimonio">{row.patrimonio || "-"}</td>
-                    <td className="sticky-col sticky-ip">{row.ip || "-"}</td>
+                    <td>{row.patrimonio || "-"}</td>
+                    <td>{row.ip || "-"}</td>
                     <td>{row.modelo || "-"}</td>
                     <td>{row.setor || "-"}</td>
                     <td>{row.localizacao || "-"}</td>
@@ -1333,7 +1332,7 @@ export default function ImpressorasPage() {
                       <span className={`ui-pill ${classePillStatus(row.status_atual)}`}>{row.status_atual}</span>
                     </td>
                     <td>
-                      <div style={{ display: "grid", gap: 3 }}>
+                      <div className="ui-stack-compact">
                         <span>{formatarDataHora(row.ultima_coleta_em)}</span>
                         <span className={`ui-pill ${classeAtualizacaoColeta(row.ultima_coleta_em)}`}>
                           {formatarTempoRelativoColeta(row.ultima_coleta_em)}
@@ -1343,13 +1342,13 @@ export default function ImpressorasPage() {
                     <td>{row.contador_paginas_atual ?? "-"}</td>
                     <td>
                       {menorSup ? (
-                        <div style={{ display: "grid", gap: 3 }}>
+                        <div className="ui-stack-compact">
                           <span className={`ui-pill ${classeNivelSuprimento(menorSup.nivelNumero)}`}>
                             {formatarIndicadorSuprimento(
                               Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null
                             )}
                           </span>
-                          <span className="ui-kv" style={{ margin: 0 }}>
+                          <span className="ui-kv ui-kv-flat">
                             {menorSup.nome_suprimento}
                           </span>
                         </div>
@@ -1382,7 +1381,7 @@ export default function ImpressorasPage() {
                           }}
                         />
                       ) : (
-                        <span className="ui-kv" style={{ margin: 0 }}>
+                        <span className="ui-kv ui-kv-flat">
                           Sem snapshot operacional
                         </span>
                       )}
@@ -1401,7 +1400,7 @@ export default function ImpressorasPage() {
 
           {!loading ? (
             <div className="ui-table-pagination">
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Mostrando <strong>{inicioVisualPagina}</strong>-<strong>{fimVisualPagina}</strong> de{" "}
                 <strong>{registrosFiltrados.length}</strong>
               </span>
@@ -1413,7 +1412,7 @@ export default function ImpressorasPage() {
                 >
                   Anterior
                 </button>
-                <span className="ui-kv" style={{ margin: 0 }}>
+                <span className="ui-kv ui-kv-flat">
                   Página <strong>{paginaAtual}</strong> de <strong>{totalPaginas}</strong>
                 </span>
                 <button

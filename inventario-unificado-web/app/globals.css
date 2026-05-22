@@ -612,6 +612,159 @@ a {
   box-shadow: 0 1px 1px rgba(2, 6, 23, 0.03);
 }
 
+/* Utilitarios de layout: substituem estilos inline simples e mantem o JSX legivel. */
+.ui-stack {
+  display: grid;
+  gap: 12px;
+}
+
+.ui-stack-lg {
+  display: grid;
+  gap: 16px;
+}
+
+.ui-stack-compact {
+  display: grid;
+  gap: 3px;
+}
+
+.ui-card-flush {
+  padding: 0;
+}
+
+.ui-card-scroll {
+  overflow-x: auto;
+}
+
+.ui-muted-note {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.ui-title-reset {
+  margin: 0;
+}
+
+.ui-title-reset-top {
+  margin-top: 0;
+}
+
+.ui-row-end {
+  align-items: end;
+}
+
+.ui-row-between {
+  justify-content: space-between;
+  align-items: center;
+}
+
+.ui-row-gap-top {
+  margin-top: 12px;
+}
+
+.ui-row-bottom {
+  margin-bottom: 8px;
+}
+
+.ui-row-bottom-lg {
+  margin-bottom: 10px;
+}
+
+.ui-section-gap {
+  margin-bottom: 12px;
+}
+
+.ui-kv-flat {
+  margin: 0;
+}
+
+.ui-kv-top-flat {
+  margin-top: 0;
+}
+
+.ui-self-end {
+  align-self: end;
+}
+
+.ui-minw-120 {
+  min-width: 120px;
+}
+
+.ui-table-flat {
+  border: none;
+  padding: 0;
+}
+
+.ui-cell-compact-input {
+  max-width: 160px;
+}
+
+.ui-modal-body {
+  padding: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.ui-form-card {
+  display: grid;
+  gap: 8px;
+}
+
+.ui-inline-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+/* Dialog base compartilhado pelos modais de cadastro e operacao. */
+.ui-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  background: rgba(15, 23, 42, 0.55);
+}
+
+.ui-dialog-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+}
+
+.ui-dialog-panel {
+  width: 100%;
+  max-width: 1160px;
+  max-height: 90vh;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--panel);
+  color: var(--text);
+  box-shadow: 0 20px 40px rgba(2, 6, 23, 0.22);
+}
+
+.ui-dialog-header {
+  padding: 18px 22px;
+  border-bottom: 1px solid var(--border);
+  background: var(--panel-soft);
+}
+
+.ui-dialog-title {
+  margin: 0;
+  color: var(--text);
+  font-size: 26px;
+  line-height: 1.1;
+}
+
+.ui-dialog-description {
+  margin: 8px 0 0;
+  color: var(--muted);
+  font-size: 14px;
+}
+
 .ui-stage-overview {
   border-color: #bfdbfe;
   background: linear-gradient(135deg, #eff6ff 0%, #ffffff 65%);
@@ -1606,6 +1759,10 @@ html[data-theme="dark"] .ui-supply-name {
   margin: 0 0 10px;
   font-size: 14px;
   color: #475569;
+}
+
+.ui-dash-card-note {
+  margin: 6px 0 0;
 }
 
 .ui-dash-card .big {

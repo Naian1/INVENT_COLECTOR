@@ -1185,9 +1185,9 @@ export function PainelDashboard() {
 
   return (
     <>
-      <section className="ui-card ui-analytics-shell" style={{ marginBottom: 12 }}>
-        <h2 style={{ marginTop: 0 }}>Dashboard de Impressoras</h2>
-        <p className="ui-kv" style={{ marginTop: 0 }}>
+      <section className="ui-card ui-analytics-shell ui-section-gap">
+        <h2 className="ui-title-reset-top">Dashboard de Impressoras</h2>
+        <p className="ui-kv ui-kv-top-flat">
           Visão analítica com conectividade SNMP, volume de páginas e custo estimado de bilhetagem.
         </p>
 
@@ -1280,13 +1280,13 @@ export function PainelDashboard() {
                 onChange={(event) => setDataFim(event.target.value)}
               />
             </label>
-            <p className="ui-kv" style={{ margin: 0, alignSelf: "end" }}>
+            <p className="ui-kv ui-kv-flat ui-self-end">
               Janela máxima: {diasMaximoHistorico} dias.
             </p>
           </div>
         ) : null}
 
-        <div className="ui-row" style={{ marginTop: 12 }}>
+        <div className="ui-row ui-row-gap-top">
           <button className="ui-btn ui-btn-primary" onClick={() => void carregar()}>
             Atualizar dashboard
           </button>
@@ -1297,7 +1297,7 @@ export function PainelDashboard() {
 
       {data ? (
         <>
-          <section className="ui-dashboard-grid" style={{ marginBottom: 12 }}>
+          <section className="ui-dashboard-grid ui-section-gap">
             <article className="ui-card ui-dash-card">
               <h3>Impressoras (filtro)</h3>
               <p className="big">{formatNumber(data.resumo.total_impressoras)}</p>
@@ -1307,7 +1307,7 @@ export function PainelDashboard() {
               <p className="big">
                 {formatNumber(data.resumo.online)} / {formatNumber(data.resumo.offline)}
               </p>
-              <p className="ui-kv" style={{ margin: "6px 0 0" }}>
+              <p className="ui-kv ui-dash-card-note">
                 Warning: {formatNumber(data.resumo.warning ?? 0)} | Erro: {formatNumber(data.resumo.error ?? 0)}
               </p>
             </article>
@@ -1318,7 +1318,7 @@ export function PainelDashboard() {
             <article className="ui-card ui-dash-card">
               <h3>Cobertura da coleta</h3>
               <p className="big">{formatNumber(data.resumo.cobertura_periodo_percentual ?? 0)}%</p>
-              <p className="ui-kv" style={{ margin: "6px 0 0" }}>
+              <p className="ui-kv ui-dash-card-note">
                 Com leitura: {formatNumber(data.resumo.impressoras_com_dados_periodo ?? 0)} | Sem leitura:{" "}
                 {formatNumber(data.resumo.impressoras_sem_dados_periodo ?? 0)}
               </p>
@@ -1333,10 +1333,10 @@ export function PainelDashboard() {
             </article>
           </section>
 
-          <section className="ui-card ui-analytics-chart-card" style={{ marginBottom: 12 }}>
-            <div className="ui-row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-              <h3 style={{ margin: 0 }}>Páginas por {agrupamento === "dia" ? "dia" : "mês"}</h3>
-              <span className="ui-kv" style={{ margin: 0 }}>
+          <section className="ui-card ui-analytics-chart-card ui-section-gap">
+            <div className="ui-row ui-row-between ui-row-bottom">
+              <h3 className="ui-title-reset">Páginas por {agrupamento === "dia" ? "dia" : "mês"}</h3>
+              <span className="ui-kv ui-kv-flat">
                 Faixa histórica válida: {formatDateTime(data.faixa_historica_global.primeira_coleta)} até{" "}
                 {formatDateTime(data.faixa_historica_global.ultima_coleta)}
               </span>
@@ -1387,15 +1387,15 @@ export function PainelDashboard() {
                 </svg>
               </div>
             ) : (
-              <p className="ui-kv" style={{ margin: 0 }}>
+              <p className="ui-kv ui-kv-flat">
                 Sem dados de páginas para o período selecionado.
               </p>
             )}
           </section>
 
-          <section className="ui-insight-grid" style={{ marginBottom: 12 }}>
+          <section className="ui-insight-grid ui-section-gap">
             <article className="ui-card">
-              <h3 style={{ marginTop: 0 }}>Setores que mais imprimem</h3>
+              <h3 className="ui-title-reset-top">Setores que mais imprimem</h3>
               <div className="ui-mini-bars">
                 {data.ranking_setores.map((item) => {
                   const width =
@@ -1404,7 +1404,7 @@ export function PainelDashboard() {
                       : 0;
                   return (
                     <div key={item.setor} className="ui-mini-bar-row">
-                      <span className="ui-kv" style={{ margin: 0 }}>
+                      <span className="ui-kv ui-kv-flat">
                         {item.setor}
                       </span>
                       <div className="ui-mini-bar-track">
@@ -1417,7 +1417,7 @@ export function PainelDashboard() {
                   );
                 })}
                 {!data.ranking_setores.length ? (
-                  <span className="ui-kv" style={{ margin: 0 }}>
+                  <span className="ui-kv ui-kv-flat">
                     Sem dados de páginas para ranking de setores.
                   </span>
                 ) : null}
@@ -1425,7 +1425,7 @@ export function PainelDashboard() {
             </article>
 
             <article className="ui-card">
-              <h3 style={{ marginTop: 0 }}>Localizações que mais imprimem</h3>
+              <h3 className="ui-title-reset-top">Localizações que mais imprimem</h3>
               <div className="ui-mini-bars">
                 {data.ranking_localizacoes.map((item) => {
                   const width =
@@ -1434,7 +1434,7 @@ export function PainelDashboard() {
                       : 0;
                   return (
                     <div key={item.localizacao} className="ui-mini-bar-row">
-                      <span className="ui-kv" style={{ margin: 0 }}>
+                      <span className="ui-kv ui-kv-flat">
                         {item.localizacao}
                       </span>
                       <div className="ui-mini-bar-track">
@@ -1447,7 +1447,7 @@ export function PainelDashboard() {
                   );
                 })}
                 {!data.ranking_localizacoes.length ? (
-                  <span className="ui-kv" style={{ margin: 0 }}>
+                  <span className="ui-kv ui-kv-flat">
                     Sem dados de páginas para ranking de localizações.
                   </span>
                 ) : null}
@@ -1455,10 +1455,10 @@ export function PainelDashboard() {
             </article>
           </section>
 
-          <section className="ui-card" style={{ marginBottom: 12 }}>
-            <div className="ui-row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-              <h3 style={{ margin: 0 }}>Bilhetagem estimada</h3>
-              <span className="ui-kv" style={{ margin: 0 }}>
+          <section className="ui-card ui-section-gap">
+            <div className="ui-row ui-row-between ui-row-bottom">
+              <h3 className="ui-title-reset">Bilhetagem estimada</h3>
+              <span className="ui-kv ui-kv-flat">
                 Custo total estimado: <strong>{formatCurrency(resumoBilhetagemExibicao.totalCusto)}</strong>
               </span>
             </div>
@@ -1494,7 +1494,7 @@ export function PainelDashboard() {
                 />
               </label>
 
-              <div style={{ alignSelf: "end" }}>
+              <div className="ui-self-end">
                 <button
                   className="ui-btn"
                   onClick={() => setTarifasPorModelo({})}
@@ -1505,14 +1505,14 @@ export function PainelDashboard() {
               </div>
             </div>
 
-            <div className="ui-row" style={{ marginBottom: 10 }}>
-              <span className="ui-kv" style={{ margin: 0 }}>
+            <div className="ui-row ui-row-bottom-lg">
+              <span className="ui-kv ui-kv-flat">
                 Páginas consideradas na bilhetagem: <strong>{formatNumber(resumoBilhetagemExibicao.totalPaginas)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Custo médio por página no cenário atual: <strong>{formatCurrency(resumoBilhetagemExibicao.custoMedioPagina)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Fonte:{" "}
                 <strong>
                   {resumoBilhetagemExibicao.fonte === "periodo"
@@ -1524,7 +1524,7 @@ export function PainelDashboard() {
               </span>
             </div>
 
-            <div className="ui-table-wrap" style={{ border: "none", padding: 0 }}>
+            <div className="ui-table-wrap ui-table-flat">
               <table className="ui-table">
                 <thead>
                   <tr>
@@ -1541,7 +1541,7 @@ export function PainelDashboard() {
                       <td>{item.modelo}</td>
                       <td>{formatNumber(item.total_paginas)}</td>
                       <td>{formatNumber(item.impressoras_ativas)}</td>
-                      <td style={{ maxWidth: 160 }}>
+                      <td className="ui-cell-compact-input">
                         <input
                           type="number"
                           className="ui-field"
@@ -1564,10 +1564,10 @@ export function PainelDashboard() {
             </div>
           </section>
 
-          <section className="ui-card" style={{ marginBottom: 12 }}>
-            <div className="ui-row" style={{ justifyContent: "space-between", marginBottom: 8 }}>
-              <h3 style={{ margin: 0 }}>Comparativo de bilhetagem (anterior x atual)</h3>
-              <span className="ui-kv" style={{ margin: 0 }}>
+          <section className="ui-card ui-section-gap">
+            <div className="ui-row ui-row-between ui-row-bottom">
+              <h3 className="ui-title-reset">Comparativo de bilhetagem (anterior x atual)</h3>
+              <span className="ui-kv ui-kv-flat">
                 Última importação da base: {formatDateTime(baseBilhetagem.ultima_importacao_em)}
               </span>
             </div>
@@ -1588,14 +1588,14 @@ export function PainelDashboard() {
                 />
               </label>
 
-              <div style={{ alignSelf: "end" }}>
-                <p className="ui-kv" style={{ margin: 0 }}>
+              <div className="ui-self-end">
+                <p className="ui-kv ui-kv-flat">
                   Referência detectada mais recente:{" "}
                   <strong>{formatDataReferencia(resumoComparativoBilhetagem.referenciaBaseMaisRecente)}</strong>
                 </p>
               </div>
 
-              <div style={{ alignSelf: "end" }}>
+              <div className="ui-self-end">
                 <button
                   className="ui-btn"
                   onClick={() =>
@@ -1615,26 +1615,26 @@ export function PainelDashboard() {
               </div>
             </div>
 
-            <div className="ui-row" style={{ marginBottom: 10 }}>
-              <span className="ui-kv" style={{ margin: 0 }}>
+            <div className="ui-row ui-row-bottom-lg">
+              <span className="ui-kv ui-kv-flat">
                 Impressoras no filtro: <strong>{formatNumber(resumoComparativoBilhetagem.total)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Com base anterior: <strong>{formatNumber(resumoComparativoBilhetagem.comBase)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Sem base: <strong>{formatNumber(resumoComparativoBilhetagem.semBase)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Sem leitura atual: <strong>{formatNumber(resumoComparativoBilhetagem.semLeituraAtual)}</strong>
               </span>
-              <span className="ui-kv" style={{ margin: 0 }}>
+              <span className="ui-kv ui-kv-flat">
                 Páginas faturáveis (delta):{" "}
                 <strong>{formatNumber(resumoComparativoBilhetagem.totalPaginasFaturaveis)}</strong>
               </span>
             </div>
 
-            <div className="ui-table-wrap" style={{ border: "none", padding: 0 }}>
+            <div className="ui-table-wrap ui-table-flat">
               <table className="ui-table">
                 <thead>
                   <tr>
@@ -1686,9 +1686,9 @@ export function PainelDashboard() {
             </div>
           </section>
 
-          <section className="ui-card" style={{ marginBottom: 12 }}>
-            <h3 style={{ marginTop: 0 }}>Suprimentos mais delicados</h3>
-            <div className="ui-table-wrap" style={{ border: "none", padding: 0 }}>
+          <section className="ui-card ui-section-gap">
+            <h3 className="ui-title-reset-top">Suprimentos mais delicados</h3>
+            <div className="ui-table-wrap ui-table-flat">
               <table className="ui-table">
                 <thead>
                   <tr>
@@ -1732,8 +1732,8 @@ export function PainelDashboard() {
           </section>
 
           {data.historico_truncado ? (
-            <section className="ui-card" style={{ marginBottom: 12 }}>
-              <p className="ui-kv" style={{ margin: 0 }}>
+            <section className="ui-card ui-section-gap">
+              <p className="ui-kv ui-kv-flat">
                 Histórico muito grande para uma única consulta. O resultado foi truncado para manter a tela rápida.
               </p>
             </section>
