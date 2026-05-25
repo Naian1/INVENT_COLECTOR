@@ -22,7 +22,8 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 
 ### `coletor-snmp/data/`
 
-- `coletor-snmp/data/printers.json`: Cache local versionado de referencia com a lista de impressoras. Em operacao, o coletor atualiza esse arquivo com dados vindos do Supabase.
+- `coletor-snmp/data/printers.json`: Cache local de runtime com a ultima lista valida de impressoras. Nao deve ser versionado, porque pode conter IPs, patrimonios, series, setores e MACs reais; o arquivo de referencia segura e `coletor-snmp/data/printers.example.json`.
+- `coletor-snmp/data/printers.example.json`: Exemplo ficticio e seguro do formato esperado pelo cache local de impressoras.
 
 ### `coletor-snmp/scripts/`
 
@@ -272,9 +273,9 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 
 - `inventario-unificado-web/app/login/page.tsx`: Tela de autenticacao. Recebe credenciais, cria sessao Supabase e direciona o usuario para o sistema.
 
-### `inventario-unificado-web/app/operacional/`
+### Historico: `inventario-unificado-web/app/operacional/`
 
-- `inventario-unificado-web/app/operacional/page.tsx`: Tela operacional auxiliar de impressoras. Usa servico real para renderizar uma tabela simples de acompanhamento.
+A rota `/operacional` foi removida na sanitizacao. O acompanhamento operacional atual fica concentrado na tela `/impressoras`, que consome os dados consolidados pela Edge Function `inventory-print`.
 
 ### `inventario-unificado-web/app/usuarios/`
 
@@ -297,23 +298,9 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 - `inventario-unificado-web/components/ui/select.tsx`: Componente base de UI `select`. Padroniza elemento visual reutilizavel para evitar repeticao de markup e estilo nas paginas.
 - `inventario-unificado-web/components/ui/textarea.tsx`: Componente base de UI `textarea`. Padroniza elemento visual reutilizavel para evitar repeticao de markup e estilo nas paginas.
 
-### `inventario-unificado-web/legacy/lib/validation/`
+### Historico: `inventario-unificado-web/legacy/`
 
-- `inventario-unificado-web/legacy/lib/validation/collectorSchemas.ts`: Validacao legada mantida como referencia historica de schemas antigos de impressoras/coletor.
-- `inventario-unificado-web/legacy/lib/validation/printerSchemas.ts`: Validacao legada mantida como referencia historica de schemas antigos de impressoras/coletor.
-
-### `inventario-unificado-web/legacy/services/`
-
-- `inventario-unificado-web/legacy/services/dashboardService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-- `inventario-unificado-web/legacy/services/metricsService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-- `inventario-unificado-web/legacy/services/printerOverviewService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-- `inventario-unificado-web/legacy/services/printerService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-- `inventario-unificado-web/legacy/services/printerStatusSuppliesService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-- `inventario-unificado-web/legacy/services/telemetryService.ts`: Servico legado mantido para referencia/migracao. Nao deve receber regra nova sem avaliar migracao para `services/` atual.
-
-### `inventario-unificado-web/legacy/types/`
-
-- `inventario-unificado-web/legacy/types/printer.ts`: Tipo TypeScript legado usado como referencia de modelos antigos do modulo de impressoras.
+A pasta `inventario-unificado-web/legacy/` foi removida na sanitizacao final do repositorio. Ela continha schemas, services e tipos antigos do modulo de impressoras, mas nao havia dependencia real das telas, rotas, services atuais ou Edge Functions. O fluxo atual usa `app/`, `components/`, `services/`, `lib/`, `supabase/functions/` e as tabelas atuais do Supabase.
 
 ### `inventario-unificado-web/lib/`
 

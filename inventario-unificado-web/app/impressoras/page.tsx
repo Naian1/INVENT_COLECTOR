@@ -1213,162 +1213,178 @@ export default function ImpressorasPage() {
             </div>
           </div>
 
-          <table className="ui-table impressoras-table">
-            <thead>
-              <tr>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("operacional")}>
-                    Operacional <span>{colunaOrdenacao === "operacional" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("patrimonio")}>
-                    Patrimônio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("ip")}>
-                    IP <span>{colunaOrdenacao === "ip" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("modelo")}>
-                    Modelo <span>{colunaOrdenacao === "modelo" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("setor")}>
-                    Setor <span>{colunaOrdenacao === "setor" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("localizacao")}>
-                    Localização <span>{colunaOrdenacao === "localizacao" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("status_atual")}>
-                    Status <span>{colunaOrdenacao === "status_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("ultima_coleta_em")}>
-                    Última coleta <span>{colunaOrdenacao === "ultima_coleta_em" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("contador_paginas_atual")}>
-                    Total páginas <span>{colunaOrdenacao === "contador_paginas_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>
-                  <button className="ui-th-btn" onClick={() => alternarOrdenacao("menor_nivel_suprimento")}>
-                    Menor suprimento <span>{colunaOrdenacao === "menor_nivel_suprimento" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                  </button>
-                </th>
-                <th>Classificacao</th>
-                <th>Suprimentos agrupados</th>
-              </tr>
-            </thead>
-            <tbody>
-              {registrosPaginados.map((row) => {
-                const suprimentosContexto = filtrarSuprimentosPorNome(row.resumo_suprimentos, filtroSuprimento);
-                const menorSup = obterMenorSuprimentoInfo(suprimentosContexto);
-                const menorNivelContexto =
-                  menorSup && Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null;
-                const classif = classificarSuprimentos(menorNivelContexto, suprimentosContexto);
-                const linhaCritica =
-                  classif === "critico" ||
-                  (menorNivelContexto !== null && menorNivelContexto <= 10);
+          <div className="impressoras-table-scroll">
+            <table className="ui-table impressoras-table">
+              <colgroup>
+                <col className="impressoras-col-operacional" />
+                <col className="impressoras-col-patrimonio" />
+                <col className="impressoras-col-ip" />
+                <col className="impressoras-col-modelo" />
+                <col className="impressoras-col-setor" />
+                <col className="impressoras-col-localizacao" />
+                <col className="impressoras-col-status" />
+                <col className="impressoras-col-coleta" />
+                <col className="impressoras-col-total" />
+                <col className="impressoras-col-menor" />
+                <col className="impressoras-col-classificacao" />
+                <col className="impressoras-col-suprimentos" />
+              </colgroup>
+              <thead>
+                <tr>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("operacional")}>
+                      Operacional <span>{colunaOrdenacao === "operacional" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("patrimonio")}>
+                      Patrimônio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("ip")}>
+                      IP <span>{colunaOrdenacao === "ip" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("modelo")}>
+                      Modelo <span>{colunaOrdenacao === "modelo" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("setor")}>
+                      Setor <span>{colunaOrdenacao === "setor" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("localizacao")}>
+                      Localização <span>{colunaOrdenacao === "localizacao" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("status_atual")}>
+                      Status <span>{colunaOrdenacao === "status_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("ultima_coleta_em")}>
+                      Última coleta <span>{colunaOrdenacao === "ultima_coleta_em" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("contador_paginas_atual")}>
+                      Total páginas <span>{colunaOrdenacao === "contador_paginas_atual" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>
+                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("menor_nivel_suprimento")}>
+                      Menor suprimento <span>{colunaOrdenacao === "menor_nivel_suprimento" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
+                    </button>
+                  </th>
+                  <th>Classificacao</th>
+                  <th className="impressoras-suprimentos-cell">Suprimentos agrupados</th>
+                </tr>
+              </thead>
+              <tbody>
+                {registrosPaginados.map((row) => {
+                  const suprimentosContexto = filtrarSuprimentosPorNome(row.resumo_suprimentos, filtroSuprimento);
+                  const menorSup = obterMenorSuprimentoInfo(suprimentosContexto);
+                  const menorNivelContexto =
+                    menorSup && Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null;
+                  const classif = classificarSuprimentos(menorNivelContexto, suprimentosContexto);
+                  const linhaCritica =
+                    classif === "critico" ||
+                    (menorNivelContexto !== null && menorNivelContexto <= 10);
 
-                const classesLinha = [
-                  "impressoras-row",
-                  linhaCritica ? "row-critical" : ""
-                ]
-                  .filter(Boolean)
-                  .join(" ");
+                  const classesLinha = [
+                    "impressoras-row",
+                    linhaCritica ? "row-critical" : ""
+                  ]
+                    .filter(Boolean)
+                    .join(" ");
 
-                return (
-                  <tr key={row.id} className={classesLinha}>
-                    <td>
-                      <span className={`ui-pill ${row.operacional ? "ok" : "warn"}`}>
-                        {row.operacional ? "operacional" : "não operacional"}
-                      </span>
-                    </td>
-                    <td>{row.patrimonio || "-"}</td>
-                    <td>{row.ip || "-"}</td>
-                    <td>{row.modelo || "-"}</td>
-                    <td>{row.setor || "-"}</td>
-                    <td>{row.localizacao || "-"}</td>
-                    <td>
-                      <span className={`ui-pill ${classePillStatus(row.status_atual)}`}>{row.status_atual}</span>
-                    </td>
-                    <td>
-                      <div className="ui-stack-compact">
-                        <span>{formatarDataHora(row.ultima_coleta_em)}</span>
-                        <span className={`ui-pill ${classeAtualizacaoColeta(row.ultima_coleta_em)}`}>
-                          {formatarTempoRelativoColeta(row.ultima_coleta_em)}
+                  return (
+                    <tr key={row.id} className={classesLinha}>
+                      <td>
+                        <span className={`ui-pill ${row.operacional ? "ok" : "warn"}`}>
+                          {row.operacional ? "operacional" : "não operacional"}
                         </span>
-                      </div>
-                    </td>
-                    <td>{row.contador_paginas_atual ?? "-"}</td>
-                    <td>
-                      {menorSup ? (
+                      </td>
+                      <td>{row.patrimonio || "-"}</td>
+                      <td>{row.ip || "-"}</td>
+                      <td>{row.modelo || "-"}</td>
+                      <td>{row.setor || "-"}</td>
+                      <td>{row.localizacao || "-"}</td>
+                      <td>
+                        <span className={`ui-pill ${classePillStatus(row.status_atual)}`}>{row.status_atual}</span>
+                      </td>
+                      <td>
                         <div className="ui-stack-compact">
-                          <span className={`ui-pill ${classeNivelSuprimento(menorSup.nivelNumero)}`}>
-                            {formatarIndicadorSuprimento(
-                              Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null
-                            )}
-                          </span>
-                          <span className="ui-kv ui-kv-flat">
-                            {menorSup.nome_suprimento}
+                          <span>{formatarDataHora(row.ultima_coleta_em)}</span>
+                          <span className={`ui-pill ${classeAtualizacaoColeta(row.ultima_coleta_em)}`}>
+                            {formatarTempoRelativoColeta(row.ultima_coleta_em)}
                           </span>
                         </div>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td>
-                      <span
-                        className={`ui-pill ${
-                          classif === "ok"
-                            ? "ok"
-                            : classif === "baixo"
-                              ? "warn"
-                              : "danger"
-                        }`}
-                      >
-                        {classif}
-                      </span>
-                    </td>
-                    <td>
-                      {row.operacional ? (
-                        <SuprimentosLista
-                          suprimentos={suprimentosContexto}
-                          onSelecionarNome={(nome) => {
-                            setFiltroSuprimento((atual) =>
-                              atual.trim().toLowerCase() === nome.trim().toLowerCase() ? "" : nome
-                            );
-                            setPaginaAtual(1);
-                          }}
-                        />
-                      ) : (
-                        <span className="ui-kv ui-kv-flat">
-                          Sem snapshot operacional
+                      </td>
+                      <td>{row.contador_paginas_atual ?? "-"}</td>
+                      <td>
+                        {menorSup ? (
+                          <div className="ui-stack-compact">
+                            <span className={`ui-pill ${classeNivelSuprimento(menorSup.nivelNumero)}`}>
+                              {formatarIndicadorSuprimento(
+                                Number.isFinite(menorSup.nivelNumero) ? menorSup.nivelNumero : null
+                              )}
+                            </span>
+                            <span className="ui-kv ui-kv-flat">
+                              {menorSup.nome_suprimento}
+                            </span>
+                          </div>
+                        ) : (
+                          "-"
+                        )}
+                      </td>
+                      <td>
+                        <span
+                          className={`ui-pill ${
+                            classif === "ok"
+                              ? "ok"
+                              : classif === "baixo"
+                                ? "warn"
+                                : "danger"
+                          }`}
+                        >
+                          {classif}
                         </span>
-                      )}
-                    </td>
-                  </tr>
-                );
-              })}
+                      </td>
+                      <td className="impressoras-suprimentos-cell">
+                        {row.operacional ? (
+                          <SuprimentosLista
+                            suprimentos={suprimentosContexto}
+                            onSelecionarNome={(nome) => {
+                              setFiltroSuprimento((atual) =>
+                                atual.trim().toLowerCase() === nome.trim().toLowerCase() ? "" : nome
+                              );
+                              setPaginaAtual(1);
+                            }}
+                          />
+                        ) : (
+                          <span className="ui-kv ui-kv-flat">
+                            Sem snapshot operacional
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
 
-              {!loading && registrosFiltrados.length === 0 ? (
-                <tr>
-                  <td colSpan={12}>Nenhuma impressora encontrada para os filtros atuais.</td>
-                </tr>
-              ) : null}
-            </tbody>
-          </table>
+                {!loading && registrosFiltrados.length === 0 ? (
+                  <tr>
+                    <td colSpan={12}>Nenhuma impressora encontrada para os filtros atuais.</td>
+                  </tr>
+                ) : null}
+              </tbody>
+            </table>
+          </div>
 
           {!loading ? (
             <div className="ui-table-pagination">

@@ -27,6 +27,7 @@ coletor-snmp/logs/
 coletor-snmp/build/
 coletor-snmp/dist/
 coletor-snmp/dados_cache.json
+coletor-snmp/data/printers.json
 coletor-snmp/data/collector_pending.jsonl
 coletor-snmp/data/collector_pending_invalid.jsonl
 
@@ -42,3 +43,5 @@ PROJETO_COMPLETO.txt
 MAPA_TABELAS_LEGADAS.md
 MAPA_USO_ROTAS_SERVICES_LEGADOS.md
 RELATORIO_SANITIZACAO.md
+MAPA_LIMPEZA_FINAL_REPOSITORIO.md
+.vercel

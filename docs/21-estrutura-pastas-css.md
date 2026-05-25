@@ -47,7 +47,6 @@ inventario-unificado-web/
 ├─ scripts/
 ├─ types/
 ├─ public/
-├─ legacy/
 ├─ node_modules/
 ├─ .next/
 └─ .vercel/
@@ -66,7 +65,6 @@ app/api/           Rotas HTTP internas do Next.js
 app/impressoras/   Tela operacional de impressoras
 app/inventario/    Tela de inventario, devolucao, categorias, importacoes e conciliacao
 app/login/         Tela de autenticacao
-app/operacional/   Tela operacional auxiliar/legada
 app/usuarios/      Tela de administracao de usuarios
 ```
 
@@ -177,11 +175,9 @@ Arquivos estaticos servidos pelo Next.js.
 
 Exemplos comuns: imagens, logos, icones, fontes ou arquivos publicos.
 
-### `legacy/`
+### Historico: pasta `legacy/` removida
 
-Area para codigo antigo ou referencia historica.
-
-Regra: nao deve receber codigo novo de producao. Se algo estiver aqui e ainda for usado, vale migrar com calma para `app`, `components`, `services` ou `lib`.
+A pasta `legacy/` existia como referencia historica de services e schemas antigos de impressoras. Na sanitizacao final, ela foi removida porque nao havia imports reais fora dela e o sistema atual usa as rotas, services e Edge Functions modernas.
 
 ### `.next/`, `.vercel/` e `node_modules/`
 
@@ -303,7 +299,6 @@ Hoje ainda existe bastante CSS inline no JSX, especialmente em:
 ```text
 components/PainelDashboard.tsx
 app/inventario/categorias/page.tsx
-app/operacional/page.tsx
 app/impressoras/page.tsx
 components/ui/dialog.tsx
 app/inventario/devolucao/page.tsx
@@ -311,13 +306,7 @@ app/inventario/devolucao/page.tsx
 
 Isso nao e automaticamente errado, mas pode atrapalhar manutencao quando vira estilo fixo repetido.
 
-Primeira limpeza real ja aplicada:
-
-```text
-app/operacional/page.tsx
-```
-
-Essa tela saiu de `style={{ ... }}` fixo para classes CSS (`operacional-page`, `operacional-error` e `operacional-table`) declaradas em `app/globals.css`. As proximas telas devem seguir o mesmo criterio, uma por vez, para nao quebrar tema claro/escuro nem layout antes da apresentacao.
+Observacao: a antiga tela `app/operacional/page.tsx` foi removida na sanitizacao. O acompanhamento operacional atual fica em `app/impressoras/page.tsx`.
 
 ## 6. Inline CSS: Quando Pode e Quando Evitar
 

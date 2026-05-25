@@ -1171,15 +1171,56 @@ a {
 }
 
 .impressoras-table-wrap {
-  max-height: min(72vh, 820px);
-  overflow-y: auto;
-  overflow-x: auto;
+  max-height: none;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.impressoras-table-scroll {
+  max-height: min(64vh, 760px);
+  overflow: auto;
+  border-bottom: 1px solid var(--line);
+  scrollbar-gutter: stable both-edges;
 }
 
 .impressoras-table {
-  min-width: 1620px;
+  min-width: 1480px;
   width: 100%;
-  table-layout: auto;
+  table-layout: fixed;
+}
+
+.impressoras-table th,
+.impressoras-table td {
+  overflow-wrap: anywhere;
+  vertical-align: top;
+}
+
+.impressoras-table tbody td {
+  padding-top: 10px;
+  padding-bottom: 12px;
+}
+
+.impressoras-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+.impressoras-table .impressoras-col-operacional { width: 98px; }
+.impressoras-table .impressoras-col-patrimonio { width: 96px; }
+.impressoras-table .impressoras-col-ip { width: 108px; }
+.impressoras-table .impressoras-col-modelo { width: 78px; }
+.impressoras-table .impressoras-col-setor { width: 150px; }
+.impressoras-table .impressoras-col-localizacao { width: 150px; }
+.impressoras-table .impressoras-col-status { width: 78px; }
+.impressoras-table .impressoras-col-coleta { width: 110px; }
+.impressoras-table .impressoras-col-total { width: 78px; }
+.impressoras-table .impressoras-col-menor { width: 110px; }
+.impressoras-table .impressoras-col-classificacao { width: 90px; }
+.impressoras-table .impressoras-col-suprimentos { width: 334px; }
+
+.impressoras-suprimentos-cell {
+  min-width: 0;
+  max-width: 334px;
 }
 
 .impressoras-table .sticky-col {
@@ -1210,11 +1251,65 @@ a {
 }
 
 .impressoras-table .ui-supply-list {
-  min-width: 180px;
+  min-width: 0;
+  width: 100%;
+  max-width: 100%;
+  gap: 6px;
 }
 
 .impressoras-table .ui-supply-item {
-  grid-template-columns: minmax(100px, 160px) minmax(120px, 1fr) 56px auto;
+  grid-template-columns: minmax(0, 1fr) minmax(88px, 132px) 46px minmax(54px, auto);
+  min-width: 0;
+  align-items: center;
+  min-height: 24px;
+}
+
+.impressoras-table .ui-supply-track {
+  min-width: 88px;
+  height: 20px;
+}
+
+.impressoras-table .ui-supply-value {
+  width: 46px;
+}
+
+@media (max-width: 1400px) {
+  .impressoras-table {
+    min-width: 1360px;
+  }
+
+  .impressoras-table .impressoras-col-operacional { width: 88px; }
+  .impressoras-table .impressoras-col-patrimonio { width: 90px; }
+  .impressoras-table .impressoras-col-ip { width: 96px; }
+  .impressoras-table .impressoras-col-modelo { width: 70px; }
+  .impressoras-table .impressoras-col-setor { width: 132px; }
+  .impressoras-table .impressoras-col-localizacao { width: 132px; }
+  .impressoras-table .impressoras-col-status { width: 70px; }
+  .impressoras-table .impressoras-col-coleta { width: 100px; }
+  .impressoras-table .impressoras-col-total { width: 72px; }
+  .impressoras-table .impressoras-col-menor { width: 98px; }
+  .impressoras-table .impressoras-col-classificacao { width: 82px; }
+  .impressoras-table .impressoras-col-suprimentos { width: 300px; }
+
+  .impressoras-suprimentos-cell {
+    max-width: 300px;
+  }
+
+  .impressoras-table .ui-supply-item {
+    grid-template-columns: minmax(0, 1fr) minmax(78px, 108px) 42px minmax(48px, auto);
+    gap: 6px;
+    min-height: 22px;
+  }
+
+  .impressoras-table .ui-supply-track {
+    min-width: 78px;
+    height: 18px;
+  }
+
+  .impressoras-table .ui-supply-value {
+    width: 42px;
+    font-size: 11px;
+  }
 }
 
 .impressoras-row.row-critical > td {
@@ -1252,6 +1347,14 @@ a {
   position: sticky;
   bottom: 0;
   z-index: 3;
+}
+
+.impressoras-table-wrap > .ui-table-pagination {
+  position: relative;
+  bottom: auto;
+  z-index: 1;
+  flex: 0 0 auto;
+  box-shadow: 0 -1px 0 var(--line);
 }
 
 .ui-th-btn {
@@ -1596,6 +1699,7 @@ a {
   grid-template-columns: minmax(130px, 190px) minmax(140px, 1fr) 56px auto;
   gap: 8px;
   align-items: center;
+  min-width: 0;
 }
 
 .ui-supply-name {
@@ -1613,6 +1717,7 @@ a {
   padding: 0;
   text-align: left;
   cursor: pointer;
+  min-width: 0;
 }
 
 .ui-supply-name-button:hover .ui-supply-name {
@@ -1621,6 +1726,7 @@ a {
 
 .ui-supply-track {
   position: relative;
+  width: 100%;
   min-width: 140px;
   height: 22px;
   border-radius: 999px;

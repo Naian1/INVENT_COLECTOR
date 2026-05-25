@@ -289,7 +289,7 @@ Exemplo:
 
 Nesse caso, o inline faz sentido porque `percentual` vem do dado da impressora. Ja `marginBottom`, `padding`, cor fixa e grid repetido devem virar classe CSS.
 
-Primeira limpeza real aplicada: a tela `app/operacional/page.tsx` deixou de usar estilos inline fixos e passou a usar classes dedicadas em `app/globals.css` (`operacional-page`, `operacional-error` e `operacional-table`). As telas maiores ainda devem ser migradas por etapas para reduzir risco visual antes do TCC.
+Observacao da sanitizacao: a antiga tela `app/operacional/page.tsx` foi removida. O acompanhamento operacional atual fica na tela `/impressoras`, que usa dados consolidados pela Edge Function `inventory-print`.
 
 ## Como a Coleta de Impressoras Funciona
 

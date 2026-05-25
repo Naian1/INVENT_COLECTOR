@@ -1,0 +1,28 @@
+{
+  "192.0.2.10": {
+    "local": "Setor Exemplo - Recepcao",
+    "patrimonio": "EXEMPLO-001",
+    "modelo": "M3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "SERIE-EXEMPLO-001",
+    "hostname": "IMPRESSORA-EXEMPLO-01",
+    "comunidade": "public",
+    "ativa": true,
+    "ip": "192.0.2.10",
+    "setor": "Setor Exemplo",
+    "localizacao": "Recepcao"
+  },
+  "192.0.2.11": {
+    "local": "Setor Exemplo - Administrativo",
+    "patrimonio": "EXEMPLO-002",
+    "modelo": "XM3250",
+    "fabricante": "Lexmark",
+    "numero_serie": "SERIE-EXEMPLO-002",
+    "hostname": "IMPRESSORA-EXEMPLO-02",
+    "comunidade": "public",
+    "ativa": false,
+    "ip": "192.0.2.11",
+    "setor": "Setor Exemplo",
+    "localizacao": "Administrativo"
+  }
+}
