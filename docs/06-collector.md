@@ -231,7 +231,8 @@ Camada de arquivos locais.
 
 Ele faz:
 
-- carrega e salva `printers.json`;
+- carrega e salva `printers.json`, que é cache runtime local ignorado pelo Git;
+- mantém `printers.example.json` como exemplo seguro do formato esperado;
 - carrega e salva configuracoes locais;
 - carrega chamados locais;
 - salva historico opcional;

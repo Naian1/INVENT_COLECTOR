@@ -81,18 +81,24 @@ Contrato:
     "alertas_substituicao_detectados": 0,
     "erros": [],
     "modo_gravacao": {
-      "impressoras": true,
-      "telemetria_impressoras": true,
-      "leituras_paginas_impressoras": true,
-      "suprimentos_impressoras": true,
-      "inventario": false,
-      "telemetria_pagecount": false,
-      "suprimentos": false,
-      "telemetria_substituicao_pendente": false
+      "inventario": true,
+      "telemetria_pagecount": true,
+      "telemetria_pagecount_diaria": true,
+      "suprimentos": true,
+      "telemetria_substituicao_pendente": true,
+      "telemetria_substituicao_evento_retido": true
     }
   }
 }
 ```
+
+Observacao importante:
+
+- As tabelas antigas de telemetria/suprimentos usadas antes da sanitizacao nao fazem parte do schema atual.
+- A fonte oficial das impressoras e `public.inventario`.
+- O historico de contador usa `public.telemetria_pagecount`.
+- O consolidado diario usa `public.telemetria_pagecount_diaria`.
+- Os suprimentos atuais usam `public.suprimentos`.
 
 Observacao (2026-05-04):
 

@@ -4,6 +4,20 @@ Sistema de inventário unificado e operação de impressoras para ambiente hospi
 
 A parte central para apresentação do TCC é o módulo de impressoras e telemetria, porque ele conecta hardware real na rede, coletor Python, Edge Functions, banco PostgreSQL/Supabase, triggers SQL e interface web.
 
+# Documentação para TCC
+
+O material principal de estudo da apresentação está concentrado na parte de impressoras e telemetria. O inventário aparece como contexto, porque ele é a fonte oficial de quais impressoras existem, onde estão e quais identificadores deveriam responder na rede.
+
+Leitura recomendada:
+
+- [Mapa de Estudo TCC - Impressoras e Telemetria](docs/MAPA_ESTUDO_IMPRESSORAS_TCC.md)
+- [Coletor Python SNMP](docs/06-collector.md)
+- [API collector-telemetria](docs/05-api/collector-telemetria.md)
+- [API collector-impressoras](docs/05-api/collector-impressoras.md)
+- [API inventory-print](docs/05-api/inventory-print.md)
+- [Modelo diário de pagecount](docs/16-telemetria-pagecount-modelo-diario.md)
+- [Resumo da sanitização final](docs/23-auditoria-sanitizacao-resumo.md)
+
 # Fluxo de Impressoras e Telemetria
 
 O foco técnico da apresentação do TCC é o fluxo de impressoras: coleta SNMP, coletor Python, telemetria, pagecount, suprimentos, troca assistida e dashboard operacional.

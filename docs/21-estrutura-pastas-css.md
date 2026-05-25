@@ -129,8 +129,9 @@ setorService.ts                         Setores
 movimentacaoService.ts                  Historico de movimentacao
 impressorasService.ts                   Dados de impressoras
 telemetriaDiariaService.ts              Consolidacao diaria de pagecount
-statusSuprimentosImpressorasService.ts  Estado de suprimentos
-metricasImpressorasService.ts           Metricas operacionais
+suprimentosService.ts                    Suprimentos atuais das impressoras
+coletorTelemetriaPtService.ts            Apoio as rotas internas de telemetria do coletor
+importacaoInventarioDinamicoService.ts   Importacao dinamica do inventario
 ```
 
 Boa pratica: regra que envolve dados deve ficar em `services`, nao espalhada dentro do JSX da pagina.
@@ -233,7 +234,8 @@ Dados locais do coletor.
 Exemplos:
 
 ```text
-printers.json                    Ultima lista valida de impressoras
+printers.json                    Cache runtime local ignorado pelo Git
+printers.example.json            Exemplo seguro versionado do formato do cache
 collector_pending.jsonl          Payloads aguardando reenvio
 collector_pending_invalid.jsonl  Payloads descartados/invalidos para auditoria
 quick_supply_scan_result.json    Resultado de varreduras pontuais

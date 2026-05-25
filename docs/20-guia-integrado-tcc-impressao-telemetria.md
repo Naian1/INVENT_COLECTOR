@@ -1,30 +1,30 @@
-# Guia Integrado TCC - InventÃ¡rio, Impressoras e Telemetria
+# Guia Integrado TCC - Inventário, Impressoras e Telemetria
 
-Este documento Ã© o guia principal para estudar e apresentar o sistema no TCC. Ele separa claramente dois mundos que trabalham juntos:
+Este documento é o guia principal para estudar e apresentar o sistema no TCC. Ele separa claramente dois mundos que trabalham juntos:
 
-1. **InventÃ¡rio patrimonial**: cadastro oficial dos equipamentos, localizaÃ§Ã£o, status, movimentaÃ§Ãµes e devoluÃ§Ãµes.
-2. **Impressoras e telemetria**: coleta SNMP, identificaÃ§Ã£o fÃ­sica das impressoras, pagecount, suprimentos, detecÃ§Ã£o de troca e dashboards.
+1. **Inventário patrimonial**: cadastro oficial dos equipamentos, localização, status, movimentações e devoluções.
+2. **Impressoras e telemetria**: coleta SNMP, identificação física das impressoras, pagecount, suprimentos, detecção de troca e dashboards.
 
-A ideia central Ã© simples: o inventÃ¡rio diz o que deveria existir e onde deveria estar; a telemetria verifica o que a rede realmente estÃ¡ mostrando.
+A ideia central é simples: o inventário diz o que deveria existir e onde deveria estar; a telemetria verifica o que a rede realmente está mostrando.
 
 ---
 
-# PARTE 1 - INVENTÃRIO
+# PARTE 1 - INVENTÁRIO
 
-## 1. O Que Ã‰ o InventÃ¡rio Neste Sistema
+## 1. O Que É o Inventário Neste Sistema
 
-InventÃ¡rio Ã© a base oficial de equipamentos do sistema. Ele responde perguntas como:
+Inventário é a base oficial de equipamentos do sistema. Ele responde perguntas como:
 
 - qual equipamento existe;
-- qual Ã© o patrimÃ´nio;
-- qual Ã© o nÃºmero de sÃ©rie;
-- qual Ã© o MAC cadastrado;
-- qual IP estÃ¡ vinculado ao item, quando existir;
-- em qual piso, setor e localizaÃ§Ã£o o item estÃ¡;
-- se o item estÃ¡ ativo, em manutenÃ§Ã£o, backup ou devoluÃ§Ã£o;
-- se o item Ã© raiz ou filho de outro item.
+- qual é o patrimônio;
+- qual é o número de série;
+- qual é o MAC cadastrado;
+- qual IP está vinculado ao item, quando existir;
+- em qual piso, setor e localização o item está;
+- se o item está ativo, em manutenção, backup ou devolução;
+- se o item é raiz ou filho de outro item.
 
-No projeto, o inventÃ¡rio nÃ£o Ã© sÃ³ uma lista. Ele Ã© a fonte de verdade para o restante do sistema. O coletor de impressoras, por exemplo, nÃ£o inventa uma impressora do nada. Ele consulta o inventÃ¡rio para saber quais IPs deve coletar.
+No projeto, o inventário não é só uma lista. Ele é a fonte de verdade para o restante do sistema. O coletor de impressoras, por exemplo, não inventa uma impressora do nada. Ele consulta o inventário para saber quais IPs deve coletar.
 
 Tabela principal:
 
@@ -35,69 +35,69 @@ public.inventario
 Campos importantes:
 
 ```text
-nr_inventario       identificador interno Ãºnico do item
+nr_inventario       identificador interno único do item
 cd_equipamento      tipo/modelo do equipamento cadastrado
 cd_setor            setor atual do item
-nr_patrimonio       nÃºmero patrimonial usado pela instituiÃ§Ã£o
-nr_serie            nÃºmero de sÃ©rie fÃ­sico do equipamento
-nr_ip               IP usado quando o equipamento Ã© de rede
+nr_patrimonio       número patrimonial usado pela instituição
+nr_serie            número de série físico do equipamento
+nr_ip               IP usado quando o equipamento é de rede
 nm_mac              MAC address cadastrado
 nm_hostname         nome de rede/hostname
-nr_invent_sup       item superior, quando o item Ã© filho de outro
+nr_invent_sup       item superior, quando o item é filho de outro
 tp_status           status operacional: ATIVO, MANUTENCAO, BACKUP, DEVOLUCAO
-ie_situacao         situaÃ§Ã£o lÃ³gica: A ativo, I inativo
+ie_situacao         situação lógica: A ativo, I inativo
 ```
 
-## 2. DiferenÃ§a Entre InventÃ¡rio e Telemetria
+## 2. Diferença Entre Inventário e Telemetria
 
-- **InventÃ¡rio** Ã© cadastro administrativo. Ele diz o que o setor de TI registrou.
-- **Telemetria** Ã© dado coletado automaticamente na rede. Ela diz o que o equipamento respondeu naquele momento.
+- **Inventário** é cadastro administrativo. Ele diz o que o setor de TI registrou.
+- **Telemetria** é dado coletado automaticamente na rede. Ela diz o que o equipamento respondeu naquele momento.
 
-Exemplo prÃ¡tico:
+Exemplo prático:
 
-- InventÃ¡rio diz que o IP `172.18.132.191` pertence Ã  impressora patrimÃ´nio `242077`.
-- O SNMP responde que naquele IP estÃ¡ a sÃ©rie `460031742FCF1`, que pertence Ã  impressora patrimÃ´nio `293273`.
-- O sistema entende que existe divergÃªncia e abre uma pendÃªncia de substituiÃ§Ã£o.
+- Inventário diz que o IP `172.18.132.191` pertence à impressora patrimônio `242077`.
+- O SNMP responde que naquele IP está a série `460031742FCF1`, que pertence à impressora patrimônio `293273`.
+- O sistema entende que existe divergência e abre uma pendência de substituição.
 
-Isso evita que uma troca fÃ­sica seja registrada como se a impressora antiga continuasse no setor.
+Isso evita que uma troca física seja registrada como se a impressora antiga continuasse no setor.
 
-## 3. OrganizaÃ§Ã£o FÃ­sica: Piso, Setor e LocalizaÃ§Ã£o
+## 3. Organização Física: Piso, Setor e Localização
 
-O sistema trabalha com trÃªs nÃ­veis de localizaÃ§Ã£o:
+O sistema trabalha com três níveis de localização:
 
 ```text
-Piso -> Setor -> LocalizaÃ§Ã£o
+Piso -> Setor -> Localização
 ```
 
 Exemplo:
 
 ```text
-Piso: 1Âº Andar
-Setor: AmbulatÃ³rio Oncologia - Sala Administrativa
-LocalizaÃ§Ã£o: Sala Administrativa
+Piso: 1º Andar
+Setor: Ambulatório Oncologia - Sala Administrativa
+Localização: Sala Administrativa
 ```
 
-Na tela, esses dados aparecem como chips visuais para facilitar leitura. Essa organizaÃ§Ã£o ajuda o usuÃ¡rio a entender rapidamente onde o equipamento estÃ¡ fisicamente.
+Na tela, esses dados aparecem como chips visuais para facilitar leitura. Essa organização ajuda o usuário a entender rapidamente onde o equipamento está fisicamente.
 
-## 4. Status do InventÃ¡rio
+## 4. Status do Inventário
 
 ### ATIVO
 
-Equipamento em uso. Para impressoras, significa que pode ser coletado pelo coletor SNMP se tiver IP vÃ¡lido.
+Equipamento em uso. Para impressoras, significa que pode ser coletado pelo coletor SNMP se tiver IP válido.
 
 ### MANUTENCAO
 
-Equipamento separado para manutenÃ§Ã£o. Normalmente nÃ£o deve aparecer como equipamento operacional.
+Equipamento separado para manutenção. Normalmente não deve aparecer como equipamento operacional.
 
 ### BACKUP
 
-Equipamento reserva. Ele existe no inventÃ¡rio, mas nÃ£o estÃ¡ em produÃ§Ã£o naquele momento. Quando uma impressora quebra, uma impressora backup pode assumir o IP/local da impressora quebrada.
+Equipamento reserva. Ele existe no inventário, mas não está em produção naquele momento. Quando uma impressora quebra, uma impressora backup pode assumir o IP/local da impressora quebrada.
 
 ### DEVOLUCAO
 
-Equipamento separado para devoluÃ§Ã£o. A tela de devoluÃ§Ã£o lista esses itens agrupados por empresa e permite exportaÃ§Ã£o.
+Equipamento separado para devolução. A tela de devolução lista esses itens agrupados por empresa e permite exportação.
 
-## 5. Fluxo Principal do InventÃ¡rio no Frontend
+## 5. Fluxo Principal do Inventário no Frontend
 
 Arquivo principal:
 
@@ -107,17 +107,17 @@ inventario-unificado-web/app/inventario/page.tsx
 
 Fluxo resumido:
 
-1. UsuÃ¡rio abre a tela de inventÃ¡rio.
+1. Usuário abre a tela de inventário.
 2. O frontend chama a Edge Function `inventory-core`.
 3. A Edge busca itens, setores, pisos, empresas, tipos e modelos.
 4. A tela monta os filtros.
-5. O usuÃ¡rio filtra por patrimÃ´nio, IP, sÃ©rie, setor, piso, tipo, status ou relacionamento.
-6. O sistema exibe os grupos por localizaÃ§Ã£o.
-7. Se existirem pendÃªncias de substituiÃ§Ã£o, elas aparecem no topo da tela.
+5. O usuário filtra por patrimônio, IP, série, setor, piso, tipo, status ou relacionamento.
+6. O sistema exibe os grupos por localização.
+7. Se existirem pendências de substituição, elas aparecem no topo da tela.
 
-O frontend nÃ£o deve aplicar regra crÃ­tica sozinho. Ele exibe e envia aÃ§Ãµes para a API. A decisÃ£o final fica centralizada no backend.
+O frontend não deve aplicar regra crítica sozinho. Ele exibe e envia ações para a API. A decisão final fica centralizada no backend.
 
-## 6. Fluxo da Tela de DevoluÃ§Ã£o
+## 6. Fluxo da Tela de Devolução
 
 Arquivo principal:
 
@@ -129,7 +129,7 @@ Objetivo da tela:
 
 - listar itens com status `DEVOLUCAO`;
 - agrupar por empresa;
-- permitir busca por patrimÃ´nio, modelo, setor ou chamado;
+- permitir busca por patrimônio, modelo, setor ou chamado;
 - exportar CSV, PDF ou planilha.
 
 APIs usadas:
@@ -139,7 +139,7 @@ inventory-core/list_devolucao
 inventory-core/list_context
 ```
 
-Mesmo quando nÃ£o existe item em devoluÃ§Ã£o, a tela precisa carregar as empresas. Isso evita a sensaÃ§Ã£o de que a tela estÃ¡ quebrada quando o filtro estÃ¡ vazio.
+Mesmo quando não existe item em devolução, a tela precisa carregar as empresas. Isso evita a sensação de que a tela está quebrada quando o filtro está vazio.
 
 ## 7. Edge Function inventory-core
 
@@ -149,45 +149,45 @@ Arquivo principal:
 inventario-unificado-web/supabase/functions/inventory-core/index.ts
 ```
 
-A `inventory-core` Ã© uma Edge Function do Supabase. Ela funciona como uma API backend. Em vez de o navegador mexer diretamente no banco, o frontend chama essa funÃ§Ã£o.
+A `inventory-core` é uma Edge Function do Supabase. Ela funciona como uma API backend. Em vez de o navegador mexer diretamente no banco, o frontend chama essa função.
 
 Responsabilidades principais:
 
-- listar contexto do inventÃ¡rio;
-- listar itens do inventÃ¡rio;
-- listar itens em devoluÃ§Ã£o;
+- listar contexto do inventário;
+- listar itens do inventário;
+- listar itens em devolução;
 - confirmar troca assistida;
 - descartar alerta;
-- corrigir dados cadastrais quando o equipamento real Ã© o mesmo, mas o cadastro estava errado;
+- corrigir dados cadastrais quando o equipamento real é o mesmo, mas o cadastro estava errado;
 - aplicar regras de auditoria;
-- centralizar validaÃ§Ãµes antes de alterar o banco.
+- centralizar validações antes de alterar o banco.
 
-Por que isso Ã© importante:
+Por que isso é importante:
 
-- diminui risco de alteraÃ§Ã£o errada pelo frontend;
-- facilita manutenÃ§Ã£o;
-- mantÃ©m regra de negÃ³cio em um ponto Ãºnico;
-- ajuda a auditar quem fez cada alteraÃ§Ã£o.
+- diminui risco de alteração errada pelo frontend;
+- facilita manutenção;
+- mantém regra de negócio em um ponto único;
+- ajuda a auditar quem fez cada alteração.
 
-## 8. Triggers do InventÃ¡rio
+## 8. Triggers do Inventário
 
-Triggers sÃ£o funÃ§Ãµes automÃ¡ticas do banco. Elas executam quando ocorre `INSERT`, `UPDATE` ou `DELETE` em uma tabela.
+Triggers são funções automáticas do banco. Elas executam quando ocorre `INSERT`, `UPDATE` ou `DELETE` em uma tabela.
 
-No inventÃ¡rio, elas servem para:
+No inventário, elas servem para:
 
-- registrar movimentaÃ§Ãµes;
-- impedir relaÃ§Ãµes invÃ¡lidas entre itens;
+- registrar movimentações;
+- impedir relações inválidas entre itens;
 - atualizar campos derivados;
-- manter histÃ³rico;
+- manter histórico;
 - proteger a hierarquia.
 
 Exemplo de regra protegida:
 
-- um item nÃ£o pode ser pai dele mesmo;
-- um item filho nÃ£o deve criar ciclo na Ã¡rvore;
-- movimentaÃ§Ãµes precisam registrar origem e destino.
+- um item não pode ser pai dele mesmo;
+- um item filho não deve criar ciclo na árvore;
+- movimentações precisam registrar origem e destino.
 
-## 9. MovimentaÃ§Ã£o
+## 9. Movimentação
 
 Tabela relacionada:
 
@@ -195,55 +195,55 @@ Tabela relacionada:
 public.movimentacao
 ```
 
-A movimentaÃ§Ã£o guarda histÃ³rico de alteraÃ§Ãµes importantes. Isso permite responder onde o equipamento estava antes, para onde foi, quando mudou, qual usuÃ¡rio alterou e qual status foi aplicado.
+A movimentação guarda histórico de alterações importantes. Isso permite responder onde o equipamento estava antes, para onde foi, quando mudou, qual usuário alterou e qual status foi aplicado.
 
 ---
 # PARTE 2 - IMPRESSORAS E TELEMETRIA
 
-## 10. O Que Ã‰ Telemetria de Impressoras
+## 10. O Que É Telemetria de Impressoras
 
-Telemetria Ã© a coleta automÃ¡tica de dados operacionais. No caso das impressoras, o sistema coleta:
+Telemetria é a coleta automática de dados operacionais. No caso das impressoras, o sistema coleta:
 
 - status online/offline;
-- contador total de pÃ¡ginas;
-- nÃºmero de sÃ©rie detectado;
+- contador total de páginas;
+- número de série detectado;
 - MAC address detectado;
-- patrimÃ´nio informado pelo equipamento, quando disponÃ­vel;
+- patrimônio informado pelo equipamento, quando disponível;
 - modelo;
 - hostname;
 - suprimentos;
-- nÃ­veis de toner, unidade de imagem e kit de manutenÃ§Ã£o.
+- níveis de toner, unidade de imagem e kit de manutenção.
 
-A telemetria Ã© usada para comparar o mundo real com o inventÃ¡rio cadastrado.
+A telemetria é usada para comparar o mundo real com o inventário cadastrado.
 
-## 11. O Que Ã‰ SNMP
+## 11. O Que É SNMP
 
-SNMP significa **Simple Network Management Protocol**. Em portuguÃªs: Protocolo Simples de Gerenciamento de Rede.
+SNMP significa **Simple Network Management Protocol**. Em português: Protocolo Simples de Gerenciamento de Rede.
 
-Ele Ã© um protocolo usado para consultar equipamentos de rede, como impressoras, switches, roteadores, nobreaks, servidores e access points.
+Ele é um protocolo usado para consultar equipamentos de rede, como impressoras, switches, roteadores, nobreaks, servidores e access points.
 
-No sistema, o SNMP Ã© usado para perguntar Ã  impressora:
+No sistema, o SNMP é usado para perguntar à impressora:
 
-- qual Ã© seu contador de pÃ¡ginas;
-- qual Ã© seu nÃºmero de sÃ©rie;
-- qual Ã© seu MAC;
+- qual é seu contador de páginas;
+- qual é seu número de série;
+- qual é seu MAC;
 - quais suprimentos existem;
 - qual porcentagem resta em cada suprimento;
-- qual Ã© seu status.
+- qual é seu status.
 
-## 12. Como o SNMP Funciona na PrÃ¡tica
+## 12. Como o SNMP Funciona na Prática
 
-O SNMP funciona com dois papÃ©is:
+O SNMP funciona com dois papéis:
 
 ### Manager
 
-Ã‰ quem pergunta. No nosso caso, o manager Ã© o coletor Python.
+É quem pergunta. No nosso caso, o manager é o coletor Python.
 
 ### Agent
 
-Ã‰ quem responde. No nosso caso, o agent Ã© a impressora.
+É quem responde. No nosso caso, o agent é a impressora.
 
-Fluxo bÃ¡sico:
+Fluxo básico:
 
 ```text
 Coletor Python -> envia pergunta SNMP -> Impressora
@@ -256,58 +256,58 @@ Normalmente o SNMP usa:
 UDP porta 161
 ```
 
-O coletor nÃ£o varre a internet procurando qualquer coisa. Ele consulta os IPs vindos do inventÃ¡rio. Isso deixa o processo mais seguro, mais rÃ¡pido e mais fÃ¡cil de auditar.
+O coletor não varre a internet procurando qualquer coisa. Ele consulta os IPs vindos do inventário. Isso deixa o processo mais seguro, mais rápido e mais fácil de auditar.
 
-## 13. O Que Ã‰ OID
+## 13. O Que É OID
 
-OID significa **Object Identifier**. Ã‰ um endereÃ§o numÃ©rico usado pelo SNMP para identificar uma informaÃ§Ã£o.
+OID significa **Object Identifier**. É um endereço numérico usado pelo SNMP para identificar uma informação.
 
 Exemplo conceitual:
 
 ```text
-OID do contador de pÃ¡ginas -> retorna 35318
-OID do nÃºmero de sÃ©rie -> retorna 701732940Z7PX
-OID do nÃ­vel do toner -> retorna 68
+OID do contador de páginas -> retorna 35318
+OID do número de série -> retorna 701732940Z7PX
+OID do nível do toner -> retorna 68
 ```
 
-Um OID Ã© como uma chave de consulta. O coletor pergunta por aquela chave e a impressora responde o valor.
+Um OID é como uma chave de consulta. O coletor pergunta por aquela chave e a impressora responde o valor.
 
-## 14. O Que Ã‰ MIB
+## 14. O Que É MIB
 
-MIB significa **Management Information Base**. Ela Ã© como um catÃ¡logo que explica o significado dos OIDs.
+MIB significa **Management Information Base**. Ela é como um catálogo que explica o significado dos OIDs.
 
-Sem MIB, o OID Ã© sÃ³ uma sequÃªncia de nÃºmeros. Com MIB, dÃ¡ para saber que aquele OID representa, por exemplo, contador total de pÃ¡ginas ou nÃ­vel de suprimento.
+Sem MIB, o OID é só uma sequência de números. Com MIB, dá para saber que aquele OID representa, por exemplo, contador total de páginas ou nível de suprimento.
 
-No sistema, a lÃ³gica prÃ¡tica fica no cÃ³digo: o coletor sabe quais OIDs tentar e como interpretar as respostas.
+No sistema, a lógica prática fica no código: o coletor sabe quais OIDs tentar e como interpretar as respostas.
 
 ## 15. GET, GETNEXT e WALK
 
 ### GET
 
-Consulta um OID especÃ­fico.
+Consulta um OID específico.
 
 ```text
-Pergunta: qual Ã© o valor do OID X?
+Pergunta: qual é o valor do OID X?
 Resposta: 35318
 ```
 
 ### GETNEXT
 
-Pede o prÃ³ximo OID na Ã¡rvore SNMP. Ã‰ Ãºtil quando os itens sÃ£o dinÃ¢micos, como suprimentos.
+Pede o próximo OID na árvore SNMP. É útil quando os itens são dinâmicos, como suprimentos.
 
 ### WALK
 
-Faz vÃ¡rias chamadas `GETNEXT` para percorrer uma Ã¡rvore de dados. Isso Ã© Ãºtil para descobrir uma lista de suprimentos, porque cada impressora pode expor cartucho, unidade de imagem, kit de manutenÃ§Ã£o e outros itens em posiÃ§Ãµes diferentes.
+Faz várias chamadas `GETNEXT` para percorrer uma árvore de dados. Isso é útil para descobrir uma lista de suprimentos, porque cada impressora pode expor cartucho, unidade de imagem, kit de manutenção e outros itens em posições diferentes.
 
 ## 16. Bibliotecas Python Usadas no Coletor
 
-Arquivo de dependÃªncias:
+Arquivo de dependências:
 
 ```text
 coletor-snmp/requirements.txt
 ```
 
-DependÃªncia principal:
+Dependência principal:
 
 ```text
 pysnmp>=7.1.0
@@ -315,19 +315,19 @@ pysnmp>=7.1.0
 
 ### pysnmp
 
-`pysnmp` Ã© a biblioteca Python usada para falar SNMP.
+`pysnmp` é a biblioteca Python usada para falar SNMP.
 
 Ela permite:
 
-- abrir comunicaÃ§Ã£o SNMP com um IP;
-- configurar versÃ£o e comunidade SNMP;
+- abrir comunicação SNMP com um IP;
+- configurar versão e comunidade SNMP;
 - fazer consultas GET;
-- fazer WALK em Ã¡rvores SNMP;
+- fazer WALK em árvores SNMP;
 - tratar timeout;
 - tratar erro de resposta;
 - converter respostas SNMP para valores Python.
 
-Em termos simples: sem `pysnmp`, o Python nÃ£o saberia conversar com a impressora usando SNMP.
+Em termos simples: sem `pysnmp`, o Python não saberia conversar com a impressora usando SNMP.
 
 Arquivo principal que usa `pysnmp`:
 
@@ -335,7 +335,7 @@ Arquivo principal que usa `pysnmp`:
 coletor-snmp/utils/snmp_client.py
 ```
 
-FunÃ§Ã£o do arquivo:
+Função do arquivo:
 
 - esconder a complexidade do protocolo;
 - receber IP e OID;
@@ -344,25 +344,25 @@ FunÃ§Ã£o do arquivo:
 
 ### urllib.request
 
-O coletor usa `urllib.request`, biblioteca padrÃ£o do Python, para enviar dados para o Supabase Edge Function por HTTP.
+O coletor usa `urllib.request`, biblioteca padrão do Python, para enviar dados para o Supabase Edge Function por HTTP.
 
 Ela serve para:
 
-- montar requisiÃ§Ã£o POST;
+- montar requisição POST;
 - enviar JSON;
-- mandar token no cabeÃ§alho `Authorization`;
+- mandar token no cabeçalho `Authorization`;
 - ler resposta da API;
 - capturar erro HTTP.
 
-Ou seja: o projeto nÃ£o depende de `supabase-py` no coletor. Ele envia para a Edge Function usando HTTP puro.
+Ou seja: o projeto não depende de `supabase-py` no coletor. Ele envia para a Edge Function usando HTTP puro.
 
 ### json
 
-Biblioteca padrÃ£o usada para ler arquivos locais, montar payloads, salvar pendÃªncias e converter dicionÃ¡rios Python em JSON para envio.
+Biblioteca padrão usada para ler arquivos locais, montar payloads, salvar pendências e converter dicionários Python em JSON para envio.
 
 ### logging
 
-Biblioteca padrÃ£o usada para registrar logs de ciclo iniciado, impressora offline, falha SNMP, envio com sucesso, erro HTTP e replay de pendÃªncia.
+Biblioteca padrão usada para registrar logs de ciclo iniciado, impressora offline, falha SNMP, envio com sucesso, erro HTTP e replay de pendência.
 
 Exemplo de arquivo de log:
 
@@ -372,15 +372,15 @@ coletor-snmp/logs/collector_loop_runtime.log
 
 ### concurrent.futures
 
-Usada para rodar coletas em paralelo com `ThreadPoolExecutor`. Coletar uma impressora por vez seria lento; com workers, o coletor consulta vÃ¡rias impressoras ao mesmo tempo.
+Usada para rodar coletas em paralelo com `ThreadPoolExecutor`. Coletar uma impressora por vez seria lento; com workers, o coletor consulta várias impressoras ao mesmo tempo.
 
 ### threading e tkinter
 
-Usados na aplicaÃ§Ã£o local com interface. `threading` evita travar a tela enquanto a coleta roda. `tkinter` cria a interface grÃ¡fica local.
+Usados na aplicação local com interface. `threading` evita travar a tela enquanto a coleta roda. `tkinter` cria a interface gráfica local.
 
 ### pystray e Pillow
 
-SÃ£o dependÃªncias opcionais para Ã­cone na bandeja do Windows. Elas ajudam o coletor a ficar rodando de forma mais amigÃ¡vel, sem depender sempre de terminal aberto.
+São dependências opcionais para ícone na bandeja do Windows. Elas ajudam o coletor a ficar rodando de forma mais amigável, sem depender sempre de terminal aberto.
 
 ## 17. Estrutura do Coletor Python
 
@@ -405,26 +405,27 @@ coletor-snmp/scripts/collector_control_app.py
 
 ### snmp_client.py
 
-ResponsÃ¡vel por consultar a impressora via SNMP. Recebe IP, comunidade, OID, timeout e tentativas. Devolve valor encontrado, erro, timeout ou informaÃ§Ã£o de offline.
+Responsável por consultar a impressora via SNMP. Recebe IP, comunidade, OID, timeout e tentativas. Devolve valor encontrado, erro, timeout ou informação de offline.
 
 ### cache_manager.py
 
-ResponsÃ¡vel por coordenar a coleta de cada ciclo. Ele:
+Responsável por coordenar a coleta de cada ciclo. Ele:
 
-- carrega configuraÃ§Ãµes locais;
+- carrega configurações locais;
 - busca a lista de impressoras remota quando permitido;
-- salva `printers.json` com a Ãºltima lista vÃ¡lida;
-- filtra IPs elegÃ­veis;
+- salva `printers.json` como cache runtime local com a última lista válida;
+- mantém `printers.example.json` como exemplo seguro versionado no Git;
+- filtra IPs elegíveis;
 - chama SNMP para cada impressora;
 - monta snapshots com status, pagecount e suprimentos;
 - aciona o envio para a API;
 - usa fila local quando o envio falha.
 
-Esse arquivo Ã© o "coraÃ§Ã£o operacional" do coletor. O script de loop chama `atualizar_cache()`, e essa funÃ§Ã£o decide o que serÃ¡ coletado naquele ciclo.
+Esse arquivo é o "coração operacional" do coletor. O script de loop chama `atualizar_cache()`, e essa função decide o que será coletado naquele ciclo.
 
 ### telemetry_mapper.py
 
-ResponsÃ¡vel por transformar dados brutos coletados em payload padronizado. Ele pega SNMP bruto, cadastro da impressora e suprimentos e monta um objeto pronto para envio para `collector-telemetria`.
+Responsável por transformar dados brutos coletados em payload padronizado. Ele pega SNMP bruto, cadastro da impressora e suprimentos e monta um objeto pronto para envio para `collector-telemetria`.
 
 Exemplo conceitual do payload:
 
@@ -450,39 +451,39 @@ Exemplo conceitual do payload:
 
 ### api_client.py
 
-ResponsÃ¡vel por falar com as APIs remotas. Ele:
+Responsável por falar com as APIs remotas. Ele:
 
-- lÃª `.env`;
+- lê `.env`;
 - busca lista de impressoras via `collector-impressoras`;
 - opcionalmente consulta `public.inventario` por REST quando configurado;
 - envia telemetria para `collector-telemetria`;
-- manda token no cabeÃ§alho `Authorization`;
+- manda token no cabeçalho `Authorization`;
 - controla retry de envio;
-- grava payload pendente em `collector_pending.jsonl` quando a API nÃ£o aceita ou estÃ¡ indisponÃ­vel.
+- grava payload pendente em `collector_pending.jsonl` quando a API não aceita ou está indisponível.
 
-Depois do incidente de sobrecarga, esse arquivo passou a ter proteÃ§Ã£o de "circuit breaker" no sync de impressoras: quando o Supabase comeÃ§a a responder timeout, o coletor abre um intervalo de respiro e para de repetir sync remoto por alguns minutos.
+Depois do incidente de sobrecarga, esse arquivo passou a ter proteção de "circuit breaker" no sync de impressoras: quando o Supabase começa a responder timeout, o coletor abre um intervalo de respiro e para de repetir sync remoto por alguns minutos.
 
 ### file_manager.py
 
-ResponsÃ¡vel por leitura e escrita de arquivos locais do coletor. Ele ajuda a manter dados persistidos como configuraÃ§Ãµes, cache e arquivos JSON sem espalhar acesso a arquivo por todo o cÃ³digo.
+Responsável por leitura e escrita de arquivos locais do coletor. Ele ajuda a manter dados persistidos como configurações, cache e arquivos JSON sem espalhar acesso a arquivo por todo o código.
 
 ### runtime_trace.py
 
-ResponsÃ¡vel por registrar rastros tÃ©cnicos em JSONL. Esse arquivo Ã© Ãºtil quando precisa auditar o que o coletor tentou fazer, qual URL chamou, qual status recebeu e onde ocorreu falha.
+Responsável por registrar rastros técnicos em JSONL. Esse arquivo é útil quando precisa auditar o que o coletor tentou fazer, qual URL chamou, qual status recebeu e onde ocorreu falha.
 
 ### run_collector_loop.py
 
-Script que mantÃ©m o coletor rodando em ciclo. Ele:
+Script que mantém o coletor rodando em ciclo. Ele:
 
 - inicia o loop;
 - chama `atualizar_cache()`;
 - espera o intervalo configurado;
 - registra erro quando um ciclo falha;
-- permite execuÃ§Ã£o contÃ­nua sem depender do usuÃ¡rio clicar manualmente.
+- permite execução contínua sem depender do usuário clicar manualmente.
 
 ### collector_control_app.py
 
-AplicaÃ§Ã£o local com interface. Ela facilita iniciar, parar e acompanhar o coletor sem depender sÃ³ do terminal. TambÃ©m ajuda na apresentaÃ§Ã£o do TCC, porque mostra que o coletor Ã© um componente separado do site.
+Aplicação local com interface. Ela facilita iniciar, parar e acompanhar o coletor sem depender só do terminal. Também ajuda na apresentação do TCC, porque mostra que o coletor é um componente separado do site.
 
 ## 18. Como o Coletor Escolhe Quais Impressoras Coletar
 
@@ -491,13 +492,13 @@ Fluxo:
 1. O coletor chama a Edge `collector-impressoras`.
 2. A Edge consulta `public.inventario`.
 3. Ela filtra itens do tipo impressora.
-4. Ela considera status e situaÃ§Ã£o.
-5. Ela retorna as impressoras com IP vÃ¡lido.
+4. Ela considera status e situação.
+5. Ela retorna as impressoras com IP válido.
 6. O coletor percorre esses IPs.
 
-Isso significa que o coletor depende do inventÃ¡rio. Se uma impressora nÃ£o tem IP ou estÃ¡ como backup, ela pode nÃ£o ser coletada como produÃ§Ã£o.
+Isso significa que o coletor depende do inventário. Se uma impressora não tem IP ou está como backup, ela pode não ser coletada como produção.
 
-ConfiguraÃ§Ãµes principais no `.env` do coletor:
+Configurações principais no `.env` do coletor:
 
 ```text
 COLLECTOR_SYNC_PRINTERS_FROM_API=true
@@ -509,42 +510,42 @@ COLLECTOR_SYNC_FAILURE_COOLDOWN=900
 COLLECTOR_ALLOW_API_FALLBACK=false
 ```
 
-O significado prÃ¡tico:
+O significado prático:
 
 - `COLLECTOR_SYNC_PRINTERS_FROM_API=true`: o coletor tenta atualizar a lista de impressoras pelo backend.
 - `COLLECTOR_PRINTERS_SOURCE=supabase`: a fonte normal do coletor local e o Supabase REST/PostgREST, consultando diretamente `public.inventario`.
 - `COLLECTOR_REQUIRE_REMOTE_PRINTERS=false`: se o backend estiver fora, o coletor pode usar o cache local quando for seguro.
 - `COLLECTOR_SYNC_RETRIES=2`: evita muitas tentativas seguidas.
 - `COLLECTOR_SYNC_FAILURE_COOLDOWN=900`: se o sync remoto falhar, espera 15 minutos antes de tentar de novo.
-- `COLLECTOR_ALLOW_API_FALLBACK=false`: evita dobrar a carga tentando outra rota quando o Supabase jÃ¡ estÃ¡ lento.
+- `COLLECTOR_ALLOW_API_FALLBACK=false`: evita dobrar a carga tentando outra rota quando o Supabase já está lento.
 
 ## 19. Como a Busca na Rede Acontece
 
-O coletor nÃ£o adivinha equipamentos. Ele recebe uma lista de IPs e consulta cada um.
+O coletor não adivinha equipamentos. Ele recebe uma lista de IPs e consulta cada um.
 
 Para cada IP:
 
 1. tenta contato SNMP;
-2. se nÃ£o responder, marca offline ou erro;
+2. se não responder, marca offline ou erro;
 3. se responder, coleta identificadores;
-4. coleta contador de pÃ¡ginas;
+4. coleta contador de páginas;
 5. coleta suprimentos;
 6. monta payload;
 7. envia para a Edge Function.
 
-## 19.1. ProteÃ§Ã£o Contra Sobrecarga no Coletor
+## 19.1. Proteção Contra Sobrecarga no Coletor
 
-O coletor nÃ£o deve se comportar como um "martelo" em cima do Supabase. Se o PostgREST, Auth ou Edge Functions comeÃ§am a responder timeout, insistir vÃ¡rias vezes sÃ³ piora a situaÃ§Ã£o.
+O coletor não deve se comportar como um "martelo" em cima do Supabase. Se o PostgREST, Auth ou Edge Functions começam a responder timeout, insistir várias vezes só piora a situação.
 
 Regra atual:
 
 1. O coletor tenta sincronizar a lista de impressoras.
 2. Se o Supabase responde timeout, ele registra o erro.
 3. Se as tentativas configuradas falham, abre um circuito de respiro.
-4. Durante esse respiro, o coletor nÃ£o fica chamando o backend a cada ciclo.
+4. Durante esse respiro, o coletor não fica chamando o backend a cada ciclo.
 5. Depois do tempo configurado, ele tenta novamente.
 
-Isso protege o projeto free contra rajadas de requisiÃ§Ãµes e ajuda o Supabase a se recuperar.
+Isso protege o projeto free contra rajadas de requisições e ajuda o Supabase a se recuperar.
 
 Exemplo real de sintoma:
 
@@ -554,13 +555,13 @@ Sync tentativa 2/3 falhou: The read operation timed out
 Sync tentativa 3/3 falhou: The read operation timed out
 ```
 
-Antes, o sistema ainda tentava outra rota de API depois desse erro. Agora, por padrÃ£o, ele nÃ£o faz fallback automÃ¡tico para outra rota quando o problema parece ser timeout/conexÃ£o do Supabase.
+Antes, o sistema ainda tentava outra rota de API depois desse erro. Agora, por padrão, ele não faz fallback automático para outra rota quando o problema parece ser timeout/conexão do Supabase.
 
 Exemplo conceitual:
 
 ```text
 IP 172.18.134.115
--> pergunta sÃ©rie via SNMP
+-> pergunta série via SNMP
 -> pergunta MAC via SNMP
 -> pergunta contador total
 -> percorre suprimentos
@@ -570,7 +571,7 @@ IP 172.18.134.115
 
 ## 20. Payload Enviado Pela Telemetria
 
-O payload Ã© o JSON enviado pelo coletor para a Edge Function `collector-telemetria`.
+O payload é o JSON enviado pelo coletor para a Edge Function `collector-telemetria`.
 
 Exemplo simplificado:
 
@@ -629,55 +630,55 @@ Responsabilidades:
 - receber payload do coletor;
 - validar token do coletor;
 - validar formato dos eventos;
-- procurar no inventÃ¡rio qual equipamento deveria estar no IP;
-- comparar patrimÃ´nio, sÃ©rie e MAC;
+- procurar no inventário qual equipamento deveria estar no IP;
+- comparar patrimônio, série e MAC;
 - gravar pagecount quando a identidade bate;
-- reter dados quando existe pendÃªncia;
-- criar alerta de substituiÃ§Ã£o quando a identidade diverge;
+- reter dados quando existe pendência;
+- criar alerta de substituição quando a identidade diverge;
 - gravar suprimentos;
 - devolver resumo de processamento.
 
-## 22. Como a ComparaÃ§Ã£o de Identidade Funciona
+## 22. Como a Comparação de Identidade Funciona
 
-A comparaÃ§Ã£o usa identificadores fortes:
+A comparação usa identificadores fortes:
 
 ```text
 IP
-patrimÃ´nio
-nÃºmero de sÃ©rie
+patrimônio
+número de série
 MAC address
 ```
 
 Regra mental:
 
 - IP diz onde a impressora respondeu na rede.
-- PatrimÃ´nio diz qual item administrativo Ã© aquele.
-- SÃ©rie diz qual equipamento fÃ­sico Ã© aquele.
+- Patrimônio diz qual item administrativo é aquele.
+- Série diz qual equipamento físico é aquele.
 - MAC diz qual placa de rede respondeu.
 
-Se o IP Ã© o mesmo, mas sÃ©rie ou MAC sÃ£o diferentes, existe grande chance de troca fÃ­sica ou cadastro errado.
+Se o IP é o mesmo, mas série ou MAC são diferentes, existe grande chance de troca física ou cadastro errado.
 
 ## 23. Troca Assistida de Impressora
 
-Troca assistida significa que o sistema detecta a divergÃªncia, mas nÃ£o altera tudo sozinho sem confirmaÃ§Ã£o humana.
+Troca assistida significa que o sistema detecta a divergência, mas não altera tudo sozinho sem confirmação humana.
 
-Motivo: existem dois cenÃ¡rios parecidos.
+Motivo: existem dois cenários parecidos.
 
-### CenÃ¡rio 1 - Troca real
+### Cenário 1 - Troca real
 
 A impressora antiga saiu e outra entrou no lugar. Nesse caso, faz sentido confirmar troca.
 
-### CenÃ¡rio 2 - Cadastro errado
+### Cenário 2 - Cadastro errado
 
-A impressora Ã© a mesma, mas o inventÃ¡rio estava com MAC ou sÃ©rie errados. Nesse caso, faz sentido corrigir dados, nÃ£o trocar equipamento.
+A impressora é a mesma, mas o inventário estava com MAC ou série errados. Nesse caso, faz sentido corrigir dados, não trocar equipamento.
 
-Por isso o sistema oferece aÃ§Ãµes diferentes:
+Por isso o sistema oferece ações diferentes:
 
 - confirmar troca;
 - corrigir dados;
 - descartar alerta.
 
-## 24. Tabela de PendÃªncia de SubstituiÃ§Ã£o
+## 24. Tabela de Pendência de Substituição
 
 Tabela:
 
@@ -685,41 +686,41 @@ Tabela:
 public.telemetria_substituicao_pendente
 ```
 
-Ela guarda alertas abertos quando a telemetria detecta divergÃªncia.
+Ela guarda alertas abertos quando a telemetria detecta divergência.
 
 Campos importantes:
 
 ```text
 ie_status                  PENDENTE, CONFIRMADO ou DESCARTADO
-dt_detectado               primeira detecÃ§Ã£o
-dt_ultima_detecao          Ãºltima vez que aconteceu
+dt_detectado               primeira detecção
+dt_ultima_detecao          última vez que aconteceu
 nr_ocorrencias             quantas vezes o mesmo problema repetiu
 nr_inventario_referencia   item que deveria estar no IP
 nr_inventario_substituto   item encontrado, quando identificado
-nr_ip_detectado            IP onde a divergÃªncia aconteceu
-nr_patrimonio_esperado     patrimÃ´nio cadastrado no inventÃ¡rio
-nr_patrimonio_detectado    patrimÃ´nio visto na telemetria
-nr_serie_esperada          sÃ©rie cadastrada
-nr_serie_detectada         sÃ©rie vista na telemetria
+nr_ip_detectado            IP onde a divergência aconteceu
+nr_patrimonio_esperado     patrimônio cadastrado no inventário
+nr_patrimonio_detectado    patrimônio visto na telemetria
+nr_serie_esperada          série cadastrada
+nr_serie_detectada         série vista na telemetria
 nr_mac_esperado            MAC cadastrado
 nr_mac_detectado           MAC visto na telemetria
 payload_evento             JSON original do evento
 ```
 
-## 25. Por Que NÃ£o Gravar Pagecount Errado
+## 25. Por Que Não Gravar Pagecount Errado
 
-Impressoras tÃªm contador fÃ­sico acumulado. Uma impressora reserva pode ter 500.000 pÃ¡ginas no histÃ³rico interno dela.
+Impressoras têm contador físico acumulado. Uma impressora reserva pode ter 500.000 páginas no histórico interno dela.
 
-Se ela entra no lugar de uma impressora que imprimiu 20 pÃ¡ginas no dia, o sistema nÃ£o pode dizer que o setor imprimiu 500.020 pÃ¡ginas.
+Se ela entra no lugar de uma impressora que imprimiu 20 páginas no dia, o sistema não pode dizer que o setor imprimiu 500.020 páginas.
 
-Por isso existe proteÃ§Ã£o:
+Por isso existe proteção:
 
 - se a identidade bate, grava normalmente;
-- se existe divergÃªncia, nÃ£o grava no item errado;
-- enquanto a pendÃªncia estÃ¡ aberta, guarda produÃ§Ã£o diÃ¡ria retida;
-- depois da decisÃ£o humana, aplica a regra correta.
+- se existe divergência, não grava no item errado;
+- enquanto a pendência está aberta, guarda produção diária retida;
+- depois da decisão humana, aplica a regra correta.
 
-## 26. Pagecount Bruto e Pagecount DiÃ¡rio
+## 26. Pagecount Bruto e Pagecount Diário
 
 Existem dois conceitos diferentes.
 
@@ -731,7 +732,7 @@ Tabela:
 public.telemetria_pagecount
 ```
 
-Esse nÃºmero representa o contador total fÃ­sico da impressora.
+Esse número representa o contador total físico da impressora.
 
 Exemplo:
 
@@ -739,9 +740,9 @@ Exemplo:
 nr_paginas_total = 35318
 ```
 
-Isso nÃ£o significa que a impressora imprimiu 35.318 pÃ¡ginas hoje. Significa que o equipamento fÃ­sico acumula esse total no histÃ³rico interno.
+Isso não significa que a impressora imprimiu 35.318 páginas hoje. Significa que o equipamento físico acumula esse total no histórico interno.
 
-### ProduÃ§Ã£o diÃ¡ria
+### Produção diária
 
 Tabela:
 
@@ -749,7 +750,7 @@ Tabela:
 public.telemetria_pagecount_diaria
 ```
 
-Essa tabela calcula produÃ§Ã£o por dia.
+Essa tabela calcula produção por dia.
 
 Exemplo:
 
@@ -759,36 +760,36 @@ fim_dia = 35368
 paginas_dia = 50
 ```
 
-Aqui sim o sistema entende que foram 50 pÃ¡ginas naquele dia.
+Aqui sim o sistema entende que foram 50 páginas naquele dia.
 
 ## 27. Como Evita Explodir o Contador no Dia da Troca
 
-A regra correta Ã© trabalhar com delta, nÃ£o com total bruto.
+A regra correta é trabalhar com delta, não com total bruto.
 
 Exemplo ruim:
 
 ```text
-impressora antiga tinha 20 pÃ¡ginas no dia
-impressora reserva tem contador fÃ­sico 500000
+impressora antiga tinha 20 páginas no dia
+impressora reserva tem contador físico 500000
 sistema soma 500000 no dashboard
 ```
 
-Isso Ã© errado.
+Isso é errado.
 
 Exemplo correto:
 
 ```text
 impressora antiga imprimiu 20 antes da troca
-impressora nova entra com contador fÃ­sico 500000
+impressora nova entra com contador físico 500000
 primeira leitura da nova vira base
-se depois ela vai para 500030, entÃ£o a nova produziu 30
+se depois ela vai para 500030, então a nova produziu 30
 setor no dia mostra 20 + 30 = 50
-impressora nova nÃ£o herda as 20 da impressora antiga
+impressora nova não herda as 20 da impressora antiga
 ```
 
-Essa separaÃ§Ã£o protege o histÃ³rico por equipamento e tambÃ©m mantÃ©m o total operacional do setor coerente.
+Essa separação protege o histórico por equipamento e também mantém o total operacional do setor coerente.
 
-## 28. RetenÃ§Ã£o DiÃ¡ria Enquanto a PendÃªncia EstÃ¡ Aberta
+## 28. Retenção Diária Enquanto a Pendência Está Aberta
 
 Tabela:
 
@@ -798,10 +799,10 @@ public.telemetria_substituicao_evento_retido
 
 Objetivo:
 
-- nÃ£o perder dados enquanto a pendÃªncia nÃ£o Ã© resolvida;
-- nÃ£o floodar o banco com uma linha por ciclo;
-- consolidar no mÃ¡ximo uma linha por pendÃªncia por dia;
-- guardar inÃ­cio e fim do contador observado naquele dia.
+- não perder dados enquanto a pendência não é resolvida;
+- não floodar o banco com uma linha por ciclo;
+- consolidar no máximo uma linha por pendência por dia;
+- guardar início e fim do contador observado naquele dia.
 
 Exemplo:
 
@@ -810,7 +811,7 @@ ciclo 100 -> contador 200
 ciclo 101 -> contador 250
 ```
 
-O sistema nÃ£o soma 200 + 250.
+O sistema não soma 200 + 250.
 
 Ele grava:
 
@@ -820,7 +821,7 @@ fim_dia = 250
 paginas_dia = 50
 ```
 
-Se a pendÃªncia durar cinco dias, o sistema guarda uma linha por dia, nÃ£o centenas de linhas por ciclo.
+Se a pendência durar cinco dias, o sistema guarda uma linha por dia, não centenas de linhas por ciclo.
 
 ## 29. O Que Acontece ao Confirmar, Corrigir ou Descartar
 
@@ -831,34 +832,34 @@ Usado quando uma impressora realmente substituiu outra.
 Resultado esperado:
 
 - item substituto assume setor/IP/status correto;
-- item antigo pode ir para backup, manutenÃ§Ã£o ou outro status definido pelo fluxo;
-- produÃ§Ã£o retida Ã© aplicada ao item correto;
-- pendÃªncia fica como `CONFIRMADO`.
+- item antigo pode ir para backup, manutenção ou outro status definido pelo fluxo;
+- produção retida é aplicada ao item correto;
+- pendência fica como `CONFIRMADO`.
 
 ### Corrigir dados
 
-Usado quando a impressora fÃ­sica Ã© a mesma, mas o cadastro tinha MAC ou sÃ©rie errados.
+Usado quando a impressora física é a mesma, mas o cadastro tinha MAC ou série errados.
 
 Resultado esperado:
 
-- inventÃ¡rio recebe MAC/sÃ©rie corretos;
-- pendÃªncia Ã© resolvida;
-- prÃ³ximas coletas passam a bater com o cadastro.
+- inventário recebe MAC/série corretos;
+- pendência é resolvida;
+- próximas coletas passam a bater com o cadastro.
 
 ### Descartar alerta
 
-Usado quando foi teste, ruÃ­do ou evento que nÃ£o deve alterar cadastro.
+Usado quando foi teste, ruído ou evento que não deve alterar cadastro.
 
 Resultado esperado:
 
-- pendÃªncia fica como `DESCARTADO`;
-- o sistema nÃ£o altera o inventÃ¡rio por causa daquele alerta.
+- pendência fica como `DESCARTADO`;
+- o sistema não altera o inventário por causa daquele alerta.
 
 ## 30. Triggers de Pagecount
 
 ### trg_sync_telemetria_pagecount_diaria
 
-FunÃ§Ã£o relacionada:
+Função relacionada:
 
 ```text
 fn_sync_telemetria_pagecount_diaria
@@ -867,31 +868,31 @@ fn_sync_telemetria_pagecount_diaria
 Responsabilidade:
 
 - receber leitura nova de contador bruto;
-- localizar o dia de referÃªncia;
-- atualizar inÃ­cio e fim do dia;
-- calcular pÃ¡ginas do dia;
+- localizar o dia de referência;
+- atualizar início e fim do dia;
+- calcular páginas do dia;
 - proteger contra queda de contador;
 - proteger contra salto absurdo.
 
-A trigger roda no banco. EntÃ£o, mesmo que a gravaÃ§Ã£o venha da Edge Function, a regra de consolidaÃ§Ã£o diÃ¡ria continua centralizada.
+A trigger roda no banco. Então, mesmo que a gravação venha da Edge Function, a regra de consolidação diária continua centralizada.
 
-## 31. Dashboard de ImpressÃ£o
+## 31. Dashboard de Impressão
 
 O dashboard usa principalmente dados consolidados.
 
 Ele mostra:
 
-- pÃ¡ginas por dia;
+- páginas por dia;
 - custo estimado;
-- pÃ¡ginas por modelo;
+- páginas por modelo;
 - equipamentos online/offline;
-- suprimentos crÃ­ticos;
+- suprimentos críticos;
 - ranking de impressoras;
 - alertas de troca.
 
-A ideia Ã© nÃ£o depender de varrer todos os eventos brutos toda vez que a tela abre. O consolidado deixa a consulta mais leve.
+A ideia é não depender de varrer todos os eventos brutos toda vez que a tela abre. O consolidado deixa a consulta mais leve.
 
-## 32. Frontend da OperaÃ§Ã£o de Impressoras
+## 32. Frontend da Operação de Impressoras
 
 Arquivo principal:
 
@@ -905,7 +906,7 @@ API principal:
 inventory-print
 ```
 
-A tela mostra patrimÃ´nio, IP, modelo, setor, localizaÃ§Ã£o, status online/offline, Ãºltima coleta, contador total, menor suprimento, suprimentos agrupados e classificaÃ§Ã£o.
+A tela mostra patrimônio, IP, modelo, setor, localização, status online/offline, última coleta, contador total, menor suprimento, suprimentos agrupados e classificação.
 
 ## 33. Bibliotecas do Frontend
 
@@ -919,7 +920,7 @@ Principais bibliotecas:
 
 ### Next.js
 
-Framework React usado para estruturar pÃ¡ginas, rotas e build do sistema web.
+Framework React usado para estruturar páginas, rotas e build do sistema web.
 
 ### React
 
@@ -927,15 +928,15 @@ Biblioteca usada para criar componentes visuais e estado das telas.
 
 ### @supabase/supabase-js
 
-Cliente JavaScript usado no frontend e serviÃ§os para conversar com Supabase quando necessÃ¡rio.
+Cliente JavaScript usado no frontend e serviços para conversar com Supabase quando necessário.
 
 ### lucide-react
 
-Biblioteca de Ã­cones SVG usada na interface.
+Biblioteca de ícones SVG usada na interface.
 
 ### @flaticon/flaticon-uicons
 
-Biblioteca de Ã­cones usada para elementos visuais como menu, piso, setor e localizaÃ§Ã£o.
+Biblioteca de ícones usada para elementos visuais como menu, piso, setor e localização.
 
 ### xlsx
 
@@ -943,79 +944,79 @@ Usada para exportar planilhas.
 
 ### jspdf e jspdf-autotable
 
-Usadas para exportar relatÃ³rios em PDF.
+Usadas para exportar relatórios em PDF.
 
 ### zod
 
-Usada para validaÃ§Ã£o de estruturas de dados quando aplicada no frontend/serviÃ§os.
+Usada para validação de estruturas de dados quando aplicada no frontend/serviços.
 
-## 34. Fluxo Completo da Impressora em ProduÃ§Ã£o
+## 34. Fluxo Completo da Impressora em Produção
 
-1. Impressora estÃ¡ cadastrada em `public.inventario`.
+1. Impressora está cadastrada em `public.inventario`.
 2. Ela tem IP e status ativo.
-3. Coletor consulta lista de impressoras elegÃ­veis.
+3. Coletor consulta lista de impressoras elegíveis.
 4. Coletor faz SNMP no IP.
-5. Impressora responde sÃ©rie, MAC, contador e suprimentos.
+5. Impressora responde série, MAC, contador e suprimentos.
 6. Coletor monta payload JSON.
 7. Coletor envia para `collector-telemetria`.
 8. Edge valida token e payload.
-9. Edge compara IP, patrimÃ´nio, sÃ©rie e MAC com o inventÃ¡rio.
+9. Edge compara IP, patrimônio, série e MAC com o inventário.
 10. Se bater, grava telemetria.
-11. Trigger atualiza pagecount diÃ¡rio.
-12. Dashboard lÃª dados consolidados.
-13. UsuÃ¡rio acompanha operaÃ§Ã£o no site.
+11. Trigger atualiza pagecount diário.
+12. Dashboard lê dados consolidados.
+13. Usuário acompanha operação no site.
 
 ## 35. Fluxo Completo de Troca Assistida
 
-1. Impressora antiga estÃ¡ cadastrada no IP.
-2. TÃ©cnico coloca outra impressora no lugar.
+1. Impressora antiga está cadastrada no IP.
+2. Técnico coloca outra impressora no lugar.
 3. Nova impressora responde no mesmo IP.
-4. Coletor SNMP captura sÃ©rie/MAC reais.
-5. Edge compara com inventÃ¡rio.
-6. Dados nÃ£o batem.
-7. Sistema cria pendÃªncia.
-8. Pagecount nÃ£o Ã© gravado no item errado.
-9. ProduÃ§Ã£o fica retida por dia.
-10. UsuÃ¡rio confirma troca, corrige cadastro ou descarta alerta.
-11. Sistema aplica a aÃ§Ã£o correta.
+4. Coletor SNMP captura série/MAC reais.
+5. Edge compara com inventário.
+6. Dados não batem.
+7. Sistema cria pendência.
+8. Pagecount não é gravado no item errado.
+9. Produção fica retida por dia.
+10. Usuário confirma troca, corrige cadastro ou descarta alerta.
+11. Sistema aplica a ação correta.
 12. Coletas seguintes passam a entrar no fluxo normal.
 
 ## 36. Como Explicar Isso no TCC
 
 Uma forma simples de apresentar:
 
-> O sistema une inventÃ¡rio patrimonial e monitoramento real de impressoras. O inventÃ¡rio define qual equipamento deveria estar em cada setor e IP. O coletor Python usa SNMP para consultar as impressoras reais na rede. A API compara o que foi detectado com o cadastro. Se estiver correto, grava pagecount e suprimentos. Se houver divergÃªncia, abre uma pendÃªncia de troca assistida para evitar histÃ³rico falso e explosÃ£o de pÃ¡ginas no dashboard.
+> O sistema une inventário patrimonial e monitoramento real de impressoras. O inventário define qual equipamento deveria estar em cada setor e IP. O coletor Python usa SNMP para consultar as impressoras reais na rede. A API compara o que foi detectado com o cadastro. Se estiver correto, grava pagecount e suprimentos. Se houver divergência, abre uma pendência de troca assistida para evitar histórico falso e explosão de páginas no dashboard.
 
 ## 37. Pontos Fortes Para Defender
 
-- IntegraÃ§Ã£o entre cadastro administrativo e dados reais de rede.
-- Coleta automÃ¡tica via SNMP.
-- ProteÃ§Ã£o contra troca fÃ­sica sem registro.
-- SeparaÃ§Ã£o entre contador bruto e produÃ§Ã£o diÃ¡ria.
-- RetenÃ§Ã£o otimizada enquanto existe pendÃªncia.
-- Uso de Edge Functions para centralizar regra de negÃ³cio.
-- Uso de triggers SQL para manter cÃ¡lculo consistente.
-- Dashboard operacional para decisÃ£o rÃ¡pida.
-- ComentÃ¡rios e documentaÃ§Ã£o para manutenÃ§Ã£o futura.
+- Integração entre cadastro administrativo e dados reais de rede.
+- Coleta automática via SNMP.
+- Proteção contra troca física sem registro.
+- Separação entre contador bruto e produção diária.
+- Retenção otimizada enquanto existe pendência.
+- Uso de Edge Functions para centralizar regra de negócio.
+- Uso de triggers SQL para manter cálculo consistente.
+- Dashboard operacional para decisão rápida.
+- Comentários e documentação para manutenção futura.
 
 ## 38. Perguntas Que Podem Aparecer na Banca
 
 ### Por que usar SNMP?
 
-Porque SNMP Ã© um protocolo padrÃ£o para consultar equipamentos de rede. Ele permite obter dados diretamente da impressora sem depender de preenchimento manual.
+Porque SNMP é um protocolo padrão para consultar equipamentos de rede. Ele permite obter dados diretamente da impressora sem depender de preenchimento manual.
 
-### Por que nÃ£o gravar tudo direto no frontend?
+### Por que não gravar tudo direto no frontend?
 
-Porque regras crÃ­ticas precisam ficar no backend. Isso reduz erro, melhora seguranÃ§a e facilita auditoria.
+Porque regras críticas precisam ficar no backend. Isso reduz erro, melhora segurança e facilita auditoria.
 
-### Por que existe pendÃªncia de troca?
+### Por que existe pendência de troca?
 
-Porque uma divergÃªncia pode ser troca real ou cadastro errado. O sistema detecta automaticamente, mas pede decisÃ£o humana para nÃ£o alterar patrimÃ´nio de forma perigosa.
+Porque uma divergência pode ser troca real ou cadastro errado. O sistema detecta automaticamente, mas pede decisão humana para não alterar patrimônio de forma perigosa.
 
-### Por que separar contador total de pÃ¡ginas do volume diÃ¡rio?
+### Por que separar contador total de páginas do volume diário?
 
-Porque contador total Ã© histÃ³rico fÃ­sico da impressora. Volume diÃ¡rio Ã© produÃ§Ã£o calculada por diferenÃ§a. Misturar os dois causaria nÃºmeros falsos.
+Porque contador total é histórico físico da impressora. Volume diário é produção calculada por diferença. Misturar os dois causaria números falsos.
 
 ### O sistema inventa impressoras?
 
-NÃ£o. Ele parte do inventÃ¡rio e compara com o que a rede responde. Quando detecta algo diferente, abre pendÃªncia em vez de cadastrar automaticamente sem validaÃ§Ã£o.
+Não. Ele parte do inventário e compara com o que a rede responde. Quando detecta algo diferente, abre pendência em vez de cadastrar automaticamente sem validação.

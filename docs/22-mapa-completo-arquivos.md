@@ -133,21 +133,9 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 
 - `inventario-unificado-web/app/api/coletor/impressoras/route.ts`: Rota API interna do Next.js para `coletor/impressoras`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
 
-### `inventario-unificado-web/app/api/coletor/sca/`
-
-- `inventario-unificado-web/app/api/coletor/sca/route.ts`: Rota API interna do Next.js para `coletor/sca`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
 ### `inventario-unificado-web/app/api/coletor/telemetria/`
 
 - `inventario-unificado-web/app/api/coletor/telemetria/route.ts`: Rota API interna do Next.js para `coletor/telemetria`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
-### `inventario-unificado-web/app/api/dashboard/analitico/`
-
-- `inventario-unificado-web/app/api/dashboard/analitico/route.ts`: Rota API interna do Next.js para `dashboard/analitico`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
-### `inventario-unificado-web/app/api/dashboard/resumo/`
-
-- `inventario-unificado-web/app/api/dashboard/resumo/route.ts`: Rota API interna do Next.js para `dashboard/resumo`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
 
 ### `inventario-unificado-web/app/api/empresas/`
 
@@ -164,18 +152,6 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 ### `inventario-unificado-web/app/api/impressoras/[id]/`
 
 - `inventario-unificado-web/app/api/impressoras/[id]/route.ts`: Rota API interna do Next.js para `impressoras/[id]`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
-### `inventario-unificado-web/app/api/impressoras/[id]/metricas/`
-
-- `inventario-unificado-web/app/api/impressoras/[id]/metricas/route.ts`: Rota API interna do Next.js para `impressoras/[id]/metricas`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
-### `inventario-unificado-web/app/api/impressoras/[id]/status-suprimentos/`
-
-- `inventario-unificado-web/app/api/impressoras/[id]/status-suprimentos/route.ts`: Rota API interna do Next.js para `impressoras/[id]/status-suprimentos`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
-
-### `inventario-unificado-web/app/api/impressoras/visao-geral/`
-
-- `inventario-unificado-web/app/api/impressoras/visao-geral/route.ts`: Rota API interna do Next.js para `impressoras/visao-geral`. Recebe requisicoes HTTP, valida contexto e chama services ou Supabase conforme a regra do modulo.
 
 ### `inventario-unificado-web/app/api/inventario/`
 
@@ -273,10 +249,6 @@ Este documento lista todos os arquivos versionados no Git e explica o papel de c
 
 - `inventario-unificado-web/app/login/page.tsx`: Tela de autenticacao. Recebe credenciais, cria sessao Supabase e direciona o usuario para o sistema.
 
-### Historico: `inventario-unificado-web/app/operacional/`
-
-A rota `/operacional` foi removida na sanitizacao. O acompanhamento operacional atual fica concentrado na tela `/impressoras`, que consome os dados consolidados pela Edge Function `inventory-print`.
-
 ### `inventario-unificado-web/app/usuarios/`
 
 - `inventario-unificado-web/app/usuarios/page.tsx`: Tela administrativa para listar e gerenciar usuarios/perfis do sistema.
@@ -297,10 +269,6 @@ A rota `/operacional` foi removida na sanitizacao. O acompanhamento operacional 
 - `inventario-unificado-web/components/ui/input.tsx`: Componente base de UI `input`. Padroniza elemento visual reutilizavel para evitar repeticao de markup e estilo nas paginas.
 - `inventario-unificado-web/components/ui/select.tsx`: Componente base de UI `select`. Padroniza elemento visual reutilizavel para evitar repeticao de markup e estilo nas paginas.
 - `inventario-unificado-web/components/ui/textarea.tsx`: Componente base de UI `textarea`. Padroniza elemento visual reutilizavel para evitar repeticao de markup e estilo nas paginas.
-
-### Historico: `inventario-unificado-web/legacy/`
-
-A pasta `inventario-unificado-web/legacy/` foi removida na sanitizacao final do repositorio. Ela continha schemas, services e tipos antigos do modulo de impressoras, mas nao havia dependencia real das telas, rotas, services atuais ou Edge Functions. O fluxo atual usa `app/`, `components/`, `services/`, `lib/`, `supabase/functions/` e as tabelas atuais do Supabase.
 
 ### `inventario-unificado-web/lib/`
 
@@ -346,25 +314,18 @@ A pasta `inventario-unificado-web/legacy/` foi removida na sanitizacao final do 
 ### `inventario-unificado-web/services/`
 
 - `inventario-unificado-web/services/.gitkeep`: Mantem a pasta services versionada mesmo quando alguma subpasta ainda estiver vazia em certos momentos.
-- `inventario-unificado-web/services/coletorScaResumoService.ts`: Servico TypeScript `coletorScaResumo`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/coletorTelemetriaPtService.ts`: Servico TypeScript `coletorTelemetriaPt`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/dashboardAnaliticoService.ts`: Servico TypeScript `dashboardAnalitico`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/empresaService.ts`: Servico TypeScript `empresa`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/equipamentoService.ts`: Servico TypeScript `equipamento`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/googleSheetsSyncService.ts`: Servico TypeScript `googleSheetsSync`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/importacaoInventarioDinamicoService.ts`: Servico TypeScript `importacaoInventarioDinamico`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/importacaoInventarioService.ts`: Servico TypeScript `importacaoInventario`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/impressorasService.ts`: Servico TypeScript `impressoras`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/inventarioService.ts`: Servico TypeScript `inventario`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/metricasImpressorasService.ts`: Servico TypeScript `metricasImpressoras`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/movimentacaoService.ts`: Servico TypeScript `movimentacao`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/resumoDashboardService.ts`: Servico TypeScript `resumoDashboard`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/setorService.ts`: Servico TypeScript `setor`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/statusSuprimentosImpressorasService.ts`: Servico TypeScript `statusSuprimentosImpressoras`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/suprimentosService.ts`: Servico TypeScript `suprimentos`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/telemetriaDiariaService.ts`: Servico TypeScript `telemetriaDiaria`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 - `inventario-unificado-web/services/tipoEquipamentoService.ts`: Servico TypeScript `tipoEquipamento`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
-- `inventario-unificado-web/services/visaoGeralImpressorasService.ts`: Servico TypeScript `visaoGeralImpressoras`. Concentra consultas, transformacoes e regras de dados usadas por APIs, telas ou Edge-related flows.
 
 ### `inventario-unificado-web/supabase/functions/_shared/`
 

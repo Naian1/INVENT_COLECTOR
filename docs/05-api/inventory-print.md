@@ -22,7 +22,7 @@ Acoes:
 
 - No schema atual de produção, a fonte oficial é `inventario`, usando itens do tipo impressora.
 - A tela operacional e o coletor contam somente impressoras ativas e com IP. Por isso, se existem `116` impressoras no inventário mas `1` está em `BACKUP`, o total operacional/coletável fica `115`.
-- A Edge usa `public.inventario` como fonte oficial da vis?o operacional atual.
+- A Edge usa `public.inventario` como fonte oficial da visao operacional atual.
 - Código principal: `inventario-unificado-web/supabase/functions/inventory-print/index.ts`, funções `loadVisaoGeral` e `loadOperacionaisViaInventario`.
 
 ### Request

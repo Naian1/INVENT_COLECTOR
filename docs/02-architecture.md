@@ -164,8 +164,9 @@ Exemplos:
 inventarioService.ts
 impressorasService.ts
 telemetriaDiariaService.ts
-statusSuprimentosImpressorasService.ts
-visaoGeralImpressorasService.ts
+suprimentosService.ts
+coletorTelemetriaPtService.ts
+importacaoInventarioDinamicoService.ts
 ```
 
 Responsabilidades:
