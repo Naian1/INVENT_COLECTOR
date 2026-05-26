@@ -9,6 +9,8 @@ from typing import Any, Dict
 BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 LOG_DIR = os.path.join(BASE_DIR, "logs")
 TRACE_FILE = os.path.join(LOG_DIR, "collector_backend_trace.jsonl")
+TRACE_MAX_MB = int(os.environ.get("COLLECTOR_TRACE_MAX_MB", "64") or "64")
+TRACE_KEEP_MB = int(os.environ.get("COLLECTOR_TRACE_KEEP_MB", "8") or "8")
 
 
 # [DOC-FUNC] _utc_now_iso
@@ -52,6 +54,34 @@ def _sanitize(value: Any, max_len: int = 2400):
     return f"{clean[:max_len].rstrip()}..."
 
 
+# [DOC-FUNC] _compact_trace_file_if_needed
+# Objetivo: impedir que o arquivo JSONL de diagnostico cresca indefinidamente.
+# Entradas: usa o caminho do trace e limites configurados por ambiente.
+# Como executa: quando o arquivo passa do limite, preserva apenas o final recente,
+# que e a parte usada pela interface de controle e pelo diagnostico operacional.
+# Saida/Efeito: reduz uso de disco/RAM sem alterar a logica de coleta SNMP.
+def _compact_trace_file_if_needed():
+    try:
+        if not os.path.exists(TRACE_FILE):
+            return
+        max_bytes = max(1, TRACE_MAX_MB) * 1024 * 1024
+        keep_bytes = max(1, min(TRACE_KEEP_MB, TRACE_MAX_MB)) * 1024 * 1024
+        current_size = os.path.getsize(TRACE_FILE)
+        if current_size <= max_bytes:
+            return
+        with open(TRACE_FILE, "rb") as trace_file:
+            trace_file.seek(max(0, current_size - keep_bytes))
+            chunk = trace_file.read()
+        lines = chunk.decode("utf-8", errors="replace").splitlines()
+        if current_size > keep_bytes and lines:
+            lines = lines[1:]
+        with open(TRACE_FILE, "w", encoding="utf-8") as trace_file:
+            trace_file.write("\n".join(lines[-20000:]))
+            trace_file.write("\n")
+    except Exception:
+        pass
+
+
 # [DOC-FUNC] append_backend_trace
 # O que faz: A funcao 'append_backend_trace' registra novos dados de negocio. Ela valida a entrada, monta o payload no formato exigido e executa a gravacao de forma segura.
 # Entradas: Recebe os parametros: event, **payload. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
@@ -63,6 +93,7 @@ def _sanitize(value: Any, max_len: int = 2400):
 def append_backend_trace(event: str, **payload: Dict[str, Any]):
     try:
         os.makedirs(LOG_DIR, exist_ok=True)
+        _compact_trace_file_if_needed()
         record = {"ts": _utc_now_iso(), "event": str(event or "").strip() or "unknown"}
         for key, value in payload.items():
             record[str(key)] = _sanitize(value)

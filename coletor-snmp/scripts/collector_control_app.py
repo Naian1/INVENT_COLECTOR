@@ -79,6 +79,21 @@ RUNTIME_LOG_PATH = LOG_DIR / "collector_loop_runtime.log"
 BACKEND_TRACE_PATH = LOG_DIR / "collector_backend_trace.jsonl"
 RUNTIME_STATE = LOG_DIR / "collector_app_state.json"
 APP_LOCK_PATH = LOG_DIR / "collector_control_app.lock"
+TAIL_READ_BYTES = 512 * 1024
+MAX_PANEL_CHARS = 14000
+BRAND_LOGO_CANDIDATES = [
+    Path(getattr(sys, "_MEIPASS", BASE_DIR)) / "assets" / "ntech-white.png",
+    Path(getattr(sys, "_MEIPASS", BASE_DIR)) / "assets" / "ntech-black.png",
+    BASE_DIR / "assets" / "ntech-white.png",
+    BASE_DIR / "assets" / "ntech-black.png",
+    BASE_DIR.parent / "inventario-unificado-web" / "public" / "brand" / "ntech-white.png",
+    BASE_DIR.parent / "inventario-unificado-web" / "public" / "brand" / "ntech-black.png",
+]
+BRAND_ICON_CANDIDATES = [
+    Path(getattr(sys, "_MEIPASS", BASE_DIR)) / "assets" / "ntech-n.png",
+    BASE_DIR / "assets" / "ntech-n.png",
+    BASE_DIR.parent / "inventario-unificado-web" / "public" / "brand" / "ntech-n.png",
+]
 MUTEX_NAME = "Global\\INVENT_COLLECTOR_COLLECTOR_CONTROL_APP"
 ERROR_ALREADY_EXISTS = 183
 PROCESS_QUERY_LIMITED_INFORMATION = 0x1000
@@ -334,7 +349,14 @@ def tail_lines(path: Path, max_lines: int = 80):
     try:
         if not path.exists():
             return []
-        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        # Le somente o final do arquivo. O trace/log pode passar de GB;
+        # carregar tudo na UI derruba RAM e disco.
+        with path.open("rb") as handle:
+            handle.seek(0, os.SEEK_END)
+            size = handle.tell()
+            handle.seek(max(0, size - TAIL_READ_BYTES), os.SEEK_SET)
+            chunk = handle.read()
+        lines = chunk.decode("utf-8", errors="replace").splitlines()
         return lines[-max(1, max_lines):]
     except Exception:
         return []
@@ -353,7 +375,16 @@ def tail_jsonl(path: Path, max_lines: int = 120):
     try:
         if not path.exists():
             return events
-        lines = path.read_text(encoding="utf-8", errors="replace").splitlines()
+        # Mesmo raciocinio de tail_lines: JSONL de backend cresce muito em
+        # producao. Ler apenas o fim evita picos de GB na interface Tkinter.
+        with path.open("rb") as handle:
+            handle.seek(0, os.SEEK_END)
+            size = handle.tell()
+            handle.seek(max(0, size - TAIL_READ_BYTES), os.SEEK_SET)
+            chunk = handle.read()
+        lines = chunk.decode("utf-8", errors="replace").splitlines()
+        if size > TAIL_READ_BYTES and lines:
+            lines = lines[1:]
         for line in lines[-max(1, max_lines):]:
             clean = line.strip()
             if not clean:
@@ -382,6 +413,77 @@ def shorten_text(value, max_len: int = 140):
     if len(text) <= max_len:
         return text
     return f"{text[:max_len - 3].rstrip()}..."
+
+
+# [DOC-FUNC] file_size_label
+# Objetivo: mostra tamanho de logs/cache sem abrir o arquivo inteiro.
+# Entradas: caminho do arquivo que sera medido.
+# Como executa: usa metadados do sistema de arquivos (`stat`) em vez de ler conteudo.
+# Saida/Efeito: devolve texto curto para o painel tecnico do aplicativo.
+def file_size_label(path: Path) -> str:
+    try:
+        if not path.exists():
+            return "0 MB"
+        size_mb = path.stat().st_size / (1024 * 1024)
+        if size_mb >= 1024:
+            return f"{size_mb / 1024:.2f} GB"
+        return f"{size_mb:.2f} MB"
+    except Exception:
+        return "indisponivel"
+
+
+# [DOC-FUNC] resolve_brand_logo_path
+# Objetivo: encontra uma logo NTECH leve para personalizar o app sem exigir asset duplicado no coletor.
+# Entradas: usa candidatos conhecidos dentro do coletor e do frontend.
+# Como executa: testa caminhos em ordem e retorna o primeiro arquivo existente.
+# Saida/Efeito: devolve Path ou None; nao altera arquivo nem regra de coleta.
+def resolve_brand_logo_path():
+    for candidate in BRAND_LOGO_CANDIDATES:
+        try:
+            if candidate.exists():
+                return candidate
+        except Exception:
+            continue
+    return None
+
+
+# [DOC-FUNC] resolve_brand_icon_path
+# Objetivo: encontra o icone NTECH usado na barra da janela, bandeja e executavel.
+# Entradas: usa candidatos conhecidos dentro do pacote, coletor e frontend.
+# Como executa: testa caminhos em ordem e retorna o primeiro arquivo existente.
+# Saida/Efeito: devolve Path ou None; nao altera coleta nem configuracao.
+def resolve_brand_icon_path():
+    for candidate in BRAND_ICON_CANDIDATES:
+        try:
+            if candidate.exists():
+                return candidate
+        except Exception:
+            continue
+    return None
+
+
+# [DOC-FUNC] fit_window_to_screen
+# Objetivo: abre a janela ja encaixada no monitor, sem exigir redimensionamento manual.
+# Entradas: janela Tk principal.
+# Como executa: usa um tamanho fixo confortavel e centraliza no monitor atual.
+# Saida/Efeito: aplica geometry inicial de forma segura; nao altera regras do coletor.
+def fit_window_to_screen(root: tk.Tk):
+    try:
+        screen_w = root.winfo_screenwidth()
+        screen_h = root.winfo_screenheight()
+        width = min(1240, max(1080, screen_w - 80))
+        height = min(700, max(640, screen_h - 90))
+        x = max(0, int((screen_w - width) / 2))
+        y = max(0, int((screen_h - height) / 2) - 10)
+        root.geometry(f"{width}x{height}+{x}+{y}")
+        root.minsize(width, height)
+        root.maxsize(width, height)
+        root.resizable(False, False)
+    except Exception:
+        root.geometry("1180x680")
+        root.minsize(1180, 680)
+        root.maxsize(1180, 680)
+        root.resizable(False, False)
 
 
 # [DOC-FUNC] stop_pid
@@ -425,15 +527,20 @@ class CollectorControlApp:
     # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def __init__(self, root: tk.Tk):
         self.root = root
-        self.root.title("Collector Control - Inventario")
-        self.root.geometry("780x540")
-        self.root.minsize(760, 520)
+        self.root.title("NTECH Collector Control")
+        fit_window_to_screen(self.root)
+        self.root.configure(bg="#07111f")
 
         self.tray_icon = None
         self.tray_thread = None
         self.running = False
         self.starting = False
         self.backend_panel_text = None
+        self.logo_image = None
+        self.icon_image = None
+        self.config_expanded = False
+        self.config_body = None
+        self.config_toggle_btn = None
 
         self.vars = {}
         env_values = load_env(ENV_PATH)
@@ -456,18 +563,119 @@ class CollectorControlApp:
     # Explicacao didatica: Monta visualmente a tela: campos do .env, botoes de iniciar/parar, status e painel de diagnostico. Cada widget fica ligado ao estado da classe.
     # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def _build_ui(self):
-        outer = ttk.Frame(self.root, padding=12)
+        palette = {
+            "app": "#07111f",
+            "surface": "#0f1b2d",
+            "surface_2": "#13233a",
+            "border": "#223752",
+            "text": "#edf5ff",
+            "muted": "#93a9c7",
+            "blue": "#38bdf8",
+            "blue_2": "#2563eb",
+            "green": "#22c55e",
+            "red": "#ef4444",
+            "field": "#eaf1fb",
+            "field_text": "#08111f",
+            "console": "#020817",
+        }
+        self.palette = palette
+
+        style = ttk.Style(self.root)
+        try:
+            style.theme_use("clam")
+        except Exception:
+            pass
+        style.configure(".", font=("Segoe UI", 9))
+        style.configure("App.TFrame", background=palette["app"])
+        style.configure("Panel.TFrame", background=palette["surface"], relief="flat")
+        style.configure("Title.TLabel", background=palette["app"], foreground=palette["text"], font=("Segoe UI", 22, "bold"))
+        style.configure("Subtitle.TLabel", background=palette["app"], foreground="#b9d9ff", font=("Segoe UI", 10))
+        style.configure("Muted.TLabel", background=palette["app"], foreground=palette["muted"], font=("Segoe UI", 9))
+        style.configure("Status.TLabel", background=palette["app"], foreground=palette["blue"], font=("Segoe UI", 10, "bold"))
+        style.configure("TLabel", background=palette["app"], foreground=palette["text"])
+        style.configure("TButton", padding=(12, 7), font=("Segoe UI", 9, "bold"), borderwidth=0)
+        style.map("TButton", background=[("active", "#1e40af")])
+        style.configure("Primary.TButton", padding=(14, 8), font=("Segoe UI", 9, "bold"), background=palette["blue_2"], foreground="#ffffff")
+        style.configure("Danger.TButton", padding=(14, 8), font=("Segoe UI", 9, "bold"), background="#7f1d1d", foreground="#ffffff")
+        style.configure("Ghost.TButton", padding=(12, 7), font=("Segoe UI", 9, "bold"), background=palette["surface_2"], foreground=palette["text"])
+        style.configure("TEntry", fieldbackground=palette["field"], foreground=palette["field_text"], bordercolor=palette["border"], lightcolor=palette["border"], darkcolor=palette["border"])
+        style.configure("Vertical.TScrollbar", background=palette["surface_2"], troughcolor=palette["console"], bordercolor=palette["surface_2"], arrowcolor=palette["text"])
+        style.configure("Horizontal.TScrollbar", background=palette["surface_2"], troughcolor=palette["console"], bordercolor=palette["surface_2"], arrowcolor=palette["text"])
+
+        icon_path = resolve_brand_icon_path()
+        if icon_path is not None:
+            try:
+                self.icon_image = tk.PhotoImage(file=str(icon_path))
+                self.root.iconphoto(True, self.icon_image)
+            except Exception:
+                self.icon_image = None
+
+        outer = tk.Frame(self.root, bg=palette["app"], padx=18, pady=16)
         outer.pack(fill="both", expand=True)
 
-        ttk.Label(outer, text="Controle do coletor SNMP", font=("Segoe UI", 14, "bold")).pack(anchor="w")
-        ttk.Label(
-            outer,
-            text="Inicia/parar coletor, ajustar .env e rodar em background sem travar terminal.",
-        ).pack(anchor="w", pady=(4, 8))
-        ttk.Label(outer, text=f"Base: {BASE_DIR} | ENV: {ENV_PATH}", foreground="#444").pack(anchor="w", pady=(0, 8))
+        header = tk.Frame(outer, bg=palette["app"])
+        header.pack(fill="x", pady=(0, 14))
+        logo_path = resolve_brand_logo_path()
+        logo_shell = tk.Frame(header, bg="#081a32", highlightbackground=palette["border"], highlightthickness=1, padx=12, pady=8)
+        logo_shell.pack(side="left", padx=(0, 14))
+        if logo_path is not None:
+            try:
+                self.logo_image = tk.PhotoImage(file=str(logo_path)).subsample(4, 4)
+                tk.Label(logo_shell, image=self.logo_image, bg="#081a32").pack()
+            except Exception:
+                self.logo_image = None
+        if self.logo_image is None:
+            tk.Label(logo_shell, text="NTECH", bg="#081a32", fg="#f8fafc", font=("Segoe UI", 16, "bold")).pack()
+            tk.Label(logo_shell, text="SNMP", bg="#081a32", fg=palette["blue"], font=("Segoe UI", 8, "bold")).pack(anchor="e")
 
-        form = ttk.Frame(outer)
-        form.pack(fill="x")
+        title_box = tk.Frame(header, bg=palette["app"])
+        title_box.pack(side="left", fill="x", expand=True)
+        ttk.Label(title_box, text="NTECH Collector Control", style="Title.TLabel").pack(anchor="w")
+        ttk.Label(
+            title_box,
+            text="Operacao local do coletor SNMP: iniciar, parar, auditar payloads e acompanhar saude sem pesar na maquina.",
+            style="Subtitle.TLabel",
+        ).pack(anchor="w", pady=(3, 0))
+
+        status_card = tk.Frame(header, bg=palette["surface"], highlightbackground=palette["border"], highlightthickness=1, padx=14, pady=9)
+        status_card.pack(side="right", fill="y")
+        tk.Label(status_card, text="STATUS", bg=palette["surface"], fg=palette["muted"], font=("Segoe UI", 8, "bold")).pack(anchor="e")
+        tk.Label(status_card, textvariable=self.status_var, bg=palette["surface"], fg=palette["blue"], font=("Segoe UI", 10, "bold")).pack(anchor="e", pady=(2, 0))
+        tk.Label(status_card, textvariable=self.pid_var, bg=palette["surface"], fg=palette["muted"], font=("Segoe UI", 9)).pack(anchor="e")
+
+        path_bar = tk.Frame(outer, bg=palette["surface"], highlightbackground=palette["border"], highlightthickness=1, padx=12, pady=8)
+        path_bar.pack(fill="x", pady=(0, 14))
+        tk.Label(path_bar, text="Base", bg=palette["surface"], fg=palette["blue"], font=("Segoe UI", 8, "bold")).pack(side="left", padx=(0, 8))
+        tk.Label(path_bar, text=str(BASE_DIR), bg=palette["surface"], fg=palette["text"], font=("Segoe UI", 9)).pack(side="left")
+        tk.Label(path_bar, text="  |  ENV", bg=palette["surface"], fg=palette["blue"], font=("Segoe UI", 8, "bold")).pack(side="left", padx=(12, 8))
+        tk.Label(path_bar, text=str(ENV_PATH), bg=palette["surface"], fg=palette["text"], font=("Segoe UI", 9)).pack(side="left")
+
+        main = tk.PanedWindow(outer, orient="vertical", bg=palette["app"], bd=0, sashwidth=8, sashrelief="flat")
+        main.pack(fill="both", expand=True)
+
+        config_card = tk.Frame(main, bg=palette["surface"], highlightbackground=palette["border"], highlightthickness=1, padx=14, pady=12)
+        main.add(config_card, stretch="never", minsize=280)
+
+        card_header = tk.Frame(config_card, bg=palette["surface"])
+        card_header.pack(fill="x", pady=(0, 10))
+        tk.Label(card_header, text="Configuracao do coletor", bg=palette["surface"], fg=palette["text"], font=("Segoe UI", 13, "bold")).pack(side="left")
+        self.config_toggle_btn = ttk.Button(
+            card_header,
+            text="Mostrar configuracao",
+            command=self.toggle_config_panel,
+            style="Ghost.TButton",
+        )
+        self.config_toggle_btn.pack(side="right")
+        tk.Label(
+            card_header,
+            text="Campos sensiveis ficam mascarados",
+            bg=palette["surface"],
+            fg=palette["muted"],
+            font=("Segoe UI", 9),
+        ).pack(side="right", padx=(0, 12))
+
+        form = tk.Frame(config_card, bg=palette["surface"])
+        self.config_body = form
 
         fields = [
             ("URL API telemetria", "COLLECTOR_API_URL"),
@@ -486,42 +694,57 @@ class CollectorControlApp:
             ("Log backups", "COLLECTOR_LOG_BACKUPS"),
         ]
 
+        columns = 2
         for idx, (label, key) in enumerate(fields):
-            ttk.Label(form, text=label).grid(row=idx, column=0, sticky="w", pady=4)
+            row = idx // columns
+            col = (idx % columns) * 2
+            tk.Label(form, text=label, bg=palette["surface"], fg=palette["muted"], font=("Segoe UI", 8, "bold")).grid(row=row * 2, column=col, sticky="w", pady=(0, 2), padx=(0, 10))
             show = "*" if "TOKEN" in key or key.endswith("_KEY") else ""
-            ttk.Entry(form, textvariable=self.vars[key], width=80, show=show).grid(row=idx, column=1, sticky="we", padx=(8, 0), pady=4)
+            entry = ttk.Entry(form, textvariable=self.vars[key], width=48, show=show)
+            entry.grid(row=row * 2 + 1, column=col, columnspan=2, sticky="we", padx=(0, 14), pady=(0, 8))
 
-        form.columnconfigure(1, weight=1)
+        for col in range(columns * 2):
+            form.columnconfigure(col, weight=1 if col % 2 == 0 else 0)
 
-        actions = ttk.Frame(outer)
-        actions.pack(fill="x", pady=(12, 6))
+        actions = tk.Frame(config_card, bg=palette["surface"])
+        actions.pack(fill="x", pady=(2, 0))
 
-        self.btn_save = ttk.Button(actions, text="Salvar config (.env)", command=self.save_config)
+        self.btn_save = ttk.Button(actions, text="Salvar .env", command=self.save_config, style="Ghost.TButton")
         self.btn_save.pack(side="left")
-        self.btn_start = ttk.Button(actions, text="Iniciar coletor", command=self.start_collector)
+        self.btn_start = ttk.Button(actions, text="Iniciar coletor", command=self.start_collector, style="Primary.TButton")
         self.btn_start.pack(side="left", padx=8)
-        self.btn_stop = ttk.Button(actions, text="Parar coletor", command=self.stop_collector)
+        self.btn_stop = ttk.Button(actions, text="Parar coletor", command=self.stop_collector, style="Danger.TButton")
         self.btn_stop.pack(side="left")
-        self.btn_refresh = ttk.Button(actions, text="Atualizar status", command=self.refresh_status)
+        self.btn_refresh = ttk.Button(actions, text="Atualizar status", command=self.refresh_status, style="Ghost.TButton")
         self.btn_refresh.pack(side="left", padx=8)
-        self.btn_logs = ttk.Button(actions, text="Abrir logs", command=self.open_logs)
+        self.btn_logs = ttk.Button(actions, text="Abrir logs", command=self.open_logs, style="Ghost.TButton")
         self.btn_logs.pack(side="left")
-        self.btn_tray = ttk.Button(actions, text="Minimizar para bandeja", command=self.minimize_to_tray)
+        self.btn_tray = ttk.Button(actions, text="Minimizar para bandeja", command=self.minimize_to_tray, style="Ghost.TButton")
         self.btn_tray.pack(side="right")
 
-        state = ttk.Frame(outer)
-        state.pack(fill="x", pady=(6, 10))
-        ttk.Label(state, textvariable=self.status_var, foreground="#114488").pack(anchor="w")
-        ttk.Label(state, textvariable=self.pid_var).pack(anchor="w")
+        console_card = tk.Frame(main, bg=palette["surface"], highlightbackground=palette["border"], highlightthickness=1, padx=14, pady=12)
+        main.add(console_card, stretch="always", minsize=280)
 
-        ttk.Label(
-            outer,
-            text="Backend ao vivo (SNMP, payload e POST em execucao):",
-            font=("Segoe UI", 10, "bold"),
-        ).pack(anchor="w", pady=(2, 4))
-        panel_frame = ttk.Frame(outer)
+        console_header = tk.Frame(console_card, bg=palette["surface"])
+        console_header.pack(fill="x", pady=(0, 8))
+        tk.Label(console_header, text="Backend ao vivo", bg=palette["surface"], fg=palette["text"], font=("Segoe UI", 13, "bold")).pack(side="left")
+        tk.Label(console_header, text="SNMP, payload, POST e ultimos logs", bg=palette["surface"], fg=palette["muted"], font=("Segoe UI", 9)).pack(side="left", padx=(10, 0))
+
+        panel_frame = tk.Frame(console_card, bg=palette["console"], highlightbackground=palette["border"], highlightthickness=1)
         panel_frame.pack(fill="both", expand=True)
-        self.backend_panel_text = tk.Text(panel_frame, height=11, wrap="none", font=("Consolas", 10))
+        self.backend_panel_text = tk.Text(
+            panel_frame,
+            height=13,
+            wrap="none",
+            font=("Consolas", 10),
+            bg=palette["console"],
+            fg="#dbeafe",
+            insertbackground="#dbeafe",
+            selectbackground="#1d4ed8",
+            relief="flat",
+            padx=12,
+            pady=10,
+        )
         scroll_y = ttk.Scrollbar(panel_frame, orient="vertical", command=self.backend_panel_text.yview)
         scroll_x = ttk.Scrollbar(panel_frame, orient="horizontal", command=self.backend_panel_text.xview)
         self.backend_panel_text.configure(yscrollcommand=scroll_y.set, xscrollcommand=scroll_x.set)
@@ -532,6 +755,24 @@ class CollectorControlApp:
         panel_frame.rowconfigure(0, weight=1)
         self.backend_panel_text.configure(state="disabled")
         self.refresh_backend_panel()
+
+    # [DOC-FUNC] toggle_config_panel
+    # Objetivo: mostra/oculta os campos de configuracao para deixar a operacao diaria mais limpa.
+    # Entradas: usa estado interno da janela (`config_expanded`).
+    # Como executa: alterna o pack do frame de campos e atualiza o texto do botao.
+    # Saida/Efeito: muda apenas a interface; nao salva .env nem altera coleta.
+    def toggle_config_panel(self):
+        if self.config_body is None:
+            return
+        self.config_expanded = not self.config_expanded
+        if self.config_expanded:
+            self.config_body.pack(fill="x", before=self.btn_save.master, pady=(0, 8))
+            if self.config_toggle_btn is not None:
+                self.config_toggle_btn.configure(text="Ocultar configuracao")
+        else:
+            self.config_body.pack_forget()
+            if self.config_toggle_btn is not None:
+                self.config_toggle_btn.configure(text="Mostrar configuracao")
 
     # [DOC-FUNC] _set_busy
     # O que faz: A funcao '_set_busy' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
@@ -877,7 +1118,7 @@ class CollectorControlApp:
     # Por que existe: separa essa responsabilidade para facilitar manutencao, diagnostico em log e apresentacao do fluxo no TCC.
     def build_backend_panel_snapshot(self):
         payload = {k: v.get().strip() for k, v in self.vars.items()}
-        trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=300)
+        trace_events = tail_jsonl(BACKEND_TRACE_PATH, max_lines=120)
         last_payload = None
         lines = []
         for event in reversed(trace_events):
@@ -917,12 +1158,13 @@ class CollectorControlApp:
         payload_pretty = self._format_payload_for_panel(last_payload)
 
         # Snapshot textual unico: facilita copiar/colar em chamados e documentação de suporte.
-        return (
+        snapshot = (
             "==================== STATUS ====================\n"
             f"Coletor: {status_line}\n"
             f"API Telemetria: {api_url or '(nao configurada)'}\n"
             f"Supabase URL: {supabase_url or '(nao configurada)'}\n"
             f"Token (mascarado): {token_masked}\n"
+            f"Trace backend: {file_size_label(BACKEND_TRACE_PATH)} | Log runtime: {file_size_label(RUNTIME_LOG_PATH)}\n"
             "\n================ COMANDOS SNMP (equivalente) ================\n"
             "snmpwalk -v2c -c <community> <ip> 1.3.6.1.2.1.43.11.1.1.6.1\n"
             "snmpwalk -v2c -c <community> <ip> 1.3.6.1.2.1.43.11.1.1.8.1\n"
@@ -935,6 +1177,9 @@ class CollectorControlApp:
             + "\n\n================ RUNTIME LOG (ultimas linhas) ================\n"
             + "\n".join(runtime_tail)
         )
+        if len(snapshot) > MAX_PANEL_CHARS:
+            return snapshot[:MAX_PANEL_CHARS].rstrip() + "\n\n... painel limitado para manter a interface leve ..."
+        return snapshot
 
     # [DOC-FUNC] refresh_backend_panel
     # O que faz: A funcao 'refresh_backend_panel' altera estado existente. Ela confere pre-condicoes, aplica as regras da mudanca e persiste somente o que e permitido no dominio.
