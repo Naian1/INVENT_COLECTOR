@@ -267,12 +267,20 @@ Autenticacao:
 O que faz:
 
 - monta a visao operacional de impressoras;
-- calcula status online/offline/warning com base em leituras recentes;
+- calcula status `online`, `offline` ou `unknown` com base na telemetria;
 - agrupa suprimentos por impressora;
 - monta indicadores do dashboard;
 - calcula ranking por periodo, setor, localizacao e modelo;
 - consulta pagecount consolidado;
 - apoia telas de categorias/linhas de impressora quando usadas.
+
+Regra importante de status:
+
+- `online` significa que a ultima coleta indicou resposta normal da impressora.
+- `offline` significa que o coletor tentou consultar o IP via SNMP e registrou falha de resposta.
+- `unknown` significa que ainda nao existe historico de coleta suficiente para classificar a impressora.
+
+Assim, impressora sem resposta SNMP nao fica como `unknown`; ela fica como `offline`. O `unknown` e reservado para equipamento sem coleta anterior.
 
 Actions principais:
 

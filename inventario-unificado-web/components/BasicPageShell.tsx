@@ -10,6 +10,7 @@ import { usePathname } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { ReactNode } from "react";
 
+import { AuthLoadingScreen } from "@/components/AuthLoadingScreen";
 import { supabase } from "@/lib/supabase/client";
 import { invokeAuthedEdgeAction } from "@/lib/supabase/invokeEdge";
 
@@ -462,15 +463,7 @@ export function BasicPageShell({ title, subtitle, children, actions }: BasicPage
   const notificacoesSuprimento = notifications.filter((item) => item.tipo === "suprimento");
 
   if (!sessionChecked) {
-    return (
-      <div className="ui-shell">
-        <div className="ui-main">
-          <main className="ui-content">
-            <div className="ui-card">Validando sessão...</div>
-          </main>
-        </div>
-      </div>
-    );
+    return <AuthLoadingScreen />;
   }
 
   return (

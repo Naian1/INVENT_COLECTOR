@@ -67,6 +67,26 @@ Acoes:
 - Quando `nr_quantidade_maxima` existe, o percentual e calculado por `nr_quantidade / nr_quantidade_maxima`.
 - Quando `nr_quantidade_maxima` esta nulo e `nr_quantidade` vem entre 0 e 100, o sistema trata `nr_quantidade` como percentual legado.
 
+### Regra atual de status da impressora
+
+Esta regra existe para separar dois cenarios diferentes que antes podiam parecer iguais na tela:
+
+- `online`: a ultima telemetria valida informou que a impressora respondeu normalmente.
+- `offline`: o coletor tentou consultar a impressora via SNMP, nao recebeu resposta e enviou status `offline`.
+- `unknown`: a impressora ainda nao possui historico confiavel de coleta. Ou seja, nao e uma impressora "offline"; e uma impressora sem base de telemetria para classificar.
+
+Na pratica, quando o log do coletor mostra que a impressora "parece estar offline", a tela `/impressoras` deve exibir `offline`. O status `unknown` fica reservado para equipamentos cadastrados que nunca tiveram coleta gravada.
+
+Os suprimentos continuam sendo exibidos a partir da ultima leitura conhecida. Isso e proposital: se uma impressora respondeu uma vez e depois ficou offline, o sistema ainda pode mostrar o ultimo toner/unidade de imagem conhecido, sem apagar informacao util da operacao.
+
+Na tela, o filtro de status operacional foi simplificado para os estados de telemetria realmente usados no fluxo atual:
+
+- `online`;
+- `offline`;
+- `unknown`.
+
+O conceito de equipamento nao operacional continua existindo, mas fica no filtro de operacionalidade/inventario, nao como status de telemetria.
+
 ## Action: add_impressora_manual
 
 ### Request

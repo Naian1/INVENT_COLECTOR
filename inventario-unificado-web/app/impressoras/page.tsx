@@ -70,8 +70,7 @@ type LinhaValorDef = {
   } | null;
 };
 
-type FiltroOperacional = "todos" | "operacional" | "nao_operacional";
-type FiltroStatus = "todos" | "online" | "offline" | "warning" | "error" | "unknown" | "nao_operacional";
+type FiltroStatus = "todos" | "online" | "offline" | "unknown";
 type FiltroRapido =
   | "todos"
   | "online"
@@ -89,7 +88,6 @@ type QuickFilterItem = {
 };
 
 type ColunaOrdenacao =
-  | "operacional"
   | "patrimonio"
   | "ip"
   | "modelo"
@@ -403,8 +401,6 @@ function classeAtualizacaoColeta(value: string | null) {
  */
 function obterValorOrdenacao(row: ImpressoraVisao, coluna: ColunaOrdenacao): string | number {
   switch (coluna) {
-    case "operacional":
-      return row.operacional ? 1 : 0;
     case "contador_paginas_atual":
       return row.contador_paginas_atual ?? -1;
     case "menor_nivel_suprimento":
@@ -432,7 +428,6 @@ export default function ImpressorasPage() {
   const [registros, setRegistros] = useState<ImpressoraVisao[]>([]);
   const [naoOperacionaisCarregados, setNaoOperacionaisCarregados] = useState(false);
 
-  const [filtroOperacional, setFiltroOperacional] = useState<FiltroOperacional>("todos");
   const [filtroStatus, setFiltroStatus] = useState<FiltroStatus>("todos");
   const [filtroRapido, setFiltroRapido] = useState<FiltroRapido>("todos");
   const [busca, setBusca] = useState("");
@@ -666,15 +661,14 @@ export default function ImpressorasPage() {
   }, [buscaDigitada]);
 
   useEffect(() => {
-    const precisaNaoOperacionais =
-      filtroOperacional === "nao_operacional" || filtroRapido === "nao_operacional";
+    const precisaNaoOperacionais = filtroRapido === "nao_operacional";
 
     if (!precisaNaoOperacionais || naoOperacionaisCarregados || loading) {
       return;
     }
 
     void carregar(true);
-  }, [carregar, filtroOperacional, filtroRapido, naoOperacionaisCarregados, loading]);
+  }, [carregar, filtroRapido, naoOperacionaisCarregados, loading]);
 
   useEffect(() => {
     if (modalAdicionarAberto) {
@@ -697,22 +691,18 @@ export default function ImpressorasPage() {
   const aplicarFiltroRapido = useCallback((filtro: FiltroRapido) => {
     setFiltroRapido(filtro);
     if (filtro === "online") {
-      setFiltroOperacional("operacional");
       setFiltroStatus("online");
       return;
     }
     if (filtro === "offline") {
-      setFiltroOperacional("operacional");
       setFiltroStatus("offline");
       return;
     }
     if (filtro === "nao_operacional") {
-      setFiltroOperacional("nao_operacional");
       setFiltroStatus("todos");
       return;
     }
     if (filtro === "todos") {
-      setFiltroOperacional("todos");
       setFiltroStatus("todos");
     }
   }, []);
@@ -729,7 +719,6 @@ export default function ImpressorasPage() {
   }, []);
 
   const limparFiltros = useCallback(() => {
-    setFiltroOperacional("todos");
     setFiltroStatus("todos");
     setFiltroRapido("todos");
     setBuscaDigitada("");
@@ -743,8 +732,6 @@ export default function ImpressorasPage() {
     const filtroSup = filtroSuprimento.trim().toLowerCase();
 
     const filtrados = registros.filter((item) => {
-      if (filtroOperacional === "operacional" && !item.operacional) return false;
-      if (filtroOperacional === "nao_operacional" && item.operacional) return false;
       if (filtroStatus !== "todos" && String(item.status_atual).toLowerCase() !== filtroStatus) return false;
 
       if (filtroRapido === "sem_coleta" && !!item.ultima_coleta_em) return false;
@@ -794,7 +781,6 @@ export default function ImpressorasPage() {
     });
   }, [
     busca,
-    filtroOperacional,
     filtroRapido,
     filtroStatus,
     filtroSuprimento,
@@ -806,7 +792,6 @@ export default function ImpressorasPage() {
   useEffect(() => {
     setPaginaAtual(1);
   }, [
-    filtroOperacional,
     filtroStatus,
     filtroRapido,
     busca,
@@ -839,12 +824,11 @@ export default function ImpressorasPage() {
   const filtrosAtivos = useMemo(() => {
     let count = 0;
     if (filtroRapido !== "todos") count += 1;
-    if (filtroOperacional !== "todos") count += 1;
     if (filtroStatus !== "todos") count += 1;
     if (filtroSuprimento.trim()) count += 1;
     if (busca.trim()) count += 1;
     return count;
-  }, [busca, filtroOperacional, filtroRapido, filtroStatus, filtroSuprimento]);
+  }, [busca, filtroRapido, filtroStatus, filtroSuprimento]);
 
   const inicioVisualPagina = registrosFiltrados.length ? intervaloPaginacao.inicio + 1 : 0;
   const fimVisualPagina = Math.min(intervaloPaginacao.fim, registrosFiltrados.length);
@@ -884,12 +868,6 @@ export default function ImpressorasPage() {
       { key: "todos", label: "Todos", count: contagensRapidas.todos, tone: "neutral" },
       { key: "online", label: "Online", count: contagensRapidas.online, tone: "online" },
       { key: "offline", label: "Offline", count: contagensRapidas.offline, tone: "offline" },
-      {
-        key: "nao_operacional",
-        label: "Não operacional",
-        count: contagensRapidas.nao_operacional,
-        tone: "offline"
-      },
       { key: "toner_baixo", label: "Toner baixo", count: contagensRapidas.toner_baixo, tone: "warn" },
       {
         key: "toner_critico",
@@ -918,12 +896,6 @@ export default function ImpressorasPage() {
       { key: "todos" as FiltroRapido, titulo: "Total", valor: contagensRapidas.todos, tone: "neutral" as const },
       { key: "online" as FiltroRapido, titulo: "Online", valor: contagensRapidas.online, tone: "online" as const },
       { key: "offline" as FiltroRapido, titulo: "Offline", valor: contagensRapidas.offline, tone: "offline" as const },
-      {
-        key: "nao_operacional" as FiltroRapido,
-        titulo: "Não operacional",
-        valor: contagensRapidas.nao_operacional,
-        tone: "offline" as const
-      },
       { key: "toner_baixo" as FiltroRapido, titulo: "Toner baixo", valor: contagensRapidas.toner_baixo, tone: "warn" as const },
       {
         key: "toner_critico" as FiltroRapido,
@@ -976,7 +948,6 @@ export default function ImpressorasPage() {
       cursorY += 46;
 
       const filtrosTexto = [
-        `Operacional: ${filtroOperacional}`,
         `Status: ${filtroStatus}`,
         `Suprimento: ${filtroSuprimento || "todos"}`,
         `Busca: ${buscaDigitada.trim() || "-"}`,
@@ -1011,7 +982,6 @@ export default function ImpressorasPage() {
             : "-";
 
         return [
-          row.operacional ? "operacional" : "nao operacional",
           row.patrimonio || "-",
           row.ip || "-",
           row.modelo || "-",
@@ -1030,7 +1000,6 @@ export default function ImpressorasPage() {
         startY: cursorY,
         margin: { left: margemX, right: margemX },
         head: [[
-          "Operacional",
           "Patrimonio",
           "IP",
           "Modelo",
@@ -1079,7 +1048,6 @@ export default function ImpressorasPage() {
   }, [
     buscaDigitada,
     carregarImagemComoDataUrl,
-    filtroOperacional,
     filtroStatus,
     filtroSuprimento,
     registrosFiltrados
@@ -1088,7 +1056,7 @@ export default function ImpressorasPage() {
   return (
     <BasicPageShell
       title="Impressoras Operacionais"
-      subtitle="Visão única com operacionais e não operacionais, filtros e ação direta de ativação."
+      subtitle="Visão única das impressoras em operação, status SNMP, pagecount e suprimentos."
       actions={
         <div className="ui-row">
           <button
@@ -1096,7 +1064,6 @@ export default function ImpressorasPage() {
             onClick={() =>
               void carregar(
                 naoOperacionaisCarregados ||
-                  filtroOperacional === "nao_operacional" ||
                   filtroRapido === "nao_operacional"
               )
             }
@@ -1130,21 +1097,6 @@ export default function ImpressorasPage() {
 
             <div className="ui-grid-4">
               <label>
-                <span className="ui-kv">Operacional</span>
-                <select
-                  className="ui-select"
-                  value={filtroOperacional}
-                  onChange={(e) => {
-                    setFiltroRapido("todos");
-                    setFiltroOperacional(e.target.value as FiltroOperacional);
-                  }}
-                >
-                  <option value="todos">Todos</option>
-                  <option value="operacional">Somente operacional</option>
-                  <option value="nao_operacional">Somente não operacional</option>
-                </select>
-              </label>
-              <label>
                 <span className="ui-kv">Status</span>
                 <select className="ui-select" value={filtroStatus} onChange={(e) => {
                   setFiltroRapido("todos");
@@ -1153,10 +1105,7 @@ export default function ImpressorasPage() {
                   <option value="todos">Todos</option>
                   <option value="online">online</option>
                   <option value="offline">offline</option>
-                  <option value="warning">warning</option>
-                  <option value="error">error</option>
                   <option value="unknown">unknown</option>
-                  <option value="nao_operacional">nao_operacional</option>
                 </select>
               </label>
               <label>
@@ -1216,7 +1165,6 @@ export default function ImpressorasPage() {
           <div className="impressoras-table-scroll">
             <table className="ui-table impressoras-table">
               <colgroup>
-                <col className="impressoras-col-operacional" />
                 <col className="impressoras-col-patrimonio" />
                 <col className="impressoras-col-ip" />
                 <col className="impressoras-col-modelo" />
@@ -1231,11 +1179,6 @@ export default function ImpressorasPage() {
               </colgroup>
               <thead>
                 <tr>
-                  <th>
-                    <button className="ui-th-btn" onClick={() => alternarOrdenacao("operacional")}>
-                      Operacional <span>{colunaOrdenacao === "operacional" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
-                    </button>
-                  </th>
                   <th>
                     <button className="ui-th-btn" onClick={() => alternarOrdenacao("patrimonio")}>
                       Patrimônio <span>{colunaOrdenacao === "patrimonio" ? (direcaoOrdenacao === "asc" ? "▲" : "▼") : "↕"}</span>
@@ -1305,11 +1248,6 @@ export default function ImpressorasPage() {
 
                   return (
                     <tr key={row.id} className={classesLinha}>
-                      <td>
-                        <span className={`ui-pill ${row.operacional ? "ok" : "warn"}`}>
-                          {row.operacional ? "operacional" : "não operacional"}
-                        </span>
-                      </td>
                       <td>{row.patrimonio || "-"}</td>
                       <td>{row.ip || "-"}</td>
                       <td>{row.modelo || "-"}</td>

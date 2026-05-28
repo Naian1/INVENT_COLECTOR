@@ -899,7 +899,16 @@ Porque uma divergência pode ser troca real ou erro cadastral. A decisão humana
 
 ### 11. O que acontece se a impressora estiver offline?
 
-O coletor registra status offline ou falha de resposta SNMP. O dashboard pode mostrar ausência de leitura ou status operacional conforme os dados recebidos.
+O coletor registra `offline` quando tentou consultar a impressora por SNMP e nao recebeu resposta. Esse caso e diferente de `unknown`.
+
+Para explicar para a banca:
+
+- `offline`: a impressora estava na lista de coleta, o coletor tentou falar com o IP, mas a impressora nao respondeu.
+- `unknown`: o sistema ainda nao tem historico de coleta para aquela impressora. E uma ausencia de base, nao uma falha confirmada.
+
+Assim, uma impressora que ja foi coletada e depois parou de responder aparece como `offline`. Uma impressora cadastrada, mas nunca coletada, aparece como `unknown`.
+
+Os suprimentos podem continuar aparecendo com a ultima leitura conhecida. Isso e correto porque o status atual pode estar offline, mas o ultimo toner medido ainda e uma informacao util para a equipe.
 
 ### 12. Como os suprimentos são monitorados?
 

@@ -69,9 +69,7 @@ const SEMANTICOS_RELEVANTES = [
 
 const HISTORICO_PAGINAS_DIAS_MAX = 92;
 const STATUS_HISTORY_WINDOW = 4;
-const STATUS_OFFLINE_CONFIRM_MINUTES = 18;
 const STATUS_OFFLINE_HARD_MINUTES = 120;
-const STATUS_RECENT_ONLINE_GRACE_MINUTES = 75;
 
 /**
  * [DOC-FUNC] getAdminClient
@@ -224,28 +222,6 @@ function minutesSince(value: string | null | undefined): number | null {
   return diffMs / 60000;
 }
 
-/**
- * [DOC-FUNC] isOfflineLikeStatus
- * O que faz: A funcao 'isOfflineLikeStatus' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: status. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) trata erros de forma explicita para facilitar diagnostico e operacao.
- * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
- */
-function isOfflineLikeStatus(status: string): boolean {
-  return ["offline", "error"].includes(status);
-}
-
-/**
- * [DOC-FUNC] isOnlineLikeStatus
- * O que faz: A funcao 'isOnlineLikeStatus' verifica condicoes de validade do fluxo. Ela retorna um sinal objetivo (ou erro) para decidir se a execucao pode continuar com seguranca.
- * Entradas: Recebe os parametros: status. Esses argumentos formam o contrato de entrada e sao tratados/validados antes de influenciar a regra principal.
- * Como executa: Fluxo resumido: 1) valida pre-condicoes e consistencia minima da entrada; 2) normaliza formato/tipo para manter comparacao e armazenamento consistentes; 3) percorre colecoes quando necessario para consolidar ou transformar resultados.
- * Retorno/Efeitos: Retorna verdadeiro/falso para orientar o proximo passo do fluxo sem ambiguidade, facilitando leitura e depuracao.
- */
-function isOnlineLikeStatus(status: string): boolean {
-  return ["online", "warning"].includes(status);
-}
-
 function normalizeStatusHistoryRows(
   rows: Array<{ status: string; coletado_em: string | null }>
 ): Array<{ status: string; coletado_em: string | null }> {
@@ -303,38 +279,10 @@ function resolverStatusOperacionalConfiavel(
   }
 
   if (latest.status === "offline") {
-    let consecutiveOffline = 0;
-    for (const item of recentWindow) {
-      if (isOfflineLikeStatus(item.status)) {
-        consecutiveOffline += 1;
-        continue;
-      }
-      break;
-    }
-
-    const hasRecentOnline = recentWindow.some((item) => isOnlineLikeStatus(item.status));
-
-    if (latestAgeMin !== null && latestAgeMin < STATUS_OFFLINE_CONFIRM_MINUTES) {
-      return "warning";
-    }
-
-    if (
-      hasRecentOnline &&
-      latestAgeMin !== null &&
-      latestAgeMin <= STATUS_RECENT_ONLINE_GRACE_MINUTES
-    ) {
-      return "warning";
-    }
-
-    if (consecutiveOffline >= 2) {
-      return "offline";
-    }
-
-    if (latestAgeMin !== null && latestAgeMin >= STATUS_OFFLINE_HARD_MINUTES) {
-      return "offline";
-    }
-
-    return "warning";
+    // Se o coletor tentou consultar a impressora e gravou "offline", a tela deve
+    // refletir esse estado imediatamente. "unknown" fica reservado para itens
+    // sem histórico de coleta, não para equipamentos que responderam com falha.
+    return "offline";
   }
 
   return fallback || latest.status || "unknown";

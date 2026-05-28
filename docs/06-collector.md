@@ -77,6 +77,17 @@ Regra pratica:
 - backup sem uso normalmente nao entra na coleta;
 - impressora ativa com IP entra na coleta.
 
+## 4.1. Status `offline` e `unknown`
+
+O coletor separa dois casos que sao importantes para a operacao:
+
+- `offline`: o coletor recebeu a impressora na lista de coleta, tentou consultar o IP por SNMP e nao teve resposta. Nesse caso ele envia um evento de telemetria com status `offline`.
+- `unknown`: nao e um status que o coletor usa para dizer que a impressora falhou. Ele representa falta de historico confiavel no dashboard, normalmente quando a impressora nunca teve coleta gravada.
+
+Por isso, quando o log mostrar uma mensagem como "parece estar offline", o correto e a tela de impressoras apresentar `offline`. O `unknown` fica para impressoras cadastradas que ainda nao possuem leitura anterior.
+
+Mesmo quando a impressora fica offline, o sistema pode continuar exibindo o ultimo suprimento conhecido. Isso evita perder informacao util: se o toner foi lido as 08:00 e a impressora ficou offline as 09:00, a tela ainda consegue mostrar o ultimo nivel conhecido, mas com status operacional offline.
+
 Exemplo real:
 
 ```text

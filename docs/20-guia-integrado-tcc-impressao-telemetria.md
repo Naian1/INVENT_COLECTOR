@@ -533,7 +533,18 @@ Para cada IP:
 6. monta payload;
 7. envia para a Edge Function.
 
-## 19.1. Proteção Contra Sobrecarga no Coletor
+### 19.1. Regra de `offline` e `unknown`
+
+Na operacao de impressoras, `offline` e `unknown` nao significam a mesma coisa.
+
+- `offline`: o coletor tentou consultar o IP da impressora via SNMP e nao recebeu resposta. Portanto, existe uma tentativa real de coleta com falha.
+- `unknown`: o sistema ainda nao tem historico confiavel de coleta daquela impressora. E usado para equipamento cadastrado sem leitura anterior.
+
+Essa separacao evita confusao no painel. Uma impressora que parou de responder deve aparecer como `offline`, porque o coletor realmente tentou consultar. Ja uma impressora nova, cadastrada mas nunca coletada, fica como `unknown` ate ter a primeira telemetria.
+
+Os dados de suprimento nao sao apagados quando a impressora fica offline. O dashboard pode mostrar o ultimo suprimento conhecido, junto com o status `offline`, para manter contexto operacional.
+
+## 19.2. Proteção Contra Sobrecarga no Coletor
 
 O coletor não deve se comportar como um "martelo" em cima do Supabase. Se o PostgREST, Auth ou Edge Functions começam a responder timeout, insistir várias vezes só piora a situação.
 

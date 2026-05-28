@@ -1208,10 +1208,16 @@ class CollectorControlApp:
     def _build_tray_image(self):
         if Image is None:
             return None
+        icon_path = resolve_brand_icon_path()
+        if icon_path is not None:
+            try:
+                return Image.open(icon_path).convert("RGBA").resize((64, 64))
+            except Exception:
+                pass
         img = Image.new("RGB", (64, 64), color=(20, 33, 61))
         draw = ImageDraw.Draw(img)
         draw.rectangle((6, 6, 58, 58), outline=(66, 135, 245), width=3)
-        draw.text((20, 18), "C", fill=(255, 255, 255))
+        draw.text((20, 18), "N", fill=(255, 255, 255))
         return img
 
     # [DOC-FUNC] minimize_to_tray
